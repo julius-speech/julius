@@ -1,0 +1,1628 @@
+'\" t
+.\"     Title: 
+    julius
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "JULIUS" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    julius
+   \- open source multi\-purpose LVCSR engine
+.SH "SYNOPSIS"
+.HP \w'\fBjulius\fR\ 'u
+\fBjulius\fR [\-C\ \fIjconffile\fR] [\fIoptions\fR...]
+.SH "DESCRIPTION"
+.PP
+
+\fBjulius\fR
+is a high\-performance, multi\-purpose, open\-source speech recognition engine for researchers and developers\&. It is capable of performing almost real\-time recognition of continuous speech with over 60k\-word 3\-gram language model and triphone HMM model, on most current PCs\&.
+\fBjulius\fR
+can perform recognition on audio files, live microphone input, network input and feature parameter files\&.
+.PP
+The core recognition module is implemented as C library called "JuliusLib"\&. It can also be extended by plug\-in facility\&.
+.SS "Supported Models"
+.PP
+\fBjulius\fR
+needs a language model and an acoustic model to run as a speech recognizer\&.
+\fBjulius\fR
+supports the following models\&.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBAcoustic model\fR
+.RS 4
+.PP
+Sub\-word HMM (Hidden Markov Model) in
+HTK
+ascii format are supported\&. Phoneme models (monophone), context dependent phoneme models (triphone), tied\-mixture and phonetic tied\-mixture models of any unit can be used\&. When using context dependent models, inter\-word context dependency is also handled\&. Multi\-stream feature and MSD\-HMM is also supported\&. You can further use a tool
+\fBmkbinhmm\fR
+to convert the ascii HMM file to a compact binary format for faster loading\&.
+.PP
+Note that
+\fBjulius\fR
+itself can only extract MFCC features from speech data\&. If you use acoustic HMM trained for other feature, you should give the input in
+HTK
+parameter file of the same feature type\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBLanguage model: word N-gram\fR
+.RS 4
+.PP
+Word N\-gram language model, up to 10\-gram, is supported\&. Julius uses different N\-gram for each pass: left\-to\-right 2\-gram on 1st pass, and right\-to\-left N\-gram on 2nd pass\&. It is recommended to use both LR 2\-gram and RL N\-gram for Julius\&. However, you can use only single LR N\-gram or RL N\-gram\&. In such case, approximated LR 2\-gram computed from the given N\-gram will be applied at the first pass\&.
+.PP
+The Standard ARPA format is supported\&. In addition, a binary format is also supported for efficiency\&. The tool
+\fBmkbingram\fR(1)
+can convert ARPA format N\-gram to binary format\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBLanguage model: grammar\fR
+.RS 4
+.PP
+The grammar format is an original one, and tools to create a recognirion grammar are included in the distribution\&. A grammar consists of two files: one is a \*(Aqgrammar\*(Aq file that describes sentence structures in a BNF style, using word \*(Aqcategory\*(Aq name as terminate symbols\&. Another is a \*(Aqvoca\*(Aq file that defines words with its pronunciations (i\&.e\&. phoneme sequences) for each category\&. They should be converted by
+\fBmkdfa.pl\fR(1)
+to a deterministic finite automaton file (\&.dfa) and a dictionary file (\&.dict), respectively\&. You can also use multiple grammars\&.
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBLanguage model: isolated word\fR
+.RS 4
+.PP
+You can perform isolated word recognition using only word dictionary\&. With this model type, Julius will perform rapid one pass recognition with static context handling\&. Silence models will be added at both head and tail of each word\&. You can also use multiple dictionaries in a process\&.
+.RE
+.SS "Search Algorithm"
+.PP
+Recognition algorithm of
+\fBjulius\fR
+is based on a two\-pass strategy\&. Word 2\-gram and reverse word 3\-gram is used on the respective passes\&. The entire input is processed on the first pass, and again the final searching process is performed again for the input, using the result of the first pass to narrow the search space\&. Specifically, the recognition algorithm is based on a tree\-trellis heuristic search combined with left\-to\-right frame\-synchronous beam search and right\-to\-left stack decoding search\&.
+.PP
+When using context dependent phones (triphones), interword contexts are taken into consideration\&. For tied\-mixture and phonetic tied\-mixture models, high\-speed acoustic likelihood calculation is possible using gaussian pruning\&.
+.PP
+For more details, see the related documents\&.
+.SH "OPTIONS"
+.PP
+These options specify the models, system behaviors and various search parameters to Julius\&. These option can be set at the command line, but it is recommended that you write them in a text file as a "jconf file", and specify it by "\-C" option\&.
+.PP
+Applications incorporating JuliusLib also use these options to set the parameters of core recognition engine\&. For example, a jconf file can be loaded to the enine by calling
+\fBj_config_load_file_new()\fR
+with the jconf file name as argument\&.
+.PP
+Please note that relative paths in a jconf file should be relative to the jconf file itself, not the current working directory\&.
+.PP
+Below are the details of all options, gathered by group\&.
+.SS "Julius application option"
+.PP
+These are application options of Julius, outside of JuliusLib\&. It contains parameters and switches for result output, character set conversion, log level, and module mode options\&. These option are specific to Julius, and cannot be used at applications using JuliusLib other than Julius\&.
+.PP
+\fB \-outfile \fR
+.RS 4
+On file input, this option write the recognition result of each file to a separate file\&. The output file of an input file will be the same name but the suffix will be changed to "\&.out"\&. (rev\&.4\&.0)
+.RE
+.PP
+\fB \-separatescore \fR
+.RS 4
+Output the language and acoustic scores separately\&.
+.RE
+.PP
+\fB \-callbackdebug \fR
+.RS 4
+Print the callback names at each call for debug\&. (rev\&.4\&.0)
+.RE
+.PP
+\fB \-charconv \fR \fIfrom\fR \fIto\fR
+.RS 4
+Print with character set conversion\&.
+\fIfrom\fR
+is the source character set used in the language model, and
+\fIto\fR
+is the target character set you want to get\&.
+.sp
+On Linux, the arguments should be a code name\&. You can obtain the list of available code names by invoking the command "iconv \-\-list"\&. On Windows, the arguments should be a code name or codepage number\&. Code name should be one of "ansi", "mac", "oem", "utf\-7", "utf\-8", "sjis", "euc"\&. Or you can specify any codepage number supported at your environment\&.
+.RE
+.PP
+\fB \-nocharconv \fR
+.RS 4
+Disable character conversion\&.
+.RE
+.PP
+\fB \-module \fR [port]
+.RS 4
+Run Julius on "Server Module Mode"\&. After startup, Julius waits for tcp/ip connection from client\&. Once connection is established, Julius start communication with the client to process incoming commands from the client, or to output recognition results, input trigger information and other system status to the client\&. The default port number is 10500\&.
+.RE
+.PP
+\fB \-record \fR \fIdir\fR
+.RS 4
+Auto\-save all input speech data into the specified directory\&. Each segmented inputs are recorded each by one\&. The file name of the recorded data is generated from system time when the input ends, in a style of
+YYYY\&.MMDD\&.HHMMSS\&.wav\&. File format is 16bit monoral
+WAV\&. Invalid for mfcfile input\&.
+.sp
+With input rejection by
+\fB\-rejectshort\fR, the rejected input will also be recorded even if they are rejected\&.
+.RE
+.PP
+\fB \-logfile \fR \fIfile\fR
+.RS 4
+Save all log output to a file instead of standard output\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-nolog \fR
+.RS 4
+Disable all log output\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-help \fR
+.RS 4
+Output help message and exit\&.
+.RE
+.SS "Global options"
+.PP
+These are model\-/search\-dependent options relating audio input, sound detection, GMM, decoding algorithm, plugin facility, and others\&. Global options should be placed before any instance declaration (\fB\-AM\fR,
+\fB\-LM\fR, or
+\fB\-SR\fR), or just after "\fB\-GLOBAL\fR" option\&.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBAudio input\fR
+.RS 4
+.PP
+\fB \-input \fR {mic|rawfile|mfcfile|outprob|adinnet|vecnet|stdin|netaudio|alsa|oss|esd}
+.RS 4
+Choose speech input source\&. Specify \*(Aqfile\*(Aq or \*(Aqrawfile\*(Aq for waveform file, \*(Aqhtkparam\*(Aq or \*(Aqmfcfile\*(Aq for
+HTK
+parameter file, \*(Aqoutprob\*(Aq for outprob vectors from
+HTK
+parameter file\&. On file input, users will be prompted to enter the file name from stdin, or you can use
+\fB\-filelist\fR
+option to specify list of files to process\&.
+.sp
+\*(Aqmic\*(Aq is to get audio input from a default live microphone device, and \*(Aqadinnet\*(Aq means receiving waveform data via tcpip network from an adinnet client\&. \*(Aqnetaudio\*(Aq is from DatLink/NetAudio input, and \*(Aqstdin\*(Aq means data input from standard input\&. \*(Aqvecnet\*(Aq means receiving feature / outprob vectors via tcpip network from vecnet client\&.
+.sp
+For waveform file input, only
+WAV
+(no compression) and
+RAW
+(noheader, 16bit, big endian) are supported by default\&. Other format can be read when compiled with
+libsnd
+library\&. To see what format is actually supported, see the help message using option
+\fB\-help\fR\&. For stdin input, only WAV and RAW is supported\&. (default: mfcfile)
+.sp
+At Linux, you can choose API at run time by specifying
+alsa,
+oss
+and
+esd\&.
+.RE
+.PP
+\fB \-filelist \fR \fIfilename\fR
+.RS 4
+(With
+\fB\-input rawfile|mfcfile|outprob\fR) perform recognition on all files listed in the file\&. The file should contain input file per line\&. Engine will end when all of the files are processed\&.
+.RE
+.PP
+\fB \-notypecheck \fR
+.RS 4
+By default, Julius checks the input parameter type whether it matches the AM or not\&. This option will disable the check and force engine to use the input vector as is\&.
+.RE
+.PP
+\fB \-48 \fR
+.RS 4
+Record input with 48kHz sampling, and down\-sample it to 16kHz on\-the\-fly\&. This option is valid for 16kHz model only\&. The down\-sampling routine was ported from
+sptk\&. (Rev\&. 4\&.0)
+.RE
+.PP
+\fB \-NA \fR \fIdevicename\fR
+.RS 4
+Host name for DatLink server input (\fB\-input netaudio\fR)\&.
+.RE
+.PP
+\fB \-adport \fR \fIport_number\fR
+.RS 4
+With
+\fB\-input adinnet\fR, specify adinnet port number to listen\&. (default: 5530)
+.RE
+.PP
+\fB \-nostrip \fR
+.RS 4
+Julius by default removes successive zero samples in input speech data\&. This option inhibits the removal\&.
+.RE
+.PP
+\fB \-zmean \fR, \fB \-nozmean \fR
+.RS 4
+This option enables/disables DC offset removal of input waveform\&. Offset will be estimated from the whole input\&. For microphone / network input, zero mean of the first 48000 samples (3 seconds in 16kHz sampling) will be used for the estimation\&. (default: disabled)
+.sp
+This option uses static offset for the channel\&. See also
+\fB\-zmeansource\fR
+for frame\-wise offset removal\&.
+.RE
+.PP
+\fB \-lvscale \fR \fIfactor\fR
+.RS 4
+Posterior scaling of magnitude of audio input\&.
+.RE
+.PP
+\fB \-chunk_size \fR
+.RS 4
+Buffer length of the audio input can be set with number of samples (default number is 1000)\&. If you set small number, you can reduce the delay\&. However, it becomes unstable when too small\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSpeech detection by level and zero-cross\fR
+.RS 4
+.PP
+\fB \-cutsilence \fR, \fB \-nocutsilence \fR
+.RS 4
+Turn on / off the speech detection by level and zero\-cross\&. Default is on for mic / adinnet input, and off for files\&.
+.RE
+.PP
+\fB \-lv \fR \fIthres\fR
+.RS 4
+Level threshold for speech input detection\&. Values should be in range from 0 to 32767\&. (default: 2000)
+.RE
+.PP
+\fB \-zc \fR \fIthres\fR
+.RS 4
+Zero crossing threshold per second\&. Only input that goes over the level threshold (\fB\-lv\fR) will be counted\&. (default: 60)
+.RE
+.PP
+\fB \-headmargin \fR \fImsec\fR
+.RS 4
+Silence margin at the start of speech segment in milliseconds\&. (default: 300)
+.RE
+.PP
+\fB \-tailmargin \fR \fImsec\fR
+.RS 4
+Silence margin at the end of speech segment in milliseconds\&. (default: 400)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBInput rejection\fR
+.RS 4
+.PP
+Two simple front\-end input rejection methods are implemented, based on input length and average power of detected segment\&. The rejection by average power is experimental, and can be enabled by
+\-\-enable\-power\-reject
+on compilation\&. Valid for MFCC feature with power coefficient and real\-time input only\&.
+.PP
+For GMM\-based input rejection see the GMM section below\&.
+.PP
+\fB \-rejectshort \fR \fImsec\fR
+.RS 4
+Reject input shorter than specified milliseconds\&. Search will be terminated and no result will be output\&.
+.RE
+.PP
+\fB \-rejectlong \fR \fImsec\fR
+.RS 4
+Reject input longer than specified milliseconds\&. Search will be terminated and no result will be output\&.
+.RE
+.PP
+\fB \-powerthres \fR \fIthres\fR
+.RS 4
+Reject the inputted segment by its average energy\&. If the average energy of the last recognized input is below the threshold, Julius will reject the input\&. (Rev\&.4\&.0)
+.sp
+This option is valid when
+\-\-enable\-power\-reject
+is specified at compilation time\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBGaussian mixture model / GMM-VAD\fR
+.RS 4
+.PP
+GMM will be used for input rejection by accumulated score, or for front\-end GMM\-based VAD when
+\-\-enable\-gmm\-vad
+is specified\&.
+.PP
+NOTE: You should also set the proper MFCC parameters required for the GMM, specifying the acoustic parameters described in AM section
+\fB\-AM_GMM\fR\&.
+.PP
+When GMM\-based VAD is enabled, the voice activity score will be calculated at each frame as front\-end processing\&. The value will be computed as \e[ \emax_{m \ein M_v} p(x|m) \- \emax_{m \ein M_n} p(x|m) \e] where $M_v$ is a set of voice GMM, and $M_n$ is a set of noise GMM whose names should be specified by
+\fB\-gmmreject\fR\&. The activity score will be then averaged for the last N frames, where N is specified by
+\fB\-gmmmargin\fR\&. Julius updates the averaged activity score at each frame, and detect speech up\-trigger when the value gets higher than a value specified by
+\fB\-gmmup\fR, and detecgt down\-trigger when it gets lower than a value of
+\fB\-gmmdown\fR\&.
+.PP
+\fB \-gmm \fR \fIhmmdefs_file\fR
+.RS 4
+GMM definition file in
+HTK
+format\&. If specified, GMM\-based input verification will be performed concurrently with the 1st pass, and you can reject the input according to the result as specified by
+\fB\-gmmreject\fR\&. The GMM should be defined as one\-state HMMs\&.
+.RE
+.PP
+\fB \-gmmnum \fR \fInumber\fR
+.RS 4
+Number of Gaussian components to be computed per frame on GMM calculation\&. Only the N\-best Gaussians will be computed for rapid calculation\&. The default is 10 and specifying smaller value will speed up GMM calculation, but too small value (1 or 2) may cause degradation of identification performance\&.
+.RE
+.PP
+\fB \-gmmreject \fR \fIstring\fR
+.RS 4
+Comma\-separated list of GMM names to be rejected as invalid input\&. When recognition, the log likelihoods of GMMs accumulated for the entire input will be computed concurrently with the 1st pass\&. If the GMM name of the maximum score is within this string, the 2nd pass will not be executed and the input will be rejected\&.
+.RE
+.PP
+\fB \-gmmmargin \fR \fIframes\fR
+.RS 4
+(GMM_VAD) Head margin in frames\&. When a speech trigger detected by GMM, recognition will start from current frame minus this value\&. (Rev\&.4\&.0)
+.sp
+This option will be valid only if compiled with
+\-\-enable\-gmm\-vad\&.
+.RE
+.PP
+\fB \-gmmup \fR \fIvalue\fR
+.RS 4
+(GMM_VAD) Up trigger threshold of voice activity score\&. (Rev\&.4\&.1)
+.sp
+This option will be valid only if compiled with
+\-\-enable\-gmm\-vad\&.
+.RE
+.PP
+\fB \-gmmdown \fR \fIvalue\fR
+.RS 4
+(GMM_VAD) Down trigger threshold of voice activity score\&. (Rev\&.4\&.1)
+.sp
+This option will be valid only if compiled with
+\-\-enable\-gmm\-vad\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBDecoding option\fR
+.RS 4
+.PP
+Real\-time processing means concurrent processing of MFCC computation 1st pass decoding\&. By default, real\-time processing on the pass is on for microphone / adinnet / netaudio input, and for others\&.
+.PP
+\fB \-realtime \fR, \fB \-norealtime \fR
+.RS 4
+Explicitly switch on / off real\-time (pipe\-line) processing on the first pass\&. The default is off for file input, and on for microphone, adinnet and NetAudio input\&. This option relates to the way CMN and energy normalization is performed: if off, they will be done using average features of whole input\&. If on, MAP\-CMN and energy normalization to do real\-time processing\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBMisc. options\fR
+.RS 4
+.PP
+\fB \-C \fR \fIjconffile\fR
+.RS 4
+Load a jconf file at here\&. The content of the jconffile will be expanded at this point\&.
+.RE
+.PP
+\fB \-version \fR
+.RS 4
+Print version information to standard error, and exit\&.
+.RE
+.PP
+\fB \-setting \fR
+.RS 4
+Print engine setting information to standard error, and exit\&.
+.RE
+.PP
+\fB \-quiet \fR
+.RS 4
+Output less log\&. For result, only the best word sequence will be printed\&.
+.RE
+.PP
+\fB \-debug \fR
+.RS 4
+(For debug) output enormous internal message and debug information to log\&.
+.RE
+.PP
+\fB \-check \fR {wchmm|trellis|triphone}
+.RS 4
+For debug, enter interactive check mode\&.
+.RE
+.PP
+\fB \-plugindir \fR \fIdirlist\fR
+.RS 4
+Specify directory to load plugin\&. If several direcotries exist, specify them by colon\-separated list\&.
+.RE
+.PP
+\fB \-outprobout \fR \fIfile\fR
+.RS 4
+Save computed outprob vectors to HTK file (for debug)\&.
+.RE
+.RE
+.SS "Instance declaration for multi decoding"
+.PP
+The following arguments will create a new configuration set with default parameters, and switch current set to it\&. Jconf parameters specified after the option will be set into the current set\&.
+.PP
+To do multi\-model decoding, these argument should be specified at the first of each model / search instances with different names\&. Any options before the first instance definition will be IGNORED\&.
+.PP
+When no instance definition is found (as older version of Julius), all the options are assigned to a default instance named
+_default\&.
+.PP
+Please note that decoding with a single LM and multiple AMs is not fully supported\&. For example, you may want to construct the jconf file as following\&.
+.sp .if n \{\ .RS 4 .\} .nf \-AM am_1 \-AM am_2 \-LM lm (LM spec\&.\&.) \-SR search1 am_1 lm \-SR search2 am_2 lm .fi .if n \{\ .RE .\}
+This type of model sharing is not supported yet, since some part of LM processing depends on the assigned AM\&. Instead, you can get the same result by defining the same LMs for each AM, like this:
+.sp .if n \{\ .RS 4 .\} .nf \-AM am_1 \-AM am_2 \-LM lm_1 (LM spec\&.\&.) \-LM lm_2 (same LM spec\&.\&.) \-SR search1 am_1 lm_1 \-SR search2 am_2 lm_2 .fi .if n \{\ .RE .\}
+.PP
+\fB \-AM \fR \fIname\fR
+.RS 4
+Create a new AM configuration set, and switch current to the new one\&. You should give a unique name\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-LM \fR \fIname\fR
+.RS 4
+Create a new LM configuration set, and switch current to the new one\&. You should give a unique name\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-SR \fR \fIname\fR \fIam_name\fR \fIlm_name\fR
+.RS 4
+Create a new search configuration set, and switch current to the new one\&. The specified AM and LM will be assigned to it\&. The
+\fIam_name\fR
+and
+\fIlm_name\fR
+can be either name or ID number\&. You should give a unique name\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-AM_GMM \fR
+.RS 4
+When using GMM for front\-end processing, you can specify GMM\-specific acoustic parameters after this option\&. If you does not specify
+\fB\-AM_GMM\fR
+with GMM, the GMM will share the same parameter vector as the last AM\&. The current AM will be switched to the GMM one, so be careful not to confuse with normal AM configurations\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-GLOBAL \fR
+.RS 4
+Start a global section\&. The global options should be placed before any instance declaration, or after this option on multiple model recognition\&. This can be used multiple times\&. (Rev\&.4\&.1)
+.RE
+.PP
+\fB \-nosectioncheck \fR, \fB \-sectioncheck \fR
+.RS 4
+Disable / enable option location check in multi\-model decoding\&. When enabled, the options between instance declaration is treated as "sections" and only the belonging option types can be written\&. For example, when an option
+\fB\-AM\fR
+is specified, only the AM related option can be placed after the option until other declaration is found\&. Also, global options should be placed at top, before any instance declarataion\&. This is enabled by default\&. (Rev\&.4\&.1)
+.RE
+.SS "Language model (\-LM)"
+.PP
+This group contains options for model definition of each language model type\&. When using multiple LM, one instance can have only one LM\&.
+.PP
+Only one type of LM can be specified for a LM configuration\&. If you want to use multi model, you should define them one as a new LM\&.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBN-gram\fR
+.RS 4
+.PP
+\fB \-d \fR \fIbingram_file\fR
+.RS 4
+Use binary format N\-gram\&. An ARPA N\-gram file can be converted to Julius binary format by
+mkbingram\&.
+.RE
+.PP
+\fB \-nlr \fR \fIarpa_ngram_file\fR
+.RS 4
+A forward, left\-to\-right N\-gram language model in standard ARPA format\&. When both a forward N\-gram and backward N\-gram are specified, Julius uses this forward 2\-gram for the 1st pass, and the backward N\-gram for the 2nd pass\&.
+.sp
+Since ARPA file often gets huge and requires a lot of time to load, it may be better to convert the ARPA file to Julius binary format by
+mkbingram\&. Note that if both forward and backward N\-gram is used for recognition, they together will be converted to a single binary\&.
+.sp
+When only a forward N\-gram is specified by this option and no backward N\-gram specified by
+\fB\-nrl\fR, Julius performs recognition with only the forward N\-gram\&. The 1st pass will use the 2\-gram entry in the given N\-gram, and The 2nd pass will use the given N\-gram, with converting forward probabilities to backward probabilities by Bayes rule\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-nrl \fR \fIarpa_ngram_file\fR
+.RS 4
+A backward, right\-to\-left N\-gram language model in standard ARPA format\&. When both a forward N\-gram and backward N\-gram are specified, Julius uses the forward 2\-gram for the 1st pass, and this backward N\-gram for the 2nd pass\&.
+.sp
+Since ARPA file often gets huge and requires a lot of time to load, it may be better to convert the ARPA file to Julius binary format by
+mkbingram\&. Note that if both forward and backward N\-gram is used for recognition, they together will be converted to a single binary\&.
+.sp
+When only a backward N\-gram is specified by this option and no forward N\-gram specified by
+\fB\-nlr\fR, Julius performs recognition with only the backward N\-gram\&. The 1st pass will use the forward 2\-gram probability computed from the backward 2\-gram using Bayes rule\&. The 2nd pass fully use the given backward N\-gram\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-v \fR \fIdict_file\fR
+.RS 4
+Word dictionary file\&.
+.RE
+.PP
+\fB \-silhead \fR \fIword_string\fR \fB \-siltail \fR \fIword_string\fR
+.RS 4
+Silence word defined in the dictionary, for silences at the beginning of sentence and end of sentence\&. (default: "<s>", "</s>")
+.RE
+.PP
+\fB \-mapunk \fR \fIword_string\fR
+.RS 4
+Specify unknown word\&. Default is "<unk>" or "<UNK>"\&. This will be used to assign word probability on unknown words, i\&.e\&. words in dictionary that are not in N\-gram vocabulary\&.
+.RE
+.PP
+\fB \-iwspword \fR
+.RS 4
+Add a word entry to the dictionary that should correspond to inter\-word pauses\&. This may improve recognition accuracy in some language model that has no explicit inter\-word pause modeling\&. The word entry to be added can be changed by
+\fB\-iwspentry\fR\&.
+.RE
+.PP
+\fB \-iwspentry \fR \fIword_entry_string\fR
+.RS 4
+Specify the word entry that will be added by
+\fB\-iwspword\fR\&. (default: "<UNK> [sp] sp sp")
+.RE
+.PP
+\fB \-sepnum \fR \fInumber\fR
+.RS 4
+Number of high frequency words to be isolated from the lexicon tree, to ease approximation error that may be caused by the one\-best approximation on 1st pass\&. (default: 150)
+.RE
+.PP
+\fB \-adddict \fR \fIdicfile\fR
+.RS 4
+Load grammars in additional on startup\&.
+.RE
+.PP
+\fB \-addword \fR \fIentry_string\fR
+.RS 4
+Load entry of words in additional on startup\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBGrammar\fR
+.RS 4
+.PP
+Multiple grammars can be specified by repeating
+\fB\-gram\fR
+and
+\fB\-gramlist\fR\&. Note that this is unusual behavior from other options (in normal Julius option, last one will override previous ones)\&. You can use
+\fB\-nogram\fR
+to reset the grammars already specified before the point\&.
+.PP
+\fB \-gram \fR gramprefix1[,gramprefix2[,gramprefix3,\&.\&.\&.]]
+.RS 4
+Comma\-separated list of grammars to be used\&. the argument should be a prefix of a grammar, i\&.e\&. if you have
+foo\&.dfa
+and
+foo\&.dict, you should specify them with a single argument
+foo\&. Multiple grammars can be specified at a time as a comma\-separated list\&.
+.RE
+.PP
+\fB \-gramlist \fR \fIlist_file\fR
+.RS 4
+Specify a grammar list file that contains list of grammars to be used\&. The list file should contain the prefixes of grammars, each per line\&. A relative path in the list file will be treated as relative to the file, not the current path or configuration file\&.
+.RE
+.PP
+\fB \-dfa \fR \fIdfa_file\fR \fB \-v \fR \fIdict_file\fR
+.RS 4
+An old way of specifying grammar files separately\&. This is bogus, and should not be used any more\&.
+.RE
+.PP
+\fB \-nogram \fR
+.RS 4
+Remove the current list of grammars already specified by
+\fB\-gram\fR,
+\fB\-gramlist\fR,
+\fB\-dfa\fR
+and
+\fB\-v\fR\&.
+.RE
+.PP
+\fB \-adddict \fR \fIdicfile\fR
+.RS 4
+Load grammars in additional on startup\&.
+.RE
+.PP
+\fB \-addword \fR \fIentry_string\fR
+.RS 4
+Load entry of words in additional on startup\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBIsolated word\fR
+.RS 4
+.PP
+Dictionary can be specified by using
+\fB\-w\fR
+and
+\fB\-wlist\fR\&. When you specify multiple times, all of them will be read at startup\&. You can use
+\fB\-nogram\fR
+to reset the already specified dictionaries at that point\&.
+.PP
+\fB \-w \fR \fIdict_file\fR
+.RS 4
+Word dictionary for isolated word recognition\&. File format is the same as other LM\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-wlist \fR \fIlist_file\fR
+.RS 4
+Specify a dictionary list file that contains list of dictionaries to be used\&. The list file should contain the file name of dictionaries, each per line\&. A relative path in the list file will be treated as relative to the list file, not the current path or configuration file\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-nogram \fR
+.RS 4
+Remove the current list of dictionaries already specified by
+\fB\-w\fR
+and
+\fB\-wlist\fR\&.
+.RE
+.PP
+\fB \-wsil \fR \fIhead_sil_model_name\fR \fItail_sil_model_name\fR \fIsil_context_name\fR
+.RS 4
+On isolated word recognition, silence models will be appended to the head and tail of each word at recognition\&. This option specifies the silence models to be appended\&.
+\fIsil_context_name\fR
+is the name of the head sil model and tail sil model as a context of word head phone and tail phone\&. For example, if you specify
+\-wsil silB silE sp, a word with phone sequence
+b eh t
+will be translated as
+silB sp\-b+eh b\-eh+t eh\-t+sp silE\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-adddict \fR \fIdicfile\fR
+.RS 4
+Load grammars in additional on startup\&.
+.RE
+.PP
+\fB \-addword \fR \fIentry_string\fR
+.RS 4
+Load entry of words in additional on startup\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBUser-defined LM\fR
+.RS 4
+.PP
+\fB \-userlm \fR
+.RS 4
+Declare to use user LM functions in the program\&. This option should be specified if you use user\-defined LM functions\&. (Rev\&.4\&.0)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBMisc. LM options\fR
+.RS 4
+.PP
+\fB \-forcedict \fR
+.RS 4
+Skip error words in dictionary and force running\&.
+.RE
+.RE
+.SS "Acoustic model and feature analysis (\-AM) (\-AM_GMM)"
+.PP
+This section is about options for acoustic model, feature extraction, feature normalizations and spectral subtraction\&.
+.PP
+After
+\-AM name, an acoustic model and related specification should be written\&. You can use multiple AMs trained with different MFCC types\&. For GMM, the required parameter condition should be specified just as same as AMs after
+\fB\-AM_GMM\fR\&.
+.PP
+When using multiple AMs, the values of
+\fB\-smpPeriod\fR,
+\fB\-smpFreq\fR,
+\fB\-fsize\fR
+and
+\fB\-fshift\fR
+should be the same among all AMs\&.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBAcoustic HMM\fR
+.RS 4
+.PP
+\fB \-h \fR \fIhmmdef_file\fR
+.RS 4
+Acoustic HMM definition file\&. It should be in
+HTK
+ascii format, or Julius binary format\&. You can convert
+HTK
+ascii format to Julius binary format using
+mkbinhmm\&.
+.RE
+.PP
+\fB \-hlist \fR \fIhmmlist_file\fR
+.RS 4
+HMMList file for phone mapping\&. This file provides mapping between logical triphone names generated in the dictionary and the defined HMM names in hmmdefs\&. This option should be specified for context\-dependent model\&.
+.RE
+.PP
+\fB \-tmix \fR \fInumber\fR
+.RS 4
+Specify the number of top Gaussians to be calculated in a mixture codebook\&. Small number will speed up the acoustic computation, but AM accuracy may get worse with too small value\&. See also
+\fB\-gprune\fR\&. (default: 2)
+.RE
+.PP
+\fB \-spmodel \fR \fIname\fR
+.RS 4
+Specify HMM model name that corresponds to short\-pause in an utterance\&. The short\-pause model name will be used in recognition: short\-pause skipping on grammar recognition, word\-end short\-pause model insertion with
+\fB\-iwsp\fR
+on N\-gram, or short\-pause segmentation (\fB\-spsegment\fR)\&. (default: "sp")
+.RE
+.PP
+\fB \-multipath \fR
+.RS 4
+Enable multi\-path mode\&. To make decoding faster, Julius by default impose a limit on HMM transitions that each model should have only one transition from initial state and to end state\&. On multi\-path mode, Julius does extra handling on inter\-model transition to allows model\-skipping transition and multiple output/input transitions\&. Note that specifying this option will make Julius a bit slower, and the larger beam width may be required\&.
+.sp
+This function was a compilation\-time option on Julius 3\&.x, and now becomes a run\-time option\&. By default (without this option), Julius checks the transition type of specified HMMs, and enable the multi\-path mode if required\&. You can force multi\-path mode with this option\&. (rev\&.4\&.0)
+.RE
+.PP
+\fB \-gprune \fR {safe|heuristic|beam|none|default}
+.RS 4
+Set Gaussian pruning algorithm to use\&. For tied\-mixture model, Julius performs Gaussian pruning to reduce acoustic computation, by calculating only the top N Gaussians in each codebook at each frame\&. The default setting will be set according to the model type and engine setting\&.
+default
+will force accepting the default setting\&. Set this to
+none
+to disable pruning and perform full computation\&.
+safe
+guarantees the top N Gaussians to be computed\&.
+heuristic
+and
+beam
+do more aggressive computational cost reduction, but may result in small loss of accuracy model (default:
+safe
+(standard),
+beam
+(fast) for tied mixture model,
+none
+for non tied\-mixture model)\&.
+.RE
+.PP
+\fB \-iwcd1 \fR {max|avg|best number}
+.RS 4
+Select method to approximate inter\-word triphone on the head and tail of a word in the first pass\&.
+.sp
+
+max
+will apply the maximum likelihood of the same context triphones\&.
+avg
+will apply the average likelihood of the same context triphones\&.
+best number
+will apply the average of top N\-best likelihoods of the same context triphone\&.
+.sp
+Default is
+best 3
+for use with N\-gram, and
+avg
+for grammar and word\&. When this AM is shared by LMs of both type, latter one will be chosen\&.
+.RE
+.PP
+\fB \-iwsppenalty \fR \fIfloat\fR
+.RS 4
+Insertion penalty for word\-end short pauses appended by
+\fB\-iwsp\fR\&.
+.RE
+.PP
+\fB \-gshmm \fR \fIhmmdef_file\fR
+.RS 4
+If this option is specified, Julius performs Gaussian Mixture Selection for efficient decoding\&. The hmmdefs should be a monophone model generated from an ordinary monophone HMM model, using
+mkgshmm\&.
+.RE
+.PP
+\fB \-gsnum \fR \fInumber\fR
+.RS 4
+On GMS, specify number of monophone states to compute corresponding triphones in detail\&. (default: 24)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBSpeech analysis\fR
+.RS 4
+.PP
+Only MFCC feature extraction is supported in current Julius\&. Thus when recognizing a waveform input from file or microphone, AM must be trained by MFCC\&. The parameter condition should also be set as exactly the same as the training condition by the options below\&.
+.PP
+When you give an input in
+HTK
+Parameter file, you can use any parameter type for AM\&. In this case Julius does not care about the type of input feature and AM, just read them as vector sequence and match them to the given AM\&. Julius only checks whether the parameter types are the same\&. If it does not work well, you can disable this checking by
+\fB\-notypecheck\fR\&.
+.PP
+In Julius, the parameter kind and qualifiers (as
+TARGETKIND
+in
+HTK) and the number of cepstral parameters (NUMCEPS) will be set automatically from the content of the AM header, so you need not specify them by options\&.
+.PP
+Other parameters should be set exactly the same as training condition\&. You can also give a
+HTK
+Config file which you used to train AM to Julius by
+\fB\-htkconf\fR\&. When this option is applied, Julius will parse the Config file and set appropriate parameter\&.
+.PP
+You can further embed those analysis parameter settings to a binary HMM file using
+mkbinhmm\&.
+.PP
+If options specified in several ways, they will be evaluated in the order below\&. The AM embedded parameter will be loaded first if any\&. Then, the
+HTK
+config file given by
+\fB\-htkconf\fR
+will be parsed\&. If a value already set by AM embedded value,
+HTK
+config will override them\&. At last, the direct options will be loaded, which will override settings loaded before\&. Note that, when the same options are specified several times, later will override previous, except that
+\fB\-htkconf\fR
+will be evaluated first as described above\&.
+.PP
+\fB \-smpPeriod \fR \fIperiod\fR
+.RS 4
+Sampling period of input speech, in unit of 100 nanoseconds\&. Sampling rate can also be specified by
+\fB\-smpFreq\fR\&. Please note that the input frequency should be set equal to the training conditions of AM\&. (default: 625, corresponds to 16,000Hz)
+.sp
+This option corresponds to the
+HTK
+Option
+SOURCERATE\&. The same value can be given to this option\&.
+.sp
+When using multiple AM, this value should be the same among all AMs\&.
+.RE
+.PP
+\fB \-smpFreq \fR \fIHz\fR
+.RS 4
+Set sampling frequency of input speech in Hz\&. Sampling rate can also be specified using
+\fB\-smpPeriod\fR\&. Please note that this frequency should be set equal to the training conditions of AM\&. (default: 16,000)
+.sp
+When using multiple AM, this value should be the same among all AMs\&.
+.RE
+.PP
+\fB \-fsize \fR \fIsample_num\fR
+.RS 4
+Window size in number of samples\&. (default: 400)
+.sp
+This option corresponds to the
+HTK
+Option
+WINDOWSIZE, but value should be in samples (HTK
+value / smpPeriod)\&.
+.sp
+When using multiple AM, this value should be the same among all AMs\&.
+.RE
+.PP
+\fB \-fshift \fR \fIsample_num\fR
+.RS 4
+Frame shift in number of samples\&. (default: 160)
+.sp
+This option corresponds to the
+HTK
+Option
+TARGETRATE, but value should be in samples (HTK
+value / smpPeriod)\&.
+.sp
+When using multiple AM, this value should be the same among all AMs\&.
+.RE
+.PP
+\fB \-preemph \fR \fIfloat\fR
+.RS 4
+Pre\-emphasis coefficient\&. (default: 0\&.97)
+.sp
+This option corresponds to the
+HTK
+Option
+PREEMCOEF\&. The same value can be given to this option\&.
+.RE
+.PP
+\fB \-fbank \fR \fInum\fR
+.RS 4
+Number of filterbank channels\&. (default: 24)
+.sp
+This option corresponds to the
+HTK
+Option
+NUMCHANS\&. The same value can be given to this option\&. Be aware that the default value not the same as in
+HTK
+(22)\&.
+.RE
+.PP
+\fB \-ceplif \fR \fInum\fR
+.RS 4
+Cepstral liftering coefficient\&. (default: 22)
+.sp
+This option corresponds to the
+HTK
+Option
+CEPLIFTER\&. The same value can be given to this option\&.
+.RE
+.PP
+\fB \-rawe \fR, \fB \-norawe \fR
+.RS 4
+Enable/disable using raw energy before pre\-emphasis (default: disabled)
+.sp
+This option corresponds to the
+HTK
+Option
+RAWENERGY\&. Be aware that the default value differs from
+HTK
+(enabled at
+HTK, disabled at Julius)\&.
+.RE
+.PP
+\fB \-enormal \fR, \fB \-noenormal \fR
+.RS 4
+Enable/disable normalizing log energy\&. On live input, this normalization will be approximated from the average of last input\&. (default: disabled)
+.sp
+This option corresponds to the
+HTK
+Option
+ENORMALISE\&. Be aware that the default value differs from
+HTK
+(enabled at
+HTK, disabled at Julius)\&.
+.RE
+.PP
+\fB \-escale \fR \fIfloat_scale\fR
+.RS 4
+Scaling factor of log energy when normalizing log energy\&. (default: 1\&.0)
+.sp
+This option corresponds to the
+HTK
+Option
+ESCALE\&. Be aware that the default value differs from
+HTK
+(0\&.1)\&.
+.RE
+.PP
+\fB \-silfloor \fR \fIfloat\fR
+.RS 4
+Energy silence floor in dB when normalizing log energy\&. (default: 50\&.0)
+.sp
+This option corresponds to the
+HTK
+Option
+SILFLOOR\&.
+.RE
+.PP
+\fB \-delwin \fR \fIframe\fR
+.RS 4
+Delta window size in number of frames\&. (default: 2)
+.sp
+This option corresponds to the
+HTK
+Option
+DELTAWINDOW\&. The same value can be given to this option\&.
+.RE
+.PP
+\fB \-accwin \fR \fIframe\fR
+.RS 4
+Acceleration window size in number of frames\&. (default: 2)
+.sp
+This option corresponds to the
+HTK
+Option
+ACCWINDOW\&. The same value can be given to this option\&.
+.RE
+.PP
+\fB \-hifreq \fR \fIHz\fR
+.RS 4
+Enable band\-limiting for MFCC filterbank computation: set upper frequency cut\-off\&. Value of \-1 will disable it\&. (default: \-1)
+.sp
+This option corresponds to the
+HTK
+Option
+HIFREQ\&. The same value can be given to this option\&.
+.RE
+.PP
+\fB \-lofreq \fR \fIHz\fR
+.RS 4
+Enable band\-limiting for MFCC filterbank computation: set lower frequency cut\-off\&. Value of \-1 will disable it\&. (default: \-1)
+.sp
+This option corresponds to the
+HTK
+Option
+LOFREQ\&. The same value can be given to this option\&.
+.RE
+.PP
+\fB \-zmeanframe \fR, \fB \-nozmeanframe \fR
+.RS 4
+With speech input, this option enables/disables frame\-wise DC offset removal\&. This corresponds to
+HTK
+configuration
+ZMEANSOURCE\&. This cannot be used together with
+\fB\-zmean\fR\&. (default: disabled)
+.RE
+.PP
+\fB \-usepower \fR
+.RS 4
+Use power instead of magnitude on filterbank analysis\&. (default: disabled)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBNormalization\fR
+.RS 4
+.PP
+Julius can perform cepstral mean normalization (CMN) for inputs\&. CMN will be activated when the given AM was trained with CMN (i\&.e\&. has "_Z" qualifier in the header)\&.
+.PP
+The cepstral mean will be estimated in different way according to the input type\&. On file input, the mean will be computed from the whole input\&. On live input such as microphone and network input, the ceptral mean of the input is unknown at the start\&. So MAP\-CMN will be used\&. On MAP\-CMN, an initial mean vector will be applied at the beginning, and the mean vector will be smeared to the mean of the incrementing input vector as input goes\&. Options below can control the behavior of MAP\-CMN\&.
+.PP
+\fB \-cvn \fR
+.RS 4
+Enable cepstral variance normalization\&. At file input, the variance of whole input will be calculated and then applied\&. At live microphone input, variance of the last input will be applied\&. CVN is only supported for an audio input\&.
+.RE
+.PP
+\fB \-vtln \fR \fIalpha\fR \fIlowcut\fR \fIhicut\fR
+.RS 4
+Do frequency warping, typically for a vocal tract length normalization (VTLN)\&. Arguments are warping factor, high frequency cut\-off and low freq\&. cut\-off\&. They correspond to
+HTK
+Config values,
+WARPFREQ,
+WARPHCUTOFF
+and
+WARPLCUTOFF\&.
+.RE
+.PP
+\fB \-cmnload \fR \fIfile\fR
+.RS 4
+Load initial cepstral mean vector from file on startup\&. The
+\fIfile\fR
+should be one saved by
+\fB\-cmnsave\fR\&. Loading an initial cepstral mean enables Julius to better recognize the first utterance on a real\-time input\&. When used together with
+\fB\-cmnnoupdate\fR, this initial value will be used for all input\&.
+.RE
+.PP
+\fB \-cmnsave \fR \fIfile\fR
+.RS 4
+Save the calculated cepstral mean vector into
+\fIfile\fR\&. The parameters will be saved at each input end\&. If the output file already exists, it will be overridden\&.
+.RE
+.PP
+\fB \-cmnupdate \fR \fB \-cmnnoupdate \fR
+.RS 4
+Control whether to update the cepstral mean at each input on real\-time input\&. Disabling this and specifying
+\fB\-cmnload\fR
+will make engine to always use the loaded static initial cepstral mean\&.
+.RE
+.PP
+\fB \-cmnmapweight \fR \fIfloat\fR
+.RS 4
+Specify the weight of initial cepstral mean for MAP\-CMN\&. Specify larger value to retain the initial cepstral mean for a longer period, and smaller value to make the cepstral mean rely more on the current input\&. (default: 100\&.0)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBFront-end processing\fR
+.RS 4
+.PP
+Julius can perform spectral subtraction to reduce some stationary noise from audio input\&. Though it is not a powerful method, but it may work on some situation\&. Julius has two ways to estimate noise spectrum\&. One way is to assume that the first short segment of an speech input is noise segment, and estimate the noise spectrum as the average of the segment\&. Another way is to calculate average spectrum from noise\-only input using other tool
+mkss, and load it in Julius\&. The former one is popular for speech file input, and latter should be used in live input\&. The options below will switch / control the behavior\&.
+.PP
+\fB \-sscalc \fR
+.RS 4
+Perform spectral subtraction using head part of each file as silence part\&. The head part length should be specified by
+\fB\-sscalclen\fR\&. Valid only for file input\&. Conflict with
+\fB\-ssload\fR\&.
+.RE
+.PP
+\fB \-sscalclen \fR \fImsec\fR
+.RS 4
+With
+\fB\-sscalc\fR, specify the length of head silence for noise spectrum estimation in milliseconds\&. (default: 300)
+.RE
+.PP
+\fB \-ssload \fR \fIfile\fR
+.RS 4
+Perform spectral subtraction for speech input using pre\-estimated noise spectrum loaded from
+\fIfile\fR\&. The noise spectrum file can be made by
+mkss\&. Valid for all speech input\&. Conflict with
+\fB\-sscalc\fR\&.
+.RE
+.PP
+\fB \-ssalpha \fR \fIfloat\fR
+.RS 4
+Alpha coefficient of spectral subtraction for
+\fB\-sscalc\fR
+and
+\fB\-ssload\fR\&. Noise will be subtracted stronger as this value gets larger, but distortion of the resulting signal also becomes remarkable\&. (default: 2\&.0)
+.RE
+.PP
+\fB \-ssfloor \fR \fIfloat\fR
+.RS 4
+Flooring coefficient of spectral subtraction\&. The spectral power that goes below zero after subtraction will be substituted by the source signal with this coefficient multiplied\&. (default: 0\&.5)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBMisc. AM options\fR
+.RS 4
+.PP
+.PP
+\fB \-htkconf \fR \fIfile\fR
+.RS 4
+Parse the given
+HTK
+Config file, and set corresponding parameters to Julius\&. When using this option, the default parameter values are switched from Julius defaults to
+HTK
+defaults\&.
+.RE
+.RE
+.SS "Recognition process and search (\-SR)"
+.PP
+This section contains options for search parameters on the 1st / 2nd pass such as beam width and LM weights, configurations for short\-pause segmentation, switches for word lattice output and confusion network output, forced alignments, and other options relating recognition process and result output\&.
+.PP
+Default values for beam width and LM weights will change according to compile\-time setup of JuliusLib , AM model type, and LM size\&. Please see the startup log for the actual values\&.
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fB1st pass parameters\fR
+.RS 4
+.PP
+\fB \-lmp \fR \fIweight\fR \fIpenalty\fR
+.RS 4
+(N\-gram) Language model weights and word insertion penalties for the first pass\&.
+.RE
+.PP
+\fB \-penalty1 \fR \fIpenalty\fR
+.RS 4
+(Grammar) word insertion penalty for the first pass\&. (default: 0\&.0)
+.RE
+.PP
+\fB \-b \fR \fIwidth\fR
+.RS 4
+Beam width in number of HMM nodes for rank beaming on the first pass\&. This value defines search width on the 1st pass, and has dominant effect on the total processing time\&. Smaller width will speed up the decoding, but too small value will result in a substantial increase of recognition errors due to search failure\&. Larger value will make the search stable and will lead to failure\-free search, but processing time will grow in proportion to the width\&.
+.sp
+The default value is dependent on acoustic model type: 400 (monophone), 800 (triphone), or 1000 (triphone, setup=v2\&.1)
+.RE
+.PP
+\fB \-bs \fR \fIwidth\fR
+.RS 4
+Score width for score pruning on first pass\&. This option can be used together with rank beaming (\fB\-b\fR
+\fIwidth\fR)\&. The default state is not active\&.
+.RE
+.PP
+\fB \-nlimit \fR \fInum\fR
+.RS 4
+Upper limit of token per node\&. This option is valid when
+\-\-enable\-wpair
+and
+\-\-enable\-wpair\-nlimit
+are enabled at compilation time\&.
+.RE
+.PP
+\fB \-progout \fR
+.RS 4
+Enable progressive output of the partial results on the first pass\&.
+.RE
+.PP
+\fB \-proginterval \fR \fImsec\fR
+.RS 4
+Set the time interval for
+\fB\-progout\fR
+in milliseconds\&. (default: 300)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fB2nd pass parameters\fR
+.RS 4
+.PP
+\fB \-lmp2 \fR \fIweight\fR \fIpenalty\fR
+.RS 4
+(N\-gram) Language model weights and word insertion penalties for the second pass\&.
+.RE
+.PP
+\fB \-penalty2 \fR \fIpenalty\fR
+.RS 4
+(Grammar) word insertion penalty for the second pass\&. (default: 0\&.0)
+.RE
+.PP
+\fB \-b2 \fR \fIwidth\fR
+.RS 4
+Envelope beam width (number of hypothesis) at the second pass\&. If the count of word expansion at a certain hypothesis length reaches this limit while search, shorter hypotheses are not expanded further\&. This prevents search to fall in breadth\-first\-like situation stacking on the same position, and improve search failure mostly for large vocabulary condition\&. (default: 30)
+.RE
+.PP
+\fB \-sb \fR \fIfloat\fR
+.RS 4
+Score envelope width for enveloped scoring\&. When calculating hypothesis score for each generated hypothesis, its trellis expansion and Viterbi operation will be pruned in the middle of the speech if score on a frame goes under the width\&. Giving small value makes the second pass faster, but computation error may occur\&. (default: 80\&.0)
+.RE
+.PP
+\fB \-s \fR \fInum\fR
+.RS 4
+Stack size, i\&.e\&. the maximum number of hypothesis that can be stored on the stack during the search\&. A larger value may give more stable results, but increases the amount of memory required\&. (default: 500)
+.RE
+.PP
+\fB \-m \fR \fIcount\fR
+.RS 4
+Number of expanded hypotheses required to discontinue the search\&. If the number of expanded hypotheses is greater then this threshold then, the search is discontinued at that point\&. The larger this value is, The longer Julius gets to give up search\&. (default: 2000)
+.RE
+.PP
+\fB \-n \fR \fInum\fR
+.RS 4
+The number of candidates Julius tries to find\&. The search continues till this number of sentence hypotheses have been found\&. The obtained sentence hypotheses are sorted by score, and final result is displayed in the order (see also the
+\fB\-output\fR)\&. The possibility that the optimum hypothesis is correctly found increases as this value gets increased, but the processing time also becomes longer\&. The default value depends on the engine setup on compilation time: 10 (standard) or 1 (fast or v2\&.1)
+.RE
+.PP
+\fB \-output \fR \fInum\fR
+.RS 4
+The top N sentence hypothesis to be output at the end of search\&. Use with
+\fB\-n\fR
+(default: 1)
+.RE
+.PP
+\fB \-lookuprange \fR \fIframe\fR
+.RS 4
+Set the number of frames before and after to look up next word hypotheses in the word trellis on the second pass\&. This prevents the omission of short words, but with a large value, the number of expanded hypotheses increases and system becomes slow\&. (default: 5)
+.RE
+.PP
+\fB \-looktrellis \fR
+.RS 4
+(Grammar) Expand only the words survived on the first pass instead of expanding all the words predicted by grammar\&. This option makes second pass decoding faster especially for large vocabulary condition, but may increase deletion error of short words\&. (default: disabled)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBShort-pause segmentation / decoder-VAD\fR
+.RS 4
+.PP
+When compiled with
+\-\-enable\-decoder\-vad, the short\-pause segmentation will be extended to support decoder\-based VAD\&.
+.PP
+\fB \-spsegment \fR
+.RS 4
+Enable short\-pause segmentation mode\&. Input will be segmented when a short pause word (word with only silence model in pronunciation) gets the highest likelihood at certain successive frames on the first pass\&. When detected segment end, Julius stop the 1st pass at the point, perform 2nd pass, and continue with next segment\&. The word context will be considered among segments\&. (Rev\&.4\&.0)
+.sp
+When compiled with
+\-\-enable\-decoder\-vad, this option enables decoder\-based VAD, to skip long silence\&.
+.RE
+.PP
+\fB \-spdur \fR \fIframe\fR
+.RS 4
+Short pause duration length to detect end of input segment, in number of frames\&. (default: 10)
+.RE
+.PP
+\fB \-pausemodels \fR \fIstring\fR
+.RS 4
+A comma\-separated list of pause model names to be used at short\-pause segmentation\&. The word whose pronunciation consists of only the pause models will be treated as "pause word" and used for pause detection\&. If not specified, name of
+\fB\-spmodel\fR,
+\fB\-silhead\fR
+and
+\fB\-siltail\fR
+will be used\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-spmargin \fR \fIframe\fR
+.RS 4
+Back step margin at trigger up for decoder\-based VAD\&. When speech up\-trigger found by decoder\-VAD, Julius will rewind the input parameter by this value, and start recognition at the point\&. (Rev\&.4\&.0)
+.sp
+This option will be valid only if compiled with
+\-\-enable\-decoder\-vad\&.
+.RE
+.PP
+\fB \-spdelay \fR \fIframe\fR
+.RS 4
+Trigger decision delay frame at trigger up for decoder\-based VAD\&. (Rev\&.4\&.0)
+.sp
+This option will be valid only if compiled with
+\-\-enable\-decoder\-vad\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBWord lattice / confusion network output\fR
+.RS 4
+.PP
+\fB \-lattice \fR, \fB \-nolattice \fR
+.RS 4
+Enable / disable generation of word graph\&. Search algorithm also has changed to optimize for better word graph generation, so the sentence result may not be the same as normal N\-best recognition\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-confnet \fR, \fB \-noconfnet \fR
+.RS 4
+Enable / disable generation of confusion network\&. Enabling this will also activates
+\fB\-lattice\fR
+internally\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-graphrange \fR \fIframe\fR
+.RS 4
+Merge same words at neighbor position at graph generation\&. If the beginning time and ending time of two word candidates of the same word is within the specified range, they will be merged\&. The default is 0 (allow merging same words on exactly the same location) and specifying larger value will result in smaller graph output\&. Setting this value to
+\-1
+will disable merging, in that case same words on the same location of different scores will be left as they are\&. (default: 0)
+.RE
+.PP
+\fB \-graphcut \fR \fIdepth\fR
+.RS 4
+Cut the resulting graph by its word depth at post\-processing stage\&. The depth value is the number of words to be allowed at a frame\&. Setting to \-1 disables this feature\&. (default: 80)
+.RE
+.PP
+\fB \-graphboundloop \fR \fIcount\fR
+.RS 4
+Limit the number of boundary adjustment loop at post\-processing stage\&. This parameter prevents Julius from blocking by infinite adjustment loop by short word oscillation\&. (default: 20)
+.RE
+.PP
+\fB \-graphsearchdelay \fR, \fB \-nographsearchdelay \fR
+.RS 4
+When this option is enabled, Julius modifies its graph generation algorithm on the 2nd pass not to terminate search by graph merging, until the first sentence candidate is found\&. This option may improve graph accuracy, especially when you are going to generate a huge word graph by setting broad search\&. Namely, it may result in better graph accuracy when you set wide beams on both 1st pass
+\fB\-b\fR
+and 2nd pass
+\fB\-b2\fR, and large number for
+\fB\-n\fR\&. (default: disabled)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBMulti-gram / multi-dic recognition\fR
+.RS 4
+.PP
+\fB \-multigramout \fR, \fB \-nomultigramout \fR
+.RS 4
+On grammar recognition using multiple grammars, Julius will output only the best result among all grammars\&. Enabling this option will make Julius to output result for each grammar\&. (default: disabled)
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBForced alignment\fR
+.RS 4
+.PP
+\fB \-walign \fR
+.RS 4
+Do viterbi alignment per word units for the recognition result\&. The word boundary frames and the average acoustic scores per frame will be calculated\&.
+.RE
+.PP
+\fB \-palign \fR
+.RS 4
+Do viterbi alignment per phone units for the recognition result\&. The phone boundary frames and the average acoustic scores per frame will be calculated\&.
+.RE
+.PP
+\fB \-salign \fR
+.RS 4
+Do viterbi alignment per state for the recognition result\&. The state boundary frames and the average acoustic scores per frame will be calculated\&.
+.RE
+.RE
+.sp
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBMisc. search options\fR
+.RS 4
+.PP
+\fB \-inactive \fR
+.RS 4
+Start this recognition process instance with inactive state\&. (Rev\&.4\&.0)
+.RE
+.PP
+\fB \-1pass \fR
+.RS 4
+Perform only the first pass\&.
+.RE
+.PP
+\fB \-fallback1pass \fR
+.RS 4
+When 2nd pass fails, Julius finish the recognition with no result\&. This option tell Julius to output the 1st pass result as a final result when the 2nd pass fails\&. Note that some score output (confidence etc\&.) may not be useful\&. This was the default behavior of Julius\-3\&.x\&.
+.RE
+.PP
+\fB \-no_ccd \fR, \fB \-force_ccd \fR
+.RS 4
+Explicitly switch phone context handling at search\&. Normally Julius determines whether the using AM is a context\-dependent model or not from the model names, i\&.e\&., whether the names contain character
++
+and
+\-\&. This option will override the automatic detection\&.
+.RE
+.PP
+\fB \-cmalpha \fR \fIfloat\fR
+.RS 4
+Smoothing parameter for confidence scoring\&. (default: 0\&.05)
+.RE
+.PP
+\fB \-iwsp \fR
+.RS 4
+(Multi\-path mode only) Enable inter\-word context\-free short pause insertion\&. This option appends a skippable short pause model for every word end\&. The short\-pause model can be specified by
+\fB\-spmodel\fR\&.
+.RE
+.PP
+\fB \-transp \fR \fIfloat\fR
+.RS 4
+Additional insertion penalty for transparent words\&. (default: 0\&.0)
+.RE
+.PP
+\fB \-demo \fR
+.RS 4
+Equivalent to
+\fB\-progout \-quiet\fR\&.
+.RE
+.PP
+\fB \-mbr \fR
+.RS 4
+.RE
+.PP
+\fB \-nombr \fR
+.RS 4
+.RE
+.PP
+\fB \-mbr_wwer \fR
+.RS 4
+.RE
+.PP
+\fB \-mbr_weight \fR
+.RS 4
+.RE
+.RE
+.SH "ENVIRONMENT VARIABLES"
+.PP
+\fB \fR\fB\fBALSADEV\fR\fR\fB \fR
+.RS 4
+(using mic input with alsa device) specify a capture device name\&. If not specified, "default" will be used\&.
+.RE
+.PP
+\fB \fR\fB\fBAUDIODEV\fR\fR\fB \fR
+.RS 4
+(using mic input with oss device) specify a capture device path\&. If not specified, "/dev/dsp" will be used\&.
+.RE
+.PP
+\fB \fR\fB\fBPORTAUDIO_DEV\fR\fR\fB \fR
+.RS 4
+(portaudio V19) specify the name of capture device to use\&. See the instruction output of log at start up how to specify it\&.
+.RE
+.PP
+\fB \fR\fB\fBLATENCY_MSEC\fR\fR\fB \fR
+.RS 4
+Try to set input latency of microphone input in milliseconds\&. Smaller value will shorten latency but sometimes make process unstable\&. Default value will depend on the running OS\&.
+.RE
+.SH "EXAMPLES"
+.PP
+For examples of system usage, refer to the tutorial section in the Julius documents\&.
+.SH "NOTICE"
+.PP
+Note about jconf files: relative paths in a jconf file are interpreted as relative to the jconf file itself, not to the current directory\&.
+.SH "SEE ALSO"
+.PP
+\fBjulian\fR(1),
+\fBjcontrol\fR(1),
+\fBadinrec\fR(1),
+\fBadintool\fR(1),
+\fBmkbingram\fR(1),
+\fBmkbinhmm\fR(1),
+\fBmkgsmm\fR(1), wav2\fBmfcc\fR(1),
+\fBmkss\fR(1)
+.PP
+\m[blue]\fBhttp://julius\&.sourceforge\&.jp/en/\fR\m[]
+.SH "DIAGNOSTICS"
+.PP
+Julius normally will return the exit status 0\&. If an error occurs, Julius exits abnormally with exit status 1\&. If an input file cannot be found or cannot be loaded for some reason then Julius will skip processing for that file\&.
+.SH "BUGS"
+.PP
+There are some restrictions to the type and size of the models Julius can use\&. For a detailed explanation refer to the Julius documentation\&. For bug\-reports, inquires and comments please contact julius\-info at lists\&.sourceforge\&.jp\&.
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "AUTHORS"
+.PP
+Rev\&.1\&.0 (1998/02/20)
+.RS 4
+Designed by Tatsuya KAWAHARA and Akinobu LEE (Kyoto University)
+.sp
+Development by Akinobu LEE (Kyoto University)
+.RE
+.PP
+Rev\&.1\&.1 (1998/04/14), Rev\&.1\&.2 (1998/10/31), Rev\&.2\&.0 (1999/02/20), Rev\&.2\&.1 (1999/04/20), Rev\&.2\&.2 (1999/10/04), Rev\&.3\&.0 (2000/02/14), Rev\&.3\&.1 (2000/05/11)
+.RS 4
+Development of above versions by Akinobu LEE (Kyoto University)
+.RE
+.PP
+Rev\&.3\&.2 (2001/08/15), Rev\&.3\&.3 (2002/09/11), Rev\&.3\&.4 (2003/10/01), Rev\&.3\&.4\&.1 (2004/02/25), Rev\&.3\&.4\&.2 (2004/04/30)
+.RS 4
+Development of above versions by Akinobu LEE (Nara Institute of Science and Technology)
+.RE
+.PP
+Rev\&.3\&.5 (2005/11/11), Rev\&.3\&.5\&.1 (2006/03/31), Rev\&.3\&.5\&.2 (2006/07/31), Rev\&.3\&.5\&.3 (2006/12/29), Rev\&.4\&.0 (2007/12/19), Rev\&.4\&.1 (2008/10/03), Rev\&.4\&.1\&.5 (2010/06/04), Rev\&.4\&.2 (2011/05/01), Rev\&.4\&.2\&.1 (2011/12/25), Rev\&.4\&.2\&.2 (2012/08/01), Rev\&.4\&.2\&.3 (2013/06/30), Rev\&.4\&.3 (2013/12/25)
+.RS 4
+Development of above versions by Akinobu LEE (Nagoya Institute of Technology)
+.RE
+.SH "THANKS TO"
+.PP
+From rev\&.3\&.2, Julius is released by the "Information Processing Society, Continuous Speech Consortium"\&.
+.PP
+The Windows DLL version was developed and released by Hideki BANNO (Nagoya University)\&.
+.PP
+The Windows Microsoft Speech API compatible version was developed by Takashi SUMIYOSHI (Kyoto University)\&.

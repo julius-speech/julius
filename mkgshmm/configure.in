@@ -1,0 +1,13 @@
+dnl Copyright (c) 2001-2013 Kawahara Lab., Kyoto University
+dnl Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+dnl Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+dnl All rights reserved
+
+AC_INIT(mkgshmm.in)
+AC_CONFIG_AUX_DIR(../support)
+AC_PROG_INSTALL
+AC_PATH_PROG(RM, rm)
+AC_PATH_PROG(PERL, perl)
+AC_EXEEXT
+AC_OUTPUT_COMMANDS([chmod +x mkgshmm])
+AC_OUTPUT(Makefile mkgshmm)

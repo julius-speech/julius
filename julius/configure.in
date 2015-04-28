@@ -1,0 +1,176 @@
+dnl Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+dnl Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
+dnl Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+dnl Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+dnl All rights reserved
+dnl
+dnl $Id: configure.in,v 1.8 2013/06/20 17:14:18 sumomo Exp $
+dnl
+
+AC_INIT(main.c)
+AC_CONFIG_HEADER(config.h)
+AC_CONFIG_AUX_DIR(../support)
+
+dnl Checks for options
+
+dnl select character set conversion method or disable
+AC_ARG_ENABLE(charconv,
+[  --enable-charconv={auto|iconv|libjcode|win|no} specify character conversion],
+use_charconv=$enableval
+,use_charconv=auto)
+
+# visualization (use GTK)
+AC_ARG_ENABLE(visualize,
+[  --enable-visualize         enable search space visualization on X11 and GTK],
+if test "$enableval" = yes; then
+	want_gtk=yes
+fi
+,want_gtk=no)
+
+dnl Checks for system.
+AC_CANONICAL_HOST
+
+dnl Checks for optimization flag
+AC_MSG_CHECKING([host-specific optimization flag])
+if test -z "$CFLAGS" ; then
+    OPTFLAG=../support/cflags.${host_cpu}-${host_vendor}-${host_os}
+    if test -f "$OPTFLAG" ; then
+	. $OPTFLAG
+	AC_MSG_RESULT([$OPTFLAG])
+    else
+	AC_MSG_RESULT([no])
+    fi
+else
+    AC_MSG_RESULT([skipped])
+fi
+
+dnl Checks for compiler.
+AC_PROG_CC
+AC_PROG_CPP
+
+dnl Checks for programs.
+AC_PROG_INSTALL
+AC_PATH_PROG(RM, rm)
+AC_EXEEXT
+
+dnl Checks for libraries.
+dnl add '-lLIBRARY' to LIBS and define 'HAVE_LIBLIBRARY'
+dnl AC_CHECK_LIB(m, log10)
+
+dnl Check for HTK and define GTK_CFLAGS and GTK_LIBS
+if test "$want_gtk" = yes; then
+   AC_DEFINE(VISUALIZE)
+   AM_PATH_GTK(,,AC_MSG_ERROR([gtk not found for visualization]))
+   AC_MSG_CHECKING(for playing capability)
+   case "$host_os" in
+   linux*)
+	AC_MSG_RESULT([yes])
+	AC_DEFINE(PLAYCOMMAND, ["sox -r %d -c 1 -s -w -t .raw -x %s -t ossdsp /dev/dsp"])
+	;;
+   solaris2*)
+	AC_MSG_RESULT([yes])
+	AC_DEFINE(PLAYCOMMAND, ["sox -r %d -c 1 -s -w -t .raw %s -t sunau /dev/audio"])
+	;;
+   *)
+	AC_MSG_RESULT([no])
+   esac
+fi
+
+dnl Checks for header files.
+AC_HEADER_STDC
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+dnl AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+dnl AC_PROG_GCC_TRADITIONAL
+dnl AC_CHECK_FUNCS(strdup strstr)
+dnl AC_CHECK_FUNC(gethostbyname,,AC_CHECK_LIB(nsl,gethostbyname))
+dnl AC_CHECK_FUNC(connect,,AC_CHECK_LIB(socket, connect))
+
+dnl check for charset conversion library
+if test "$use_charconv" = no; then
+    CCOBJ=""
+else
+    dnl determine which one to use
+    CCOBJ="charconv.o"
+    case "$use_charconv" in
+	auto)
+	    dnl check w32 function
+	    AC_CHECK_HEADER(winnls.h,use_winnls=yes,use_winnls=no)
+	    if test "$use_winnls" = yes; then
+	       use_cfunc=win32
+	    else
+	       dnl check iconv
+	       AM_ICONV
+	       if test "$am_cv_func_iconv" = yes; then
+	          use_cfunc=iconv
+	       else
+	          use_cfunc=libjcode
+	       fi
+	    fi
+	    ;;
+	win)
+	    dnl check w32 function
+	    AC_CHECK_HEADER(winnls.h,use_winnls=yes,use_winnls=no)
+	    if test "$use_winnls" = yes; then
+	       use_cfunc=win32
+	    else
+	       use_cfunc=no
+               AC_MSG_ERROR([Win32 function not found!])
+	    fi
+	    ;;
+	iconv)
+	    dnl check iconv
+	    AM_ICONV
+	    if test "$am_cv_func_iconv" = yes; then
+	       use_cfunc=iconv
+	    else
+	       use_cfunc=no
+               AC_MSG_ERROR([iconv function not found!])
+	    fi
+	    ;;
+	no)
+	    use_cfunc=no
+	    ;;
+	*)
+            dnl error
+            AC_MSG_ERROR([wrong argument for --enable-charconv])
+	    ;;
+    esac
+    AC_MSG_CHECKING([for charset conversion])
+    case "$use_cfunc" in
+	win32)
+	    AC_DEFINE(CHARACTER_CONVERSION)
+	    AC_DEFINE(USE_WIN32_MULTIBYTE)
+	    CCOBJ="${CCOBJ} charconv_win32.o"
+	    CCOBJ="${CCOBJ} charconv_libjcode.o libjcode/libjcode.o libjcode/detect.o"
+	    ccdesc="Win32 API + libjcode"
+	    AC_MSG_RESULT([win32])
+	    ;;
+	iconv)
+            AC_DEFINE(CHARACTER_CONVERSION)
+	    CCOBJ="${CCOBJ} charconv_iconv.o"
+            ccdesc="iconv library"
+	    AC_MSG_RESULT([iconv])
+	    ;;
+	libjcode)
+            AC_DEFINE(CHARACTER_CONVERSION)
+            AC_DEFINE(USE_LIBJCODE)
+	    CCOBJ="${CCOBJ} charconv_libjcode.o libjcode/libjcode.o libjcode/detect.o"
+            ccdesc="built-in libjcode (Japanese codes only)"
+	    AC_MSG_RESULT([libjcode])
+	    ;;
+	no)
+	    CCOBJ=""
+            ccdesc="no"
+	    AC_MSG_RESULT([no])
+            ;;
+    esac
+fi
+
+AC_SUBST(CCOBJ)
+
+dnl write names
+AC_OUTPUT(Makefile)

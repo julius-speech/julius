@@ -1,0 +1,413 @@
+#
+# Sample Jconf configuration file
+# for Julius library rev.4.3
+#
+# 1) Options can also be specified in command line option.
+#    The values are default values in Julius.
+# 2) For file name, relative path must be relative to THIS FILE.
+# 3) Texts after '#' at each line will be ignored.  If you want to specify
+#    '#', use `\#'.
+# 4) Each line should be no longer than 512 bytes.
+#
+#
+
+######################################################################
+#### JULIUS APPLICATION OPTION (not a part of JuliusLib)
+######################################################################
+#-outfile			# save each result in separate file
+#-separatescore			# print AM / LM scores separately
+#-callbackdebug			# print callback names at call for debug
+#-charconv from to		# print with character set conversion
+#-nocharconv			# disable "-charconv"
+#-module			# start in module mode
+#-record dir			# record each inputs into dir
+#-logfile file			# redirect logs to file
+#-nolog				# disable all logs
+#-help				# print help, and exit
+
+
+######################################################################
+#### GLOBAL OPTIONS
+######################################################################
+####
+#### Misc. Options
+####
+#-C jconffile			# include jconf file at here
+#-version			# print version info to stderr, and exit
+#-setting			# print version info to stderr, and exit
+#-quiet				# output less log
+#-debug				# output more log for debug
+#-check wchmm			# for debug, enter debug shell mode
+#-check trellis			# for debug, enter debug shell mode
+#-check triphone		# for debug, enter debug shell mode
+#-demo				# same as "-quiet -progout"
+
+####
+#### Stream Input
+####
+
+## Feature vector input
+#-input mfcfile			# feature vector in HTK parameter file
+#-input htkparam		# (same as "mfcfile")
+#-input outprob			# outprob vector in HTK parameter file
+#-input vecet			# feature / outprob vector via network client
+
+## Raw audio input
+#-input mic    			# live microphone
+#-input rawfile			# wavefile
+#-input file			# (same as "rawfile")
+#-input stdin			# waveform from standard input
+#-input adinnet			# waveform via network client
+#-input netaudio                # DatLink server
+#-input oss			# OSS API input (if available)
+#-input alsa			# ALSA API input (if available)
+#-input esd			# ESounD daemon input (if available)
+#-input portaudio		# PortAudio API
+#-input pulseaudio		# PulseAudio API
+
+
+#-filelist filename		# input file list
+#-notypecheck			# does not check parameter type of input
+#-48				# 48kHz sampling > 16kHz conv. (16kHz only)
+#-NA devname			# hostname for DatLink server
+#-adport 5530			# port number for adinnet
+#-nostrip			# do not strip zero samples
+#-zmean				# remove DC offset (use long input average)
+#-nozmean			# disable "-zmean" specified before
+
+####
+#### Audio Input Scaling
+####
+#-lvscale 1.0			# input level scaling factor (1.0 = disable)
+
+####
+#### Speech segment detection by level and zero-cross
+####
+#### default: on for microphone, off for other sources
+####
+#-cutsilence			# detection on
+#-nocutsilence			# detection off
+#-lv 2000			# level threshold (0-32767)
+#-zc 60				# zero-cross threshold (times in sec.)
+#-headmargin 300		# head silence margin (msec)
+#-tailmargin 400		# tail silence margin (msec)
+#-chunk_size 1000		# processing segment unit length in samples
+#-rejectshort 0			# reject shorter input (msec)
+#-rejectlong -1			# reject longer input (msec) -1 to disable
+
+####
+#### Input rejection by average power (EXPERIMENTAL)
+####
+####  This will be enabled by "--enable-power-reject" on compilation.
+####  Should be used with Decoder VAD or GMM VAD.
+####  Valid for real-time input only.
+####
+#-powerthres 9.0		# reject input by avg. energy
+
+####
+#### Gaussian Mixture Model
+####
+####  GMM will be used for input rejection by accumurated score, or
+####  for GMM-based frontend VAD when "--enable-gmm-vad" specified.
+####
+####  NOTE: If you use MFCC for the GMM which is different from AM, you
+####  should also set the parameters like other AM with an option "-AM_GMM".
+####  If "-AM_GMM" is not used, Julius assume GMM to use the same
+####  parameter as the first AM.
+####
+#-gmm hmmdefs			# GMM definitions in HTK format
+#-gmmnum 10			# num of Gaussians to be computed per GMM
+#-gmmreject string		# comma-separated list of GMM name to reject
+#### GMM_VAD
+#-gmmmargin 20			# head margin for GMM based VAD in frames
+
+####
+#### Decoding option
+####
+#### Real-time processing means concurrent processing of MFCC computation
+#### and 1st pass decoding.  By default, real-time processing on the
+#### 1st pass is on for microphone / adinnet / netaudio input, and
+#### off for others.
+####
+#-realtime			# force real-time processing
+#-norealtime			# force non real-time processing
+
+####
+#### Plug-in
+####
+#### See plugin/00readme.txt for detail
+####
+#-plugindir ./plugin:/usr/local/share/julius/plugins
+
+
+######################################################################
+#### INSTANCE DEFINITION FOR MULTI DECODING
+######################################################################
+####
+#### The following three argument will create a new configuration set
+#### with default parameters, and switch current set to it.  Jconf
+#### parameters specified after the option will be set into the current
+#### set.
+####
+#### To do multi-model decoding, these argument should be specified at
+#### the first of each model / search instances with different names.
+#### Any options before the first instance definition will be IGNORED.
+####
+#### When no instance definition is found (as older version of Julius),
+#### all the options are assigned to a default instance named "_default".
+####
+#### Please note that decoding with a single LM and multiple AMs is not
+#### fully supported.  For example, you may want to construct the
+#### jconf file as this:
+####
+####  -AM am_1 -AM am_2
+####  -LM lm (LM spec..)
+####  -SR search1 am_1 lm
+####  -SR search2 am_2 lm
+####
+#### This type of model sharing is not supported yet, since some part
+#### of LM processing depends on the assigned AM.  Instead, you can
+#### get the same result by defining the same LMs for each AM, like this:
+####
+####  -AM am_1 -AM am_2
+####  -LM lm_1 (LM spec..)
+####  -LM lm_2 (same LM spec..)
+####  -SR search1 am_1 lm_1
+####  -SR search2 am_2 lm_2
+####
+
+## Create a new AM configuration set, and switch current to it.
+## You should give a unique name.
+#-AM name			
+
+## Create a new LM configuration set, and switch current to it.
+## You should give a unique name.
+#-LM name			
+
+## Create a new Search configuration set with AM and LM, and switch 
+## current to it.  AM and LM name can be either name or ID number.
+#-SR name am_name_or_id lm_name_or_id
+
+## Switch current AM to special one reserved for GMM, to specify
+## analysis parameter for GMM.  Be sure not to confuse with normal AM
+## configuration.
+# -AM_GMM
+
+## When using instance declarations, global options should be placed
+## at top before any instance declaration, or after this option below.
+## This option is only a switcher and can be used anywhere anytime.
+# -GLOBAL
+
+## This option disables the strict section checkings and back to 4.0
+# -nosectioncheck
+
+######################################################################
+#### LANGUAGE MODEL (-LM)
+######################################################################
+####
+#### Only one type of LM can be specified for a LM configuration.
+####
+
+####
+#### N-gram
+####
+#-d binary_ngram_file		# N-gram in Julius binary format
+#-nlr ngram			# forward (left-to-right) N-gram
+#-nrl rev_ngram			# backward (right-to-left) N-gram
+#-v dictfile			# word dictionary
+## param.
+#-silhead "<s>"			# beginning-of-sentence (silence) word
+#-siltail "</s>"		# end-of-sentence (silence) word
+#-mapunk "<unk>"		# word to which unknown words should be mapped
+#-iwspword			# add a pause word to the dictionary
+#-iwspentry "<UNK> [sp] sp sp"	# word that will be added by "-iwspword"
+#-sepnum 150			# num of high freq words to linearize 
+#-adddict dictfile              # append additional word dictionary
+#-addword entry                 # append additional word entry
+
+####
+#### Grammar
+####
+#### "-gram", "-gramlist" can be used multiple times
+#-gram gramprefix		# (comma-separated list of) grammar file prefix
+#-gramlist txtfile		# text file containing grammar prefixes
+#-dfa dfafile -v dictfile	# specify DFA and dictionary separately
+#-nogram			# reset all grammar list already specified
+
+####
+#### Isolated Word
+####
+#-w dictfile			# word dictionary
+#-wlist txtfile			# text file containing dictionaries
+#-nogram			# reset all dictfiles already specified
+## param.
+#-wsil silB silE NULL		# head / tail silence models to be appended
+
+####
+#### User-defined LM
+####
+#-userlm			# declare to use user LM defined in program
+
+####
+#### misc LM option
+####
+#-forcedict			# skip error word entries (no stop on error)
+
+######################################################################
+#### ACOUSTIC MODEL (-AM)  (-AM_GMM)
+######################################################################
+####
+#### Acoustic analysis parameters are included in this section, since
+#### the AM defines the required parameter.  You can use different MFCC
+#### type for each AM.
+#### For GMM, the same parameter should be specified after "-AM_GMM"
+#### 
+#### When using multiple AM,  the values of "-smpPeriod", "-smpFreq",
+#### "-fsize" and "-fshift" should be the same among all AM.
+####
+
+## Acoustic model
+#-h hmmfile			# acoustic HMM (ascii or Julius binary)
+#-hlist logicaltri		# HMMList to map logical phone to physical
+#-tmix 2			# # of mixture to compute in a mixture PDF
+#-spmodel "sp"			# name of a short-pause silence model
+#-multipath			# force enable MULTI-PATH model handling
+#-gprune {safe|heuristic|beam|none|default} # Gaussian pruning method
+#-iwcd1 {max|avg|best 3}	# Inter-word triphone approximation method
+#-iwsppenalty -1.0		# pause insertion penalty for "-iwsp"
+#-gshmm hmmfile 		# HMM for Gaussian mixture selection
+#-gsnum 24			# Threshold number of HMM for gshmm
+
+## Analysis
+#-smpPeriod 625			# sampling period (ns) (= 10000000 / smpFreq)
+#-smpFreq 16000			# sampling rate (Hz)
+#-fsize 400			# window size (samples)
+#-fshift 160			# frame shift (samples)
+#-preemph 0.97			# pre-emphasis coef.
+#-fbank 24			# number of filterbank channels
+#-ceplif 22			# cepstral liftering coef.
+#-rawe				# use raw energy
+#-norawe			# disable "-rawe" (this is default)
+#-enormal			# normalize log energy
+#-noenormal			# disable "-enormal" (this is default)
+#-escale 1.0			# scaling log energy for enormal
+#-silfloor 50.0			# energy silence floor in dB for enormal
+#-delwin 2			# delta window (frames)
+#-accwin 2			# acceleration window (frames)
+#-hifreq -1			# cut-off hi frequency (Hz) (-1: disable)
+#-lofreq -1			# cut-off low frequency (Hz) (-1: disable)
+#-zmeanframe			# frame-wise DC offset removal (same as HTK)
+#-nozmeanframe			# disable "-zmeanframe" (this is default)
+
+## Cepstral mean / variance normalization
+#-cmnload filename		# load initial cep. mean / variance on startup
+#-cmnsave filename		# save cep. mean / variance at each input end
+#-cmnupdate			# update beginning cep. data at each input
+#-cmnnoupdate			# keep initial mean, disable "-cmnupdate"
+#-cmnmapweight 100.0		# weight for MAP-CMN
+#-cvn				# enable variance normalization
+
+## Vocal tract length normalization (VTLN)
+#-vtln 1.0 300 4800		# enable VTLN (alpha, lowerfreq, upperfreq)
+
+## Spectral subtraction (default: disabled)
+#-sscalc			# do SS, estimate noise from head sil
+#-sscalclen 300			# length of head silence for "-sscalc" (msec)
+#-ssload filename		# do SS, load noise spectrum saved by "mkss"
+#-ssalpha 2.0			# alpha coef. for spectral subtraction
+#-ssfloor 0.5			# spectral floor coef.
+
+## Others
+#-htkconf configfile		# load analysis settings from HTK Config file 
+
+######################################################################
+#### RECOGNIZER (-SR)
+######################################################################
+####
+#### Default values for beam width and LM weights will change
+#### according to compile-time setup of JuliusLib and model specification.
+#### Please see the startup log for the actual values.
+#### 
+
+####
+#### parameter (common)
+####
+#-inactive			# start this process with inactive status
+#-1pass				# perform only the 1st pass, omit 2nd pass
+#-no_ccd			# switch off the phone context dependency
+#-force_ccd			# force on the phone context dependency
+#-cmalpha 0.05			# CM alpha value
+#-iwsp				# append a skippable sp at all word ends
+#-transp 0.0			# transition penalty for transparent words
+
+####
+#### parameter (1st pass)
+####
+#-lmp weight penalty		# LM weight and word insertion penalty (pass1)
+#-penalty1 penalty		# word insertion penalty for grammar (pass1)
+#-b width			# beam width (# of nodes)
+#-bs score                      # beam width (score)
+#-nlimit 3			# with enable-wpair-nlimit, set max N at nodes
+#-progout			# progressive output while decoding
+#-proginterval 300		# output interval in msec for "-progout"
+
+####
+#### parameter (2nd pass)
+####
+#-lmp2 weight penalty		# LM weight and word insertion penalty (pass2)
+#-penalty2 penalty		# word insertion penalty for grammar (pass2)
+#-b2 width			# envelope beam width of 2nd pass (#word)
+#-sb 80.0			# envelope score width at 2nd pass
+#-s 500				# hypotheses stack size on 2nd pass (#hypo)
+#-m 2000			# hypotheses overflow threshold (#hypo)
+#-n n				# num of sentences to find
+#-output 1			# num of sentences to output as result
+#-lookuprange 5			# hypo. lookup range at word expansion (#frame)
+#-looktrellis			# expand only trellis words in grammar
+#-fallback1pass			# output 1st pass result when 2nd pass fails
+
+####
+#### short-pause segmentation (and decoder-based VAD)
+####
+#-spsegment			# enable sp segmentation (or decoder VAD)
+#-spdur 10			# # of frames to detect a short pause
+#-pausemodels string		# comma-separated pause model names
+#### for decoder-VAD
+#-spmargin 40			# backstep margin at trigger up (frame)
+#-spdelay 4			# decision delay at trigger up (frame)
+
+#### 
+#### lattice output
+#### 
+#-lattice			# output result in word graph (aka -graphout)
+#-graphrange 0			# merge same words nearby, -1 to disable merge
+#-graphcut 80			# graph depth cut threshold (in depth)
+#-graphboundloop 20		# max itertations for boundary adjustment loop
+#-graphsearchdelay		# activate an alternate generation algorithm 
+#-nographsearchdelay		# disable "-graphsearchdelay"
+
+#### 
+#### confusion network output
+#### 
+#-confnet			# enable confusion network output
+#-noconfnet			# disable confusion network output
+
+#### 
+#### multi-grammar output (for grammar and isolated word)
+#### 
+#-multigramout			# output max hypo for each grammar
+#-nomultigramout		# disable "-multigramout"
+
+#### 
+#### forced alignment
+#### 
+#-walign			# enable alignment for result at word level
+#-palign			# enable alignment for result at phoneme level
+#-salign			# enable alignment for result at state level
+
+####
+#### misc.
+####
+-outprobout filename		# save computed outprob vectors to HTK file (for debug)
+
+################################################################# end of file

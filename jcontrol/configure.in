@@ -1,0 +1,27 @@
+dnl Copyright (c) 2002-2013 Kawahara Lab., Kyoto University
+dnl Copyright (c) 2002-2005 Shikano Lab., Nara Institute of Science and Technology
+dnl Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+dnl All rights reserved
+AC_INIT(jcontrol.c)
+AC_CANONICAL_HOST
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PATH_PROG(RM,rm)
+AC_EXEEXT
+AC_CHECK_FUNC(gethostbyname,,AC_CHECK_LIB(nsl,gethostbyname))
+AC_CHECK_FUNC(connect,,AC_CHECK_LIB(socket, connect,,
+AC_MSG_CHECKING([for connect in -lws2_32])
+xxxxLIBS=$LIBS
+LIBS="$LIBS -lws2_32"
+AC_TRY_LINK([#include <winsock2.h>
+int sd;
+struct sockaddr_in s;
+], [connect(sd, (struct sockaddr *)&s, sizeof(s));],
+AC_MSG_RESULT([yes]),
+LIBS=$xxxxLIBS
+AC_MSG_RESULT([no])
+)
+))
+AC_SUBST(EXTRALIB)
+AC_OUTPUT(Makefile)

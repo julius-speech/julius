@@ -1,0 +1,100 @@
+# Makefile for directory with library jcode
+# by Kuramitsu Kimio
+
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+
+SHELL = /bin/sh
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+top_builddir = ..
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+transform = @program_transform_name@
+libdir = $(exec_prefix)/lib
+includedir = $(prefix)/include
+datadir = $(prefix)/@DATADIRNAME@
+subdir = libjcode
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+MKINSTALLDIRS = @MKINSTALLDIRS@
+
+AR = ar
+CC = @CC@
+LIBTOOL = @LIBTOOL@
+RANLIB = @RANLIB@
+
+DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
+-DLOCALE_ALIAS_PATH=\"$(aliaspath)\" @DEFS@
+CPPFLAGS = @CPPFLAGS@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+
+COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)
+
+HEADERS = $(COMHDRS)
+COMHDRS = jlib.h
+SOURCES = $(COMSRCS)
+COMSRCS = detect.c libjcode.c
+OBJECTS = detect.$lo libjcode.$lo
+DISTFILES.common = README
+DISTFILES.normal = VERSION
+
+.SUFFIXES:
+.SUFFIXES: .c .o .lo
+.c.o:
+	$(COMPILE) $<
+.c.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) $<
+
+INCLUDES = -I. -I$(top_srcdir)/
+
+all: all-@COMPILE_LIBJCODE@
+
+all-yes: libjcode.$la
+all-no:
+
+libjcode.a: $(OBJECTS)
+	rm -f $@
+	$(AR) cru $@ $(OBJECTS)
+	$(RANLIB) $@
+
+libjcode.la: $(OBJECTS)
+	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) -o $@ $(OBJECTS) \
+		   -version-info 1:0 -rpath $(libdir)
+
+check: all
+
+install: install-exec install-data
+install-exec: all
+
+install-data: all
+
+# Define this as empty until I found a useful application.
+installcheck:
+
+uninstall:
+
+info dvi:
+
+$(OBJECTS): jlibconfig.h jlib.h
+
+mostlyclean:
+	rm -f *.a *.o *.lo core core.*
+
+clean: mostlyclean
+
+distclean: clean
+	rm -f Makefile ID TAGS po2msg.sed po2tbl.sed
+
+maintainer-clean: distclean
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+Makefile: Makefile.in ../config.status
+	cd .. \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status

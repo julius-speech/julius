@@ -1,0 +1,69 @@
+'\" t
+.\"     Title: 
+    mkgshmm
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "MKGSHMM" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    mkgshmm
+   \- convert monophone HMM to GS HMM for Julius
+.SH "SYNOPSIS"
+.HP \w'\fBmkgshmm\fR\ 'u
+\fBmkgshmm\fR {monophone_hmmdefs}
+  >
+   {outputfile}
+.SH "DESCRIPTION"
+.PP
+mkgshmm converts monophone HMM definition file in HTK format into a special format for Gaussian Mixture Selection (GMS) in Julius\&.
+.PP
+GMS is an algorithm to reduce the amount of acoustic computation with triphone HMM, by pre\-selection of promising gaussian mixtures using likelihoods of corresponding monophone mixtures\&.
+.SH "EXAMPLES"
+.PP
+(1) Prepare a monophone model which was trained by the same corpus as target triphone model\&.
+.PP
+(2) Convert the monophone model using mkgshmm\&.
+.sp .if n \{\ .RS 4 .\} .nf % \fBmkgshmm\fR monophone > gshmmfile .fi .if n \{\ .RE .\}
+(3) Specify the output file in Julius with option "\-gshmm"
+.sp .if n \{\ .RS 4 .\} .nf % \fBjulius\fR \-C \&.\&.\&. \-gshmm gshmmfile .fi .if n \{\ .RE .\}
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "LICENSE"
+.PP
+The same as Julius\&.

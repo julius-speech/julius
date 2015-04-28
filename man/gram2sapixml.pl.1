@@ -1,0 +1,71 @@
+'\" t
+.\"     Title: 
+    gram2sapixml.pl
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "GRAM2SAPIXML\&." "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    gram2sapixml.pl
+   \- convert Julius grammar to SAPI XML grammar format
+.SH "SYNOPSIS"
+.HP \w'\fBgram2sapixml\&.pl\fR\ 'u
+\fBgram2sapixml\&.pl\fR [\fIprefix\fR...]
+.SH "DESCRIPTION"
+.PP
+
+\fBgram2sapixml\&.pl\fR
+converts a recognition grammar file of Julius (\&.grammar, \&.voca) to Microsoft SAPI XML grammar format\&.
+\fIprefix\fR
+should be a file name of target grammar, excluding suffixes\&. If multiple argument is given, each will be process sequencialy in turn\&.
+.PP
+The internal character set should be in UTF\-8 format\&. By default
+\fBgram2sapixml\&.pl\fR
+assume input in EUC\-JP encoding and tries to convert it to UTF\-8 using
+\fBiconv\fR\&. You may want to disable this feature within the script\&.
+.PP
+It will fail to convert a left recursive rule in the grammar\&. When fails, it will leave the source rules in the target \&.xml file, so you should modify the output manually to solve it\&.
+.SH "SEE ALSO"
+.PP
+
+\fB mkdfa.pl \fR( 1 )
+.SH "DIAGNOSTICS"
+.PP
+The conversion procedure is somewhat dumb one, only converting the non\-terminal symbols and terminal symbols (=word category name) into corresponding rules one by one\&. This is only a help tool, and you will need a manual inspection and editing to use it on a real SAPI application\&.
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "LICENSE"
+.PP
+The same as Julius\&.

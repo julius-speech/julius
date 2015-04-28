@@ -1,0 +1,99 @@
+'\" t
+.\"     Title: 
+    generate-ngram
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "GENERATE\-NGRAM" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    generate-ngram
+   \- random sentence generator from N\-gram
+.SH "SYNOPSIS"
+.HP \w'\fBgenerate\-ngram\fR\ 'u
+\fBgenerate\-ngram\fR [\fIoptions\fR...] {\fIbinary_ngram\fR}
+.SH "DESCRIPTION"
+.PP
+
+\fBgenerate\-ngram\fR
+is a tool to generate sentences randomly according to the given N\-gram language model\&. The N\-gram model file
+\fIbinary_ngram\fR
+should be an binary format\&.
+.SH "OPTIONS"
+.PP
+\fB \-n \fR \fInum\fR
+.RS 4
+Number of sentences to generate (default: 10)
+.RE
+.PP
+\fB \-N \fR
+.RS 4
+Specify which length of N\-gram to use (default: available max in the given model)
+.RE
+.PP
+\fB \-bos \fR
+.RS 4
+Beginning\-of\-sentence word (default: "<s>")
+.RE
+.PP
+\fB \-eos \fR
+.RS 4
+End\-of\-sentence word (default: "</s>")
+.RE
+.PP
+\fB \-ignore \fR
+.RS 4
+Specify a word to be supressed from output (default: "<UNK")
+.RE
+.PP
+\fB \-v \fR
+.RS 4
+Verbose output\&.
+.RE
+.PP
+\fB \-debug \fR
+.RS 4
+Debug output\&.
+.RE
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+,
+\fB mkbingram \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "LICENSE"
+.PP
+The same as Julius\&.

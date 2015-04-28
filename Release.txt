@@ -1,0 +1,740 @@
+4.3.1 (2014.01.15)
+===================
+Fixed bugs:
+- Compilation error on OS X.
+- Unnecessary debug messages in adintool.
+- Several bugs around reading / applying "-cmnload".
+
+4.3 (2013.12.25)
+=================
+New features:
+- FBANK and MELSPEC support.
+- Network-based feature vector and outprob vector input.
+- Static mean/variance for cepstral mean/variance normalization.
+- State output probability (i.e. outprob) vector input for DNN-HMM decoding.
+- State ID "<SID>" extension of hmmdefs for DNN-HMM decoding.
+- Real-time feature extraction and network transmittion by 'adintool'.
+
+Modified:
+- "mkbinhmm" now keeps the state order and id of the original hmmdefs.
+- For portaudio, pause / resume operation synced between engine and audio I/O
+- Load / save cepstral mean/variance of CMN/CVN in HTK text format.
+
+New options:
+  [-input vecnet]       read feature / outprob vectors from network
+  [-input outprob]      read outprob vectors from HTK parameter file
+  [-outprobout [file]]  save computed outprob vectors to HTK file (for debug)
+
+
+4.2.3 (2013.06.30)
+==================
+
+New features:
+- Add function "j_reload_adddict()" to reload dictionaries.
+- Add option "-lvscale factor" and func "j_adin_change_input_scaling_factor()"
+  to scale the amplitude of captured audio by the factor.
+- Add option "-rejectlong msec" to reject too long input.
+- Add minimum bayes risk decoding, contributed by H. Nanjo and R. Furutani
+- Support binary N-gram symbol charset conversion by "mkbingram".
+
+Fixes:
+- Fix sending audio stream via network with incorrect byte order at
+  big-endian machines.
+- Fix occasional failure of closing audio device at j_close_stream().
+- Fix segfault when reading binary hmm created at 64bit env. with embedded parameters.
+- Fix memory leak when failed to read an N-gram file.
+- Fix memory leak when input length overflow is detected.
+- Fix unable to load feature vector plugin.
+- Update microphone input code for recent MacOSX.
+
+
+4.2.2 (2012.08.01)
+==================
+
+Fixes:
+- Now can be compiled without flex library
+- Fix failure of reading binary N-gram when compiled with "--enable-words-int"
+- Fix incorrect handling of file paths with backslash in jconf file at Windows
+- Fix segfault when reading an errorous word dictionary.
+- Fix occasional segfault which may occur while search.
+
+
+4.2.1 (2011.12.25)
+===================
+
+New features:
+- Add support for per-word insertion penalty setting at grammar
+  recognition. You can set different word insertion score for each word
+  entry at .dict file. For example, if you have an entry
+        15 [a] a
+  in .dict file and want to assign word insertion score of "-2.0" to
+  this word, you can write like this:
+        15 @-2.0 15 [a] a
+  The figure after "@" is the insertion penalty. The third
+  element should be the same as the first element.
+
+- New option "-chunk_size" can specify the audio fragment size in
+  number of samples. The default value is 1000.
+
+- At "adintool", enable input detection by default for standard input.
+
+Fixed bugs:
+- (IMPORTANT) CMN is not performed for C0 coef.  This bug exists in
+  the versions from 4.1.3 to 4.2.
+- "-forcedict" won't work for additional dictionaries given by "-adddict".
+- Corrupted header of recorded WAV file when interrupted by CTRL+C.
+- Occasional segfault when reading a wrongly formatted dictionary.
+- Won't compile with configure option "--enable-word-graph".
+- Segfault of "mkbingram" and "generate-ngram" at cygwin.
+
+
+4.2 (2011.05.01)
+=================
+
+New features:
+- Additional score-based pruning at the 1st pass.  It is disabled by
+  default, you can enable by using an option "-bs arg". The argument
+  is score range.
+- New support for PulseAudio (--with-mictype=pulseaudio)
+- New Option "-adddict", "-addword" to read additional dictionaries / words.
+- Portaudio library updated to V19.  Audio capture device can be
+  changed by env. "PORTAUDIO_DEV_NUM".  The device list will be
+  output at start up.
+
+Changed behavior:
+- "mkbinhmmlist" now saves pseudo phone list extracted from AM for
+  faster start up. The output should be used with the same AM
+  specified at generation.  Note that the converted binhmmlist file
+  can not be used with older Julius.
+- Audio library linking was modified at configure script.
+  When "--with-mictype=..." is explicitly specified, Julius will link
+  ONLY the audio library.  If not specified, Julius will link all the
+  audio devices whose development file was detected by the configure.
+
+Library functions:
+- j_config_load_string_new(char *str): like j_config_load_file(), but
+  parse the given string to set parameters.
+- add_dict(), add_word(): the same as "-adddict" and "-addword".
+  (They should be called at start up before starting engine)
+- (portaudio/Windows) j_open_stream(recog, NUMSTR) to choose device NUM.
+  ex. 'j_open_stream(recog, "1")' will open device number one.
+- (portaudio/Windows) get_device_list(): obtain list of available devices.
+
+Fixes:
+- Improved tree lexicon structure for better memory management.
+- Reduce malloc calls at reading N-gram.
+- Eliminated memory leaks using Valgrind.
+- Workarounds to avoid crash with j_close_stream().
+- Now allow "-iwsp" only with multi-path acoustic model.
+
+
+4.1.5.1 (2010.12.25)
+=====================
+
+Modified:
+ - Fixed problem related to the license.
+
+4.1.5 (2010.06.04)
+===================
+Bug fixes:
+
+ - Language model / decoding (these bugs may affect the ASR performance):
+   - Several wrong word insertion penalty handling on grammar was
+     found and fixed.
+   - Now correctly add the prob. of the first word at the second pass.
+
+ - MFCC computation:
+   - Support MFCC computation when liftering parameter (CEPLIFTER) = 0.
+
+ - Compilation:
+   - Fixes to build Julius on cygwin and MSVC.
+   - Supports "gcc -mno-cygwin" on cygwin.
+   - Compilation error with configure "--disable-plugin"
+
+ - Module mode:
+   - Unable to send grammar from jcontrol.
+   - Not working "DELPROCESS" command when SR and LM has different names.
+
+ - Other fixed bugs:
+   - wrong parsing of "-mapunk" option.
+   - "-htkconf" in a jconf file now correctly handles the file path as
+     relative to the jconf file.
+   - "-input stdin" now supports WAV format.
+   - not working "-plugin DIRNAME" on Win32/MSVC.
+
+
+4.1.4 (2009.12.25)
+===================
+
+New feature:
+ - added function to choose input audio device on MSVC compiled Julius,
+   by specifying a device ID with env. var. "PORTAUDIO_DEV_NUM".
+   The available device IDs will be listed in the system log at start up.
+ - You can now set a locale for a LM in Julius.cpp.
+
+Bug fixes:
+ - now can be compield on Mac OS X (OS X 10.6 SDK).
+ - fixes around portaudio for smaller latency and compatibility (Windows).
+
+
+4.1.3 (2009.11.02)
+===================
+
+New features:
+ - new MSVC support: please read "msvc/00README.txt"
+ - extended N-gram to support arbitrary N
+ - portaudio external library (V19) can be used instead of internal V18.
+   When configure detects portaudio library installed in your system, 
+   Julius will use it instead of internal V18.  You can also choose
+   input device by "PORTAUDIO_DEV" env. var. at V19library.  See the
+   log text at start up to know how to set it.
+ - allow word alignment output (-walign) in module mode
+
+Modified:
+ - ! now Julius do not perform CMN on 0'th cepstral coefficients,
+   which is the same as the old 4.0.x versions.
+ - j_get_current_filename() added on JuliusLib
+ - improved "--enable-wpair" handling
+
+Bug fixes:
+ - many bugs around audio open/close API on JuliusLib
+ - fail to do make in julius-simple
+ - unable to record inputs at cygwin
+ - segfault on adintool with "-server"
+ - occasional segfault at grammar recognition
+
+
+4.1.2 (2009.02.12)
+===================
+
+[SRILM support]
+ - Added swapping "<s>" and "</s>" when reading BACKWARD ARPA file
+   trained by SRILM.  It will be automatically detected.  If detection
+   fails, you can specify an option "-swap" in mkbingram to do that.
+ - Internally modify the unigram probability of "<s>" or "</s>", since
+   they may be set to "-99" in SRILM model.  The same value as
+   opposite will be assigned.
+[N-gram]
+ - Size limit extended from 2GB to 4GB for big N-gram.
+ - "<unk>" and "<UNK>" can be changed by "-mapunk".
+ - More strict check for unknown words: Julius now terminates with
+   error when dictionary has OOV words and N-gram is not open (no unk word).
+[Improvements]
+ - Faster successor list building algorithm
+ - Update yomi2voca.pl to cover more minor Japanese pronunciation.
+ - Workaround for audio buffer overrun in ALSA
+[JuliusLib]
+ - Added API function "j_close_stream()" to exit main recognition loop.
+[Bug Fixes]
+ - Fixed segfault on adintool when specifying multiple servers.
+ - Fixed compilation error on cygwin (libesd)
+ - Fixed segfault when not specifying "-input" option.
+
+
+4.1.1 (2008.12.13)
+===================
+Bug fixes:
+
+[N-gram]
+  - sometimes could not read an ARPA N-gram file trained by SRILM.
+[A/D-in]
+  - "-input stdin" does not work.
+  - "SOURCERATE" at "-htkconf" is ignored.
+[Forced alignments]
+  - now can be used in isolated word recognition and with "-1pass".
+  - "-palign", "-walign" and "-salign" can not be run together at a time.
+[Module mode]
+  - freezes when a grammar is specified by its ID number.
+  - wrong grammar ID in recognition result (GRAM=.. always 0)
+  - "SYNCGRAM" will cause crash at isolated word recognition.
+  - unable to receive/activate/dactivate on isolated word recognition.
+[Others]
+  - fails to compile on several OS (needs "-ldl").
+  - does not handle backslash escaping correctly in Jconf file.
+  - does not output the 1st pass result as a final result with "-1pass".
+[Tools]
+  Jcontrol
+  - does not support "graminfo" command.
+  - can not send a dictionary to Julius running isolated word recognition.
+  mkdfa
+  - segfault on mkfa
+  - fails to read a grammar file on DOS format.
+  adintool
+  - wrong behavior when splitting a long audio file.
+  - now output time of each segment.
+
+
+4.1 (2008.10.3)
+================
+New plugin extension:
+  - supported types:
+      - A/D-in plugin
+      - feature vector input plugin
+      - audio input monitor / postprocess plugin
+      - feature vector monitor / postprocess plugin
+      - result plugin
+      - can add arbitrary JuliusLib callback via plugin
+  - sample codes is included, with full documentation of function spec.
+  - run on Linux, Windows and other unix variants with dlopen() capability
+
+Newly supported features:
+  - multi-stream feature input
+  - MSD-HMM (compatible with "HTS" toolkit)
+  - CVN 
+  - frequency warping for VTLN (no estimation yet)
+  - "-input alsa", "-input oss" and "-input esd"
+  - perl version of jcontrol client "jclient-perl"
+
+Modified:
+  - Restrict option orders when multiple instances defined (-AM, -LM, -SR):
+      - Option should be just after correspondence instance declaration. 
+        (ex. LM options should be placed after "-LM" and before other 
+        instance declaration.)
+      - Global option should be before any instance declaration, or
+        just after "-GLOBAL" option.
+    This new restriction can be removed by "-nosectioncheck" option.
+
+Fixed bugs:
+  - "-record" fails to record the first silence part!
+  - Not working "-multigramout"
+  - environment variable expansion sometimes fail within jconf file.
+  - limits extended:
+     maximum HMM name length = 256 char, Number of HMM states unlimited.
+  - Module mode error message on grammar command.
+
+Documents:
+  - Alpha version of "Juliusbook" (contains only manuals at this time)
+  - Unix manuals are moved to "man" directory.
+
+
+4.0.2 (2008.5.27)
+==================
+New features:
+
+  - New option "-fallback1pass" will output 1st pass result as final result
+    when the 2nd pass fails.
+  - Added support for "USEPOWER=T" on feature extraction.
+
+Modified:
+  - "-AM_GMM" becomes optional: GMM will share AM params if not specified.
+
+Fixed:
+  - GMM rejection does not work (since 4.0.1)
+  - Cannot specify other A/D device on Linux/ALSA correctly.
+  - Sometimes fails to read a big N-gram.
+  - Sometimes crush with "-record" option.
+  - Callback timing modified on real-time input with sp-segment/GMM/VAD.
+  - Other minor fixes.
+
+
+4.0.1 (2008.3.12)
+==================
+New features:
+
+  A/D-in
+    - ALSA now become default on Linux instead of OSS.
+
+  Module mode
+    - "ACTIVATEGRAM", "DEACTIVATEGRAM" and "DELGRAM" now accepts
+      grammar name as arguments in addition to grammar ID number.
+    - new command "GRAMINFO" to get list of current grammars.
+
+
+Fixed bugs:
+
+  A/D-in
+    - ALSA codes updated to work on 1.x drivers.
+    - segfault with "-48".
+    - segfault on MFCC input with zero frames with "-spsegment".
+  VAD
+    - CMN not working on spsegment/GMM-VAD/decoder-VAD with microphone input.
+  Acoustic model
+    - Error when no short-pause model defined in multi-path mode.
+  N-gram
+    - incorrect 2-gram prob on 1st pass with backward N-gram only.
+    - incorrect 1-gram prob for unknown words.
+    - fail to read some ARPA files with no back-off compaction.
+    - read failure or segfault on big N-gram with over 24bit entries.
+    - redundant index for back-off weights in some case. 
+  Word recognition
+    - incorrect N-best output with "-output N" on word recognition.
+  Installation
+    - "make install" fails on cygwin.
+  Source code
+    - Static variables in functions that are not meant to be static
+      are made local.
+    - Global variables in search are moved to StackDecode.
+
+
+
+4.0 (2007.12.19)
+=================
+For more detail about new features in 4.0, please see other document.
+
+- Re-constructed all data structures and re-organize source code.
+- Core engine now becomes a library called JuliusLib, with API and callbacks.
+- Multi-model decoding now available.
+- Modularize language model handling, and merge Julian to JuliusLib.
+- Support longer N-gram (N > 3).
+- User-defined LM function support.
+- Handy isolated word recognition mode.
+- Confusion network output.
+- Improvements in short-pause segmentation, especially for live input.
+- GMM-based VAD.
+- Decoder-based VAD.
+- Integrated many compile-time options.
+- Reduce memory usage.
+- Sample application to use the JuliusLib is included: "julius-simple".
+- Update tools:
+   - "adintool" supports multi-server mode.
+   - "generate-ngram" newly added to generate sentences from N-gram
+
+
+3.5.3 (2006.12.29)
+===================
+  o  Improved Performance:
+     - acoustic computation optimized: now becomes 20%-40% faster!
+     - optimize memory access: re-use work area of deleted hypothesis
+       in the 2nd pass.
+     - some memory allocation improvement on dictionary and word trellis.
+
+  o  New Grammar Tools:
+     - "dfa_minimize", "dfa_determinize" will minimize/determinize DFA.
+        mkdfa.pl now calls dfa_mimize in it.
+     - "slf2dfa": a toolkit to convert HTK slf to Julian dfa (separate kit)
+
+  o  Embedding HTK Acoustic Parameters:
+     - add option to load HTK Config file to set correct acoustic parameter
+       configuration at recognition time. 
+     - the acoustic parameter configuration can be embedded into
+       header of a binary HMM file.
+
+  o  Improved Word Graph:
+     - add an option to completely separate graph words: words with
+       different phone contexts can be output separatedly by
+       "-graphrange -1".
+
+  o  Support for online energy normalization:
+     - Preliminary support for live recognition using acoustic model with
+       energy normalization. (approximate with maximum energy of last input)
+
+  o  Code refinements:
+     - re-organize libsent/src/wav2mfcc.
+     - modularize acoustic parameter (Value) handling.
+     - output compile-time configuration of libsent with "--setting" option.
+     - Doxygen 1.5.0 support.
+     - "julius-info@lists.sourceforge.jp" becomes the official contact address.
+     - fixed typo on copyright notice.
+
+  o  Fixed bugs:
+     - sometimes unable to read a binary LM on "--enable-words-int".
+     - memory leaks around option handling, global variables and local buffers.
+     - segmentation fault on very long input.
+     - doublely counted initial state of DFA.
+     - mkdfa.pl: unable to find mkfa on some OS.
+     - adintool: makes empty output file on termination.
+     - adintool: miss last inputs when killed.
+     - other small changes.
+
+
+3.5.2 (2006.07.31)
+===================
+  o  Speed-up and improvement on Windows console:
+     - Support DirectSound for better input handling
+     - Support input threading utilizing callback API on portaudio.
+     - Support newest MinGW (tested on 5.0.2)
+
+  o  More accurate word graph output:
+     - Add option to cut the resulting graph by its depth
+       (option -graphcut, and enabled by default!)
+     - Set limit for post-processing loop to avoid infinite loop
+       (option -graphboundloop, and set by default)
+     - Refine graph generation algorithm concerning dynamic word merging
+       and search termination on the second pass.
+
+  o  Add capability to output word graph instead of trellis on 1st pass:
+     - 1st pass generates word graph instead of word trellis as
+       intermediate result by specifying "--enable-word-graph".
+       In that case, the 2nd pass will be restricted on the graph, not
+       on the whole trellis.
+     - With "--enable-word-graph" and "--enable-wpair" option, the
+       first pass of Julius can perform 1-pass graph generation based
+       on 2-gram with basically the same algorithm as other popular
+       word graph based decoders.
+
+  o  Bug fixes:
+     - configure script did not work on Solaris 8/9
+     - "-gprune none" did not work on tied-mixture AM
+     - Incorrect error message for AM with duration header other than "NULLD"
+     - Always warns abount zero frame stripping upon MFCC
+
+  o  Imprementation improvements:
+     - bmalloc2-based AM memory management
+
+
+3.5.1 (2006.03.31)
+===================
+  o  Wider MFCC types support:
+     - Added extraction of acceleration coefficients (_A).  Now you
+       can recognize waveform or microphone input with AM trained with _A.
+     - Support all MFCC qualifiers (_0, _E, _N, _D, _A, _N, _Z) and their
+       combination 
+     - Support for any vector lenth (will be guessed from AM header)
+     - New option: "-accwin"
+     - New option "-zmeanframe": frame-wise DC offset removal, like HTK
+     - New options to specify detailed analysis parameters (see manual):
+          -preemph, -fbank, -ceplif, -rawe / -norawe, 
+          -enormal / -noenormal, -escale, -silfloor
+
+  o Improved microphone / network recognition by MAP-CMN:
+     - New option "-cmnmapweight" to change MAP weight
+     - Option "-cmnload" can be used to specify the initial cepstral
+       mean at startup
+     - Cepstral mean of last 5 second input is used as an initial mean
+       for each input.  You can inhibit updating of the initial mean
+       and keep the value loaded by "-cmnload" by option "-cmnnoupdate".
+
+  o Module issue:
+     - Julius now outputs "<STARTPROC/>" when recognition starts, and
+       "<STOPPROC/>" after recognition stopped by module command.
+       Use this for safer server-client synchronization.
+     - now can specify grammar name from client by specifying a name
+       after a command like "ADDGRAM name" or "CHANGEGRAM name".
+
+  o Bug fixes:
+     - Sometimes segfault on pause/resume command on module mode while input.
+     - Can not read N-gram with tuples > 2^24.
+     - Can not read HMM with 3-state (1 output state) model on multi-path.
+     - Sometimes omit the last transition definition in DFA file.
+     - Sometimes fails to compile the gramtools on MacOSX.
+
+
+3.5 (2005.11.11)
+=================
+  o  New features:
+     - Input verification / rejection using GMM (-gmm, -gmmnum, -gmmreject)
+     - Word graph output (--enable-graphout, --enable-graphout-nbest)
+     - Pruning on 2nd pass based on local posterior CM (--enable-cmthres)
+     - Multiple/per-grammar recognition (-gram, -gramlist, -multigramout) 
+     - Can specify multiple grammars at startup: "-gram prefix1,prefix2,..."
+       or "-gramlist listfile" where listfile contains list of prefixes.
+     - General output character set conversion "-charconv from to"
+       based on iconv (Linux) or Win32API+libjcode (Windows)
+
+  o  Improved audio inputs on Linux:
+     - ALSA-1.x support. (--with-mictype=alsa)
+     - EsounD daemon input support. (--with-mictype=esd)
+     - Fixed some bugs on USB audio input.
+     - Audio capturing device can be specified via env. "AUDIODEV".
+     - Extra microphone API support using portaudio and spLib API.
+
+  o  Performance improvements:
+     - Reduced memory size for beam operation on the 1st pass.
+     - Slightly optimized tree lexicon by removing redundant data.
+     - Reduced size of word N-gram index (reduced from 32 bit to 24 bit).
+
+  o  Fixed bugs:
+     - Not working spectral subtraction.
+     - Memory leak when stack exhausted ("stack empty") on 2nd pass.
+     - Segmentation fault on a very short input of 1 to 4 frames.
+     - AM trained with no CMN cannot be used with waveform/mic input.
+     - Wrong short-pause word handling on successive decoding mode.
+       (--enable-sp-segment)
+     - No output of "maxcodebooksize" at startup.
+     - No output of the number of sentences found when stack exhausted.
+     - No output of "-separatescore" on module mode.
+     - Beam width does not adjusted when grammar has been changed and 
+       full beam options (-b 0) is specified in Julian.
+     - Wrong update of category-aware cross-word triphones when
+       dynamically switching grammar on Julian.
+     - No output of grammar to stdout on multiple grammar mode.
+     - Unable to send/receive audio data between different endian machines.
+     - (Linux) crash when compiled with icc.
+     - (Linux) some strange behavior on USB audio.
+     - (Windows) confuse with CR/LF newline inputs in several text inputs.
+     - (Windows) mkdfa.pl could not work on cygwin.
+     - (Windows) sometimes fails to read a file when not using zlib.
+     - (Windows) wrong file suffix when recording with "-record" (.raw->.wav)
+
+  o  Unified source code:
+     - Linux and Windows version are integrated into one source.
+     - Multi-path version has been integrated with the normal version
+       into one source.  The multi-path version of Julius/Julian, that
+       allows any transitions of HMMs including model skip transition,
+       can be compiled by "--enable-multipath" option.  The part of
+       source codes for the multi-path version can be identified 
+       by the definition "MULTIPATH_VERSION".
+
+  o  Other improvements:
+     - Now can be compiled on MinGW/MSYS on Windows
+     - Totally rewritten comments in entire source in Doxygen format.
+       You can generate fully browsable source documents in English.
+       Try "make doxygen" at the top directory (you need doxygen installed)
+     - Install additional executables of julius/julian with version and setting
+       names like "julius-3.5-fast" when "make install" is invoked.
+     - Updated LICENSE.txt with English translation for reference.
+
+  o  Changed behaviors:
+     - Binary N-gram file format has been changed for smaller size.
+       The old files can still be read directly by julius, in which
+       case on-line conversion will be performed at startup.
+       You can convert the old files (3.4.2 and earlier) to the new
+       format with the new mkbingram by involing the command below:
+	       "mkbingram -d oldbinary newbinary"
+       Please note that since mkbingram now output the new format
+       file, it can not be read by older Julius.
+       The binary N-gram file version can be detected by the first 17
+       bytes of the file: old format should be "julius_bingram_v3" and
+       new format should be "julius_bingram_v4".
+     - Byte order of audio stream via tcpip fixed to LITTLE ENDIAN.
+     - Now use built-in zlib by default for compressed files.  This may
+       make the engine startup slower, and if you prefer, you can still
+       use the previous method using external gzip command by specifying
+       "--disable-zlib".
+     - (Windows) Changed the compilation procedure on VC++.  You can build
+       Julian by only specifying "-DBUILD_JULIAN" at compiler option,
+       and do not need to alter "julius.h".
+
+
+3.4.2 (2004.03.31)
+===================
+- New option "-rejectshort msec" to reject short input.
+- More stable PAUSE/RESUME on module mode with adinnet input.
+- Bug fixes:
+  - Memory leak on very short input.
+  - Missing Nth result when small vocabulary is used.
+  - Hang up of "generate" on small grammar.
+- Cosmetic changes:
+  - Cleanup codes to confirm for 'gcc -Wall'.
+  - Update of config.guess and config.sub.
+  - Update of copyright to 2004.
+
+3.4.1 (2004.02.25)
+===================
+- AM and LM computation method is slightly modified to improve search
+  stability of 2nd pass.  These modification are enabled by default, and
+  MAY IMPROVE THE RECOGNITION ACCURACY as compared with older versions.
+  - fixed overcounting of LM score for the expanded word.
+  - new inter-word triphone approximation (-iwcd1 best #) on 1st
+    pass.  This new algorithm now becomes default.
+- Newly supports binary HMM (original format, not compatible with HTK).
+  A tool "mkbinhmm" converts a hmmdefs(ascii) file to the binary format.
+- MFCC computation becomes faster by sin/cos table lookup.
+- Bugs below have been fixed:
+  - (-input adinnet) recognition does not start immediately after speech
+		     inputs begin when using adinnet client.
+  - (-input adinnet) together with module mode, speech input cannot
+		     stop by pause/terminate command.
+  - (-input adinnet) unneccesary fork when connecting with adinnet client.
+  - (-input rawfile) error in reading wave files created by Windows
+                     sound recorder.
+  - (CMN) CMN was applied any time even when acoustic models does not want.
+  - (AM) numerous messages in case of missing triphone errors at startup.
+  - (adintool) immediately exit after single file input.
+  - (sp-segment) fixed many bugs relating short pause word and LM
+  - (sp-segment) wow it works with microphone input.
+  - (-[wps]align) memory leak on continuous input.
+- Add option to remove DC offset from speech input (option -zmean).
+- (-module) new output message:
+  '<INPUTPARAM FRAMES="input_frame_length" MSEC="length_in_msec">'
+- Optional feature "Search Space Visualization" is added (--enable-visualize)
+- HTML documentations greatly revised in doc.
+
+New argument: "-iwcd1 best #" "-zmean"
+New configure option: "--disable-lmfix", "--enable-visualize"
+
+3.4   (2003.10.01)
+===================
+- Confidence measure support
+  - New parameter "-cmalpha" as smoothing coef.
+  - New command "-outcode C" to output CM in module output
+  - Can be disabled by configure option "--disbale-cm"
+  - Can use an alternate CM algorithm by configure option "--enable-cm-nbest"
+- Class N-gram support
+  - Can be disabled by configure option "--disable-class-ngram"
+  - Factoring basis changed from N-gram entry to dictionary word
+- WAV format recording in "adinrec", "adintool" and "-record" option
+- Modified output message
+    startup messages,
+    engine configuration message in --version and --help,
+- Fixes:
+    some outputs in module mode,
+    bug in only several frame input (realtime-1stpass.c),
+    long silence at end of segmented speech
+    miscompilation with NetAudio,
+    word size check in binary N-gram,
+    bug in acoustic computation (gprune_none.c).
+    "-version" -> "-setting", "-hipass" -> "-hifreq", "-lopass" -> "-lofreq"
+
+3.3p4 (2003.05.06)
+===================
+- Fixes for audio input:
+  - Fix segfault/hangup with continuous microphone input.
+  - Fix client hangup when input speech too long in module mode.
+    (now send an buffer overflow message to the client)
+  - Fix audio input buffering for very short input (<1000 samples).
+  - Fix blocking handling in tcpip adin.
+- Some cosmetic changes (jcontrol, LOG_TEN, etc.)
+
+3.3p3 (2003.01.08)
+===================
+- New inter-word short pause handling:
+  - [Julius] New option added for short pause handling.  Specifying
+    "-iwspword" adds a short-pause word entry, namely "<UNK> [sp] sp sp",
+    to the dictionary.  The entry content to be changed by using "-iwspentry".
+  - [multi-path] Supports inter-word context-free short pause handling.
+    "-iwsp" option automatically appends a skippable short pause model at
+    every word end.  The added model will also be ignored in context
+    modeling.  The short pause model to be appended by "-iwsp" can be
+    specified by "-spmodel" options.  See documents for details.
+- Fixes for audio input:
+   - Input delay improved: the initial response to mic input now
+     becomes much faster than previous versions (200ms -> 50ms approx.).
+   - Would not block when other process is using the audio device, but
+     just output error and exit.
+   - Update support for libsndfile-1.0.x.
+   - Update support for ALSA-0.9.x 
+     (to use this, add "--with-mictype=alsa" to configure option.)
+ 
+3.3p2 (2002.11.18)
+===================
+- [multi-path version] Supports model-skip transition.  From
+  this version, you can use "any" type of state transition in HTK
+  format acoustic model.
+- New feature: "-record dir" records speech inputs sucessively
+  into the specified directory with time-stamp file names.
+- fix segfault on Solaris with "-input mfcfile".
+- fix blocking command input when using module mode and adinnet together.
+- modified the output flush timing to make sure the last recognition
+  result will be output immediately.
+
+3.3p1 (2002.10.15)
+===================
+Following bugs are fixed:
+- Fixed incorrect default value of language weights for second pass (-lmp2).
+- Fixed sometimes read failure of dictionary file (double space enabled).
+- Fixed wrong output of "-separatescore" together with monophone model.
+
+3.3 (2002.09.12)
+==================
+The updates and new features from rev.3.2 is shown below.
+
+- New features added:
+        - Server module mode - control Julius (input on/off, grammar switching)
+          from other client process via network.
+        - Online grammar changing and multi-grammar recognition supported.
+- Noise robustness:
+        - Spectral subtraction incorporated.
+- Support more variety of acoustic models:
+        - "multi-path version" is available that allows any transition
+           including loop, skip and parallel transition.
+- A little improvement of recognition performance by bug fixes
+- Other minor extensions (CMN parameter saving, etc.)
+- Many bug fixes
+
+English documents are available in
+  o online manuals (will be installed by default), and
+  o Translated full documentation in PDF format: Julius-3.2-book-e.pdf.
+We are sorry that current release contains only documents for old rev.3.2.
+We are now working to update it to catch up with the current rev.3.3 version.
+

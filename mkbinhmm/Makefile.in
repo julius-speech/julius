@@ -1,0 +1,49 @@
+# Copyright (c) 2003-2013 Kawahara Lab., Kyoto University 
+# Copyright (c) 2003-2005 Shikano Lab., Nara Institute of Science and Technology
+# Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+# All rights reserved
+#
+# $Id: Makefile.in,v 1.9 2013/06/20 17:14:27 sumomo Exp $
+#
+SHELL=/bin/sh
+.SUFFIXES:
+.SUFFIXES: .c .o
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+
+LIBSENT=../libsent
+CC=@CC@
+CFLAGS=@CFLAGS@
+CPPFLAGS=-I$(LIBSENT)/include @CPPFLAGS@ @DEFS@ `$(LIBSENT)/libsent-config --cflags`
+LDFLAGS=@LDFLAGS@ -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`
+RM=@RM@ -f
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+INSTALL=@INSTALL@
+
+all: mkbinhmm@EXEEXT@ mkbinhmmlist@EXEEXT@
+
+mkbinhmm@EXEEXT@: mkbinhmm.o $(LIBSENT)/libsent.a
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ mkbinhmm.o $(LDFLAGS)
+
+mkbinhmmlist@EXEEXT@: mkbinhmmlist.o $(LIBSENT)/libsent.a
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ mkbinhmmlist.o $(LDFLAGS)
+
+install: install.bin
+
+install.bin: mkbinhmm@EXEEXT@ mkbinhmmlist@EXEEXT@
+	${INSTALL} -d @bindir@
+	@INSTALL_PROGRAM@ mkbinhmm@EXEEXT@ mkbinhmmlist@EXEEXT@ @bindir@
+
+clean:
+	$(RM) mkbinhmm.o mkbinhmmlist.o
+	$(RM) *~ core
+	$(RM) mkbinhmm mkbinhmm.exe
+	$(RM) mkbinhmmlist mkbinhmmlist.exe
+
+distclean:
+	$(RM) mkbinhmm.o mkbinhmmlist.o
+	$(RM) *~ core
+	$(RM) mkbinhmm mkbinhmm.exe
+	$(RM) mkbinhmmlist mkbinhmmlist.exe
+	$(RM) Makefile

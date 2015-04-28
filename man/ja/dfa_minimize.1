@@ -1,0 +1,81 @@
+'\" t
+.\"     Title: 
+    dfa_minimize
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 19/12/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: Japanese
+.\"
+.TH "DFA_MINIMIZE" "1" "19/12/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "名前"
+
+    dfa_minimize
+   \- 有限オートマトン文法を最小化する
+.SH "概要"
+.HP \w'\fBdfa_minimize\fR\ 'u
+\fBdfa_minimize\fR [\-o\ \fIoutfile\fR] {dfafile}
+.SH "DESCRIPTION"
+.PP
+dfa_minimize は，\&.dfa ファイルを等価な最小化の \&.dfa ファイルに変換し， 標準出力に出力します．オプション
+\fB\-o\fR
+で出力先を 指定することもできます．
+.PP
+バージョン 3\&.5\&.3 以降の Julius に付属の
+\fBmkdfa\&.pl\fR
+は， このツールを内部で自動的に呼び出すので，出力される \&.dfa は常に最小化 されており，これを単体で実行する必要はありません．バージョン 3\&.5\&.2 以前の
+\fBmkdfa\&.pl\fR
+で出力された \&.dfa は最小化されていないので， このツールで最小化するとサイズを最適化することができます．
+.SH "OPTIONS"
+.PP
+\fB \-o \fR \fIoutfile\fR
+.RS 4
+出力ファイル名を指定する．
+.RE
+.SH "EXAMPLES"
+.PP
+
+foo\&.dfa
+を最小化して
+bar\&.dfa
+に 保存する．
+.sp .if n \{\ .RS 4 .\} .nf % \fBdfa_minimize\fR \-o bar\&.dfa foo\&.dfa .fi .if n \{\ .RE .\}
+別の方法：
+.sp .if n \{\ .RS 4 .\} .nf % \fBdfa_minimize\fR < foo\&.dfa > bar\&.dfa .fi .if n \{\ .RE .\}
+.SH "SEE ALSO"
+.PP
+
+\fB mkdfa.pl \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 京都大学 河原研究室
+.PP
+Copyright (c) 1997\-2000 情報処理振興事業協会(IPA)
+.PP
+Copyright (c) 2000\-2005 奈良先端科学技術大学院大学 鹿野研究室
+.PP
+Copyright (c) 2005\-2013 名古屋工業大学 Julius開発チーム
+.SH "LICENSE"
+.PP
+Julius の使用許諾に準じます．

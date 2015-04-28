@@ -1,0 +1,220 @@
+'\" t
+.\"     Title: 
+    jcontrol
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "JCONTROL" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    jcontrol
+   \- a sample module client written in C
+.SH "SYNOPSIS"
+.HP \w'\fBjcontrol\fR\ 'u
+\fBjcontrol\fR {\fIhostname\fR} [\fIportnum\fR]
+.SH "DESCRIPTION"
+.PP
+
+\fBjcontrol\fR
+is a simple console program to control julius running on other host via network API\&. It can send command to Julius, and receive messages from Julius\&.
+.PP
+When invoked, jcontrol tries to connect to Julius running in "module mode" on specified hostname\&. After connection established, jcontrol waits for user commands from standard input\&.
+.PP
+When user types a command to jcontrol, it will be interpreted and cor\- responding API command will be sent to Julius\&. When a message is received from Julius, its content will be output to standard output\&.
+.PP
+For the details about the API, see the related documents\&.
+.SH "OPTIONS"
+.PP
+\fB hostname \fR
+.RS 4
+Host name where Julius is runnning in module mode\&.
+.RE
+.PP
+\fB portnum \fR
+.RS 4
+port number (default: 10500)
+.RE
+.SH "COMMANDS"
+.PP
+
+\fBjcontrol\fR
+interprets commands from standard input\&. Below is a list of all commands\&.
+.SS "Engine control"
+.PP
+pause
+.RS 4
+Stop Julius and enter into paused status\&. In paused status, Julius will not run recognition even if speech input occurs\&. When this command is issued while recognition is running, Julius will stop after the recognition has been finished\&.
+.RE
+.PP
+terminate
+.RS 4
+Same as
+pause, but discard the current speech input when received command in the middle of recognition process\&.
+.RE
+.PP
+resume
+.RS 4
+Restart Julius that has been paused or terminated\&.
+.RE
+.PP
+inputparam \fIarg\fR
+.RS 4
+Tell Julius how to deal with speech input in case grammar is changed just when recognition is running\&. Specify one: "TERMINATE", "PAUSE" or "WAIT"\&.
+.RE
+.PP
+version
+.RS 4
+Tell Julius to send version description string\&.
+.RE
+.PP
+status
+.RS 4
+Tell Julius to send the system status (active
+/
+sleep)
+.RE
+.SS "Grammar handling"
+.PP
+graminfo
+.RS 4
+Tell the current process to send the list of current grammars to client\&.
+.RE
+.PP
+changegram \fIprefix\fR
+.RS 4
+Send a new grammar "prefix\&.dfa" and "prefix\&.dict", and tell julius to use it as a new grammar\&. All the current grammars used in the current process of Julius will be deleted and replaced to the specifed grammar\&.
+.sp
+On isolated word recognition, the dictionary alone should be specified as "filename\&.dict" instead of
+\fIprefix\fR\&.
+.RE
+.PP
+addgram \fIprefix\fR
+.RS 4
+Send a new grammar "prefix\&.dfa" and "prefix\&.dict" and add it to the current grammar\&.
+.sp
+On isolated word recognition, the dictionary alone should be specified as "filename\&.dict" instead of
+\fIprefix\fR\&.
+.RE
+.PP
+deletegram \fIgramlist\fR
+.RS 4
+Tell Julius to delete existing grammar\&. The grammar can be specified by either prefix name or number ID\&. The number ID can be determined from the message sent from Julius at each time grammar information has changed\&. When want to delete more than one grammar, specify all of them as comma\-sparated\&.
+.RE
+.PP
+deactivategram \fIgramlist\fR
+.RS 4
+Tell Julius to de\-activate a specified grammar\&. The specified grammar will still be kept but will not be used for recognition\&.
+.sp
+The target grammar can be specified by either prefix name or number ID\&. The number ID can be determined from the message sent from Julius at each time grammar information has changed\&. When want to delete more than one grammar, specify all of them as comma\-sparated\&.
+.RE
+.PP
+activategram \fIgramlist\fR
+.RS 4
+Tell Julius to activate previously de\-activated grammar\&. The target grammar can be specified by either prefix name or number ID\&. The number ID can be determined from the message sent from Julius at each time grammar information has changed\&. When want to delete more than one grammar, specify all of them as comma\-sparated\&.
+.RE
+.PP
+addword \fIgrammar_name_or_id\fR \fIdictfile\fR
+.RS 4
+Add the recognition word entries in the specified
+\fIdictfile\fR
+to the specified grammar on current process\&.
+.RE
+.PP
+syncgram
+.RS 4
+Force synchronize grammar status, like unix command "sync"\&.
+.RE
+.SS "Process management"
+.PP
+Julius\-4 supports multi\-model recognition nad multi decoding\&. In this case it is possible to control each recognition process, as defined by "\fB\-SR\fR" option, from module client\&.
+.PP
+In multi decoding mode, the module client holds "current process", and the process commands and grammar related commands will be issued toward the current process\&.
+.PP
+listprocess
+.RS 4
+Tell Julius to send the list of existing recognition process\&.
+.RE
+.PP
+currentprocess \fIprocname\fR
+.RS 4
+Switch the current process to the process specified by the name\&.
+.RE
+.PP
+shiftprocess
+.RS 4
+Rotate the current process\&. At each call the current process will be changed to the next one\&.
+.RE
+.PP
+addprocess \fIjconffile\fR
+.RS 4
+Tell Julisu to load a new recognition process into engine\&. The argument
+\fIjconffile\fR
+should be a jconf file that contains only one set of LM options and one SR definition\&. Note that the file should be visible on the running Julius, since
+\fBjcontrol\fR
+only send the path name and Julius actually read the jconf file\&.
+.sp
+The new LM and SR process will have the name of the jconffile\&.
+.RE
+.PP
+delprocess \fIprocname\fR
+.RS 4
+Delete the specified recognition process from the engine\&.
+.RE
+.PP
+deactivateprocess \fIprocname\fR
+.RS 4
+Tell Julius to temporary stop the specified recognition process\&. The stopped process will not be executed for the input until activated again\&.
+.RE
+.PP
+activateprocess \fIprocname\fR
+.RS 4
+Tell Julius to activate the temporarily stopped process\&.
+.RE
+.SH "EXAMPLES"
+.PP
+The dump messages from Julius are output to tty with prefix ">" appended to each line\&. Julius can be started in module mode like this:
+.sp .if n \{\ .RS 4 .\} .nf % \fBjulius\fR \-C \&.\&.\&. \-module .fi .if n \{\ .RE .\}
+\fBjcontrol\fRcan be launched with the host name:
+.sp .if n \{\ .RS 4 .\} .nf % \fBjcontrol\fR hostname .fi .if n \{\ .RE .\}
+It will then receive the outputs of Julius and output the raw message to standard out\&. Also, by inputting the commands above to the standard input of
+\fBjcontrol\fR, it will be sent to Julius\&. See manuals for the specification of module mode\&.
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "LICENSE"
+.PP
+The same as Julius\&.

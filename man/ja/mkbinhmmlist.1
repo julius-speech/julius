@@ -1,0 +1,92 @@
+'\" t
+.\"     Title: 
+    mkbinhmmlist
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 19/12/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: Japanese
+.\"
+.TH "MKBINHMMLIST" "1" "19/12/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "名前"
+
+    mkbinhmmlist
+   \- HMMList ファイルをバイナリ形式に変換
+.SH "概要"
+.HP \w'\fBmkbinhmmlist\fR\ 'u
+\fBmkbinhmmlist\fR {hmmdefs_file} {HMMList_file} {output_binhmmlist_file}
+.SH "DESCRIPTION"
+.PP
+mkbinhmmlist は，主にトライフォンとともに使用される HMMList ファイルを バイナリ形式に変換します．通常のテキスト形式の代わりにこれを使うことで Juliusの起動を高速化することができます．
+.PP
+変換には，HMMList ファイルのほかに，一緒に使う音響モデル定義ファイル
+\fIhmmdefs_file\fR
+が必要です（HTK ASCII形式 / Juliusバイナリ形式のどちらも可）．
+.PP
+Julius で使用する際には，通常のテキスト形式と同じく "\fB\-hlist\fR" オプションで指定します． テキスト形式かバイナリ形式かの判定は Julius 側で自動的に行われます．
+.PP
+バージョン 4\&.2より音響モデルから抽出した pseudo phone 情報も書きだす ようになりました．これによりJuliusの起動を高速化することができます．た だし作成した音響モデルとセットで使用する必要があります．また，このバー ジョン以降の mkbinhmmlist で作成した binhmmlist ファイルは以前のバージョ ンでは使用できません．
+.PP
+mkbinhmmlist は gzip 圧縮されたファイルをそのまま読み込めます．
+.SH "OPTIONS"
+.PP
+\fIhmmdefs_file\fR
+.RS 4
+音響モデル定義ファイル．HTK ASCII 形式，あるいはJulius バイナ リ形式．
+.RE
+.PP
+\fIHMMList_file\fR
+.RS 4
+変換対象の HMMList ファイル．
+.RE
+.PP
+\fIoutput_binhmmlist_file\fR
+.RS 4
+出力先となるJulius用バイナリ形式HMMListファイル．すでに ある場合は上書きされる．
+.RE
+.SH "EXAMPLES"
+.PP
+HMMList ファイル
+logicalTriをバイナリ形式に変換して
+logicalTri\&.bin
+に保存する：
+.sp .if n \{\ .RS 4 .\} .nf % \fBmkbinhmmlist\fR binhmm logicalTri logicalTri\&.bin .fi .if n \{\ .RE .\}
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+,
+\fB mkbinhmm \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 京都大学 河原研究室
+.PP
+Copyright (c) 1997\-2000 情報処理振興事業協会(IPA)
+.PP
+Copyright (c) 2000\-2005 奈良先端科学技術大学院大学 鹿野研究室
+.PP
+Copyright (c) 2005\-2013 名古屋工業大学 Julius開発チーム
+.SH "LICENSE"
+.PP
+Julius の使用許諾に準じます．

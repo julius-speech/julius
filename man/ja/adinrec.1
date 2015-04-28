@@ -1,0 +1,177 @@
+'\" t
+.\"     Title: 
+    adinrec
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 19/12/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: Japanese
+.\"
+.TH "ADINREC" "1" "19/12/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "名前"
+
+    adinrec
+   \- １発話の音声入力データをファイルに記録する
+.SH "概要"
+.HP \w'\fBadinrec\fR\ 'u
+\fBadinrec\fR [\fIoptions\fR...] {\fIfilename\fR}
+.SH "DESCRIPTION"
+.PP
+adinrec は，音声区間を一定時間内の零交差数とパワー（振幅レベル）のしき い値に基づいて切り出し，ファイルに記録する．デフォルトでは標準デバイス を用いてマイク入力から録音するが，\fB\-input\fR
+オプションで デバイスを選択可能である．またプラグイン入力も選択できる．
+.PP
+サンプリング周波数は任意に設定可能である．録音形式は 16bit, 1 channel であり，書き出されるファイル形式は Microsoft WAV 形式である． 既に同じ名前のファイルが存在する場合は上書きされる．
+.PP
+ファイル名に "\-" を指定すると取り込んだ音声データを標準出力へ出 力する．この場合データ形式は RAW 形式になる．
+.SH "OPTIONS"
+.PP
+Julius の全てのオプションが指定可能である．指定されたもののうち， 音声入力に関係するオプションのみ扱われる．以下に，adinrec 独自の オプションと関係する Julius オプションに分けて解説する．
+.SS "adinrec specific options"
+.PP
+\fB \-freq \fR \fIHz\fR
+.RS 4
+音声のサンプリング周波数 (Hz) を指定する．(default: 16,000)
+.RE
+.PP
+\fB \-raw \fR
+.RS 4
+RAWファイル形式で出力する．
+.RE
+.SS "Concerning Julius options"
+.PP
+\fB \-input \fR {mic|rawfile|adinnet|stdin|netaudio|esd|alsa|oss}
+.RS 4
+音声入力ソースを選択する．音声波形ファイルの場合は
+fileあるいはrawfileを指 定する．起動後にプロンプトが表れるので，それに対してファイ ル名を入力する．adinnet
+では，
+adintool
+などのクライアントプロセスから音声 データをネットワーク経由で受け取ることができる．
+netaudio
+はDatLinkのサーバから，
+stdinは標準入力から音声入力を行う．
+esdは，音声デバイスの共有手段として多くの Linuxのデスクトップ環境で利用されている EsounD daemon から入力する．
+.RE
+.PP
+\fB \-lv \fR \fIthres\fR
+.RS 4
+振幅レベルのしきい値．値は 0 から 32767 の範囲で指定する． (default: 2000)
+.RE
+.PP
+\fB \-zc \fR \fIthres\fR
+.RS 4
+零交差数のしきい値．値は１秒あたりの交差数で指定する． (default: 60)
+.RE
+.PP
+\fB \-headmargin \fR \fImsec\fR
+.RS 4
+音声区間開始部のマージン．単位はミリ秒． (default: 300)
+.RE
+.PP
+\fB \-tailmargin \fR \fImsec\fR
+.RS 4
+音声区間終了部のマージン．単位はミリ秒． (default: 400)
+.RE
+.PP
+\fB \-zmean \fR
+.RS 4
+入力音声ストリームに対して直流成分除去を行う．全ての音声処理の の前段として処理される．
+.RE
+.PP
+\fB \-smpFreq \fR \fIHz\fR
+.RS 4
+音声のサンプリング周波数 (Hz) を指定する．(default: 16,000)
+.RE
+.PP
+\fB \-48 \fR
+.RS 4
+48kHzで入力を行い，16kHzにダウンサンプリングする． これは 16kHz のモデルを使用しているときのみ有効である． ダウンダンプリングの内部機能は
+sptk
+から 移植された． (Rev\&. 4\&.0)
+.RE
+.PP
+\fB \-NA \fR \fIdevicename\fR
+.RS 4
+DatLink サーバのデバイス名 (\fB\-input netaudio\fR)\&.
+.RE
+.PP
+\fB \-adport \fR \fIport_number\fR
+.RS 4
+
+\fB\-input adinnet\fR
+使用時，接続を受け付ける adinnet のボート番号を指定する．(default: 5530)
+.RE
+.PP
+\fB \-nostrip \fR
+.RS 4
+音声取り込み時，デバイスやファイルによっては，音声波形中に振幅 が "0" となるフレームが存在することがある．Julius は通常，音声 入力に含まれるそのようなフレームを除去する．この零サンプル除去が うまく動かない場合，このオプションを指定することで自動消去を 無効化することができる．
+.RE
+.PP
+\fB \-C \fR \fIjconffile\fR
+.RS 4
+jconf設定ファイルを読み込む．ファイルの内容がこの場所に展開される．
+.RE
+.PP
+\fB \-plugindir \fR \fIdirlist\fR
+.RS 4
+プラグインを読み込むディレクトリを指定する．複数の場合は コロンで区切って並べて指定する．
+.RE
+.SH "ENVIRONMENT VARIABLES"
+.PP
+\fB \fR\fB\fBALSADEV\fR\fR\fB \fR
+.RS 4
+(マイク入力で alsa デバイス使用時) 録音デバイス名を指定する． 指定がない場合は "default"．
+.RE
+.PP
+\fB \fR\fB\fBAUDIODEV\fR\fR\fB \fR
+.RS 4
+(マイク入力で oss デバイス使用時) 録音デバイス名を指定する． 指定がない場合は "/dev/dsp"．
+.RE
+.PP
+\fB \fR\fB\fBPORTAUDIO_DEV\fR\fR\fB \fR
+.RS 4
+(portaudio V19 使用時) 録音デバイス名を指定する． 具体的な指定方法は adinrec の初期化時にログに出力されるので参照のこと．
+.RE
+.PP
+\fB \fR\fB\fBLATENCY_MSEC\fR\fR\fB \fR
+.RS 4
+Linux (alsa/oss) および Windows で，マイク入力時の遅延時間をミ リ秒単位で指定する．短い値を設定することで入力遅延を小さくでき るが，CPU の負荷が大きくなり，また環境によってはプロセスやOSの 挙動が不安定になることがある．最適な値はOS やデバイスに大きく 依存する．デフォルト値は動作環境に依存する．
+.RE
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+,
+\fB adintool \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 京都大学 河原研究室
+.PP
+Copyright (c) 1997\-2000 情報処理振興事業協会(IPA)
+.PP
+Copyright (c) 2000\-2005 奈良先端科学技術大学院大学 鹿野研究室
+.PP
+Copyright (c) 2005\-2013 名古屋工業大学 Julius開発チーム
+.SH "LICENSE"
+.PP
+Julius の使用許諾に準じます．

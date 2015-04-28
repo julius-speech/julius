@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# libsent configuration result reporter
+#
+# "libsent-config --cflags" generates C defines, and
+# "libsent-config --libs" generates libraries needed for compile with
+# the sentlib
+#
+# by Doshita Lab. Speech Group, Kyoto University  1991-2000
+# by Shikano Lab. Speech Group, NAIST 2002
+
+#
+# ripped from gtk's gtk-config.in
+#
+# $Id: libsent-config-dist.in,v 1.2 2011/03/04 03:01:48 sumomo Exp $
+#
+
+#
+# @configure_input@
+#
+
+sound_inc="@SOUNDINC@"
+sound_libs="@SOUNDLIB@ @EXTRALIB@"
+version="\
+Julius/Julian libsent library rev.@LIBSENT_VERSION@"
+info="\
+****************************************************************
+Julius/Julian libsent library rev.@LIBSENT_VERSION@:
+
+- Audio I/O
+    primary mic device API   : @altype@ (@aldesc@)
+    available mic device API :@adinlist@
+    supported audio format   : @wavefile_support@
+    NetAudio support         : @use_netaudio@
+- Language Modeling
+    class N-gram support     : @use_class_ngram@
+- Libraries
+    file decompression by    : @gzdesc@
+- Process management
+    fork on adinnet input    : @use_fork@
+ 
+  Note: compilation time flags are now stored in \"libsent-config\".
+        If you link this library, please add output of
+        \"libsent-config --cflags\" to CFLAGS and
+        \"libsent-config --libs\" to LIBS.
+****************************************************************"
+usage="\
+Usage: libsent-config [--libs] [--cflags] [--info] [--version]"
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+
+if test $# -eq 0; then
+      echo "${usage}" 1>&2
+      exit 1
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+    -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+    *) optarg= ;;
+    esac
+
+    case $1 in
+	--cflags)
+	    echo -I@includedir@ $sound_inc
+	    ;;
+	--libs)
+	    echo -L@libdir@ -lsent $sound_libs @LIBS@ -lm
+	    ;;
+	--version)
+	    echo "${version}"
+	    ;;
+	--info)
+	    echo "${info}"
+	    ;;
+        *)
+	    echo "${usage}" 1>&2
+	    exit 1
+	    ;;
+    esac
+    shift
+done
+
+echo
+
+exit 0

@@ -1,0 +1,49 @@
+# Copyright (c) 2002-2013 Kawahara Lab., Kyoto University
+# Copyright (c) 2002-2005 Shikano Lab., Nara Institute of Science and Technology
+# Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+# All rights reserved
+#
+# $Id: Makefile.in,v 1.7 2013/06/20 17:14:18 sumomo Exp $
+#
+SHELL=/bin/sh
+.SUFFIXES:
+.SUFFIXES: .c .o
+.c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+
+CC=@CC@
+CFLAGS=@CFLAGS@
+CPPFLAGS=@CPPFLAGS@ @DEFS@
+LDFLAGS=@LIBS@ @EXTRALIB@
+RM=@RM@ -f
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+INSTALL=@INSTALL@
+
+OBJ=jcontrol.o server.o japi_misc.o japi_grammar.o japi_process.o
+TARGET=jcontrol@EXEEXT@
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+
+install: install.bin
+
+install.bin: $(TARGET)
+	${INSTALL} -d @bindir@
+	@INSTALL_PROGRAM@ $(TARGET) @bindir@
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) config.log config.cache
+	$(RM) *~ core
+	$(RM) $(TARGET) $(TARGET).exe
+
+distclean:
+	$(RM) $(OBJ)
+	$(RM) config.log config.cache
+	$(RM) *~ core
+	$(RM) $(TARGET) $(TARGET).exe
+	$(RM) config.status
+	$(RM) Makefile

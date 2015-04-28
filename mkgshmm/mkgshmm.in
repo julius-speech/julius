@@ -1,0 +1,89 @@
+#!@PERL@
+# Copyright (c) 2001-2013 Kawahara Lab., Kyoto University
+# Copyright (c) 2001-2005 Shikano Lab., Nara Institute of Science and Technology
+# Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+# All rights reserved
+#
+# mkgshmm.pl --- output Gaussian Mixture Selection model for Julius-3.2
+#                from monophone HMM  (gziped file allowed)
+#
+#
+# ver0.1  2001/06/13
+#
+if ($#ARGV < 0) {
+    print "convert monophone HMM to GS HMM for Julius\n";
+    print "usage: $0 monophone_hmmdefs > outputfile\n";
+    exit;
+}
+
+#
+# 1) extract states and output as macros
+#
+
+open(SRC, "gzip -dcf $ARGV[0] |") || die "cannot open $ARGV[0]\n";
+$sw = 0;
+## output till a "~h" appears
+while (<SRC>) {
+    if (/^\~h \"(.*)\"/) {
+	$name = $1;
+	last;
+    }
+    print;
+}
+## extract states as macros
+while (<SRC>) {
+    if (/^\~h \"(.*)\"/) {
+	$name = $1;
+	next;
+    }
+    if (/^<STATE> ([0-9]*)/i) {
+	$stateloc = $1;
+	$sw = 1;
+	print "~s \"${name}${stateloc}m\"\n"; # 'm' is needed
+	next;
+    }
+    if (/^<TRANSP>/i) {
+	$sw = 0;
+    }
+    if ($sw == 1) {
+	print;
+    }
+}
+close(SRC);
+
+#
+# 2) reopen source and output the rest
+#
+open(SRC, "gzip -dcf $ARGV[0] |") || die "cannot open $ARGV[0]\n";
+$sw = 0;
+## skip till a "~h" appears
+while (<SRC>) {
+    if (/^\~h \"(.*)\"/) {
+	$name = $1;
+	print;
+	last;
+    }
+}
+## output HMMs with refering to the macros
+while (<SRC>) {
+    if (/^\~h \"(.*)\"/) {
+	$name = $1;
+	print;
+	next;
+    }
+    if (/^<STATE> ([0-9]*)/i) {
+	$stateloc = $1;
+	$sw = 1;
+	print;
+	print "~s \"${name}${stateloc}m\"\n"; # 'm' is needed
+	next;
+    }
+    if (/^<TRANSP>/i) {
+	$sw = 0;
+    }
+    if ($sw == 0) {
+	print;
+    }
+}
+close(SRC);
+##################### end of program

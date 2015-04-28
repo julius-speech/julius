@@ -1,0 +1,96 @@
+'\" t
+.\"     Title: 
+    mkbinhmmlist
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "MKBINHMMLIST" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    mkbinhmmlist
+   \- convert HMMList file into binary format
+.SH "SYNOPSIS"
+.HP \w'\fBmkbinhmmlist\fR\ 'u
+\fBmkbinhmmlist\fR {hmmdefs_file} {HMMList_file} {output_binhmmlist_file}
+.SH "DESCRIPTION"
+.PP
+
+\fBmkbinhmmlist\fR
+converts a HMMList file to binary format\&. Since the index trees for lookup are also stored in the binary format, it will speed up the startup of Julius, namely when using big HMMList file\&.
+.PP
+For conversion, HMM definition file
+\fIhmmdefs_file\fR
+that will be used together at Julius needs to be specified\&. The format of the HMM definition file can be either ascii or Julius binary format\&.
+.PP
+The output binary file can be used in Julius as the same by "\fB\-hlist\fR"\&. The format wil be auto\-detected by Julius\&.
+.PP
+The pseudo phone extracted form acoustic model is outputed by version 4\&.2 or later\&. This cause faster starting Julius\&. However, It is required that using it with created acoustic model\&. Also, binhmmlist file created by mkbinhmmlist of this version or later cannot be used in earlier version\&.
+.PP
+
+\fBmkbinhmmlist\fR
+can read gzipped file\&.
+.SH "OPTIONS"
+.PP
+\fIhmmdefs_file\fR
+.RS 4
+Acoustic HMM definition file, in HMM ascii format or Julius binary format\&.
+.RE
+.PP
+\fIHMMList_file\fR
+.RS 4
+Source HMMList file
+.RE
+.PP
+\fIoutput_binhmmlist_file\fR
+.RS 4
+Output file, will be overwritten if already exist\&.
+.RE
+.SH "EXAMPLES"
+.PP
+Convert a HMMList file
+logicalTri
+into binary format and store to
+logicalTri\&.bin:
+.sp .if n \{\ .RS 4 .\} .nf % \fBmkbinhmmlist\fR binhmm logicalTri logicalTri\&.bin .fi .if n \{\ .RE .\}
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+,
+\fB mkbinhmm \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "LICENSE"
+.PP
+The same as Julius\&.

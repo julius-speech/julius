@@ -1,0 +1,112 @@
+'\" t
+.\"     Title: 
+    mkdfa.pl
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 19/12/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: Japanese
+.\"
+.TH "MKDFA\&.PL" "1" "19/12/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "名前"
+
+    mkdfa.pl
+   \- Julius 形式の文法をオートマトンに変換するコンパイラ
+.SH "概要"
+.HP \w'\fBmkdfa\&.pl\fR\ 'u
+\fBmkdfa\&.pl\fR [\fIoptions\fR...] {prefix}
+.SH "DESCRIPTION"
+.PP
+mkdfa\&.pl は Julius の文法コンパイラです．記述された文法ファイル (\&.grammar) と語彙ファイル (\&.voca) から，Julius用の有限状態オートマトン ファイル (\&.dfa) および認識辞書 (\&.dict) を生成します．カテゴリ名と生成 後の各ファイルで用いられるカテゴリ ID 番号との対応が \&.term ファイルと して出力されます．
+.PP
+各ファイル形式の詳細については，別途ドキュメントをご覧下さい．
+.PP
+
+prefix
+は，\&.grammar ファイルおよび \&.vocaファイルの プレフィックスを引数として与えます．prefix\&.grammarと
+prefix\&.vocaからprefix\&.dfa，
+prefix\&.dictおよび
+prefix\&.termが生成されます．
+.PP
+バージョン 3\&.5\&.3 以降の Julius に付属の
+\fBmkdfa\&.pl\fR
+は，
+\fBdfa_minimize\fR
+を内部で自動的に呼び出すので， 出力される \&.dfa は常に最小化されています．
+.SH "OPTIONS"
+.PP
+\fB \-n \fR
+.RS 4
+辞書を出力しない．\&.voca 無しで \&.grammar のみを \&.dfa に変換する ことができる．
+.RE
+.SH "ENVIRONMENT VARIABLES"
+.PP
+\fB \fR\fB\fBTMP\fR\fR\fB または \fR\fB\fBTEMP\fR\fR\fB \fR
+.RS 4
+変換中に一時ファイルを置くディレクトリを指定する． 指定が無い場合，
+/tmp,
+/var/tmp,
+/WINDOWS/Temp,
+/WINNT/Temp
+の順で最初に見つかった場所が使用される．
+.RE
+.SH "EXAMPLES"
+.PP
+文法ファイル
+foo\&.grammar,
+foo\&.vocaに 対して以下を実行することで
+foo\&.dfaと
+foo\&.vocaおよびfoo\&.termが出力される．
+.sp .if n \{\ .RS 4 .\} .nf % \fBmkdfa\&.pl\fR foo .fi .if n \{\ .RE .\}
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+,
+\fB generate \fR( 1 )
+,
+\fB nextword \fR( 1 )
+,
+\fB accept_check \fR( 1 )
+,
+\fB dfa_minimize \fR( 1 )
+.SH "DIAGNOSTICS"
+.PP
+mkdfa\&.pl は内部で
+\fBmkfa\fR
+および
+\fBdfa_minimize\fR
+を呼び出します．実行時，これらの実行ファ イルが，この mkdfa\&.pl と同じディレクトリに置いてある必要があります． これらはJulius に同梱されています．
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 京都大学 河原研究室
+.PP
+Copyright (c) 1997\-2000 情報処理振興事業協会(IPA)
+.PP
+Copyright (c) 2000\-2005 奈良先端科学技術大学院大学 鹿野研究室
+.PP
+Copyright (c) 2005\-2013 名古屋工業大学 Julius開発チーム
+.SH "LICENSE"
+.PP
+Julius の使用許諾に準じます．

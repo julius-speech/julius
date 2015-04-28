@@ -1,0 +1,329 @@
+2008-05-17 13:06  sumomo
+
+	* libjulius/src/: instance.c, m_fusion.c, m_options.c: Now GMM
+	  module uses the analysis parameter of the given AM when "-AM_GMM"
+	  is not explicitly specified.	Now output error when GMM has
+	  different sampling rate from AM.
+
+2008-05-13 15:32  sumomo
+
+	* jcontrol/jcontrol.c: Flush output after each message.
+
+2008-05-13 15:32  sumomo
+
+	* libsent/src/util/readfile.c: Fixed file name prompt to ignore
+	  empty input correctly.
+
+2008-05-09 15:00  sumomo
+
+	* libjulius/src/m_usage.c: Grouped the usage messages by the
+	  belonging modules.
+
+2008-05-09 14:59  sumomo
+
+	* libjulius/src/m_options.c: New option "-usepower" to use power
+	  instead of magnitude in filterbank analysis.
+
+2008-05-09 14:58  sumomo
+
+	* libsent/: include/sent/mfcc.h, src/hmminfo/read_binhmm.c,
+	  src/hmminfo/write_binhmm.c, src/wav2mfcc/mfcc-core.c: Added
+	  support for USEPOWER in filterbank analysis.
+
+2008-05-09 14:57  sumomo
+
+	* libsent/src/wav2mfcc/para.c: Add support for USEPOWER.  Fixed
+	  -htkconf to assume SOURCERATE=625 (16kHz) if not exist.
+
+2008-05-08 14:45  sumomo
+
+	* libjulius/: include/julius/extern.h, src/adin-cut.c,
+	  src/m_adin.c: Add tiny value check for frequency.
+
+2008-05-08 14:44  sumomo
+
+	* libsent/src/adin/adin_mic_linux_alsa.c: Fixed failure to startup
+	  when using multiple sound cards on ALSA.
+
+2008-05-08 14:43  sumomo
+
+	* libsent/src/adin/adin_file.c: Fixed segfault when failed to open
+	  audio file.
+
+2008-04-27 22:06  sumomo
+
+	* libjulius/: include/julius/jconf.h, src/default.c, src/m_info.c,
+	  src/m_options.c, src/m_usage.c, src/search_bestfirst_main.c: Add
+	  an option "-fallback1pass" to use the 1st pass result as final
+	  result when the 2nd pass fails.  This was the default on 3.x.
+
+2008-04-27 22:06  sumomo
+
+	* libjulius/src/version.c.in: Update copyright output.
+
+2008-03-28 13:52  sumomo
+
+	* libsent/src/adin/adin_mic_linux_alsa.c: Fix ALSA A/D-in to use
+	  device other than "default".
+
+2008-03-28 12:57  sumomo
+
+	* julius/record.c: Fixed record sometimes fails.
+
+2008-03-28 12:51  sumomo
+
+	* libjulius/src/adin-cut.c: Moved CALLBACK_ADIN_TRIGGERED to adin
+	  thread.
+
+2008-03-25 17:12  sumomo
+
+	* libjulius/src/pass1.c: Fixed GMM rejection not working well on
+	  microphone input (enbuged on 4.0.1).
+
+2008-03-21 11:59  sumomo
+
+	* libsent/src/wav2mfcc/para.c: Add warning when HTK Config given by
+	  "-htkconf" has unsupported values.
+
+2008-03-20 18:08  sumomo
+
+	* libsent/: include/sent/ngram2.h, include/sent/util.h,
+	  src/ngram/ngram_access.c, src/ngram/ngram_compact_context.c,
+	  src/ngram/ngram_read_arpa.c, src/ngram/ngram_read_bin.c,
+	  src/ngram/ngram_util.c, src/ngram/ngram_write_bin.c,
+	  src/util/endian.c: Update N-gram codes to (hopefully) allow 64bit
+	  index in the future.
+
+2008-03-20 18:06  sumomo
+
+	* julius/: charconv_win32.c, libjcode/jlib.h, libjcode/libjcode.c:
+	  Fixed euc-jp conversion not working on some string.
+
+2008-03-18 02:00  sumomo
+
+	* libjulius/src/: adin-cut.c, recogmain.c: Fixed
+	  CALLBACK_EVENT_SPEECH_* call timing when -spsegment/VAD enabled.
+
+2008-03-18 01:59  sumomo
+
+	* libjulius/src/version.c.in, libsent/src/util/confout.c: Fix
+	  typos.
+
+2008-03-18 01:58  sumomo
+
+	* julius/main.c, julius/output_stdout.c,
+	  libjulius/include/julius/global.h, libjulius/src/callback.c,
+	  libjulius/src/m_options.c, libjulius/src/m_usage.c:
+	  "-callbackdebug" moved from Julius to JuliusLib.
+
+2008-03-14 22:28  sumomo
+
+	* libsent/src/ngram/ngram_compact_context.c: Fixed a bug that
+	  prevents reading big N-gram.
+
+2008-03-12 15:43  tag release_4_0_1
+
+2008-03-12 15:43  sumomo
+
+	* 00readme-ja.txt, 00readme.txt, ChangeLog, LICENSE.txt,
+	  Release-ja.txt, Release.txt, libjulius/configure,
+	  libjulius/configure.in, libsent/configure, libsent/configure.in,
+	  support/build-all.sh: Release of 4.0.1.
+
+2008-03-12 14:48  sumomo
+
+	* libjulius/src/pass1.c: Fixed compilation failure enbuged at last
+	  fix...
+
+2008-03-10 11:39  sumomo
+
+	* libjulius/src/: pass1.c, realtime-1stpass.c, recogmain.c: Fix CMN
+	  not working well on spsegment/GMM-VAD/decoder-VAD mode.
+
+2008-03-02 02:10  sumomo
+
+	* libsent/: configure, configure.in, include/sent/config.h.in,
+	  src/adin/adin_mic_linux_alsa.c: Fixed ALSA recording to work.
+	  Many codes are updated.
+
+2008-02-21 13:10  sumomo
+
+	* libjulius/src/beam.c: Word recognition results are not correctly
+	  sorted when using "-output N".
+
+2008-02-18 23:35  sumomo
+
+	* julius/module.c: Added a module command "GRAMINFO" to return
+	  grammar info.
+
+2008-02-18 23:32  sumomo
+
+	* libjulius/src/m_fusion.c: Now -spsegment detects error when pause
+	  word is not defined in dictionary.
+
+2008-02-15 03:26  sumomo
+
+	* libsent/src/phmm/mkwhmm.c: Fixed bug of immediate stop when no sp
+	  model in multi-path mode.
+
+2008-02-15 03:25  sumomo
+
+	* libjulius/src/: m_info.c, search_bestfirst_v1.c,
+	  search_bestfirst_v2.c, word_align.c: Fixed hungup when sp model
+	  not exist on AM in multipath.
+
+2008-02-14 13:44  sumomo
+
+	* libjulius/: include/julius/extern.h, src/multi-gram.c: Changes
+	  for better grammar handling: - multigram_add() returns the newly
+	  assigned grammar id.	- a function is added to get grammar id
+	  from name string.  - modified STAT message to output grammar name
+	  together with id.
+
+2008-02-14 13:41  sumomo
+
+	* julius/module.c: Extended ACTIVATEGRAM, DEACTIVATEGRAM, DELGRAM
+	  to specify grammar by name.
+
+2008-02-13 17:49  sumomo
+
+	* libjulius/include/julius/extern.h: Updated for some function
+	  changes.
+
+2008-02-13 17:48  sumomo
+
+	* libjulius/src/: outprob_style.c, search_bestfirst_v1.c,
+	  search_bestfirst_v2.c: Global variables and work area has been
+	  moved to RecogProcess and StackDecode.
+
+2008-02-13 17:47  sumomo
+
+	* libjulius/src/wchmm.c: qsort function switched to qsort_reentrant
+	  in libsent for modularity.
+
+2008-02-13 17:46  sumomo
+
+	* libjulius/src/confnet.c: Updated for being re-entrant.
+
+2008-02-13 17:45  sumomo
+
+	* libjulius/src/: m_jconf.c, m_options.c, ngram_decode.c,
+	  search_bestfirst_main.c: Removed unnecessary static variables in
+	  some functions.
+
+2008-02-13 17:43  sumomo
+
+	* libjulius/include/julius/wchmm.h: Work area (lccbuf, lccbuf2)
+	  moved to wchmm.
+
+2008-02-13 17:43  sumomo
+
+	* libjulius/include/julius/recog.h: Some global varibables has been
+	  moved to RecogProcess and StackDecode.
+
+2008-02-13 17:42  sumomo
+
+	* libjulius/src/: adin-cut.c, beam.c: Removed unnecessary static
+	  variables in functions.
+
+2008-02-13 17:40  sumomo
+
+	* libsent/: Makefile.in, include/sent/util.h, src/util/qsort.c: new
+	  qsort function to pass data object to comparison function for
+	  re-entrant usage.
+
+2008-02-13 17:40  sumomo
+
+	* libsent/src/hmminfo/: cdset.c, chkhmmlist.c, hmm_lookup.c,
+	  put_htkdata_info.c: Eliminated unnecessary global variables.
+
+2008-02-13 17:38  sumomo
+
+	* libsent/include/sent/htk_hmm.h: Set smaller value for
+	  MAX_HMMNAME_LEN
+
+2008-02-06 09:03  sumomo
+
+	* libsent/src/ngram/ngram_read_bin.c: Fixed segfault on reading big
+	  N-gram in binary format.
+
+2008-02-05 17:14  sumomo
+
+	* libsent/src/anlz/strip_mfcc.c: Fixed segfault when bogus frame
+	  stripping occur on MFCC input.
+
+2008-01-30 12:49  sumomo
+
+	* libjulius/src/: adin-cut.c, m_adin.c: Fixed segfault when using
+	  "-48".
+
+2008-01-30 09:48  sumomo
+
+	* libsent/src/ngram/: ngram_compact_context.c, ngram_read_arpa.c:
+	  Fixed a bug on N-gram bowt compaction for big N-gram (index >
+	  24bit).
+
+2008-01-25 15:37  sumomo
+
+	* libjulius/src/m_fusion.c, libsent/src/wav2mfcc/ss.c: Add checker
+	  to specify too small value for -sscalc.
+
+2008-01-22 22:01  sumomo
+
+	* generate-ngram/Makefile.in, julius/Makefile.in,
+	  julius/charconv_iconv.c, julius/config.h.in,
+	  libjulius/Makefile.in, libsent/Makefile.in,
+	  libsent/include/sent/stddefs.h: Fixed some tiny problems when
+	  compiling on cygwin / mingw.
+
+2008-01-22 15:02  sumomo
+
+	* libsent/src/ngram/: ngram_compact_context.c, ngram_read_arpa.c:
+	  N-gram back-off compaction behavior changed not to do it when all
+	  entries has valid bo-wt, and also avoid compaction on some cases
+	  they has bo-wt even when upper N-gram does not exist.
+
+2008-01-20 13:37  sumomo
+
+	* generate-ngram/Makefile.in: Wrongly commit debug file, revert to
+	  1.2.
+
+2008-01-20 13:34  sumomo
+
+	* generate-ngram/: Makefile.in, generate-ngram.c: Fix incorrect
+	  count (+1) in generating random word.
+
+2008-01-19 16:07  sumomo
+
+	* libsent/src/ngram/ngram_compact_context.c: Fix some output.
+
+2008-01-19 16:07  sumomo
+
+	* libsent/src/ngram/ngram_access.c: Fix uni-gram prob. when
+	  dictionary contains unk word.
+
+2008-01-13 01:28  sumomo
+
+	* libjulius/src/search_bestfirst_main.c: Fix wrong message, since
+	  Julius-4 does not output the 1st pass result as final result if
+	  2nd pass failed.
+
+2008-01-10 13:16  sumomo
+
+	* libsent/src/ngram/ngram_access.c: Fixed incorrect 2-gram prob at
+	  first pass when using only backward N-gram.
+
+2007-12-23 19:08  sumomo
+
+	* libjulius/: include/julius/jconf.h, src/default.c, src/gmm.c,
+	  src/m_info.c, src/m_options.c, src/m_usage.c, src/pass1.c: Fixed
+	  not working GMM VAD.	Two options newly added "-gmmup" and
+	  "-gmmdown" to specify GMM up / down trigger.
+
+2007-12-18 23:32  tag release_4_0
+
+2007-12-18 23:32  sumomo
+
+	* julius/output_stdout.c, libjulius/src/pass1.c: Fix compilation
+	  fault.
+

@@ -1,0 +1,117 @@
+'\" t
+.\"     Title: 
+    accept_check
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "ACCEPT_CHECK" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    accept_check
+   \- Check whether a grammar accept / reject given word sequences
+.SH "SYNOPSIS"
+.HP \w'\fBaccept_check\fR\ 'u
+\fBaccept_check\fR [\-t] [\-s\ \fIspname\fR] [\-v] {prefix}
+.SH "DESCRIPTION"
+.PP
+
+\fBaccept_check\fR
+is a tool to check whether a sentence can be accepted or rejected on a grammar (prefix\&.dfa
+and
+prefix\&.dict)\&. The sentence should be given from standard input\&. You can do a batch check by preparing all test sentence at each line of a text file, and give it as standard input of
+\fBaccept_check\fR\&.
+.PP
+This tool needs \&.dfa, \&.dict and \&.term files\&. You should convert a written grammar file to generate them by
+\fBmkdfa\&.pl\fR\&.
+.PP
+A sentence should be given as space\-separated word sequence\&. It may be required to add head / tail silence word like
+sil, depending on your grammar\&. And should not contain a short\-pause word\&.
+.PP
+When a word belongs to various category in a grammar,
+\fBaccept_check\fR
+will check all the possible sentence patterns, and accept it if any of those is acceptable\&.
+.SH "OPTIONS"
+.PP
+\fB \-t \fR
+.RS 4
+Use category name as input instead of word\&.
+.RE
+.PP
+\fB \-s \fR \fIspname\fR
+.RS 4
+Short\-pause word name to be skipped\&. (default: "sp")
+.RE
+.PP
+\fB \-v \fR
+.RS 4
+Debug output\&.
+.RE
+.SH "EXAMPLES"
+.PP
+An output for "date" grammar:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+% echo \*(Aq<s> NEXT SUNDAY </s>\*(Aq | accept_check date
+Reading in dictionary\&.\&.\&.
+143 words\&.\&.\&.done
+Reading in DFA grammar\&.\&.\&.done
+Mapping dict item <\-> DFA terminal (category)\&.\&.\&.done
+Reading in term file (optional)\&.\&.\&.done
+27 categories, 143 words
+DFA has 35 nodes and 71 arcs
+\-\-\-\-\-
+wseq: <s> NEXT SUNDAY </s>
+cate: NS_B (NEXT|NEXT) (DAYOFWEEK|DAYOFWEEK|DAY|DAY) NS_E
+accepted
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.SH "SEE ALSO"
+.PP
+
+\fB mkdfa.pl \fR( 1 )
+,
+\fB generate \fR( 1 )
+,
+\fB nextword \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "LICENSE"
+.PP
+The same as Julius\&.

@@ -1,0 +1,125 @@
+'\" t
+.\"     Title: 
+    nextword
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 19/12/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: Japanese
+.\"
+.TH "NEXTWORD" "1" "19/12/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "名前"
+
+    nextword
+   \- DFA 文法で（逆向きに）次単語を予測するツール
+.SH "概要"
+.HP \w'\fBnextword\fR\ 'u
+\fBnextword\fR [\-t] [\-r] [\-s\ \fIspname\fR] [\-v] {prefix}
+.SH "DESCRIPTION"
+.PP
+nextword は，\fBmkdfa\&.pl\fR
+によって変換された DFA 文法 上で，与えられた部分文に対して接続しうる次単語の集合を出力します．
+.PP
+実行には \&.dfa, \&.dict, \&.term の各ファイルが必要です． あらかじめ
+\fBmkdfa\&.pl\fR
+で生成しておいて下さい．
+.PP
+！注意！
+\fBmkdfa\&.pl\fR
+で出力される文法は，元の 文法と異なり，文の後ろから前に向かう逆向きの文法となっています． これは，Julius の第2パスで後ろ向きの探索を行うためです． このため，nextword で与える部分文も逆向きとなります．
+.SH "OPTIONS"
+.PP
+\fB \-t \fR
+.RS 4
+単語ではなくカテゴリ名で入力・出力する．
+.RE
+.PP
+\fB \-r \fR
+.RS 4
+単語を逆順に入力する．
+.RE
+.PP
+\fB \-s \fR \fIspname\fR
+.RS 4
+スキップすべきショートポーズ単語の名前を指定する． (default: "sp")
+.RE
+.PP
+\fB \-v \fR
+.RS 4
+デバッグ出力．
+.RE
+.SH "EXAMPLES"
+.PP
+vfr (フィッティングタスク用文法) での実行例：
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+% nextword vfr
+Reading in dictionary\&.\&.\&.done
+Reading in DFA grammar\&.\&.\&.done
+Mapping dict item <\-> DFA terminal (category)\&.\&.\&.done
+Reading in term file (optional)\&.\&.\&.done
+42 categories, 99 words
+DFA has 135 nodes and 198 arcs
+\-\-\-\-\- 
+wseq > に して 下さい silE
+[wseq: に して 下さい silE]
+[cate: (NI|NI_AT) SURU_V KUDASAI_V NS_E]
+PREDICTED CATEGORIES/WORDS:
+            KEIDOU_A (派手 地味 )
+            BANGOU_N (番 )
+              HUKU_N (服 服装 服装 )
+           PATTERN_N (チェック 縦縞 横縞 \&.\&.\&.)
+              GARA_N (柄 )
+             KANZI_N (感じ )
+               IRO_N (色 )
+             COLOR_N (赤 橙 黄 \&.\&.\&.)
+wseq >
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.SH "SEE ALSO"
+.PP
+
+\fB mkdfa.pl \fR( 1 )
+,
+\fB generate \fR( 1 )
+,
+\fB accept_check \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 京都大学 河原研究室
+.PP
+Copyright (c) 1997\-2000 情報処理振興事業協会(IPA)
+.PP
+Copyright (c) 2000\-2005 奈良先端科学技術大学院大学 鹿野研究室
+.PP
+Copyright (c) 2005\-2013 名古屋工業大学 Julius開発チーム
+.SH "LICENSE"
+.PP
+Julius の使用許諾に準じます．

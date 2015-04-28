@@ -1,0 +1,128 @@
+'\" t
+.\"     Title: 
+    mkdfa.pl
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "MKDFA\&.PL" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    mkdfa.pl
+   \- grammar compiler
+.SH "SYNOPSIS"
+.HP \w'\fBmkdfa\&.pl\fR\ 'u
+\fBmkdfa\&.pl\fR [\fIoptions\fR...] {prefix}
+.SH "DESCRIPTION"
+.PP
+
+\fBmkdfa\&.pl\fR
+compiles the Julian format grammar (\&.grammar
+and
+\&.voca) to Julian native formats (\&.dfa
+and
+\&.dict)\&. In addition, "\&.term" will be also generated that stores correspondence of category ID used in the output files to the source category name\&.
+.PP
+
+prefix
+should be the common file name prefix of "\&.grammar" and "voca" file\&. From
+prefix\&.grammar
+and
+prefix\&.voca
+file,
+prefix\&.dfa,
+prefix\&.dict
+and
+prefix\&.term
+will be output\&.
+.SH "OPTIONS"
+.PP
+\fB \-n \fR
+.RS 4
+Not process dictionary\&. You can only convert
+\&.grammar
+file to
+\&.dfa
+file without
+\&.voca
+file\&.
+.RE
+.SH "ENVIRONMENT VARIABLES"
+.PP
+\fB \fR\fB\fBTMP\fR\fR\fB or \fR\fB\fBTEMP\fR\fR\fB \fR
+.RS 4
+Set directory to store temporal file\&. If not specified, one of them on the following list will be used:
+/tmp,
+/var/tmp,
+/WINDOWS/Temp,
+/WINNT/Temp\&.
+.RE
+.SH "EXAMPLES"
+.PP
+Convert a grammar
+foo\&.grammar
+and
+foo\&.voca
+to
+foo\&.dfa,
+foo\&.voca
+and
+foo\&.term\&.
+.sp .if n \{\ .RS 4 .\} .nf % \fBmkdfa\&.pl\fR foo .fi .if n \{\ .RE .\}
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+,
+\fB generate \fR( 1 )
+,
+\fB nextword \fR( 1 )
+,
+\fB accept_check \fR( 1 )
+,
+\fB dfa_minimize \fR( 1 )
+.SH "DIAGNOSTICS"
+.PP
+
+\fBmkdfa\&.pl\fR
+invokes
+\fBmkfa\fR
+and
+\fBdfa_minimize\fR
+internally\&. They should be placed at the same directory as
+\fBmkdfa\&.pl\fR\&.
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 Kawahara Lab\&., Kyoto University
+.PP
+Copyright (c) 1997\-2000 Information\-technology Promotion Agency, Japan
+.PP
+Copyright (c) 2000\-2005 Shikano Lab\&., Nara Institute of Science and Technology
+.PP
+Copyright (c) 2005\-2013 Julius project team, Nagoya Institute of Technology
+.SH "LICENSE"
+.PP
+The same as Julius\&.

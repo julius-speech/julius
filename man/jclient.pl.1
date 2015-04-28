@@ -1,0 +1,66 @@
+'\" t
+.\"     Title: 
+    jclient.pl
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 12/19/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "JCLIENT\&.PL" "1" "12/19/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+
+    jclient.pl
+   \- sample client for module mode (perl version)
+.SH "SYNOPSIS"
+.HP \w'\fBjclient\&.pl\fR\ 'u
+\fBjclient\&.pl\fR
+.SH "DESCRIPTION"
+.PP
+This is yet another sample client written in perl\&. It will connect to Julius running in module mode, receive recognition results from Julius, and cna send commands to control Julius\&.
+.PP
+This is a tiny program with only 57 lines\&. You can use it for free\&.
+.SH "EXAMPLES"
+.PP
+Invoke Julius with module mode by specifying "\fB\-module\fR" option:
+.sp .if n \{\ .RS 4 .\} .nf % \fBjulius\fR \-C \&.\&.\&. \-module .fi .if n \{\ .RE .\}
+Then, at other terminal or other host, invoke
+\fBjclient\&.pl\fR
+like below\&. The default hostname is "localhost", and port number is 10500\&. You can change them by editing the top part of the script\&.
+.sp .if n \{\ .RS 4 .\} .nf % \fBjclient\&.pl\fR .fi .if n \{\ .RE .\}
+It will then receive the outputs of Julius and output the raw message to standard out\&. Also, by inputting a raw module command to the standard input of
+\fBjclient\&.pl\fR, it will be sent to Julius\&. See manuals for the specification of module mode\&.
+.SH "SEE ALSO"
+.PP
+
+\fB julius \fR( 1 )
+,
+\fB jcontrol \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+"\fBjclient\&.pl\fR" has been developed by Dr\&. Ryuichi Nisimura (nisimura@sys\&.wakayama\-u\&.ac\&.jp)\&. Use at your own risk\&.
+.PP
+If you have any feedback, comment or request, please contact the E\-mail address above, or look at the Web page below\&.
+.PP
+http://w3voice\&.jp/

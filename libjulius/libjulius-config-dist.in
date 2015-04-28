@@ -1,0 +1,61 @@
+#!/bin/sh
+#
+# libsent configuration result reporter
+#
+# "libsent-config --cflags" generates C defines, and
+# "libsent-config --libs" generates libraries needed for compile with
+# the sentlib
+#
+# by Doshita Lab. Speech Group, Kyoto University  1991-2000
+# by Shikano Lab. Speech Group, NAIST 2002
+
+#
+# ripped from gtk's gtk-config.in
+#
+# $Id: libjulius-config-dist.in,v 1.1 2008/10/02 15:01:59 sumomo Exp $
+#
+
+#
+# @configure_input@
+#
+
+version="\
+Julius/Julian library rev.@JULIUS_VERSION@"
+usage="\
+Usage: libjulius-config [--libs] [--cflags] [--info] [--version]"
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+
+if test $# -eq 0; then
+      echo "${usage}" 1>&2
+      exit 1
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+    -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+    *) optarg= ;;
+    esac
+
+    case $1 in
+	--cflags)
+	    echo -I@includedir@ @CPPFLAGS@
+	    ;;
+	--libs)
+	    echo -L@libdir@ -ljulius @LDFLAGS@ @LIBS@
+	    ;;
+	--version)
+	    echo "${version}"
+	    ;;
+        *)
+	    echo "${usage}" 1>&2
+	    exit 1
+	    ;;
+    esac
+    shift
+done
+
+echo
+
+exit 0

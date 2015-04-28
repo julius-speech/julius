@@ -1,0 +1,392 @@
+dnl Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+dnl Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
+dnl Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+dnl Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+dnl All rights reserved
+dnl
+dnl $Id: configure.in,v 1.21 2014/01/16 05:41:03 sumomo Exp $
+dnl
+
+AC_INIT(src/search_bestfirst_main.c)
+AC_CONFIG_HEADER(include/julius/config.h)
+AC_CONFIG_AUX_DIR(../support)
+
+JULIUS_PRODUCTNAME=JuliusLib
+JULIUS_VERSION=4.3.1
+
+dnl Checks for options
+
+dnl pthread support
+AC_ARG_ENABLE(pthread,
+[  --disable-pthread       [debug] do not use pthread for speech input],
+want_pthread=$enableval
+,want_pthread=yes)
+
+dnl easy setup
+AC_ARG_ENABLE(setup,
+[  --enable-setup=...         select algorithm set
+                 standard       high accuracy, slow speed
+                 fast           balanced for both speed and accuracy (default)
+                 v2.1           backward compatible with Rev.2.1],
+easy_setup=$enableval,
+easy_setup=fast
+)
+
+dnl expand easy setup
+if test "$easy_setup" = standard; then
+dnl JULIUS related begin
+    dnl AC_DEFINE(UNIGRAM_FACTORING)
+    want_unigram_factoring=yes
+dnl JULIUS related end
+    dnl AC_DEFINE(PASS1_IWCD)
+    want_pass1_iwcd=yes
+    dnl AC_DEFINE(PASS2_STRICT_IWCD)
+    want_pass2_strict_iwcd=yes
+    dnl AC_DEFINE(GPRUNE_DEFAULT_SAFE)
+    want_gprune_default=safe
+elif test "$easy_setup" = fast; then
+dnl JULIUS related begin
+    dnl AC_DEFINE(UNIGRAM_FACTORING)
+    want_unigram_factoring=yes
+    dnl AC_DEFINE(LOWMEM2)
+    want_lowmem2=yes
+dnl JULIUS related end
+    dnl AC_DEFINE(PASS1_IWCD)
+    want_pass1_iwcd=yes
+    dnl AC_DEFINE(GPRUNE_DEFAULT_BEAM)
+    want_gprune_default=beam
+elif test "$easy_setup" = v2.1; then
+    dnl AC_DEFINE(GPRUNE_DEFAULT_SAFE)
+    want_gprune_default=safe
+fi
+
+dnl multipath version
+dnl AC_ARG_ENABLE(multipath,
+dnl [  --enable-multipath         compile as multipath version],
+dnl want_multipath=$enableval
+dnl ,want_multipath=no)
+
+dnl JULIUS related begin
+
+dnl enable 1-gram factoring
+AC_ARG_ENABLE(factor1,
+[  --enable-factor1           use 1-gram factoring on 1st pass],
+   dnl AC_DEFINE(UNIGRAM_FACTORING)
+   want_unigram_factoring=$enableval)
+AC_ARG_ENABLE(factor2,
+[  --enable-factor2           use 2-gram factoring on 1st pass],
+if test "$enableval" = yes; then
+   want_unigram_factoring=no
+else
+   want_unigram_factoring=yes
+fi)
+
+dnl no linear tree separation
+AC_ARG_ENABLE(lowmem,
+[  --enable-lowmem            all words share a single root on lexicon tree],
+if test "$enableval" = yes; then
+	AC_DEFINE(LOWMEM)
+fi)
+
+dnl linear tree separation for hi-freq words
+AC_ARG_ENABLE(lowmem2,
+[  --enable-lowmem2           separate hi-freq words from lexicon tree],
+   dnl AC_DEFINE(LOWMEM2)
+   want_lowmem2=$enableval)
+
+dnl JULIUS related end
+
+dnl use monophone tree on 1st pass
+AC_ARG_ENABLE(monotree,
+[  --enable-monotree          monophone lexicon on 1st pass (EXPERIMENTAL)],
+if test "$enableval" = yes; then
+	AC_DEFINE(MONOTREE)
+fi)
+
+dnl enable score envelope beaming on 2nd pass forward scan
+AC_ARG_ENABLE(score-beam,
+[  --disable-score-beam       enable score envelope beaming on 2nd pass scan],
+if test "$enableval" = yes; then
+	AC_DEFINE(SCAN_BEAM)
+fi
+,AC_DEFINE(SCAN_BEAM))
+
+dnl enable inter-word context dependency handling on 1st pass
+AC_ARG_ENABLE(iwcd1,
+[  --enable-iwcd1             handle inter-word triphone on 1st pass],
+   dnl AC_DEFINE(PASS1_IWCD)
+   want_pass1_iwcd=$enableval)
+
+dnl enable strict inter-word context handling on 2nd pass (slow)
+AC_ARG_ENABLE(strict-iwcd2,
+[  --enable-strict-iwcd2      strict IWCD scoring on 2nd pass],
+   dnl AC_DEFINE(PASS2_STRICT_IWCD)
+   want_pass2_strict_iwcd=$enableval)
+
+dnl use word-pair approximation on 1st pass
+AC_ARG_ENABLE(wpair,
+[  --enable-wpair             use word-pair approximation on 1st pass],
+if test "$enableval" = yes; then
+	AC_DEFINE(WPAIR)
+fi)
+
+dnl use N-best approximation
+AC_ARG_ENABLE(wpair-nlimit,
+[  --enable-wpair-nlimit      keep only N-best path with wpair (-nlimit)],
+if test "$enableval" = yes; then
+	AC_DEFINE(WPAIR)
+	AC_DEFINE(WPAIR_KEEP_NLIMIT)
+fi)
+
+dnl output word graph on 1st pass (default: trellis)
+AC_ARG_ENABLE(word-graph,
+[  --enable-word-graph        use word graph instead of trellis between passes],
+if test "$enableval" = yes; then
+	AC_DEFINE(WORD_GRAPH)
+fi)
+
+dnl disable confidence measure computation
+AC_ARG_ENABLE(cm,
+[  --disable-cm               disable confidence measure computation],
+use_cm=$enableval
+,use_cm=yes)
+dnl use confidence measure based on N-best candidate
+AC_ARG_ENABLE(cm-nbest,
+[  --enable-cm-nbest          use N-best CM instead of search CM],
+use_cm_nbest=$enableval
+,use_cm_nbest=no)
+dnl for exprtiment: confidence measure output for multiple alphas
+AC_ARG_ENABLE(cm-multiple-alpha,
+[  --enable-cm-multiple-alpha  EXPERIMENTAL: test multi alphas (need much mem)],
+use_cm_multiple_alpha=$enableval
+,use_cm_multiple_alpha=no)
+# disable lmfix
+AC_ARG_ENABLE(lmfix,
+[  --disable-lmfix	      make LM computing compatible with < 3.4],
+if test "$enableval" = yes; then
+	AC_DEFINE(LM_FIX_DOUBLE_SCORING)
+fi
+,AC_DEFINE(LM_FIX_DOUBLE_SCORING))
+
+# enable word graph output from N-best sentences
+AC_ARG_ENABLE(graphout-nbest,
+[  --enable-graphout-nbest    word graph output from N-best sentence],
+use_graphout_nbest=$enableval
+,use_graphout_nbest=no)
+
+# enable pruning by confidence score on 2nd pass
+AC_ARG_ENABLE(cmthres,
+[  --enable-cmthres           enable confidence score based pruning on 2nd pass],
+use_cmthres=$enableval
+,use_cmthres=no)
+
+dnl GMM VAD
+AC_ARG_ENABLE(gmm-vad,
+[  --enable-gmm-vad           enable GMM-based VAD (EXPERIMENTAL)],
+want_gmm_vad=$enableval
+,want_gmm_vad=no
+)
+
+dnl naist spsegment
+AC_ARG_ENABLE(decoder-vad,
+[  --enable-decoder-vad       enable a new decoder-based VAD by NAIST team],
+want_spseg_naist=$enableval
+,want_spseg_naist=no
+)
+
+dnl naist spsegment
+AC_ARG_ENABLE(power-reject,
+[  --enable-power-reject      enable post rejection by power],
+want_power_reject=$enableval
+,want_power_reject=no
+)
+
+dnl plugin support
+AC_ARG_ENABLE(plugin,
+[  --disable-plugin           disable plugin support],
+if test "$enableval" = yes; then
+	AC_DEFINE(ENABLE_PLUGIN)
+fi
+,AC_DEFINE(ENABLE_PLUGIN))
+
+dnl CM options check
+if test "$use_cm" = yes; then
+  AC_DEFINE(CONFIDENCE_MEASURE)
+fi
+if test "$use_cm_nbest" = yes; then
+  if test "$use_cm" = yes; then
+    AC_DEFINE(CM_NBEST)
+  else 
+    AC_MSG_ERROR([--disable-cm and --enable-cm-nbest conflicts])
+  fi
+fi
+if test "$use_cm_multiple_alpha" = yes; then
+  if test "$use_cm" = yes; then
+    AC_DEFINE(CM_MULTIPLE_ALPHA)
+  else
+    AC_MSG_ERROR([--disable-cm and --enable-cm-multiple-alpha conflicts])
+  fi
+fi
+if test "$use_cmthres" = yes; then
+  if test "$use_cm" = yes; then
+    if test "$use_cm_nbest" = yes; then
+      AC_MSG_ERROR([--enable-cmthres cannot be used with --enable-cm-nbest])
+    elif test "$use_cm_multiple_alpha" = yes; then
+      AC_MSG_ERROR([--enable-cmthres cannot be used with --enable-cm-multiple-alpha])
+    else
+      AC_DEFINE(CM_SEARCH_LIMIT)
+    fi
+  else
+    AC_MSG_ERROR([--disable-cm and --enable-cmthres conflicts])
+  fi
+fi
+
+dnl graphout option
+if test "$use_graphout_nbest" = no; then
+    AC_DEFINE(GRAPHOUT_DYNAMIC)
+    AC_DEFINE(GRAPHOUT_SEARCH)
+fi
+
+dnl final definition based on easy setup and separate option
+if test ! -z "$want_unigram_factoring"; then
+   if test "$want_unigram_factoring" = yes; then
+      AC_DEFINE(UNIGRAM_FACTORING)
+   fi
+fi
+if test ! -z "$want_pass1_iwcd"; then
+   if test "$want_pass1_iwcd" = yes; then
+      AC_DEFINE(PASS1_IWCD)
+   fi
+fi
+if test ! -z "$want_pass2_strict_iwcd"; then
+   if test "$want_pass2_strict_iwcd" = yes; then
+      AC_DEFINE(PASS2_STRICT_IWCD)
+   fi
+fi
+if test ! -z "$want_lowmem2"; then
+   if test "$want_lowmem2" = yes; then
+      AC_DEFINE(LOWMEM2)
+   fi
+fi
+if test "$want_gprune_default" = safe; then
+   AC_DEFINE(GPRUNE_DEFAULT_SAFE)
+elif test "$want_gprune_default" = beam; then
+   AC_DEFINE(GPRUNE_DEFAULT_BEAM)
+fi
+
+dnl multipath version
+dnl if test "$want_multipath" = yes; then
+dnl	AC_DEFINE(MULTIPATH_VERSION)
+dnl	VERSION="${VERSION}-multipath"
+dnl fi
+
+if test "$want_gmm_vad" = yes; then
+  AC_DEFINE(GMM_VAD)
+  AC_DEFINE(BACKEND_VAD)
+fi
+
+if test "$want_spseg_naist" = yes; then
+  AC_DEFINE(SPSEGMENT_NAIST)
+  AC_DEFINE(BACKEND_VAD)
+fi
+
+if test "$want_power_reject" = yes; then
+  AC_DEFINE(POWER_REJECT)
+fi
+
+dnl -------------------------------------------------------------------
+
+dnl Checks for system.
+AC_CANONICAL_HOST
+
+dnl Checks for optimization flag
+AC_MSG_CHECKING([host-specific optimization flag])
+if test -z "$CFLAGS" ; then
+    OPTFLAG=../support/cflags.${host_cpu}-${host_vendor}-${host_os}
+    if test -f "$OPTFLAG" ; then
+	. $OPTFLAG
+	AC_MSG_RESULT([$OPTFLAG])
+    else
+	AC_MSG_RESULT([no])
+    fi
+else
+    AC_MSG_RESULT([skipped])
+fi
+
+dnl Checks for compiler.
+AC_PROG_CC
+AC_PROG_CPP
+
+dnl Checks for programs.
+AC_PROG_INSTALL
+AC_PATH_PROG(RM, rm)
+AC_PATH_PROG(AR, ar)
+AC_PROG_RANLIB
+AC_EXEEXT
+
+dnl Checks for libraries.
+dnl add '-lLIBRARY' to LIBS and define 'HAVE_LIBLIBRARY'
+dnl AC_CHECK_LIB(m, log10)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+dnl AC_CHECK_HEADERS(fcntl.h strings.h sys/file.h sys/ioctl.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+dnl AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+dnl AC_PROG_GCC_TRADITIONAL
+AC_TYPE_SIGNAL
+dnl AC_CHECK_FUNCS(strdup strstr)
+dnl AC_CHECK_FUNC(gethostbyname,,AC_CHECK_LIB(nsl,gethostbyname))
+dnl AC_CHECK_FUNC(connect,,AC_CHECK_LIB(socket, connect))
+AC_CHECK_FUNC(dlopen,,AC_CHECK_LIB(dl, dlopen))
+
+dnl check for POSIX thread support
+if test "$want_pthread" = yes; then
+  case "$host_os" in
+  freebsd*)
+	# FreeBSD
+	AC_MSG_CHECKING([for linking POSIX threaded process])
+ 	ac_save_CFLAGS="$CFLAGS"
+ 	CFLAGS="$CFLAGS -pthread"
+ 	AC_TRY_LINK([#include <pthread.h>],[pthread_equal(NULL,NULL);],
+     	    use_pthread=yes
+     	    AC_DEFINE(HAVE_PTHREAD)
+	    CPPFLAGS="$CPPFLAGS -pthread",
+   	  use_pthread=no
+	)
+	CFLAGS="$ac_save_CFLAGS"
+	;;
+  *)
+	# other with libpthread
+	AC_MSG_CHECKING([for POSIX thread library in -lpthread])
+	ac_save_LIBS_p="$LIBS"
+	LIBS="$LIBS -lpthread"
+	AC_TRY_LINK([#include <pthread.h>],[pthread_equal(NULL,NULL);],
+	    use_pthread=yes
+	    AC_DEFINE(HAVE_PTHREAD),
+	  use_pthread=no
+	  LIBS="$ac_save_LIBS_p"
+	)
+  esac
+  AC_MSG_RESULT("$use_pthread")
+else
+  use_pthread=no
+fi
+
+dnl write names
+AC_DEFINE_UNQUOTED(JULIUS_PRODUCTNAME, "$JULIUS_PRODUCTNAME")
+AC_DEFINE_UNQUOTED(JULIUS_VERSION, "$JULIUS_VERSION")
+AC_DEFINE_UNQUOTED(JULIUS_SETUP, "$easy_setup")
+AC_DEFINE_UNQUOTED(JULIUS_HOSTINFO, "$host")
+AC_SUBST(JULIUS_PRODUCTNAME)
+AC_SUBST(JULIUS_VERSION)
+AC_SUBST(easy_setup)
+
+AC_OUTPUT_COMMANDS(
+[chmod +x libjulius-config libjulius-config-dist
+])
+AC_OUTPUT(Makefile libjulius-config libjulius-config-dist src/version.c doxygen.conf.ver)

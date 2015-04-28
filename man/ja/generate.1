@@ -1,0 +1,115 @@
+'\" t
+.\"     Title: 
+    generate
+  
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 19/12/2013
+.\"    Manual: 
+.\"    Source: 
+.\"  Language: Japanese
+.\"
+.TH "GENERATE" "1" "19/12/2013" ""
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "名前"
+
+    generate
+   \- 文法から文をランダム生成する
+.SH "概要"
+.HP \w'\fBgenerate\fR\ 'u
+\fBgenerate\fR [\-v] [\-t] [\-n\ \fInum\fR] [\-s\ \fIspname\fR] {prefix}
+.SH "DESCRIPTION"
+.PP
+generate は文法に従って文をランダムに生成します．
+.PP
+実行には \&.dfa, \&.dict, \&.term の各ファイルが必要です． あらかじめ
+\fBmkdfa\&.pl\fR
+で生成しておいて下さい．
+.SH "OPTIONS"
+.PP
+\fB \-t \fR
+.RS 4
+単語ではなくカテゴリ名で出力する．
+.RE
+.PP
+\fB \-n \fR \fInum\fR
+.RS 4
+生成する文の数を指定する (default: 10)
+.RE
+.PP
+\fB \-s \fR \fIspname\fR
+.RS 4
+生成においてスキップすべきショートポーズ単語の名前を指定する． (default: "sp")
+.RE
+.PP
+\fB \-v \fR
+.RS 4
+デバッグ出力．
+.RE
+.SH "EXAMPLES"
+.PP
+vfr (フィッティングタスク用文法) での実行例：
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+% generate vfr
+Reading in dictionary\&.\&.\&.done
+Reading in DFA grammar\&.\&.\&.done
+Mapping dict item <\-> DFA terminal (category)\&.\&.\&.done
+Reading in term file (optional)\&.\&.\&.done
+42 categories, 99 words
+DFA has 135 nodes and 198 arcs
+ \-\-\-\-\- 
+silB やめます silE
+silB 終了します silE
+silB シャツ を スーツ と 統一して 下さい silE
+silB スーツ を カッター と 同じ 色 に 統一して 下さい silE
+silB 交換して 下さい silE
+silB これ を 覚えておいて 下さい silE
+silB 覚えておいて 下さい silE
+silB 戻って 下さい silE
+silB スーツ を シャツ と 統一して 下さい silE
+silB 上着 を 橙 に して 下さい silE
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+.SH "SEE ALSO"
+.PP
+
+\fB mkdfa.pl \fR( 1 )
+,
+\fB generate-ngram \fR( 1 )
+.SH "COPYRIGHT"
+.PP
+Copyright (c) 1991\-2013 京都大学 河原研究室
+.PP
+Copyright (c) 1997\-2000 情報処理振興事業協会(IPA)
+.PP
+Copyright (c) 2000\-2005 奈良先端科学技術大学院大学 鹿野研究室
+.PP
+Copyright (c) 2005\-2013 名古屋工業大学 Julius開発チーム
+.SH "LICENSE"
+.PP
+Julius の使用許諾に準じます．

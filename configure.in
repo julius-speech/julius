@@ -1,0 +1,35 @@
+dnl Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+dnl Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+dnl Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+dnl All rights reserved
+dnl
+dnl $Id: configure.in,v 1.7 2013/06/20 17:14:16 sumomo Exp $
+dnl
+AC_INIT(Sample.jconf)
+AC_CONFIG_AUX_DIR(support)
+AC_CONFIG_SUBDIRS(mkgshmm gramtools jcontrol julius libjulius libsent)
+
+dnl all configure options will be passed to all subdirectries.
+
+AC_CANONICAL_HOST
+
+AC_MSG_CHECKING([host specific optimization flag])
+if test -z "$CFLAGS" ; then
+    OPTFLAG=support/cflags.${host_cpu}-${host_vendor}-${host_os}
+    if test -f "$OPTFLAG" ; then
+	. $OPTFLAG
+	AC_MSG_RESULT([$OPTFLAG])
+    else
+	AC_MSG_RESULT([no])
+    fi
+else
+    AC_MSG_RESULT([skipped])
+fi
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PATH_PROG(RM, rm)
+AC_EXEEXT
+
+AC_OUTPUT(Makefile mkbingram/Makefile mkbinhmm/Makefile adinrec/Makefile adintool/Makefile mkss/Makefile generate-ngram/Makefile jclient-perl/Makefile man/Makefile)
