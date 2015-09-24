@@ -1,9 +1,9 @@
 # Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 
 Copyright (c) 1991-2015 Kawahara Lab., Kyoto University  
+Copyright (c) 2005-2015 Julius project team, Nagoya Institute of Technology  
 Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan  
 Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology  
-Copyright (c) 2005-2015 Julius project team, Nagoya Institute of Technology  
 
 # About Julius
 
