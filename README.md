@@ -7,21 +7,23 @@ Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
 
 # About Julius
 
-"Julius" is a high-performance, two-pass large vocabulary continuous speech recognition (LVCSR) decoder software for speech-related researchers and developers. Based on word N-gram and context-dependent HMM, it can perform almost real-time decoding on most current PCs in 60k word dictation task. Major search techniques are fully incorporated such as tree lexicon, N-gram factoring, cross-word context dependency handling, enveloped beam search, Gaussian pruning, Gaussian selection, etc. Besides search efficiency, it is also modularized carefully to be independent from model structures, and various HMM types are supported such as shared-state triphones and tied-mixture models, with any number of mixtures, states, or phones. Standard formats are adopted to cope with other free modeling toolkit such as HTK, CMU-Cam SLM toolkit, etc.
-The main platform is Linux and other Unix workstations, and also works on Windows. Most recent version is developed on Linux and Windows (cygwin / mingw), and also has Microsoft SAPI version. Julius is distributed with open license together with source codes.
+"Julius" is a high-performance, small-footprint large vocabulary continuous speech recognition (LVCSR) decoder software for speech-related researchers and developers. Based on word N-gram and context-dependent HMM, it can perform real-time decoding on various computers and devices from micro-computer to cloud server. The algorithm is based on 2-pass tree-trellis search, which fully incorporates major decoding techniques such as tree-organized lexicon, 1-best / word-pair context approximation, rank/score pruning, N-gram factoring, cross-word context dependency handling, enveloped beam search, Gaussian pruning, Gaussian selection, etc. Besides search efficiency, it is also modularized to be independent from model structures, and wide variety of HMM structures are supported such as shared-state triphones and tied-mixture models, with any number of mixtures, states, or phone sets. Standard formats are adopted for the models to cope with other speech / language modeling toolkit such as HTK, SRILM, etc.  Recent version also supports Deep Neural Network (DNN) based real-time decoding.
 
-Julius has been developed as a research software for Japanese LVCSR since 1997, and the work was continued under IPA Japanese dictation toolkit project (1997-2000), Continuous Speech Recognition Consortium, Japan (CSRC) (2000-2003) and currently Interactive Speech Technology Consortium (ISTC).
+The main platform is Linux and other Unix-based system, as well as Windows, Mac, Androids and other platforms.
+
+Julius is distributed with an open license together with source codes.
+
+Julius has been developed as a research software for Japanese LVCSR since 1997, and the work was continued under IPA Japanese dictation toolkit project (1997-2000), Continuous Speech Recognition Consortium, Japan (CSRC) (2000-2003) and Interactive Speech Technology Consortium (ISTC). The main developer / maintainer is Akinobu Lee.
 
 
 # Features
 
-- An open-source software (see terms and conditions of license)
+- An open-source LVCSR software (see terms and conditions of license).
 - Real-time, hi-speed, accurate recognition based on 2-pass strategy.
 - Low memory requirement: less than 32MBytes required for work area (<64MBytes for 20k-word dictation with on-memory 3-gram LM).
-- Supports LM of N-gram, grammar, and isolated word.
-- Language and unit-dependent: Any LM in ARPA standard format and AM in HTK ascii hmmdefs format can be used.
+- Supports LM of N-gram with arbitrary N.  Also supports rule-based grammar, and word list for isolated word recognition.
+- Language and unit-dependent: Any LM in ARPA standard format and AM in HTK ascii hmm definition format can be used.
 - Highly configurable: can set various search parameters. Also alternate decoding algorithm (1-best/word-pair approx., word trellis/word graph intermediates, etc.) can be chosen.
-- Full source code documentation and manual in Engligh / Japanese.
 - List of major supported features:
   - On-the-fly recognition for microphone and network input
   - GMM-based input rejection
