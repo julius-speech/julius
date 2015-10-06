@@ -61,7 +61,7 @@ Run with "-help" to see full list of options.
 This toolkit helps performing "forced alignment" with speech recognition engine Julius with grammar-based recognition. This kit uses Julius to do forced alignment to a speech file by generating grammar for each samples from transcription.
 julius4-segmentation-kit-v1.0.tar.gz
 
-## Grammar buildint kit
+## Grammar building kit
 
 ## HTK-to-Julius grammar converter
 
