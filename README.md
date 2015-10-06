@@ -15,7 +15,7 @@ The main platform is Linux and other Unix-based system, as well as Windows, Mac,
 
 Julius has been developed as a research software for Japanese LVCSR since 1997, and the work was continued under IPA Japanese dictation toolkit project (1997-2000), Continuous Speech Recognition Consortium, Japan (CSRC) (2000-2003) and Interactive Speech Technology Consortium (ISTC).
 
-The main developer / maintainer is Akinobu Lee.
+The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 
 
 # Features
