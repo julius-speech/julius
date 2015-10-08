@@ -45,28 +45,31 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
   - (Rev. 4) Rapid isolated word recognition
   - (Rev. 4) User-defined LM function embedding
 
-# Latest version: 4.3.1
+# Download Julius
 
-The latest version is 4.3.1, released on January 15, 2014.
+The latest release version is [4.3.1](https://github.com/julius-speech/julius/releases), released on January 15, 2014.
 
 Version 4.3.1 is a bug fix release. Several bugs has been fixed.
-
 See the "Release.txt" file for the full list of updates.
 Run with "-help" to see full list of options.
 
-# Releases and Assets
+You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
 
-## Word / phoneme segmentation kit
+# Toolkit and Assets
 
-This toolkit helps performing "forced alignment" with speech recognition engine Julius with grammar-based recognition. This kit uses Julius to do forced alignment to a speech file by generating grammar for each samples from transcription.
-julius4-segmentation-kit-v1.0.tar.gz
+There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can download them fron the following links:
 
-## Grammar building kit
+## [Japanese Dictation Kit](https://github.com/julius-speech/dictation-kit)
 
-## HTK-to-Julius grammar converter
+A set of Julius executables and Japanese LM/AM.  You can test 60k-word Japanese dictation with this kit.  For AM, triphone HMMs of both GMM and DNN are included.  For DNN, a front-end DNN module, separated from Julius, computes the state probabilities of HMM for each input frame and send them to Julius via socket to perform real-time DNN decoding.  For LM, 60k-word 3-gram trained by BCCWJ corpus is included.
 
-This toolkit converts an HTK recognition grammar into Julian format. A word network (SLF) will be converted to DFA format, and the words in the SLF are extracted from the dictionary to be used in Julian. Furthermore, word category will be automatically detected and defined to optimize performance in Julian.
-slg2dfa-1.0.tar.gz
+## [Recognition Grammar Toolkit](https://github.com/julius-speech/grammar-kit)
+
+Documents, sample files and conversion tools to use and build a recognition grammar for Julius.
+
+## [Speech Segmentation Toolkit](https://github.com/julius-speech/segmentation-kit)
+
+This is a handy toolkit to do phoneme segmentation (aka phoneme alignments) for speech audio file using Julius. Given pairs of speech audio file and its transcription, this toolkit perform Viterbi alignment to get the beginning and ending time of each phoneme.
 
 # About Models
 
@@ -78,8 +81,7 @@ Here you can get Japanese and English language/acoustic models.
 
 ## Japanese
 
-Japanese language model (20k-word trained by newspaper article) and acoustic models (Phonetic tied-mixture triphone / monophone)
-More various types of Japanese N-gram LM and acoustic models are available at CSRC. For more detail, please contact csrc@astem.or.jp.
+Japanese language model (60k-word trained by balanced corpus) and acoustic models (triphone GMM/DNN).  They are included in the Japanese dictation kit.  More various types of Japanese N-gram LM and acoustic models are available at CSRC. For more detail, please contact csrc@astem.or.jp.
 
 ## English
 
@@ -99,8 +101,8 @@ If you have any language or acoustic model that can be distributed as a freeware
 
 # References
 
-- [Old site](http://julius.osdn.jp/)
-- [Old files on osdn.jp](http://sourceforge.jp/projects/julius/)
+- [Old web site](http://julius.osdn.jp/)
+- [Old development site, having old releases](http://sourceforge.jp/projects/julius/)
 - Publications:
   - A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
   - A. Lee, T. Kawahara and K. Shikano. "Julius --- an open source real-time large vocabulary recognition engine." In Proc. European Conference on Speech Communication and Technology (EUROSPEECH), pp. 1691--1694, 2001.
