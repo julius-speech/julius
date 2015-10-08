@@ -48,16 +48,15 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 # Download Julius
 
 The latest release version is [4.3.1](https://github.com/julius-speech/julius/releases), released on January 15, 2014.
+You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
 
 Version 4.3.1 is a bug fix release. Several bugs has been fixed.
 See the "Release.txt" file for the full list of updates.
 Run with "-help" to see full list of options.
 
-You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
-
 # Toolkit and Assets
 
-There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can download them fron the following links:
+There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can get them fron the following Github pages:
 
 ## [Japanese Dictation Kit](https://github.com/julius-speech/dictation-kit)
 
