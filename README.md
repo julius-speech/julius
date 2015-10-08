@@ -44,6 +44,7 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
   - (Rev. 4) Arbitrary multi-model decoding in a single thread.
   - (Rev. 4) Rapid isolated word recognition
   - (Rev. 4) User-defined LM function embedding
+- DNN-based decoding, using front-end module for frame-wise state probability calculation for flexibility.
 
 # Download Julius
 
