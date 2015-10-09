@@ -81,7 +81,7 @@ Here you can get Japanese and English language/acoustic models.
 
 ## Japanese
 
-Japanese language model (60k-word trained by balanced corpus) and acoustic models (triphone GMM/DNN).  They are included in the Japanese dictation kit.  More various types of Japanese N-gram LM and acoustic models are available at CSRC. For more detail, please contact csrc@astem.or.jp.
+Japanese language model (60k-word trained by balanced corpus) and acoustic models (triphone GMM/DNN) are included in the [Japanese dictation kit](https://github.com/julius-speech/dictation-kit).  More various types of Japanese N-gram LM and acoustic models are available at CSRC. For more detail, please contact csrc@astem.or.jp.
 
 ## English
 
@@ -101,7 +101,7 @@ If you have any language or acoustic model that can be distributed as a freeware
 
 # References
 
-- [Old web site](http://julius.osdn.jp/)
+- [Official web site (Japanese)](http://julius.osdn.jp/)
 - [Old development site, having old releases](http://sourceforge.jp/projects/julius/)
 - Publications:
   - A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
