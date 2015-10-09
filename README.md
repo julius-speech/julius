@@ -61,15 +61,15 @@ There are also toolkit and assets to run Julius.  They are maintained by the Jul
 
 ## [Japanese Dictation Kit](https://github.com/julius-speech/dictation-kit)
 
-A set of Julius executables and Japanese LM/AM.  You can test 60k-word Japanese dictation with this kit.  For AM, triphone HMMs of both GMM and DNN are included.  For DNN, a front-end DNN module, separated from Julius, computes the state probabilities of HMM for each input frame and send them to Julius via socket to perform real-time DNN decoding.  For LM, 60k-word 3-gram trained by BCCWJ corpus is included.
+A set of Julius executables and Japanese LM/AM.  You can test 60k-word Japanese dictation with this kit.  For AM, triphone HMMs of both GMM and DNN are included.  For DNN, a front-end DNN module, separated from Julius, computes the state probabilities of HMM for each input frame and send them to Julius via socket to perform real-time DNN decoding.  For LM, 60k-word 3-gram trained by BCCWJ corpus is included.  You can get it from [its GitHub page](https://github.com/julius-speech/dictation-kit).
 
 ## [Recognition Grammar Toolkit](https://github.com/julius-speech/grammar-kit)
 
-Documents, sample files and conversion tools to use and build a recognition grammar for Julius.
+Documents, sample files and conversion tools to use and build a recognition grammar for Julius.  You can get it from [the GitHub page](https://github.com/julius-speech/grammar-kit).
 
 ## [Speech Segmentation Toolkit](https://github.com/julius-speech/segmentation-kit)
 
-This is a handy toolkit to do phoneme segmentation (aka phoneme alignments) for speech audio file using Julius. Given pairs of speech audio file and its transcription, this toolkit perform Viterbi alignment to get the beginning and ending time of each phoneme.
+This is a handy toolkit to do phoneme segmentation (aka phoneme alignments) for speech audio file using Julius. Given pairs of speech audio file and its transcription, this toolkit perform Viterbi alignment to get the beginning and ending time of each phoneme.  This toolkit is available at [its GitHub page](https://github.com/julius-speech/segmentation-kit).
 
 # About Models
 
