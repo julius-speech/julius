@@ -1248,7 +1248,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 
   /* ワークエリア */
   /* work area */
-  NEXTWORD fornoise; /* Dummy NEXTWORD data for short-pause insertion handling */
+  NEXTWORD fornoise = {0}; /* Dummy NEXTWORD data for short-pause insertion handling */
 
   NEXTWORD **nextword, *nwroot;	/* buffer to store predicted words */
   int maxnwnum;			/* current allocated number of words in nextword */
