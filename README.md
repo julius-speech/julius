@@ -1,4 +1,5 @@
-(Moved from julius.osdn.jp since 2015/09, this is official)
+(Moved from julius.osdn.jp since 2015/09, this is official)  
+(Forum has been closed.  Please [make an issues](https://github.com/julius-speech/julius/issues) for questions and discussions about Julius)
 
 # Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 
