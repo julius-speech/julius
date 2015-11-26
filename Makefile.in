@@ -9,7 +9,7 @@
 #
 SHELL=/bin/sh
 
-SUBDIRS=libsent libjulius julius mkbingram mkbinhmm adinrec adintool mkgshmm mkss jcontrol gramtools generate-ngram jclient-perl man
+SUBDIRS=libsent libjulius julius mkbingram mkbinhmm adinrec adintool mkgshmm mkss jcontrol gramtools generate-ngram jclient-perl binlm2arpa man
 
 CONFIG_SUBDIRS=mkgshmm gramtools jcontrol julius libjulius libsent
 

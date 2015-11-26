@@ -232,6 +232,7 @@ void bi_prob_func_set(NGRAM_INFO *ndata);
 
 boolean ngram_read_arpa(FILE *fp, NGRAM_INFO *ndata, boolean addition);
 boolean ngram_read_bin(FILE *fp, NGRAM_INFO *ndata);
+boolean ngram_write_arpa(NGRAM_INFO *ndata, FILE *fp, FILE *fp_rev);
 boolean ngram_write_bin(FILE *fp, NGRAM_INFO *ndata, char *header_str);
 
 boolean ngram_compact_context(NGRAM_INFO *ndata, int n);

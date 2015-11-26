@@ -100,6 +100,7 @@ adintool に "-C" で与えるのがよいでしょう。（上記の例）
 	man/			マニュアル類
 	support/		開発用スクリプト
  (new)  dnntools/		Sample programs for dnn and vecnet client
+	binlm2arpa/		バイナリN-gramからARPAへの変換ツール
 
 
 

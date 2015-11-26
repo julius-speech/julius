@@ -87,6 +87,7 @@ src/net/server-client.o \
 src/ngram/init_ngram.o \
 src/ngram/ngram_read_arpa.o \
 src/ngram/ngram_read_bin.o \
+src/ngram/ngram_write_arpa.o \
 src/ngram/ngram_write_bin.o \
 src/ngram/ngram_compact_context.o \
 src/ngram/ngram_access.o \

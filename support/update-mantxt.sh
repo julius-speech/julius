@@ -31,5 +31,6 @@ mv mkbinhmm/00readme-ja.txt mkbinhmm/00readme-mkbinhmmlist-ja.txt
 ./support/makeman.sh mkgshmm mkgshmm
 ./support/makeman.sh mkss mkss
 ./support/makeman.sh nextword gramtools/nextword
+./support/makeman.sh binlm2arpa binlm2arpa
 
 echo Finished.

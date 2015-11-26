@@ -115,6 +115,7 @@ Contents of Julius-4.3
 	man/			Unix online manuals
 	msvc/			Files to compile on Microsoft VC++ 2008
  (new)  dnntools/		Sample programs for dnn and vecnet client
+	binlm2arpa/		Convert binary N-gram to ARPA format
 
 
 Documentation

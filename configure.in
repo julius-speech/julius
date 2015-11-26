@@ -32,4 +32,4 @@ AC_PROG_INSTALL
 AC_PATH_PROG(RM, rm)
 AC_EXEEXT
 
-AC_OUTPUT(Makefile mkbingram/Makefile mkbinhmm/Makefile adinrec/Makefile adintool/Makefile mkss/Makefile generate-ngram/Makefile jclient-perl/Makefile man/Makefile)
+AC_OUTPUT(Makefile mkbingram/Makefile mkbinhmm/Makefile adinrec/Makefile adintool/Makefile mkss/Makefile generate-ngram/Makefile jclient-perl/Makefile binlm2arpa/Makefile man/Makefile)
