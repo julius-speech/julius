@@ -246,6 +246,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\libsent\src\anlz\vecin_net.c"
+					>
+				</File>
+				<File
 					RelativePath="..\..\libsent\src\anlz\wrsamp.c"
 					>
 				</File>
