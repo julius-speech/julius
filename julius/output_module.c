@@ -26,7 +26,6 @@
 
 #include <time.h>
 
-extern int module_sd;
 extern boolean separate_score_flag;
 
 /**********************************************************************/
@@ -45,7 +44,7 @@ extern boolean separate_score_flag;
 static void
 status_process_online(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<STARTPROC/>\n.\n");
+  module_send("<STARTPROC/>\n.\n");
 }
 /** 
  * <JA>
@@ -60,7 +59,7 @@ status_process_online(Recog *recog, void *dummy)
 static void
 status_process_offline(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<STOPPROC/>\n.\n");
+  module_send("<STOPPROC/>\n.\n");
 }
 
 /**********************************************************************/
@@ -145,19 +144,19 @@ msock_word_out1(WORD_ID w, RecogProcess *r)
   winfo = r->lm->winfo;
 
   if (out1_word) {
-    module_send(module_sd, " WORD=\"%s\"", winfo->woutput[w]);
+    module_send(" WORD=\"%s\"", winfo->woutput[w]);
   }
   if (out1_lm) {
-    module_send(module_sd, " CLASSID=\"%s\"", winfo->wname[w]);
+    module_send(" CLASSID=\"%s\"", winfo->wname[w]);
   }
   if (out1_phone) {
-    module_send(module_sd, " PHONE=\"");
+    module_send(" PHONE=\"");
     for(j=0;j<winfo->wlen[w];j++) {
       center_name(winfo->wseq[w][j]->name, buf);
-      if (j == 0) module_send(module_sd, "%s", buf);
-      else module_send(module_sd, " %s", buf);
+      if (j == 0) module_send("%s", buf);
+      else module_send(" %s", buf);
     }
-    module_send(module_sd, "\"");
+    module_send("\"");
   }
 }
 
@@ -185,19 +184,19 @@ msock_word_out2(WORD_ID w, RecogProcess *r)
   winfo = r->lm->winfo;
 
   if (out2_word) {
-    module_send(module_sd, " WORD=\"%s\"", winfo->woutput[w]);
+    module_send(" WORD=\"%s\"", winfo->woutput[w]);
   }
   if (out2_lm) {
-    module_send(module_sd, " CLASSID=\"%s\"", winfo->wname[w]);
+    module_send(" CLASSID=\"%s\"", winfo->wname[w]);
   }
   if (out2_phone) {
-    module_send(module_sd, " PHONE=\"");
+    module_send(" PHONE=\"");
     for(j=0;j<winfo->wlen[w];j++) {
       center_name(winfo->wseq[w][j]->name, buf);
-      if (j == 0) module_send(module_sd, "%s", buf);
-      else module_send(module_sd, " %s", buf);
+      if (j == 0) module_send("%s", buf);
+      else module_send(" %s", buf);
     }
-    module_send(module_sd, "\"");
+    module_send("\"");
   }
 }
 
@@ -218,7 +217,7 @@ msock_word_out2(WORD_ID w, RecogProcess *r)
 static void
 status_pass1_begin(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<STARTRECOG/>\n.\n");
+  module_send("<STARTRECOG/>\n.\n");
 }
 
 /** 
@@ -267,21 +266,21 @@ result_pass1_current(Recog *recog, void *dummy)
     num = r->result.pass1.word_num;
 
     if (multi) {
-      module_send(module_sd, "<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
+      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
     } else {
-      module_send(module_sd, "<RECOGOUT>\n");
+      module_send("<RECOGOUT>\n");
     }
     if (out1_score) {
-      module_send(module_sd, "  <PHYPO PASS=\"1\" SCORE=\"%f\" FRAME=\"%d\" TIME=\"%ld\"/>\n", r->result.pass1.score, r->result.num_frame, time(NULL));
+      module_send("  <PHYPO PASS=\"1\" SCORE=\"%f\" FRAME=\"%d\" TIME=\"%ld\"/>\n", r->result.pass1.score, r->result.num_frame, time(NULL));
     } else {
-      module_send(module_sd, "  <PHYPO PASS=\"1\" FRAME=\"%d\" TIME=\"%ld\"/>\n", r->result.num_frame, time(NULL));
+      module_send("  <PHYPO PASS=\"1\" FRAME=\"%d\" TIME=\"%ld\"/>\n", r->result.num_frame, time(NULL));
     }
     for (i=0;i<num;i++) {
-      module_send(module_sd, "    <WHYPO");
+      module_send("    <WHYPO");
       msock_word_out1(seq[i], r);
-      module_send(module_sd, "/>\n");
+      module_send("/>\n");
     }
-    module_send(module_sd, "  </PHYPO>\n</RECOGOUT>\n.\n");
+    module_send("  </PHYPO>\n</RECOGOUT>\n.\n");
   }
 }
 
@@ -325,21 +324,21 @@ result_pass1_final(Recog *recog, void *dummy)
     if (r->result.status < 0) continue;	/* search already failed  */
 
     if (multi) {
-      module_send(module_sd, "<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
+      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
     } else {
-      module_send(module_sd, "<RECOGOUT>\n");
+      module_send("<RECOGOUT>\n");
     }
     if (out1_score) {
-      module_send(module_sd, "  <SHYPO PASS=\"1\" SCORE=\"%f\">\n", r->result.pass1.score);
+      module_send("  <SHYPO PASS=\"1\" SCORE=\"%f\">\n", r->result.pass1.score);
     } else {
-      module_send(module_sd, "  <SHYPO PASS=\"1\">\n", r->result.pass1.score);
+      module_send("  <SHYPO PASS=\"1\">\n", r->result.pass1.score);
     }
     for (i=0;i<r->result.pass1.word_num;i++) {
-      module_send(module_sd, "    <WHYPO");
+      module_send("    <WHYPO");
       msock_word_out1(r->result.pass1.word[i], r);
-      module_send(module_sd, "/>\n");
+      module_send("/>\n");
     }
-    module_send(module_sd, "  </SHYPO>\n</RECOGOUT>\n.\n");
+    module_send("  </SHYPO>\n</RECOGOUT>\n.\n");
   }
 }
 
@@ -356,7 +355,7 @@ result_pass1_final(Recog *recog, void *dummy)
 static void
 status_pass1_end(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<ENDRECOG/>\n.\n");
+  module_send("<ENDRECOG/>\n.\n");
 }
 
 /**********************************************************************/
@@ -399,31 +398,31 @@ result_pass2(Recog *recog, void *dummy)
     if (r->result.status < 0) {
       switch(r->result.status) {
       case J_RESULT_STATUS_REJECT_POWER:
-	module_send(module_sd, "<REJECTED REASON=\"by power\"");
+	module_send("<REJECTED REASON=\"by power\"");
 	break;
       case J_RESULT_STATUS_TERMINATE:
-	module_send(module_sd, "<REJECTED REASON=\"input terminated by request\"");
+	module_send("<REJECTED REASON=\"input terminated by request\"");
 	break;
       case J_RESULT_STATUS_ONLY_SILENCE:
-	module_send(module_sd, "<REJECTED REASON=\"result has pause words only\"");
+	module_send("<REJECTED REASON=\"result has pause words only\"");
 	break;
       case J_RESULT_STATUS_REJECT_GMM:
-	module_send(module_sd, "<REJECTED REASON=\"by GMM\"");
+	module_send("<REJECTED REASON=\"by GMM\"");
 	break;
       case J_RESULT_STATUS_REJECT_SHORT:
-	module_send(module_sd, "<REJECTED REASON=\"too short input\"");
+	module_send("<REJECTED REASON=\"too short input\"");
 	break;
       case J_RESULT_STATUS_REJECT_LONG:
-	module_send(module_sd, "<REJECTED REASON=\"too long input\"");
+	module_send("<REJECTED REASON=\"too long input\"");
 	break;
       case J_RESULT_STATUS_FAIL:
-	module_send(module_sd, "<RECOGFAIL");
+	module_send("<RECOGFAIL");
 	break;
       }
       if (multi) {
-	module_send(module_sd, " ID=\"SR%02d\" NAME=\"%s\"", r->config->id, r->config->name);
+	module_send(" ID=\"SR%02d\" NAME=\"%s\"", r->config->id, r->config->name);
       }
-      module_send(module_sd, "/>\n.\n");
+      module_send("/>\n.\n");
       continue;
     }
 
@@ -433,45 +432,45 @@ result_pass2(Recog *recog, void *dummy)
     num = r->result.sentnum;
 
     if (multi) {
-      module_send(module_sd, "<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
+      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
     } else {
-      module_send(module_sd, "<RECOGOUT>\n");
+      module_send("<RECOGOUT>\n");
     }
     for(n=0;n<num;n++) {
       s = &(r->result.sent[n]);
       seq = s->word;
       seqnum = s->word_num;
       
-      module_send(module_sd, "  <SHYPO RANK=\"%d\"", n+1);
+      module_send("  <SHYPO RANK=\"%d\"", n+1);
       if (out2_score) {
 #ifdef USE_MBR
 	if(r->config->mbr.use_mbr == TRUE){
 
-	  module_send(module_sd, " MBRSCORE=\"%f\"", s->score_mbr);
+	  module_send(" MBRSCORE=\"%f\"", s->score_mbr);
 	}
 #endif
-	module_send(module_sd, " SCORE=\"%f\"", s->score);
+	module_send(" SCORE=\"%f\"", s->score);
 	if (r->lmtype == LM_PROB) {
 	  if (separate_score_flag) {
-	    module_send(module_sd, " AMSCORE=\"%f\" LMSCORE=\"%f\"", s->score_am, s->score_lm);
+	    module_send(" AMSCORE=\"%f\" LMSCORE=\"%f\"", s->score_am, s->score_lm);
 	  }
 	}
       }
       if (r->lmtype == LM_DFA) {
 	/* output which grammar the best hypothesis belongs to */
-	module_send(module_sd, " GRAM=\"%d\"", s->gram_id);
+	module_send(" GRAM=\"%d\"", s->gram_id);
       }
       
-      module_send(module_sd, ">\n");
+      module_send(">\n");
       for (i=0;i<seqnum;i++) {
-	module_send(module_sd, "    <WHYPO");
+	module_send("    <WHYPO");
 	msock_word_out2(seq[i], r);
 #ifdef CONFIDENCE_MEASURE
 #ifdef CM_MULTIPLE_ALPHA
 	/* currently not handle multiple alpha output */
 #else
 	if (out2_cm) {
-	  module_send(module_sd, " CM=\"%5.3f\"", s->confidence[i]);
+	  module_send(" CM=\"%5.3f\"", s->confidence[i]);
 	}
 #endif
 #endif /* CONFIDENCE_MEASURE */
@@ -479,7 +478,7 @@ result_pass2(Recog *recog, void *dummy)
 	for (align = s->align; align; align = align->next) {
 	  switch(align->unittype) {
 	  case PER_WORD:	/* word alignment */
-	    module_send(module_sd, " BEGINFRAME=\"%d\" ENDFRAME=\"%d\"", align->begin_frame[i], align->end_frame[i]);
+	    module_send(" BEGINFRAME=\"%d\" ENDFRAME=\"%d\"", align->begin_frame[i], align->end_frame[i]);
 	    break;
 	  case PER_PHONEME:
 	  case PER_STATE:
@@ -488,11 +487,11 @@ result_pass2(Recog *recog, void *dummy)
 	  }
 	}
 	
-	module_send(module_sd, "/>\n");
+	module_send("/>\n");
       }
-      module_send(module_sd, "  </SHYPO>\n");
+      module_send("  </SHYPO>\n");
     }
-    module_send(module_sd, "</RECOGOUT>\n.\n");
+    module_send("</RECOGOUT>\n.\n");
 
   }
 
@@ -542,22 +541,22 @@ result_graph(Recog *recog, void *dummy)
       arcnum += wg->rightwordnum;
     }
 
-    module_send(module_sd, "<GRAPHOUT");
-    if (multi) module_send(module_sd, " ID=\"SR%02d\" NAME=\"%s\"", r->config->id, r->config->name);
-    module_send(module_sd, " NODENUM=\"%d\" ARCNUM=\"%d\">\n", nodenum, arcnum);
+    module_send("<GRAPHOUT");
+    if (multi) module_send(" ID=\"SR%02d\" NAME=\"%s\"", r->config->id, r->config->name);
+    module_send(" NODENUM=\"%d\" ARCNUM=\"%d\">\n", nodenum, arcnum);
     for(wg=root;wg;wg=wg->next) {
-      module_send(module_sd, "    <NODE GID=\"%d\"", wg->id);
+      module_send("    <NODE GID=\"%d\"", wg->id);
       msock_word_out2(wg->wid, r);
-      module_send(module_sd, " BEGIN=\"%d\"", wg->lefttime);
-      module_send(module_sd, " END=\"%d\"", wg->righttime);
-      module_send(module_sd, "/>\n");
+      module_send(" BEGIN=\"%d\"", wg->lefttime);
+      module_send(" END=\"%d\"", wg->righttime);
+      module_send("/>\n");
     }
     for(wg=root;wg;wg=wg->next) {
       for(i=0;i<wg->rightwordnum;i++) {
-	module_send(module_sd, "    <ARC FROM=\"%d\" TO=\"%d\"/>\n", wg->id, wg->rightword[i]->id);
+	module_send("    <ARC FROM=\"%d\" TO=\"%d\"/>\n", wg->id, wg->rightword[i]->id);
       }
     }
-    module_send(module_sd, "</GRAPHOUT>\n.\n");
+    module_send("</GRAPHOUT>\n.\n");
   }
 }
 
@@ -574,7 +573,7 @@ result_graph(Recog *recog, void *dummy)
 static void
 status_recready(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<INPUT STATUS=\"LISTEN\" TIME=\"%ld\"/>\n.\n", time(NULL));
+  module_send("<INPUT STATUS=\"LISTEN\" TIME=\"%ld\"/>\n.\n", time(NULL));
 }
 
 /** 
@@ -590,7 +589,7 @@ status_recready(Recog *recog, void *dummy)
 static void
 status_recstart(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<INPUT STATUS=\"STARTREC\" TIME=\"%ld\"/>\n.\n", time(NULL));
+  module_send("<INPUT STATUS=\"STARTREC\" TIME=\"%ld\"/>\n.\n", time(NULL));
 }
 /** 
  * <JA>
@@ -605,7 +604,7 @@ status_recstart(Recog *recog, void *dummy)
 static void
 status_recend(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<INPUT STATUS=\"ENDREC\" TIME=\"%ld\"/>\n.\n", time(NULL));
+  module_send("<INPUT STATUS=\"ENDREC\" TIME=\"%ld\"/>\n.\n", time(NULL));
 }
 /** 
  * <JA>
@@ -634,9 +633,9 @@ status_param(Recog *recog, void *dummy)
     frames = mfcc->param->samplenum;
     msec = (float)mfcc->param->samplenum * (float)recog->jconf->input.period * (float)recog->jconf->input.frameshift / 10000.0;
     if (multi) {
-      module_send(module_sd, "<INPUTPARAM MFCCID=\"%02d\" FRAMES=\"%d\" MSEC=\"%d\"/>\n.\n", mfcc->id, frames, msec);
+      module_send("<INPUTPARAM MFCCID=\"%02d\" FRAMES=\"%d\" MSEC=\"%d\"/>\n.\n", mfcc->id, frames, msec);
     } else {
-      module_send(module_sd, "<INPUTPARAM FRAMES=\"%d\" MSEC=\"%d\"/>\n.\n", frames, msec);
+      module_send("<INPUTPARAM FRAMES=\"%d\" MSEC=\"%d\"/>\n.\n", frames, msec);
     }
   }
 }
@@ -654,11 +653,11 @@ status_param(Recog *recog, void *dummy)
 static void
 result_gmm(Recog *recog, void *dummy)
 {
-  module_send(module_sd, "<GMM RESULT=\"%s\"", recog->gc->max_d->name);
+  module_send("<GMM RESULT=\"%s\"", recog->gc->max_d->name);
 #ifdef CONFIDENCE_MEASURE
-  module_send(module_sd, " CMSCORE=\"%f\"", recog->gc->gmm_max_cm);
+  module_send(" CMSCORE=\"%f\"", recog->gc->gmm_max_cm);
 #endif
-  module_send(module_sd, "/>\n.\n");
+  module_send("/>\n.\n");
 }
 
 /** 
@@ -678,10 +677,10 @@ send_gram_info(RecogProcess *r)
   char buf[1024];
 
   if (r->lmtype == LM_PROB) {
-    module_send(module_sd, "<GRAMMAR STATUS=\"ERROR\" REASON=\"NOT A GRAMMAR-BASED LM\"/>\n.\n");
+    module_send("<GRAMMAR STATUS=\"ERROR\" REASON=\"NOT A GRAMMAR-BASED LM\"/>\n.\n");
     return;
   }
-  module_send(module_sd, "<GRAMINFO>\n");
+  module_send("<GRAMINFO>\n");
   for(m=r->lm->grammars;m;m=m->next) {
     buf[0] = '\0';
     if (m->dfa) {
@@ -705,7 +704,7 @@ send_gram_info(RecogProcess *r)
       }
       strcat(buf, ")");
     }
-    module_send(module_sd, "  #%2d: [%-11s] %4d words%s \"%s\"\n",
+    module_send("  #%2d: [%-11s] %4d words%s \"%s\"\n",
 		m->id,
 		m->active ? "active" : "inactive",
 		m->winfo->num,
@@ -713,9 +712,9 @@ send_gram_info(RecogProcess *r)
 		m->name);
   }
   if (r->lm->dfa != NULL) {
-    module_send(module_sd, "  Global:            %4d words, %3d categories, %4d nodes\n", r->lm->winfo->num, r->lm->dfa->term_num, r->lm->dfa->state_num);
+    module_send("  Global:            %4d words, %3d categories, %4d nodes\n", r->lm->winfo->num, r->lm->dfa->term_num, r->lm->dfa->state_num);
   }
-  module_send(module_sd, "</GRAMINFO>\n.\n");
+  module_send("</GRAMINFO>\n.\n");
 }
 
 /**********************************************************************/

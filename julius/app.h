@@ -19,7 +19,7 @@
 void main_recognition_stream_loop(Recog *recog);
 
 /* module.c */
-int module_send(int sd, char *fmt, ...);
+int module_send(char *fmt, ...);
 void module_add_option();
 boolean is_module_mode();
 void module_setup(Recog *recog, void *data);
