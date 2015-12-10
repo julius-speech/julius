@@ -685,7 +685,6 @@ msock_check_and_process_command(Recog *recog, void *dummy)
   fd_set rfds;
   int ret;
   struct timeval tv;
-  static int errorcount;
 
   if (module_sd < 0) return;
 
@@ -706,15 +705,11 @@ msock_check_and_process_command(Recog *recog, void *dummy)
     while(select(module_sd+1, &rfds, NULL, NULL, &tv) > 0) {
       if (myfgets(mbuf, MAXBUFLEN, module_fp) != NULL) {
 	msock_exec_command(mbuf, recog);
-	errorcount = 0;
       } else {
-	errorcount++;
-	if (errorcount > 20) {
-	  module_disconnect();
-	  if (local_recog)
-	    j_request_pause(local_recog);
-	  printf("socket error, connection closed\n");
-	}
+	module_disconnect();
+	if (local_recog)
+	  j_request_pause(local_recog);
+	printf("socket error, connection closed\n");
       }
     }
   }
@@ -738,7 +733,6 @@ msock_check_and_process_command(Recog *recog, void *dummy)
 static void
 msock_process_command(Recog *recog, void *dummy)
 {
-  static int errorcount;
   local_recog = recog;
 
   if (module_sd < 0) {
@@ -749,14 +743,10 @@ msock_process_command(Recog *recog, void *dummy)
   while(!recog->process_active) {
     if (myfgets(mbuf, MAXBUFLEN, module_fp) != NULL) {
       msock_exec_command(mbuf, recog);
-      errorcount = 0;
     } else {
-      errorcount++;
-      if (errorcount > 20) {
-	module_disconnect();
-	printf("socket error, connection closed\n");
-	module_connect();
-      }
+      module_disconnect();
+      printf("socket error, connection closed\n");
+      module_connect();
     }
   }
 }
