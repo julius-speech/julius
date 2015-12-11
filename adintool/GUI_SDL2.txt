@@ -1,0 +1,28 @@
+adintool-gui is a GUI version of adintool using SDL2 library.
+It accepts the same arguments as original adintool.
+
+To compile, install SDL2 development files:
+
+   % sudo apt-get install libsdl2-dev
+
+When started no argument, adintool-gui starts just capturing audio
+from microphone device but output nothing, i.e. the same as specifying
+
+     -in mic -out none
+
+-------------------------------
+Keys for adintool-gui:
+
+- 'ESC'	   	exit
+- 'UP'/'DOWN'	trigger threshold up/down
+- 'c'		output start/stop | server connect/disconnect
+- 'm'		mute/unmute
+- 'Enter'	force audio segmentation
+
+-------------------------------
+Upper-right red box indicator:
+
+  not displayed  = capturing audio but not output
+  filled square  = capturing audio and outputing the triggered samples
+  line square    = pausing by server request, capturing audio but not output
+
