@@ -77,6 +77,9 @@ AdinTool *adintool_new()
   a->outpath = NULL;
   for (i = 0; i < MAXCONNECTION; i++) a->sd[i] = 0;
 #ifdef USE_SDL
+#ifdef HAVE_PTHREAD
+  pthread_mutex_init(&(a->sdl.mutex), NULL);
+#endif
   a->sdl.window = NULL;
   a->sdl.renderer = NULL;
   a->sdl.window_w = 0;

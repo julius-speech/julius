@@ -815,8 +815,28 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
   int miny, startx;
   boolean thres_moving = FALSE;
 
-  if (s->window == NULL) return;
-  if (s->renderer == NULL) return;
+#ifdef HAVE_PTHREAD
+  pthread_mutex_lock(&(s->mutex));
+#endif
+  
+  if (s->window == NULL) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+      fprintf(stderr, "SDL could not initialize: %s\n", SDL_GetError());
+      exit(1);
+    }
+    s->window = SDL_CreateWindow("adintool", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (s->window == NULL) {
+      fprintf(stderr, "SDL window could not be created: %s\n", SDL_GetError());
+      exit(1);
+    }
+    //screenSurface = SDL_GetWindowSurface(window);
+    //  renderer = SDL_CreateSoftwareRenderer(screenSurface);
+    s->renderer = SDL_CreateRenderer(s->window, -1, SDL_RENDERER_ACCELERATED);
+    if (s->renderer == NULL) {
+      fprintf(stderr, "SDL renderer could not be created: %s\n", SDL_GetError());
+      exit(1);
+    }
+  }
 
   if (s->tickbuf == NULL) {
     s->ticklen = freq * WAVE_TICK_TIME_MSEC / 1000;
@@ -858,7 +878,7 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 #endif
     s->rects = (SDL_Rect *)malloc(sizeof(SDL_Rect) * s->items);
     s->rectflags = (short *)malloc(sizeof(short) * s->items);
-    for (j = 0; j < s->items; j++) {
+    for (i = 0; i < s->items; i++) {
       s->maxlevel[i] = 0.0;
       s->minlevel[i] = 0.0;
       s->flag[i] = 0;
@@ -1175,6 +1195,11 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 #endif /* AUTO_ADJUST_THRESHOLD */
 
   SDL_RenderPresent(s->renderer);
+
+#ifdef HAVE_PTHREAD
+  pthread_mutex_unlock(&(s->mutex));
+#endif
+
 }
 
 static int
@@ -1187,24 +1212,10 @@ sdl_check_command()
 
   if (recog == NULL) return 0;
 
-  if (s->window == NULL) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-      fprintf(stderr, "SDL could not initialize: %s\n", SDL_GetError());
-      exit(1);
-    }
-    s->window = SDL_CreateWindow("adintool", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (s->window == NULL) {
-      fprintf(stderr, "SDL window could not be created: %s\n", SDL_GetError());
-      exit(1);
-    }
-    //screenSurface = SDL_GetWindowSurface(window);
-    //  renderer = SDL_CreateSoftwareRenderer(screenSurface);
-    s->renderer = SDL_CreateRenderer(s->window, -1, SDL_RENDERER_ACCELERATED);
-    if (s->renderer == NULL) {
-      fprintf(stderr, "SDL renderer could not be created: %s\n", SDL_GetError());
-      exit(1);
-    }
-  }
+#ifdef HAVE_PTHREAD
+  pthread_mutex_lock(&(s->mutex));
+#endif
+
   if (s->window != NULL && s->renderer != NULL) {
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
@@ -1253,10 +1264,16 @@ sdl_check_command()
 	if (event.key.state != SDL_PRESSED || event.key.repeat != 0) break;
 	// Enter -> force segmentation
 	a->process_error = FALSE;
+#ifdef HAVE_PTHREAD
+	pthread_mutex_unlock(&(s->mutex));
+#endif
 	return -2;
       }
     }
   }
+#ifdef HAVE_PTHREAD
+  pthread_mutex_unlock(&(s->mutex));
+#endif
   return 0;
 }
 

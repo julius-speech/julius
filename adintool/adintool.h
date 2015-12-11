@@ -48,6 +48,9 @@ enum{SPOUT_NONE, SPOUT_FILE, SPOUT_STDOUT, SPOUT_ADINNET, SPOUT_VECTORNET};
 #endif
 
 typedef struct {
+#ifdef HAVE_PTHREAD
+  pthread_mutex_t mutex;        /* mutex */
+#endif
   SDL_Window *window;		/* SDL Window */
   SDL_Renderer *renderer;	/* SDL Renderer */
   int window_w;		/* current window screen width */
