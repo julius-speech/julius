@@ -18,36 +18,25 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 INSTALL=@INSTALL@
 
-all:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE)); \
-	done
+.PHONY: all install install.bin install.man clean distclean configure doxygen
 
-install:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE) install); \
-	done
+all install install.bin clean distclean: $(SUBDIRS)
 
-install.bin:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE) install.bin); \
-	done
+all: TARGET=all
+
+install: TARGET=install
+
+install.bin: TARGET=install.bin
 
 install.man:
 	(cd man; $(MAKE) install)
 
+clean: TARGET=clean
 clean:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE) clean); \
-	done
 	$(RM) config.log config.cache
 
+distclean: TARGET=distclean
 distclean:
-	for d in $(SUBDIRS); do \
-	  if test -f $$d/Makefile; then \
-	   (cd $$d; $(MAKE) distclean); \
-	  fi; \
-	done
 	$(RM) config.log config.cache
 	$(RM) config.status
 	$(RM) Makefile
@@ -64,3 +53,10 @@ doxygen:
 	cat support/doxygen.conf.ja libjulius/doxygen.conf.ver > doxygen/doxygen.conf.ja
 	doxygen doxygen/doxygen.conf.en > doxygen/doxygen-en.log 2> doxygen/doxygen-en-err.log
 	doxygen doxygen/doxygen.conf.ja > doxygen/doxygen-ja.log 2> doxygen/doxygen-ja-err.log
+
+$(SUBDIRS): force
+	@ test -f $@/Makefile && $(MAKE) -C $@ $(TARGET)
+
+.PHONY: force
+
+force :;

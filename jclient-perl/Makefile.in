@@ -24,4 +24,5 @@ clean:
 	echo nothing to do
 
 distclean:
+	chmod -x $(TARGET)
 	$(RM) Makefile

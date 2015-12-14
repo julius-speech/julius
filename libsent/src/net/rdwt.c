@@ -55,7 +55,7 @@ rd(int fd, char *data, int *len, int maxlen)
       read(fd,((char *)len) + off, toread);
 #endif
     if (ret <= 0) {  
-      if (ret < 0) jlog("Error: rdwt: failed to read data at %d / %d\n", count, len);
+      if (ret < 0) jlog("Error: rdwt: failed to read data\n");
       return(-1);
     }
     toread -= ret;
