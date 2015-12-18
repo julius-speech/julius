@@ -374,7 +374,14 @@ case $altype in
     libportaudio)
       aldesc="PortAudio library (external)"
       ADINOBJ="$ADINOBJ src/adin/adin_portaudio.o"
-      SOUNDLIB="$SOUNDLIB -lportaudio"
+      case "$host_os" in
+      	cygwin*)
+          SOUNDLIB="$SOUNDLIB -lportaudio.dll"
+	  ;;
+        *)
+	  SOUNDLIB="$SOUNDLIB -lportaudio"
+	  ;;
+      esac
       AC_DEFINE(USE_MIC)
       ;;
     pa-*)
