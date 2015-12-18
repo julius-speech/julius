@@ -69,46 +69,53 @@ else
     fi
 fi
 dnl check for readline library for nextword
-have_readline=no
-READLINE_LIBS=""
-AC_CHECK_HEADER(readline/readline.h,
-    AC_CHECK_LIB(readline, readline,
-	   have_readline=yes
-	   READLINE_LIBS="-lreadline",
-	AC_MSG_CHECKING([for readline in -lreadline with -ltermcap])
-	ac_save_LIBS="$LIBS"
-	LIBS="$ac_save_LIBS -lreadline -ltermcap"
-	AC_TRY_LINK([#include <stdio.h>
-#include <readline/readline.h>],[readline("");],
-	    AC_MSG_RESULT([yes])
-	    READLINE_LIBS="-lreadline -ltermcap"
-	    LIBS="$ac_save_LIBS"
-	    have_readline=yes,
-	  AC_MSG_RESULT([no])
-	  AC_MSG_CHECKING([for readline in -lreadline with -lncurses])
-	  LIBS="$ac_save_LIBS -lreadline -lncurses"
-	  AC_TRY_LINK([#include <stdio.h>
-#include <readline/readline.h>],[readline("");],
-	      AC_MSG_RESULT([yes])
-	      READLINE_LIBS="-lreadline -lncurses"
-	      LIBS="$ac_save_LIBS"
-	      have_readline=yes,
-	    AC_MSG_RESULT([no])
-	    READLINE_LIBS=""
-	    LIBS="$ac_save_LIBS"
-	  )
-	)
-    )
-)
-if test "$have_readline" = yes; then
-    AC_DEFINE(HAVE_READLINE)
-    dnl check some definition
+AC_MSG_CHECKING([for a readline library])
+ac_save_LIBS="$LIBS"
+for readline_lib in readline edit editline; do
+    for termcap_lib in "" termcap curses ncurses; do
+        if test -z "$termcap_lib"; then
+            TRY_LIB="-l$readline_lib"
+        else
+            TRY_LIB="-l$readline_lib -l$termcap_lib"
+        fi
+        LIBS="$ac_save_LIBS $TRY_LIB"
+        case "$host_os" in
+          cygwin*|mingw*)
+            LIBS="$LIBS -static"
+            ;;
+        esac
+        AC_TRY_LINK_FUNC(readline, READLINE_LIBS="$TRY_LIB")
+        if test -n "$READLINE_LIBS"; then
+            break
+        fi
+    done
+    if test -n "$READLINE_LIBS"; then
+        break
+    fi
+done
+LIBS="$ac_save_LIBS"
+
+if test -z "$READLINE_LIBS"; then
+    AC_MSG_RESULT([no])
+else
+    AC_MSG_RESULT([$READLINE_LIBS])
+    ac_save_LIBS="$LIBS"
+    LIBS="$LIBS $READLINE_LIBS"
+    AC_DEFINE(HAVE_LIBREADLINE)
+    AC_CHECK_HEADERS(readline.h readline/readline.h)
+    READLINE_LIBS_history="no"
+    AC_TRY_LINK_FUNC(add_history, READLINE_LIBS_history="yes")
+    if test "$READLINE_LIBS_history" = "yes"; then
+        AC_DEFINE(HAVE_LIBREADLINE_HISTORY)
+        AC_CHECK_HEADERS(history.h readline/history.h)
+    fi
     AC_MSG_CHECKING([for readline verion > 4.1])
     AC_EGREP_HEADER(rl_compentry_func_t, readline/readline.h,
 	AC_MSG_RESULT([yes]),
       AC_MSG_RESULT([no - use old func])
-      AC_DEFINE(HAVE_READLINE_4_1_OLDER)
+      AC_DEFINE(HAVE_LIBREADLINE_4_1_OLDER)
     )
+    LIBS="$ac_save_LIBS"
 fi
 AC_SUBST(READLINE_LIBS)
 
