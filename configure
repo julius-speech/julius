@@ -657,7 +657,7 @@ LDFLAGS
 LIBS
 CPPFLAGS
 CPP'
-ac_subdirs_all='mkgshmm gramtools jcontrol julius libjulius libsent'
+ac_subdirs_all='mkgshmm gramtools jcontrol mkbingram julius libjulius libsent'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1811,7 +1811,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-subdirs="$subdirs mkgshmm gramtools jcontrol julius libjulius libsent"
+subdirs="$subdirs mkgshmm gramtools jcontrol mkbingram julius libjulius libsent"
 
 
 
@@ -2965,7 +2965,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile mkbingram/Makefile mkbinhmm/Makefile adinrec/Makefile adintool/Makefile mkss/Makefile generate-ngram/Makefile jclient-perl/Makefile binlm2arpa/Makefile man/Makefile"
+ac_config_files="$ac_config_files Makefile mkbinhmm/Makefile adinrec/Makefile adintool/Makefile mkss/Makefile generate-ngram/Makefile jclient-perl/Makefile binlm2arpa/Makefile man/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3674,7 +3674,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "mkbingram/Makefile") CONFIG_FILES="$CONFIG_FILES mkbingram/Makefile" ;;
     "mkbinhmm/Makefile") CONFIG_FILES="$CONFIG_FILES mkbinhmm/Makefile" ;;
     "adinrec/Makefile") CONFIG_FILES="$CONFIG_FILES adinrec/Makefile" ;;
     "adintool/Makefile") CONFIG_FILES="$CONFIG_FILES adintool/Makefile" ;;

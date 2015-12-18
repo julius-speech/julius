@@ -5,6 +5,26 @@
  * All rights reserved
  */
 
+#ifdef HAVE_LIBREADLINE
+# if defined(HAVE_READLINE_READLINE_H)
+#  include <readline/readline.h>
+# elif defined(HAVE_READLINE_H)
+#  include <readline.h>
+# else
+extern char *readline();
+# endif
+#endif	/* HAVE_LIBREADLINE */
+
+#ifdef HAVE_LIBREADLINE_HISTORY
+# if defined(HAVE_READLINE_HISTORY_H)
+#  include <readline/history.h>
+# elif defined(HAVE_HISTORY_H)
+#  include <history.h>
+# else
+extern void add_history();
+# endif
+#endif	/* HAVE_LIBREADLINE_HISTORY */
+
 typedef struct __wtoken__ {
   WORD_ID wid;
   struct __wtoken__ *next;

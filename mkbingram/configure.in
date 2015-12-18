@@ -1,0 +1,58 @@
+dnl Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+dnl Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
+dnl Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+dnl Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+dnl All rights reserved
+dnl
+dnl $Id: configure.in,v 1.8 2013/06/20 17:14:18 sumomo Exp $
+dnl
+
+AC_INIT(mkbingram.c)
+AC_CONFIG_HEADER(config.h)
+AC_CONFIG_AUX_DIR(../support)
+
+dnl Checks for system.
+AC_CANONICAL_HOST
+
+dnl Checks for optimization flag
+AC_MSG_CHECKING([host-specific optimization flag])
+if test -z "$CFLAGS" ; then
+    OPTFLAG=../support/cflags.${host_cpu}-${host_vendor}-${host_os}
+    if test -f "$OPTFLAG" ; then
+	. $OPTFLAG
+	AC_MSG_RESULT([$OPTFLAG])
+    else
+	AC_MSG_RESULT([no])
+    fi
+else
+    AC_MSG_RESULT([skipped])
+fi
+
+dnl Checks for compiler.
+AC_PROG_CC
+AC_PROG_CPP
+
+dnl Checks for programs.
+AC_PROG_INSTALL
+AC_PATH_PROG(RM, rm)
+AC_EXEEXT
+
+dnl Checks for header files.
+AC_HEADER_STDC
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+dnl AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+
+dnl check for charset conversion library
+dnl check w32 function
+has_winnls=no
+AC_CHECK_HEADERS(winnls.h,[has_winnls=yes],[has_winnls=no])
+if test "$has_winnls" = no; then
+  AM_ICONV
+fi
+
+dnl write names
+AC_OUTPUT(Makefile)

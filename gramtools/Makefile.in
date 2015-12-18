@@ -14,34 +14,30 @@ INSTALL=@INSTALL@
 
 SUBDIRS=mkdfa dfa_minimize generate accept_check nextword yomi2voca gram2sapixml dfa_determinize 
 
-all:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE)); \
-	done
+.PHONY: all install install.bin clean distclean
 
-install:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE) install); \
-	done
+all install install.bin clean distclean: $(SUBDIRS)
 
-install.bin:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE) install.bin); \
-	done
+all: TARGET=all
 
+install: TARGET=install
+
+install.bin: TARGET=install.bin
+
+clean: TARGET=clean
 clean:
-	for d in $(SUBDIRS); do \
-	  (cd $$d; $(MAKE) clean); \
-	done
 	$(RM) config.log config.cache
 
-
+distclean: TARGET=distclean
 distclean:
-	for d in $(SUBDIRS); do \
-	  if test -f $$d/Makefile; then \
-	   (cd $$d; $(MAKE) distclean); \
-	  fi; \
-	done
 	$(RM) config.log config.cache
 	$(RM) config.status
 	$(RM) Makefile
+
+
+$(SUBDIRS): force
+	@ test -f $@/Makefile && $(MAKE) -C $@ $(TARGET)
+
+.PHONY: force
+
+force :;

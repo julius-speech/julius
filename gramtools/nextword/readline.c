@@ -9,10 +9,7 @@
 #include <sent/vocabulary.h>
 #include <sent/dfa.h>
 #include <sent/speech.h>
-#ifdef HAVE_READLINE
-#include <readline/readline.h>
-#include <readline/history.h>
-#endif
+
 #include "nextword.h"
 
 extern WORD_INFO *winfo;
@@ -26,7 +23,7 @@ extern boolean term_mode;
 
 static char *line_read = (char *)NULL; /* 読み込んだ文字列 */
 
-#ifdef HAVE_READLINE
+#ifdef HAVE_LIBREADLINE
 /* readline関係 */
 /* Read a string, and return a pointer to it.  Returns NULL on EOF. */
 char *
@@ -40,12 +37,14 @@ rl_gets (char *prompt)
   }
   /* Get a line from the user. */
   line_read = readline (prompt);
+#ifdef HAVE_LIBREADLINE_HISTORY
   /* If the line has any text in it, save it on the history. */
   if (line_read && *line_read) {
     /*line_read = pad_sil(line_read);
     printf("%s\n",line_read);*/
     add_history (line_read);
   }
+#endif
   return (line_read);
 }
 
@@ -88,7 +87,7 @@ dfaword_generator(char *text, int state)
   return((char *)NULL);
 }
 
-#else  /* ~HAVE_READLINE */
+#else  /* ~HAVE_LIBREADLINE */
 
 /* Read a string, and return a pointer to it.  Returns NULL on EOF. */
 char *
@@ -119,4 +118,4 @@ rl_gets (char *prompt)
   return (line_read);
 }
 
-#endif /* HAVE_READLINE */
+#endif /* HAVE_LIBREADLINE */

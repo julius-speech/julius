@@ -50,7 +50,9 @@ usage(char *s)
   printf("    -nlr file       forward  N-gram in ARPA format\n");
   printf("    -nrl file       backward N-gram in ARPA format\n");
   printf("    -d bingramfile  Julius binary N-gram file input\n");
+#if defined(HAVE_WINNLS) || defined(HAVE_ICONV)
   printf("    -c from to      convert character code\n");
+#endif
   printf("    -swap           swap \"%s\" and \"%s\"\n", BEGIN_WORD_DEFAULT, END_WORD_DEFAULT);
   printf("\n      When both \"-nlr\" and \"-nrl\" are specified, \n");
   printf("      Julius will use the BACKWARD N-gram as main LM\n");
@@ -114,6 +116,7 @@ main(int argc, char *argv[])
 	  return -1;
 	}
       } else if (argv[i][1] == 'c') {
+#if defined(HAVE_WINNLS) || defined(HAVE_ICONV)
 	if (++i >= argc) {
 	  printf("Error: no argument for option \"%s\"\n", argv[i]);
 	  usage(argv[0]);
@@ -128,6 +131,11 @@ main(int argc, char *argv[])
 	}
 	to_code = strcpy((char*)mymalloc(strlen(argv[i])+1),argv[i]);
 	charconv_enabled = TRUE;
+#else
+	printf("Error: this binary was not built with character code conversion\n");
+	usage(argv[0]);
+	return -1;
+#endif
       } else if (argv[i][1] == 's') {
 	force_swap = TRUE;
       }
@@ -207,6 +215,7 @@ main(int argc, char *argv[])
 
   print_ngram_info(stdout, ngram);
   
+#if defined(HAVE_WINNLS) || defined(HAVE_ICONV)
   if (charconv_enabled == TRUE) {
     /* do character conversion */
     if (charconv_setup(from_code, to_code) == -1) {
@@ -221,6 +230,7 @@ main(int argc, char *argv[])
     }
     free(buf);
   }
+#endif
 
   /* write in JULIUS binary format */
   if ((fp = fopen_writefile(outfile)) == NULL) {

@@ -582,7 +582,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 PACKAGE_URL=
 
-ac_unique_file="src/phmm/outprob.c"
+ac_unique_file="mkbingram.c"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -621,25 +621,9 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-SOUNDLIB
-SOUNDINC
-EXTRALIB
-EXTRAOBJ
-gzdesc
-use_fork
-use_class_ngram
-wavefile_support
-use_pthread
-use_netaudio
-adinlist
-aldesc
-altype
-LIBSENT_VERSION
-GZIP
+LIBICONV
 EGREP
 GREP
-RANLIB
-AR
 RM
 INSTALL_DATA
 INSTALL_SCRIPT
@@ -701,17 +685,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
-with_mictype
-with_netaudio_dir
-enable_addarray
-enable_words_int
-enable_class_ngram
-enable_fork
-enable_mfcc_table
-enable_msd
-enable_mbr
-enable_zlib
-with_sndfile
+with_libiconv_prefix
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1329,26 +1303,10 @@ if test -n "$ac_init_help"; then
 
   cat <<\_ACEOF
 
-Optional Features:
-  --disable-option-checking  ignore unrecognized --enable/--with options
-  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
-  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --disable-addarray      debug do not use addlog_array() function
-  --enable-words-int      use integer instead of unsigned short for word ID
-                           to extend vocabulary limit to 2^31=2G words
-  --disable-class-ngram   disable class N-gram support
-  --enable-fork           enable process forking on adinnet
-  --disable-mfcc-table    disable sin/cos table for MFCC calculation
-  --enable-msd            enable MSD model support
-  --disable-mbr           disable MBR support
-  --disable-zlib          disable zlib library
-
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-mictype=TYPE     specify mic I/O (oss|alsa|freebsd|coreaudio|sol2|sun4|irix|esd|sp|portaudio|pa-oss|pa-alsa|pa-winmm|pa-dsound|pulseaudio)
-  --with-netaudio-dir=DIR DatLink/NetAudio include/lib are in DIR
-  --without-sndfile       does not link libsndfile library
+  --with-libiconv-prefix=DIR  search for libiconv in DIR/include and DIR/lib
 
 Some influential environment variables:
   CC          C compiler command
@@ -1675,72 +1633,51 @@ $as_echo "$ac_res" >&6; }
 
 } # ac_fn_c_check_header_compile
 
-# ac_fn_c_check_func LINENO FUNC VAR
-# ----------------------------------
-# Tests whether FUNC exists, setting the cache variable VAR accordingly
-ac_fn_c_check_func ()
+# ac_fn_c_try_link LINENO
+# -----------------------
+# Try to link conftest.$ac_ext, and return whether this succeeded.
+ac_fn_c_try_link ()
 {
   as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
-$as_echo_n "checking for $2... " >&6; }
-if eval \${$3+:} false; then :
-  $as_echo_n "(cached) " >&6
+  rm -f conftest.$ac_objext conftest$ac_exeext
+  if { { ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_link") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    grep -v '^ *+' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+    mv -f conftest.er1 conftest.err
+  fi
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 test -x conftest$ac_exeext
+       }; then :
+  ac_retval=0
 else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-/* Define $2 to an innocuous variant, in case <limits.h> declares $2.
-   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
-#define $2 innocuous_$2
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char $2 (); below.
-    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-    <limits.h> exists even on freestanding compilers.  */
-
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-
-#undef $2
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char $2 ();
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined __stub_$2 || defined __stub___$2
-choke me
-#endif
-
-int
-main ()
-{
-return $2 ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  eval "$3=yes"
-else
-  eval "$3=no"
+	ac_retval=1
 fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-eval ac_res=\$$3
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
+  # Delete the IPA/IPO (Inter Procedural Analysis/Optimization) information
+  # created by the PGI compiler (conftest_ipa8_conftest.oo), as it would
+  # interfere with the next link command; also delete a directory that is
+  # left behind by Apple's compiler.  We do this before executing the actions.
+  rm -rf conftest.dSYM conftest_ipa8_conftest.oo
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
 
-} # ac_fn_c_check_func
+} # ac_fn_c_try_link
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -2093,7 +2030,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-ac_config_headers="$ac_config_headers include/sent/config.h"
+ac_config_headers="$ac_config_headers config.h"
 
 ac_aux_dir=
 for ac_dir in ../support "$srcdir"/../support; do
@@ -2124,139 +2061,6 @@ ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
-
-LIBSENT_VERSION=4.3.1
-
-# specify mic type
-
-# Check whether --with-mictype was given.
-if test "${with_mictype+set}" = set; then :
-  withval=$with_mictype;
-else
-  with_mictype=auto
-fi
-
-
-# NetAudio support
-
-# Check whether --with-netaudio-dir was given.
-if test "${with_netaudio_dir+set}" = set; then :
-  withval=$with_netaudio_dir;
-else
-  with_netaudio_dir=auto
-fi
-
-
-# Check whether --enable-addarray was given.
-if test "${enable_addarray+set}" = set; then :
-  enableval=$enable_addarray; want_addarray=$enableval
-
-else
-  want_addarray=yes
-fi
-
-
-# Check whether --enable-words-int was given.
-if test "${enable_words_int+set}" = set; then :
-  enableval=$enable_words_int; want_words_int=$enableval
-
-else
-  want_words_int=no
-fi
-
-
-# Check whether --enable-class-ngram was given.
-if test "${enable_class_ngram+set}" = set; then :
-  enableval=$enable_class_ngram; use_class_ngram=$enableval
-
-else
-  use_class_ngram=yes
-fi
-
-
-# Check whether --enable-fork was given.
-if test "${enable_fork+set}" = set; then :
-  enableval=$enable_fork; use_fork=$enableval
-
-else
-  use_fork=no
-fi
-
-
-# Check whether --enable-mfcc-table was given.
-if test "${enable_mfcc_table+set}" = set; then :
-  enableval=$enable_mfcc_table; use_mfcc_table=$enableval
-
-else
-  use_mfcc_table=yes
-fi
-
-
-# Check whether --enable-msd was given.
-if test "${enable_msd+set}" = set; then :
-  enableval=$enable_msd; want_msd=$enableval
-
-else
-  want_msd=no
-fi
-
-
-# Check whether --enable-mbr was given.
-if test "${enable_mbr+set}" = set; then :
-  enableval=$enable_mbr; want_mbr=$enableval
-
-else
-  want_mbr=yes
-fi
-
-
-
-
-# Check whether --enable-zlib was given.
-if test "${enable_zlib+set}" = set; then :
-  enableval=$enable_zlib; use_zlib=$enableval
-
-else
-  use_zlib=yes
-fi
-
-
-
-# Check whether --with-sndfile was given.
-if test "${with_sndfile+set}" = set; then :
-  withval=$with_sndfile;
-fi
-
-
-
-if test "$want_addarray" = yes; then
-	$as_echo "#define USE_ADDLOG_ARRAY 1" >>confdefs.h
-
-fi
-if test "$want_words_int" = yes; then
-	$as_echo "#define WORDS_INT 1" >>confdefs.h
-
-fi
-if test "$use_class_ngram" = yes; then
-	$as_echo "#define CLASS_NGRAM 1" >>confdefs.h
-
-fi
-if test "$use_fork" = yes; then
-	$as_echo "#define FORK_ADINNET 1" >>confdefs.h
-
-fi
-if test "$use_mfcc_table" = yes; then
-	$as_echo "#define MFCC_SINCOS_TABLE 1" >>confdefs.h
-
-fi
-if test "$want_msd" = yes; then
-	$as_echo "#define ENABLE_MSD 1" >>confdefs.h
-
-fi
-if test "$want_mbr" = yes; then
-	$as_echo "#define USE_MBR 1" >>confdefs.h
-
-fi
 
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
@@ -2330,8 +2134,8 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host specific optimization flag" >&5
-$as_echo_n "checking host specific optimization flag... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host-specific optimization flag" >&5
+$as_echo_n "checking host-specific optimization flag... " >&6; }
 if test -z "$CFLAGS" ; then
     OPTFLAG=../support/cflags.${host_cpu}-${host_vendor}-${host_os}
     if test -f "$OPTFLAG" ; then
@@ -3407,145 +3211,7 @@ $as_echo "no" >&6; }
 fi
 
 
-# Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_AR+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $AR in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_AR="$AR" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_AR="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
 
-  ;;
-esac
-fi
-AR=$ac_cv_path_AR
-if test -n "$AR"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $AR" >&5
-$as_echo "$AR" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_RANLIB+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$RANLIB"; then
-  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-RANLIB=$ac_cv_prog_RANLIB
-if test -n "$RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $RANLIB" >&5
-$as_echo "$RANLIB" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_prog_RANLIB"; then
-  ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_RANLIB+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_RANLIB"; then
-  ac_cv_prog_ac_ct_RANLIB="$ac_ct_RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_RANLIB=$ac_cv_prog_ac_ct_RANLIB
-if test -n "$ac_ct_RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_RANLIB" >&5
-$as_echo "$ac_ct_RANLIB" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_ct_RANLIB" = x; then
-    RANLIB=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    RANLIB=$ac_ct_RANLIB
-  fi
-else
-  RANLIB="$ac_cv_prog_RANLIB"
-fi
-
-
-
-case "$host_os" in
-  cygwin*|mingw*)
-    EXTRALIB="-static $EXTRALIB"
-    ;;
-esac
 
 
 
@@ -3791,259 +3457,6 @@ $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 
 fi
 
-# On IRIX 5.3, sys/types and inttypes.h are conflicting.
-for ac_header in sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
-		  inttypes.h stdint.h unistd.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_compile "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default
-"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-
-for ac_header in unistd.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "unistd.h" "ac_cv_header_unistd_h" "$ac_includes_default"
-if test "x$ac_cv_header_unistd_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_UNISTD_H 1
-_ACEOF
-
-fi
-
-done
-
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
-$as_echo_n "checking whether byte ordering is bigendian... " >&6; }
-if ${ac_cv_c_bigendian+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_cv_c_bigendian=unknown
-    # See if we're dealing with a universal compiler.
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifndef __APPLE_CC__
-	       not a universal capable compiler
-	     #endif
-	     typedef int dummy;
-
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-
-	# Check for potential -arch flags.  It is not universal unless
-	# there are at least two -arch flags with different values.
-	ac_arch=
-	ac_prev=
-	for ac_word in $CC $CFLAGS $CPPFLAGS $LDFLAGS; do
-	 if test -n "$ac_prev"; then
-	   case $ac_word in
-	     i?86 | x86_64 | ppc | ppc64)
-	       if test -z "$ac_arch" || test "$ac_arch" = "$ac_word"; then
-		 ac_arch=$ac_word
-	       else
-		 ac_cv_c_bigendian=universal
-		 break
-	       fi
-	       ;;
-	   esac
-	   ac_prev=
-	 elif test "x$ac_word" = "x-arch"; then
-	   ac_prev=arch
-	 fi
-       done
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-    if test $ac_cv_c_bigendian = unknown; then
-      # See if sys/param.h defines the BYTE_ORDER macro.
-      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <sys/types.h>
-	     #include <sys/param.h>
-
-int
-main ()
-{
-#if ! (defined BYTE_ORDER && defined BIG_ENDIAN \
-		     && defined LITTLE_ENDIAN && BYTE_ORDER && BIG_ENDIAN \
-		     && LITTLE_ENDIAN)
-	      bogus endian macros
-	     #endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  # It does; now see whether it defined to BIG_ENDIAN or not.
-	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <sys/types.h>
-		#include <sys/param.h>
-
-int
-main ()
-{
-#if BYTE_ORDER != BIG_ENDIAN
-		 not big endian
-		#endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_c_bigendian=yes
-else
-  ac_cv_c_bigendian=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-    fi
-    if test $ac_cv_c_bigendian = unknown; then
-      # See if <limits.h> defines _LITTLE_ENDIAN or _BIG_ENDIAN (e.g., Solaris).
-      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <limits.h>
-
-int
-main ()
-{
-#if ! (defined _LITTLE_ENDIAN || defined _BIG_ENDIAN)
-	      bogus endian macros
-	     #endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  # It does; now see whether it defined to _BIG_ENDIAN or not.
-	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <limits.h>
-
-int
-main ()
-{
-#ifndef _BIG_ENDIAN
-		 not big endian
-		#endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_c_bigendian=yes
-else
-  ac_cv_c_bigendian=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-    fi
-    if test $ac_cv_c_bigendian = unknown; then
-      # Compile a test program.
-      if test "$cross_compiling" = yes; then :
-  # Try to guess by grepping values from an object file.
-	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-short int ascii_mm[] =
-		  { 0x4249, 0x4765, 0x6E44, 0x6961, 0x6E53, 0x7953, 0 };
-		short int ascii_ii[] =
-		  { 0x694C, 0x5454, 0x656C, 0x6E45, 0x6944, 0x6E61, 0 };
-		int use_ascii (int i) {
-		  return ascii_mm[i] + ascii_ii[i];
-		}
-		short int ebcdic_ii[] =
-		  { 0x89D3, 0xE3E3, 0x8593, 0x95C5, 0x89C4, 0x9581, 0 };
-		short int ebcdic_mm[] =
-		  { 0xC2C9, 0xC785, 0x95C4, 0x8981, 0x95E2, 0xA8E2, 0 };
-		int use_ebcdic (int i) {
-		  return ebcdic_mm[i] + ebcdic_ii[i];
-		}
-		extern int foo;
-
-int
-main ()
-{
-return use_ascii (foo) == use_ebcdic (foo);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  if grep BIGenDianSyS conftest.$ac_objext >/dev/null; then
-	      ac_cv_c_bigendian=yes
-	    fi
-	    if grep LiTTleEnDian conftest.$ac_objext >/dev/null ; then
-	      if test "$ac_cv_c_bigendian" = unknown; then
-		ac_cv_c_bigendian=no
-	      else
-		# finding both strings is unlikely to happen, but who knows?
-		ac_cv_c_bigendian=unknown
-	      fi
-	    fi
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$ac_includes_default
-int
-main ()
-{
-
-	     /* Are we little or big endian?  From Harbison&Steele.  */
-	     union
-	     {
-	       long int l;
-	       char c[sizeof (long int)];
-	     } u;
-	     u.l = 1;
-	     return u.c[sizeof (long int) - 1] == 1;
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  ac_cv_c_bigendian=no
-else
-  ac_cv_c_bigendian=yes
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-    fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_bigendian" >&5
-$as_echo "$ac_cv_c_bigendian" >&6; }
- case $ac_cv_c_bigendian in #(
-   yes)
-     $as_echo "#define WORDS_BIGENDIAN 1" >>confdefs.h
-;; #(
-   no)
-      ;; #(
-   universal)
-
-$as_echo "#define AC_APPLE_UNIVERSAL_BUILD 1" >>confdefs.h
-
-     ;; #(
-   *)
-     as_fn_error $? "unknown endianness
- presetting ac_cv_c_bigendian=no (or yes) will help" "$LINENO" 5 ;;
- esac
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
@@ -4126,1235 +3539,173 @@ $as_echo "#define const /**/" >>confdefs.h
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for socklen_t" >&5
-$as_echo_n "checking for socklen_t... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+
+has_winnls=no
+# On IRIX 5.3, sys/types and inttypes.h are conflicting.
+for ac_header in sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
+		  inttypes.h stdint.h unistd.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_compile "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default
+"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
+for ac_header in winnls.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "winnls.h" "ac_cv_header_winnls_h" "$ac_includes_default"
+if test "x$ac_cv_header_winnls_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_WINNLS_H 1
+_ACEOF
+ has_winnls=yes
+else
+  has_winnls=no
+fi
+
+done
+
+if test "$has_winnls" = no; then
+
+
+
+# Check whether --with-libiconv-prefix was given.
+if test "${with_libiconv_prefix+set}" = set; then :
+  withval=$with_libiconv_prefix;
+    for dir in `echo "$withval" | tr : ' '`; do
+      if test -d $dir/include; then CPPFLAGS="$CPPFLAGS -I$dir/include"; fi
+      if test -d $dir/lib; then LDFLAGS="$LDFLAGS -L$dir/lib"; fi
+    done
+
+fi
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv" >&5
+$as_echo_n "checking for iconv... " >&6; }
+if ${am_cv_func_iconv+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    am_cv_func_iconv="no, consider installing GNU libiconv"
+    am_cv_lib_iconv=no
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <stdlib.h>
+#include <iconv.h>
+int
+main ()
+{
+iconv_t cd = iconv_open("","");
+       iconv(cd,NULL,NULL,NULL,NULL);
+       iconv_close(cd);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  am_cv_func_iconv=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+    if test "$am_cv_func_iconv" != yes; then
+      am_save_LIBS="$LIBS"
+      LIBS="$LIBS -liconv"
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdlib.h>
+#include <iconv.h>
+int
+main ()
+{
+iconv_t cd = iconv_open("","");
+         iconv(cd,NULL,NULL,NULL,NULL);
+         iconv_close(cd);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  am_cv_lib_iconv=yes
+        am_cv_func_iconv=yes
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+      LIBS="$am_save_LIBS"
+    fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_func_iconv" >&5
+$as_echo "$am_cv_func_iconv" >&6; }
+  if test "$am_cv_func_iconv" = yes; then
+
+$as_echo "#define HAVE_ICONV 1" >>confdefs.h
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv declaration" >&5
+$as_echo_n "checking for iconv declaration... " >&6; }
+    if ${am_cv_proto_iconv+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <stdlib.h>
+#include <iconv.h>
+extern
+#ifdef __cplusplus
+"C"
+#endif
+#if defined(__STDC__) || defined(__cplusplus)
+size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+#else
+size_t iconv();
+#endif
 
 int
 main ()
 {
-socklen_t dummy;
+
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
-  $as_echo "#define HAVE_SOCKLEN_T 1" >>confdefs.h
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
+  am_cv_proto_iconv_arg1=""
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
+  am_cv_proto_iconv_arg1="const"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-ac_fn_c_check_func "$LINENO" "gethostbyname" "ac_cv_func_gethostbyname"
-if test "x$ac_cv_func_gethostbyname" = xyes; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lnsl" >&5
-$as_echo_n "checking for gethostbyname in -lnsl... " >&6; }
-if ${ac_cv_lib_nsl_gethostbyname+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-
-# ac_fn_c_try_link LINENO
-# -----------------------
-# Try to link conftest.$ac_ext, and return whether this succeeded.
-ac_fn_c_try_link ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  rm -f conftest.$ac_objext conftest$ac_exeext
-  if { { ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_link") 2>conftest.err
-  ac_status=$?
-  if test -s conftest.err; then
-    grep -v '^ *+' conftest.err >conftest.er1
-    cat conftest.er1 >&5
-    mv -f conftest.er1 conftest.err
-  fi
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 test -x conftest$ac_exeext
-       }; then :
-  ac_retval=0
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_retval=1
-fi
-  # Delete the IPA/IPO (Inter Procedural Analysis/Optimization) information
-  # created by the PGI compiler (conftest_ipa8_conftest.oo), as it would
-  # interfere with the next link command; also delete a directory that is
-  # left behind by Apple's compiler.  We do this before executing the actions.
-  rm -rf conftest.dSYM conftest_ipa8_conftest.oo
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-  as_fn_set_status $ac_retval
-
-} # ac_fn_c_try_link
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname ();
-int
-main ()
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_nsl_gethostbyname=yes
-else
-  ac_cv_lib_nsl_gethostbyname=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_gethostbyname" >&5
-$as_echo "$ac_cv_lib_nsl_gethostbyname" >&6; }
-if test "x$ac_cv_lib_nsl_gethostbyname" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBNSL 1
-_ACEOF
-
-  LIBS="-lnsl $LIBS"
-
+      am_cv_proto_iconv="extern size_t iconv (iconv_t cd, $am_cv_proto_iconv_arg1 char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);"
 fi
 
-fi
-
-ac_fn_c_check_func "$LINENO" "connect" "ac_cv_func_connect"
-if test "x$ac_cv_func_connect" = xyes; then :
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for connect in -lsocket" >&5
-$as_echo_n "checking for connect in -lsocket... " >&6; }
-if ${ac_cv_lib_socket_connect+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char connect ();
-int
-main ()
-{
-return connect ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_socket_connect=yes
-else
-  ac_cv_lib_socket_connect=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_connect" >&5
-$as_echo "$ac_cv_lib_socket_connect" >&6; }
-if test "x$ac_cv_lib_socket_connect" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBSOCKET 1
-_ACEOF
-
-  LIBS="-lsocket $LIBS"
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for connect in -lws2_32" >&5
-$as_echo_n "checking for connect in -lws2_32... " >&6; }
-xxxxLIBS=$LIBS
-LIBS="$LIBS -lws2_32"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <winsock2.h>
-int sd;
-struct sockaddr_in s;
-
-int
-main ()
-{
-connect(sd, (struct sockaddr *)&s, sizeof(s));
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  EXTRALIB="$EXTRALIB -lws2_32"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-else
-  LIBS=$xxxxLIBS
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-fi
-
-fi
-
-
-for ac_func in strcasecmp
-do :
-  ac_fn_c_check_func "$LINENO" "strcasecmp" "ac_cv_func_strcasecmp"
-if test "x$ac_cv_func_strcasecmp" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_STRCASECMP 1
-_ACEOF
-
-fi
-done
-
-for ac_func in sleep
-do :
-  ac_fn_c_check_func "$LINENO" "sleep" "ac_cv_func_sleep"
-if test "x$ac_cv_func_sleep" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SLEEP 1
-_ACEOF
-
-fi
-done
-
-
-case "$host_os" in
-  cygwin*|mingw*)
-# avoid ALSA/OSS detection for Windows environment
-    has_alsa=no
-    has_oss=no
-    ;;
-  *)
-# ALSA
-    has_alsa=yes
-    for ac_header in alsa/asoundlib.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "alsa/asoundlib.h" "ac_cv_header_alsa_asoundlib_h" "$ac_includes_default"
-if test "x$ac_cv_header_alsa_asoundlib_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_ALSA_ASOUNDLIB_H 1
-_ACEOF
-
-else
-  for ac_header in sys/asoundlib.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sys/asoundlib.h" "ac_cv_header_sys_asoundlib_h" "$ac_includes_default"
-if test "x$ac_cv_header_sys_asoundlib_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SYS_ASOUNDLIB_H 1
-_ACEOF
-
-else
-  has_alsa=no
-
-fi
-
-done
-
-fi
-
-done
-
-# OSS
-    has_oss=yes
-    for ac_header in sys/soundcard.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sys/soundcard.h" "ac_cv_header_sys_soundcard_h" "$ac_includes_default"
-if test "x$ac_cv_header_sys_soundcard_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SYS_SOUNDCARD_H 1
-_ACEOF
-
-else
-  for ac_header in machine/soundcard.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "machine/soundcard.h" "ac_cv_header_machine_soundcard_h" "$ac_includes_default"
-if test "x$ac_cv_header_machine_soundcard_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_MACHINE_SOUNDCARD_H 1
-_ACEOF
-
-else
-  has_oss=no
-
-fi
-
-done
-
-fi
-
-done
-
-    ;;
-esac
-
-# ESounD
-has_esd=yes
-for ac_header in esd.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "esd.h" "ac_cv_header_esd_h" "$ac_includes_default"
-if test "x$ac_cv_header_esd_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_ESD_H 1
-_ACEOF
-
-else
-  has_esd=no
-fi
-
-done
-
-
-# PulseAudio
-has_pulseaudio=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pa_simple_new in -lpulse-simple" >&5
-$as_echo_n "checking for pa_simple_new in -lpulse-simple... " >&6; }
-if ${ac_cv_lib_pulse_simple_pa_simple_new+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpulse-simple  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char pa_simple_new ();
-int
-main ()
-{
-return pa_simple_new ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_pulse_simple_pa_simple_new=yes
-else
-  ac_cv_lib_pulse_simple_pa_simple_new=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pulse_simple_pa_simple_new" >&5
-$as_echo "$ac_cv_lib_pulse_simple_pa_simple_new" >&6; }
-if test "x$ac_cv_lib_pulse_simple_pa_simple_new" = xyes; then :
-  for ac_header in pulse/simple.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "pulse/simple.h" "ac_cv_header_pulse_simple_h" "$ac_includes_default"
-if test "x$ac_cv_header_pulse_simple_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_PULSE_SIMPLE_H 1
-_ACEOF
- has_pulseaudio=yes
-fi
-
-done
-
-fi
-
-
-if test "$with_mictype" = auto; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for default input device type" >&5
-$as_echo_n "checking for default input device type... " >&6; }
-  altype=no
-  case "$host_os" in
-  linux*)
-	# Linux - availability already checked, set default
-	if test "$has_alsa" = yes; then
-	   altype=alsa
-	elif test "$has_pulseaudio" = yes; then
-	   altype=pulseaudio
-	elif test "$has_oss" = yes; then
-	   altype=oss
-	elif test "$has_esd" = yes; then
-	   altype=esd
-	else
-	   as_fn_error $? "none of alsa/oss/pulseaudio/esd header/lib found!" "$LINENO" 5
-	fi
-	;;
-  freebsd*)
-	# FreeBSD (snd driver)
-	if test "$has_oss" = yes; then
-	    altype=freebsd
-	elif test "$has_pulseaudio" = yes; then
-	    altype=pulseaudio
-	else
-	    as_fn_error $? "no soundcard.h or pulseaudio header/lib found!" "$LINENO" 5
-	fi
-	;;
-  darwin*)
-        # MacOSX (CoreAudio)
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <CoreAudio/CoreAudio.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  altype=coreaudio
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-	;;
-  solaris2*)
-	# Solaris2.x Built-in Audio
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <sys/audioio.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  altype=sol2
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-	;;
-  sunos4*)
-	# SunOS4 Audio
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <multimedia/libaudio.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  altype=sun4
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-	;;
-  irix6*)
- 	# O2 (SGI IRIX6.3)
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <audio.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  altype=irix
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-	;;
-#  osf*)
-#	# Digital Unix 4.0 --- not yet
-#	AC_TRY_CPP([#include <mme/mme_api.h>],altype=osf1)
-#	;;
-  cygwin*|mingw*)
-	# minGW - portaudio (auto select winmm / dsound)
-	altype=portaudio
-	;;
-  esac
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $altype" >&5
-$as_echo "$altype" >&6; }
-else
-  altype=$with_mictype
-fi
-
-# If PortAudio library found at the system, use it.
-# if not, V19 codes included in this distribution will be compiled in.
-case $altype in
-    portaudio)
-      pa_system=no
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Pa_Initialize in -lportaudio" >&5
-$as_echo_n "checking for Pa_Initialize in -lportaudio... " >&6; }
-if ${ac_cv_lib_portaudio_Pa_Initialize+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lportaudio  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char Pa_Initialize ();
-int
-main ()
-{
-return Pa_Initialize ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_portaudio_Pa_Initialize=yes
-else
-  ac_cv_lib_portaudio_Pa_Initialize=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_portaudio_Pa_Initialize" >&5
-$as_echo "$ac_cv_lib_portaudio_Pa_Initialize" >&6; }
-if test "x$ac_cv_lib_portaudio_Pa_Initialize" = xyes; then :
-  for ac_header in portaudio.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "portaudio.h" "ac_cv_header_portaudio_h" "$ac_includes_default"
-if test "x$ac_cv_header_portaudio_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_PORTAUDIO_H 1
-_ACEOF
- pa_system=yes
-fi
-
-done
-
-fi
-
-      if test "$pa_system" = no; then
-        case "$host_os" in
-        linux*)
-	  if test "$has_alsa" = yes; then
-	     altype="pa-alsa"
-	  else
-	     altype="pa-oss"
-	  fi
-          ;;
-	solaris*)
-	  altype="pa-solaris"
-	  ;;
-        cygwin*|mingw*)
-	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -ldsound" >&5
-$as_echo_n "checking for main in -ldsound... " >&6; }
-if ${ac_cv_lib_dsound_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldsound  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_dsound_main=yes
-else
-  ac_cv_lib_dsound_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dsound_main" >&5
-$as_echo "$ac_cv_lib_dsound_main" >&6; }
-if test "x$ac_cv_lib_dsound_main" = xyes; then :
-  for ac_header in DSound.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "DSound.h" "ac_cv_header_DSound_h" "$ac_includes_default"
-if test "x$ac_cv_header_DSound_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_DSOUND_H 1
-_ACEOF
- altype="pa-dsound"
-else
-  altype="pa-winmm"
-fi
-
-done
-
-else
-  altype="pa-winmm"
-fi
-
-          ;;
-        esac
-      else
-        altype="libportaudio"
-      fi
-      ;;
-esac
-
-# set appropritate parameters for the determined API
-SOUNDLIB=""
-ADINOBJ=""
-
-# when auto, several available interfaces will be enabled
-adinlist=""
-if test "$with_mictype" = auto; then
-  # if PulseAudio exist, include it
-  if test "$has_pulseaudio" = yes; then
-      SOUNDLIB="$SOUNDLIB -lpulse-simple -lpulse"
-      ADINOBJ="$ADINOBJ src/adin/adin_pulseaudio.o"
-      $as_echo "#define HAS_PULSEAUDIO 1" >>confdefs.h
-
-      adinlist="$adinlist pulseaudio"
-  fi
-  # if alsa exist, include it
-  if test "$has_alsa" = yes; then
-      SOUNDLIB="$SOUNDLIB -lasound"
-      ADINOBJ="$ADINOBJ src/adin/adin_mic_linux_alsa.o"
-      $as_echo "#define HAS_ALSA 1" >>confdefs.h
-
-      adinlist="$adinlist alsa"
-  fi
-  # if oss exist, include it
-  if test "$has_oss" = yes; then
-      ADINOBJ="$ADINOBJ src/adin/adin_mic_linux_oss.o"
-      $as_echo "#define HAS_OSS 1" >>confdefs.h
-
-      adinlist="$adinlist oss"
-  fi
-  # if esd exist, include it
-  if test "$has_esd" = yes; then
-      SOUNDLIB="$SOUNDLIB -lesd"
-      ADINOBJ="$ADINOBJ src/adin/adin_esd.o"
-      $as_echo "#define HAS_ESD 1" >>confdefs.h
-
-      adinlist="$adinlist esd"
-  fi
-fi
-
-# altype-specific setup
-case $altype in
-    sp)
-      aldesc="spAudio"
-      ADINOBJ="$ADINOBJ src/adin/adin_mic_sp.o"
-      $as_echo "#define USE_MIC 1" >>confdefs.h
-
-      $as_echo "#define USE_SPLIB 1" >>confdefs.h
-
-      case "$host_os" in
-        linux*)
-          { $as_echo "$as_me:${as_lineno-$LINENO}: checking for spInitAudio in -lspa.linux" >&5
-$as_echo_n "checking for spInitAudio in -lspa.linux... " >&6; }
-if ${ac_cv_lib_spa_linux_spInitAudio+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lspa.linux -lspb.linux -lm $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char spInitAudio ();
-int
-main ()
-{
-return spInitAudio ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_spa_linux_spInitAudio=yes
-else
-  ac_cv_lib_spa_linux_spInitAudio=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_spa_linux_spInitAudio" >&5
-$as_echo "$ac_cv_lib_spa_linux_spInitAudio" >&6; }
-if test "x$ac_cv_lib_spa_linux_spInitAudio" = xyes; then :
-  SOUNDLIB="$SOUNDLIB -lspa.linux -lspb.linux"
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for spInitAudio in -lspa.linux-glibc" >&5
-$as_echo_n "checking for spInitAudio in -lspa.linux-glibc... " >&6; }
-if ${ac_cv_lib_spa_linux_glibc_spInitAudio+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lspa.linux-glibc -lspb.linux-glibc -lm $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char spInitAudio ();
-int
-main ()
-{
-return spInitAudio ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_spa_linux_glibc_spInitAudio=yes
-else
-  ac_cv_lib_spa_linux_glibc_spInitAudio=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_spa_linux_glibc_spInitAudio" >&5
-$as_echo "$ac_cv_lib_spa_linux_glibc_spInitAudio" >&6; }
-if test "x$ac_cv_lib_spa_linux_glibc_spInitAudio" = xyes; then :
-  SOUNDLIB="$SOUNDLIB -lspa.linux-glibc -lspb.linux-glibc"
-else
-  as_fn_error $? "spAudio library not found!" "$LINENO" 5
-fi
-
-fi
-
-          ;;
-        solaris2*)
-          SOUNDLIB="$SOUNDLIB -L/usr/local/lib -lspa.sun -lspb.sun"
-          ;;
-        sunos4*)
-          SOUNDLIB="$SOUNDLIB -L/usr/local/lib -lspa.sun -lspb.sun -laudio"
-          ;;
-        irix6*)
-          SOUNDLIB="$SOUNDLIB -L/usr/local/lib -lspa.sgi -lspb.sgi -laudio"
-          ;;
-        cygwin*)
-          SOUNDLIB="$SOUNDLIB -L/usr/local/lib -lspa.win -lspb.win -lwinmm -liconv"
-          ;;
-        darwin*)
-          SOUNDLIB="$SOUNDLIB -arch ppc -framework CoreAudio -framework Carbon -L/usr/local/lib -lspa.mac -lspb.mac"
-          ;;
-      esac
-      ;;
-    libportaudio)
-      aldesc="PortAudio library (external)"
-      ADINOBJ="$ADINOBJ src/adin/adin_portaudio.o"
-      case "$host_os" in
-      	cygwin*)
-          SOUNDLIB="$SOUNDLIB -lportaudio.dll"
-	  ;;
-        *)
-	  SOUNDLIB="$SOUNDLIB -lportaudio"
-	  ;;
-      esac
-      $as_echo "#define USE_MIC 1" >>confdefs.h
-
-      ;;
-    pa-*)
-      aldesc="PortAudio library (internal)"
-      ADINOBJ="$ADINOBJ src/adin/pa/common/pa_allocation.o src/adin/pa/common/pa_converters.o src/adin/pa/common/pa_cpuload.o src/adin/pa/common/pa_debugprint.o src/adin/pa/common/pa_dither.o src/adin/pa/common/pa_front.o src/adin/pa/common/pa_process.o src/adin/pa/common/pa_ringbuffer.o src/adin/pa/common/pa_skeleton.o src/adin/pa/common/pa_stream.o src/adin/pa/common/pa_trace.o"
-      SOUNDINC="-Isrc/adin/pa/include -Isrc/adin/pa/common"
-      $as_echo "#define USE_MIC 1" >>confdefs.h
-
-      case "$altype" in
-        pa-winmm)
-	  aldesc="$aldesc (WinMM)"
-	  SOUNDINC="$SOUNDINC -DPA_NO_DS -DPA_NO_ASIO"
-          ADINOBJ="$ADINOBJ src/adin/pa/os/win/pa_win_hostapis.o src/adin/pa/os/win/pa_win_util.o src/adin/pa/os/win/pa_win_waveformat.o"
-	  ADINOBJ="$ADINOBJ src/adin/pa/hostapi/wmme/pa_win_wmme.o"
-          SOUNDLIB="$SOUNDLIB -lwinmm"
-          ;;
-        pa-dsound)
-	  aldesc="$aldesc (DirectSound)"
-	  SOUNDINC="$SOUNDINC -Isrc/adin/pa/os/win -DPA_NO_ASIO"
-          ADINOBJ="$ADINOBJ src/adin/pa/os/win/pa_win_hostapis.o src/adin/pa/os/win/pa_win_util.o src/adin/pa/os/win/pa_win_waveformat.o"
-	  ADINOBJ="$ADINOBJ src/adin/pa/hostapi/wmme/pa_win_wmme.o"
-	  ADINOBJ="$ADINOBJ src/adin/pa/hostapi/dsound/pa_win_ds.o src/adin/pa/hostapi/dsound/pa_win_ds_dynlink.o"
-          SOUNDLIB="$SOUNDLIB -lwinmm -ldsound -lole32"
-          ;;
-        pa-alsa)
-	  aldesc="$aldesc (Unix/ALSA)"
-	  SOUNDINC="$SOUNDINC -Isrc/adin/pa/os/unix -DPA_USE_ALSA"
-	  ADINOBJ="$ADINOBJ src/adin/pa/os/unix/pa_unix_hostapis.o src/adin/pa/os/unix/pa_unix_util.o"
-          ADINOBJ="$ADINOBJ src/adin/pa/hostapi/alsa/pa_linux_alsa.o"
-          SOUNDLIB="$SOUNDLIB -lpthread -lasound"
-          ;;
-        pa-oss)
-	  aldesc="$aldesc (Unix/OSS)"
-	  SOUNDINC="$SOUNDINC -Isrc/adin/pa/os/unix -DPA_USE_OSS"
-	  ADINOBJ="$ADINOBJ src/adin/pa/os/unix/pa_unix_hostapis.o src/adin/pa/os/unix/pa_unix_util.o"
-          ADINOBJ="$ADINOBJ src/adin/pa/hostapi/oss/pa_unix_oss.o"
-          SOUNDLIB="$SOUNDLIB -lpthread"
-          ;;
-        pa-solaris)
-	  aldesc="$aldesc (Solaris)"
-          ADINOBJ="$ADINOBJ src/adin/pa/pa_unix.o src/adin/pa/pa_unix_solaris.o"
-          SOUNDLIB="$SOUNDLIB -lpthread"
-          ;;
-      esac
-      ADINOBJ="$ADINOBJ src/adin/adin_portaudio.o"
-      ;;
-    oss)
-      if test "$has_oss" = no; then
-        as_fn_error $? "no OSS header!" "$LINENO" 5
-      fi
-      aldesc="Open Sound System compatible"
-      $as_echo "#define USE_MIC 1" >>confdefs.h
-
-      ADINOBJ="$ADINOBJ src/adin/adin_mic_linux.o"
-      if test "$with_mictype" != auto; then
-	ADINOBJ="$ADINOBJ src/adin/adin_mic_linux_oss.o"
-	$as_echo "#define HAS_OSS 1" >>confdefs.h
-
-        adinlist="$adinlist oss"
-      fi
-      ;;
-    alsa)
-      if test "$has_alsa" = no; then
-        as_fn_error $? "no ALSA header!" "$LINENO" 5
-      fi
-      aldesc="Advanced Linux Sound Architecture"
-      $as_echo "#define USE_MIC 1" >>confdefs.h
-
-      ADINOBJ="$ADINOBJ src/adin/adin_mic_linux.o"
-      if test "$with_mictype" != auto; then
-	SOUNDLIB="$SOUNDLIB -lasound"
-	ADINOBJ="$ADINOBJ src/adin/adin_mic_linux_alsa.o"
-	$as_echo "#define HAS_ALSA 1" >>confdefs.h
-
-        adinlist="$adinlist alsa"
-      fi
-      ;;
-    esd)
-      if test "$has_esd" = no; then
-        as_fn_error $? "no ESounD header!" "$LINENO" 5
-      fi
-      aldesc="EsoundD - The Enlightened Sound Daemon"
-      $as_echo "#define USE_MIC 1" >>confdefs.h
-
-      ADINOBJ="$ADINOBJ src/adin/adin_mic_linux.o"
-      if test "$with_mictype" != auto; then
-	SOUNDLIB="$SOUNDLIB -lesd"
-	ADINOBJ="$ADINOBJ src/adin/adin_esd.o"
-	$as_echo "#define HAS_ESD 1" >>confdefs.h
-
-        adinlist="$adinlist esd"
-      fi
-      ;;
-    pulseaudio)
-      if test "$has_pulseaudio" = no; then
-        as_fn_error $? "no PulseAudio header!" "$LINENO" 5
-      fi
-      aldesc="PulseAudio"
-      $as_echo "#define USE_MIC 1" >>confdefs.h
-
-      ADINOBJ="$ADINOBJ src/adin/adin_mic_linux.o"
-      if test "$with_mictype" != auto; then
-	SOUNDLIB="$SOUNDLIB -lpulse-simple -lpulse"
-	ADINOBJ="$ADINOBJ src/adin/adin_pulseaudio.o"
-	$as_echo "#define HAS_PULSEAUDIO 1" >>confdefs.h
-
-        adinlist="$adinlist pulseaudio"
-      fi
-      ;;
-    freebsd)
-	if test "$has_oss" = no; then
-	  as_fn_error $? "neither sys/soundcard.h nor machine/soundcard.h exist" "$LINENO" 5
-	fi
-	aldesc="FreeBSD snd driver"
-	ADINOBJ="$ADINOBJ src/adin/adin_mic_freebsd.o"
-	$as_echo "#define USE_MIC 1" >>confdefs.h
-
-	if test "$with_mictype" != auto; then
-	   ADINOBJ="$ADINOBJ src/adin/adin_mic_linux_oss.o"
-	   $as_echo "#define HAS_OSS 1" >>confdefs.h
-
-           adinlist="$adinlist oss"
-	fi
-	;;
-    coreaudio)
-	aldesc="MacOSX CoreAudio"
-	ADINOBJ="$ADINOBJ src/adin/adin_mic_darwin_coreaudio.o"
-	$as_echo "#define USE_MIC 1" >>confdefs.h
-
-	SOUNDLIB="$SOUNDLIB -Wl,-framework -Wl,CoreServices -Wl,-framework -Wl,CoreAudio -Wl,-framework -Wl,AudioUnit -Wl,-framework -Wl,AudioToolbox"
-	;;
-    sol2)
-	aldesc="Solaris2.x audio interface"
-	ADINOBJ="$ADINOBJ src/adin/adin_mic_sol2.o"
-	$as_echo "#define USE_MIC 1" >>confdefs.h
-
-	;;
-    sun4)
-	aldesc="SunOS4.x audio interface"
-	ADINOBJ="$ADINOBJ src/adin/adin_mic_sun4.o"
-	$as_echo "#define USE_MIC 1" >>confdefs.h
-
-	SOUNDLIB="$SOUNDLIB -laudio"
-	;;
-    irix)
-	aldesc="IRIX6.x audio interface"
-	ADINOBJ="$ADINOBJ src/adin/adin_mic_o2.o"
-	$as_echo "#define USE_MIC 1" >>confdefs.h
-
-	SOUNDLIB="$SOUNDLIB -laudio"
-	 ;;
-#    osf1)
-#	aldesc="Digital/Unix 4.0"
-#	ADINOBJ=src/adin/adin_mic_osf1.o
-#	AC_DEFINE(USE_MIC)
-#	SOUNDLIB="-L/usr/opt/MME242/lib -lmme")
-#	;;
-    *)
-	aldesc="no support"
-	as_fn_error $? "mictype not supported, or specified type not exist" "$LINENO" 5
-	;;
-esac
-
-if test "$with_netaudio_dir" = auto ; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for DatLink/NetAudio support" >&5
-$as_echo_n "checking for DatLink/NetAudio support... " >&6; }
-else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for DatLink/NetAudio support on ${with_netaudio_dir}" >&5
-$as_echo_n "checking for DatLink/NetAudio support on ${with_netaudio_dir}... " >&6; }
-fi
-TMPCPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS -I${with_netaudio_dir}/include"
-use_netaudio=no
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <netaudio.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  use_netaudio=yes
-	$as_echo "#define USE_NETAUDIO 1" >>confdefs.h
-
-	SOUNDINC="-I${with_netaudio_dir}/include"
-	ADINOBJ="$ADINOBJ src/adin/adin_netaudio.o src/adin/adin_na.o "
-	SOUNDLIB="$SOUNDLIB -L${with_netaudio_dir}/lib -lnetaudio -lsupport"
-	adinlist="$adinlist netaudio"
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $use_netaudio" >&5
-$as_echo "$use_netaudio" >&6; }
-CPPFLAGS="$TMPCPPFLAGS"
-EXTRAOBJ="$EXTRAOBJ $ADINOBJ"
-
-have_zlib=no;
-if test "$use_zlib" = yes; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for deflate in -lz" >&5
-$as_echo_n "checking for deflate in -lz... " >&6; }
-if ${ac_cv_lib_z_deflate+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lz  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char deflate ();
-int
-main ()
-{
-return deflate ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_z_deflate=yes
-else
-  ac_cv_lib_z_deflate=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_z_deflate" >&5
-$as_echo "$ac_cv_lib_z_deflate" >&6; }
-if test "x$ac_cv_lib_z_deflate" = xyes; then :
-  for ac_header in zlib.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "zlib.h" "ac_cv_header_zlib_h" "$ac_includes_default"
-if test "x$ac_cv_header_zlib_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_ZLIB_H 1
-_ACEOF
- have_zlib=yes;
-      gzdesc="zlib library";
-      EXTRALIB="$EXTRALIB -lz"
-      $as_echo "#define HAVE_ZLIB 1" >>confdefs.h
-
-fi
-
-done
-
-fi
-
-  if test "$have_zlib" = no; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: not found" >&5
-$as_echo "$as_me: WARNING: not found" >&2;}
-      use_zlib=no;
-  fi
-fi
-if test "$use_zlib" = no; then
-  # Extract the first word of "gzip", so it can be a program name with args.
-set dummy gzip; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_GZIP+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$GZIP"; then
-  ac_cv_prog_GZIP="$GZIP" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_GZIP="found"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_GZIP" && ac_cv_prog_GZIP="no"
-fi
-fi
-GZIP=$ac_cv_prog_GZIP
-if test -n "$GZIP"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GZIP" >&5
-$as_echo "$GZIP" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  if test "$GZIP" = no; then
-    gzdesc="none";
-    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: not found, compressed file input disabled" >&5
-$as_echo "$as_me: WARNING: not found, compressed file input disabled" >&2;}
-  else
-    gzdesc="gzip command";
-    $as_echo "#define ZCAT \"gzip -d -c\"" >>confdefs.h
-
-  fi
-fi
-
-
-wavefile_support="RAW and WAV only"
-if test -z "$with_sndfile"; then
-   with_sndfile=yes
-fi
-if test "$with_sndfile" = yes; then
- have_libsndfile=no
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sf_open in -lsndfile" >&5
-$as_echo_n "checking for sf_open in -lsndfile... " >&6; }
-if ${ac_cv_lib_sndfile_sf_open+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsndfile  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char sf_open ();
-int
-main ()
-{
-return sf_open ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_sndfile_sf_open=yes
-else
-  ac_cv_lib_sndfile_sf_open=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sndfile_sf_open" >&5
-$as_echo "$ac_cv_lib_sndfile_sf_open" >&6; }
-if test "x$ac_cv_lib_sndfile_sf_open" = xyes; then :
-  for ac_header in sndfile.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sndfile.h" "ac_cv_header_sndfile_h" "$ac_includes_default"
-if test "x$ac_cv_header_sndfile_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SNDFILE_H 1
-_ACEOF
- wavefile_support='various formats by libsndfile ver.1'
-    $as_echo "#define HAVE_LIBSNDFILE 1" >>confdefs.h
-
-    $as_echo "#define HAVE_LIBSNDFILE_VER1 1" >>confdefs.h
-
-    EXTRALIB="$EXTRALIB -lsndfile"
-    have_libsndfile=yes
-fi
-
-done
-
-fi
-
- if test "$have_libsndfile" = no; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sf_open_read in -lsndfile" >&5
-$as_echo_n "checking for sf_open_read in -lsndfile... " >&6; }
-if ${ac_cv_lib_sndfile_sf_open_read+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsndfile  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char sf_open_read ();
-int
-main ()
-{
-return sf_open_read ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_sndfile_sf_open_read=yes
-else
-  ac_cv_lib_sndfile_sf_open_read=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sndfile_sf_open_read" >&5
-$as_echo "$ac_cv_lib_sndfile_sf_open_read" >&6; }
-if test "x$ac_cv_lib_sndfile_sf_open_read" = xyes; then :
-  for ac_header in sndfile.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sndfile.h" "ac_cv_header_sndfile_h" "$ac_includes_default"
-if test "x$ac_cv_header_sndfile_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SNDFILE_H 1
-_ACEOF
- wavefile_support='various formats by libsndfile ver.0'
-      $as_echo "#define HAVE_LIBSNDFILE 1" >>confdefs.h
-
-      EXTRALIB="$EXTRALIB -lsndfile"
-      have_libsndfile=yes
-fi
-
-done
-
-fi
-
- fi
- if test "$have_libsndfile" = no; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: libsndfile enables AIFF AU SND NIST format for Julius.
-It's available at http://www.mega-nerd.com/libsndfile/" >&5
-$as_echo "$as_me: WARNING: libsndfile enables AIFF AU SND NIST format for Julius.
-It's available at http://www.mega-nerd.com/libsndfile/" >&2;}
- fi
-fi
-
-case "$host_os" in
-  darwin*)
-    EXTRALIB="$EXTRALIB -liconv"
-    ;;
-esac
-
-
-
-
-
-
-
-
-
-
-
+    am_cv_proto_iconv=`echo "$am_cv_proto_iconv" | tr -s ' ' | sed -e 's/( /(/'`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ac_t:-
+         }$am_cv_proto_iconv" >&5
+$as_echo "${ac_t:-
+         }$am_cv_proto_iconv" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define LIBSENT_VERSION "$LIBSENT_VERSION"
+#define ICONV_CONST $am_cv_proto_iconv_arg1
 _ACEOF
 
-cat >>confdefs.h <<_ACEOF
-#define AUDIO_API_NAME "$altype"
-_ACEOF
-
-cat >>confdefs.h <<_ACEOF
-#define AUDIO_API_DESC "$aldesc"
-_ACEOF
-
-cat >>confdefs.h <<_ACEOF
-#define AUDIO_FORMAT_DESC "$wavefile_support"
-_ACEOF
-
-cat >>confdefs.h <<_ACEOF
-#define GZIP_READING_DESC "$gzdesc"
-_ACEOF
+  fi
+  LIBICONV=
+  if test "$am_cv_lib_iconv" = yes; then
+    LIBICONV="-liconv"
+  fi
 
 
+fi
 
-
-
-
-
-ac_config_commands="$ac_config_commands default-1"
-
-ac_config_files="$ac_config_files Makefile libsent-config libsent-config-dist"
+ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5463,7 +3814,6 @@ done
 LIBOBJS=$ac_libobjs
 
 LTLIBOBJS=$ac_ltlibobjs
-
 
 
 
@@ -5890,7 +4240,6 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
-config_commands="$ac_config_commands"
 
 _ACEOF
 
@@ -5919,9 +4268,6 @@ $config_files
 
 Configuration headers:
 $config_headers
-
-Configuration commands:
-$config_commands
 
 Report bugs to the package provider."
 
@@ -6043,18 +4389,6 @@ _ASBOX
 
 _ACEOF
 cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
-#
-# INIT-COMMANDS
-#
-altype=$altype
-aldesc="$aldesc"
-adinlist="$adinlist"
-use_netaudio=$use_netaudio
-use_pthread=$use_pthread
-wavefile_support="$wavefile_support"
-gzdesc="$gzdesc"
-
-
 _ACEOF
 
 cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
@@ -6063,11 +4397,8 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "include/sent/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/sent/config.h" ;;
-    "default-1") CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
+    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "libsent-config") CONFIG_FILES="$CONFIG_FILES libsent-config" ;;
-    "libsent-config-dist") CONFIG_FILES="$CONFIG_FILES libsent-config-dist" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -6081,7 +4412,6 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
-  test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
 # Have a temporary directory for convenience.  Make it in the build tree
@@ -6378,7 +4708,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    "
 shift
 for ac_tag
 do
@@ -6616,18 +4946,9 @@ $as_echo "$as_me: $ac_file is unchanged" >&6;}
   fi
  ;;
 
-  :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
-$as_echo "$as_me: executing $ac_file commands" >&6;}
- ;;
-  esac
-
-
-  case $ac_file$ac_mode in
-    "default-1":C) chmod +x libsent-config libsent-config-dist
-./libsent-config --info
- ;;
 
   esac
+
 done # for ac_tag
 
 

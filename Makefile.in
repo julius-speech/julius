@@ -11,7 +11,7 @@ SHELL=/bin/sh
 
 SUBDIRS=libsent libjulius julius mkbingram mkbinhmm adinrec adintool mkgshmm mkss jcontrol gramtools generate-ngram jclient-perl binlm2arpa man
 
-CONFIG_SUBDIRS=mkgshmm gramtools jcontrol julius libjulius libsent
+CONFIG_SUBDIRS=mkgshmm gramtools jcontrol mkbingram julius libjulius libsent
 
 RM=@RM@ -f
 prefix=@prefix@

@@ -11,10 +11,6 @@
 #include <sent/vocabulary.h>
 #include <sent/dfa.h>
 #include <sent/speech.h>
-#ifdef HAVE_READLINE
-#include <readline/readline.h>
-#include <readline/history.h>
-#endif
 #include "nextword.h"
 #include "common.h"
 
@@ -229,7 +225,7 @@ usage(char *s)
   fprintf(stderr, "  -s string ... specify short-pause model\n");
   fprintf(stderr, "  -r      ... reverse order input\n");
   fprintf(stderr, "  -v      ... verbose output\n");
-#ifndef HAVE_READLINE
+#ifndef HAVE_LIBREADLINE
   fprintf(stderr, "(READLINE feature disabled)\n");
 #endif
   exit(1);
@@ -334,23 +330,23 @@ int main(int argc, char *argv[])
   }
   printf("----- \n");
 
-#ifdef HAVE_READLINE
+#ifdef HAVE_LIBREADLINE
   printf("command completion is built-in\n----- \n");
 #else
   printf("command completion is disabled\n----- \n");
 #endif
 
   /* initialize readline */
-#ifdef HAVE_READLINE
+#ifdef HAVE_LIBREADLINE
   /* rl_bind_key(PAGE, rl_menu_complete); */
   if (term_mode && !no_term_file) {
-#ifdef HAVE_READLINE_4_1_OLDER
+#ifdef HAVE_LIBREADLINE_4_1_OLDER
     rl_completion_entry_function = (Function *)dfaterm_generator;
 #else
     rl_completion_entry_function = (rl_compentry_func_t *)dfaterm_generator;
 #endif
   } else {
-#ifdef HAVE_READLINE_4_1_OLDER
+#ifdef HAVE_LIBREADLINE_4_1_OLDER
     rl_completion_entry_function = (Function *)dfaword_generator;
 #else
     rl_completion_entry_function = (rl_compentry_func_t *)dfaword_generator;
