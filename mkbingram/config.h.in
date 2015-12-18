@@ -1,0 +1,6 @@
+/* Define if you have winnls */
+#undef HAVE_WINNLS_H
+
+/* Define if you have iconv function */
+#undef HAVE_ICONV
+

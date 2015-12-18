@@ -10,7 +10,7 @@
 
 #define strmatch !strcmp
 
-#if defined(_WIN32)
+#if defined(HAVE_WINNLS)
 
 /* winnls */
 #include <windows.h>
@@ -20,7 +20,7 @@ static unsigned int from_cp;	///< Source codepage
 static unsigned int to_cp;	///< Target codepage
 static wchar_t unibuf[UNICODE_BUFFER_SIZE]; ///< buffer for unicode conversion
 
-#else
+#elif defined(HAVE_ICONV)
 
 /* iconv */
 #include <iconv.h>
@@ -33,7 +33,7 @@ static iconv_t cd = (iconv_t)-1; ///< Converstion descriptor
 static int convert_enabled = 0; ///< 1 if charset converstion is enabled
 
 
-#if defined(_WIN32)
+#if defined(HAVE_WINNLS)
 
 static int
 str2code(char *codestr, unsigned int *code)
@@ -100,7 +100,7 @@ charconv_setup(char *fromcode, char *tocode)
     return -1;
   }
 
-#if defined(_WIN32)
+#if defined(HAVE_WINNLS)
   if (str2code(fromcode, &from_cp) == -1) {
     fprintf(stderr, "Error: charconv_setup: unknown codepage specified\n");
     return -1;
@@ -109,7 +109,7 @@ charconv_setup(char *fromcode, char *tocode)
     fprintf(stderr, "Error: charconv_setup: unknown codepage specified\n");
     return -1;
   }
-#else
+#elif defined(HAVE_ICONV)
   /* clear already allocated descriptor */
   if (cd != (iconv_t)-1) {
     if (iconv_close(cd) < 0) {
@@ -148,7 +148,7 @@ char *
 charconv(char *instr, char *outstr, int maxoutlen)
 {
 
-#if defined(_WIN32)
+#if defined(HAVE_WINNLS)
 
   int unilen, newlen;
   char *srcbuf;
@@ -182,9 +182,8 @@ charconv(char *instr, char *outstr, int maxoutlen)
   }
   /* convert unicode to target string */
   WideCharToMultiByte(to_cp, 0, unibuf, -1, outstr, newlen, NULL, NULL);
-  return(outstr);
 
-#else
+#elif defined(HAVE_ICONV)
 
   char *src, *dst;
   size_t srclen, dstlen;
@@ -217,8 +216,7 @@ charconv(char *instr, char *outstr, int maxoutlen)
     }
   }
 
-  return(outstr);
-
 #endif
 
+  return(outstr);
 }
