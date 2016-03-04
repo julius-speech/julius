@@ -69,6 +69,7 @@ word_info_free(WORD_INFO *winfo)
   if (winfo->wname != NULL) free(winfo->wname);
   if (winfo->woutput != NULL) free(winfo->woutput);
   if (winfo->wlen != NULL) free(winfo->wlen);
+  if (winfo->wseq != NULL) free(winfo->wseq);
   if (winfo->wton != NULL) free(winfo->wton);
 #ifdef CLASS_NGRAM
   if (winfo->cprob != NULL) free(winfo->cprob);
