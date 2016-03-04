@@ -276,7 +276,6 @@ main(int argc, char *argv[])
     fprintf(stderr, "Julius rev.%s - based on ", JULIUS_VERSION);
     j_put_version(stderr);
     fprintf(stderr, "Try '-setting' for built-in engine configuration.\n");
-    fprintf(stderr, "Try '-help' for run time options.\n");
     return -1;
   }
 
@@ -288,7 +287,7 @@ main(int argc, char *argv[])
   /* else, you can load configurations from a jconf file */
   //jconf = j_config_load_file_new(jconf_filename);
   if (jconf == NULL) {		/* error */
-    fprintf(stderr, "Try `-help' for more information.\n");
+    fprintf(stderr, "Try '-setting' for built-in engine configuration.\n");
     return -1;
   }
   
