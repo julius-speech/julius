@@ -205,13 +205,16 @@ charconv(char *instr, char *outstr, int maxoutlen)
   if (ret == -1) {
     switch(errno) {
     case EILSEQ:
-      fprintf(stderr, "Error: charconv: invalid multibyte sequence in the input\n"); exit(-1);
+      fprintf(stderr, "Error: charconv: invalid multibyte sequence in the input\n");
+      return NULL;
       break;
     case EINVAL:
-      fprintf(stderr, "Error: charconv: incomplete multibyte sequence in the input\n"); exit(-1);
+      fprintf(stderr, "Error: charconv: incomplete multibyte sequence in the input\n");
+      return NULL;
       break;
     case E2BIG:
-      fprintf(stderr, "Error: charconv: converted string size exceeded buffer (>%d)\n", maxoutlen); exit(-1);
+      fprintf(stderr, "Error: charconv: converted string size exceeded buffer (>%d)\n", maxoutlen);
+      return NULL;
       break;
     }
   }

@@ -217,6 +217,7 @@ main(int argc, char *argv[])
   
 #if defined(HAVE_WINNLS) || defined(HAVE_ICONV)
   if (charconv_enabled == TRUE) {
+    int fail_count = 0;
     /* do character conversion */
     if (charconv_setup(from_code, to_code) == -1) {
       fprintf(stderr, "failed to setup character convertsion\n");
@@ -224,11 +225,18 @@ main(int argc, char *argv[])
     }
     buf = (char *)mymalloc(4096);
     for (w = 0; w < ngram->max_word_num; w++) {
-      charconv(ngram->wname[w], buf, 4096);
-      ngram->wname[w] = mybmalloc2(strlen(buf)+1, &(ngram->mroot));
-      strcpy(ngram->wname[w], buf);
+      if (charconv(ngram->wname[w], buf, 4096) == NULL) {
+	fprintf(stderr, "failed to convert, leave original string #%d \"%s\"\n", w, ngram->wname[w]);
+	fail_count++;
+      } else {
+	ngram->wname[w] = mybmalloc2(strlen(buf)+1, &(ngram->mroot));
+	strcpy(ngram->wname[w], buf);
+      }
     }
     free(buf);
+    if (fail_count > 0) {
+      fprintf(stderr, "total %d of %d words was not converted\n", fail_count, ngram->max_word_num);
+    }
   }
 #endif
 
