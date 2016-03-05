@@ -9,7 +9,7 @@ SHELL=/bin/sh
 .SUFFIXES:
 .SUFFIXES: .c .o
 .c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(SDL_CFLAGS) -o $@ -c $<
 
 LIBSENT=../libsent
 LIBJULIUS=../libjulius
@@ -22,37 +22,30 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 INSTALL=@INSTALL@
 
+SDL_CFLAGS=`sdl2-config --cflags` -DUSE_SDL
+SDL_LDFLAGS=`sdl2-config --static-libs`
+
 OBJ=adintool.o options.o mainloop.o
-TARGET=adintool@EXEEXT@
+TARGET=adintool-gui@EXEEXT@
 
-all: $(TARGET) @extra_target@
+all: $(TARGET)
 
-gui:
-	$(RM) $(OBJ)
-	$(MAKE) -f Makefile.gui
-
-$(TARGET): $(OBJ) $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+adintool-gui@EXEEXT@: $(OBJ) $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(SDL_CFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(SDL_LDFLAGS)
 
 install: install.bin
 
 install.bin: $(TARGET)
 	${INSTALL} -d @bindir@
 	@INSTALL_PROGRAM@ $(TARGET) @bindir@
-	$(MAKE) -f Makefile.gui install.bin
 
 clean:
 	$(RM) $(OBJ)
-	$(RM) config.log config.cache
 	$(RM) *~ core
 	$(RM) $(TARGET) $(TARGET).exe
-	$(MAKE) -f Makefile.gui clean
 
 distclean:
 	$(RM) $(OBJ)
-	$(RM) config.log config.cache
 	$(RM) *~ core
 	$(RM) $(TARGET) $(TARGET).exe
-	$(RM) config.status
-	$(RM) Makefile
-	$(MAKE) -f Makefile.gui distclean
+	$(RM) Makefile.gui
