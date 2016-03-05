@@ -7,7 +7,7 @@ dnl $Id: configure.in,v 1.7 2013/06/20 17:14:16 sumomo Exp $
 dnl
 AC_INIT(Sample.jconf)
 AC_CONFIG_AUX_DIR(support)
-AC_CONFIG_SUBDIRS(mkgshmm gramtools jcontrol mkbingram julius libjulius libsent)
+AC_CONFIG_SUBDIRS(adintool mkgshmm gramtools jcontrol mkbingram julius libjulius libsent)
 
 dnl all configure options will be passed to all subdirectries.
 
@@ -32,4 +32,4 @@ AC_PROG_INSTALL
 AC_PATH_PROG(RM, rm)
 AC_EXEEXT
 
-AC_OUTPUT(Makefile mkbinhmm/Makefile adinrec/Makefile adintool/Makefile mkss/Makefile generate-ngram/Makefile jclient-perl/Makefile binlm2arpa/Makefile man/Makefile)
+AC_OUTPUT(Makefile mkbinhmm/Makefile adinrec/Makefile mkss/Makefile generate-ngram/Makefile jclient-perl/Makefile binlm2arpa/Makefile man/Makefile)
