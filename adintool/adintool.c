@@ -23,9 +23,9 @@
  * 
  */
 /*
- * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  * Copyright (c) 2001-2005 Shikano Lab., Nara Institute of Science and Technology
- * Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
  * All rights reserved
  */
 
@@ -34,7 +34,7 @@
 // global 
 AdinTool *global_a = NULL;
 
-// allocate new
+// allocate new audio structure
 AdinTool *adintool_new()
 {
   AdinTool *a;
@@ -111,10 +111,7 @@ AdinTool *adintool_new()
 }
 
 
-/** 
- * Output input/output configuration in text for a confirmation.
- * 
- */
+// Output configuration to stderr
 static void
 put_status(AdinTool *a)
 {
@@ -283,6 +280,7 @@ put_status(AdinTool *a)
 
 }    
 
+// return newly allocated filename with the suffix
 static char *
 new_output_filename(char *filename, char *suffix)
 {
@@ -300,14 +298,7 @@ new_output_filename(char *filename, char *suffix)
   return buf;
 }
 
-/** 
- * Main function.
- * 
- * @param argc [in] number of argument.
- * @param argv [in] array of arguments.
- * 
- * @return 1 on error, 0 on success.
- */
+// Main function
 int
 main(int argc, char *argv[])
 {
@@ -468,3 +459,5 @@ main(int argc, char *argv[])
 
   return 0;
 }
+
+/* end of adintool.c */

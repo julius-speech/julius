@@ -1,7 +1,16 @@
+/*
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
+ * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
+ * All rights reserved
+ */
+
+
 #include "adintool.h"
 
 extern AdinTool *global_a;
 
+// show descriptions to stderr
 boolean
 show_help_and_exit(Jconf *jconf, char *arg[], int argnum)
 {
@@ -69,6 +78,7 @@ show_help_and_exit(Jconf *jconf, char *arg[], int argnum)
   exit(1);
 }
 
+// option "-in" handler
 static boolean
 opt_in(Jconf *jconf, char *arg[], int argnum)
 {
@@ -108,6 +118,8 @@ opt_in(Jconf *jconf, char *arg[], int argnum)
   }
   return TRUE;
 }
+
+// option "-out" handler
 static boolean
 opt_out(Jconf *jconf, char *arg[], int argnum)
 {
@@ -133,6 +145,8 @@ opt_out(Jconf *jconf, char *arg[], int argnum)
   }
   return TRUE;
 }
+
+// option "-server" handler
 static boolean
 opt_server(Jconf *jconf, char *arg[], int argnum)
 {
@@ -156,6 +170,8 @@ opt_server(Jconf *jconf, char *arg[], int argnum)
   }
   return TRUE;
 }
+
+// option "-NA" handler
 static boolean
 opt_NA(Jconf *jconf, char *arg[], int argnum)
 {
@@ -172,12 +188,16 @@ opt_NA(Jconf *jconf, char *arg[], int argnum)
   return FALSE;
 #endif
 }
+
+// option "-inport" handler
 static boolean
 opt_inport(Jconf *jconf, char *arg[], int argnum)
 {
   global_a->conf.adinnet_port_in = atoi(arg[0]);
   return TRUE;
 }
+
+// option "-port" handler
 static boolean
 opt_port(Jconf *jconf, char *arg[], int argnum)
 {
@@ -197,12 +217,15 @@ opt_port(Jconf *jconf, char *arg[], int argnum)
   return TRUE;
 }
 
+// option "-filename" handler
 static boolean
 opt_filename(Jconf *jconf, char *arg[], int argnum)
 {
   global_a->conf.filename = arg[0];
   return TRUE;
 }
+
+// option "-paramtype" handler
 static boolean
 opt_paramtype(Jconf *jconf, char *arg[], int argnum)
 {
@@ -212,6 +235,8 @@ opt_paramtype(Jconf *jconf, char *arg[], int argnum)
 
   return TRUE;
 }
+
+// option "-veclen" handler
 static boolean
 opt_veclen(Jconf *jconf, char *arg[], int argnum)
 {
@@ -221,12 +246,16 @@ opt_veclen(Jconf *jconf, char *arg[], int argnum)
 
   return TRUE;
 }
+
+// option "-startid" handler
 static boolean
 opt_startid(Jconf *jconf, char *arg[], int argnum)
 {
   global_a->conf.startid = atoi(arg[0]);
   return TRUE;
 }
+
+// option "-freq" handler
 static boolean
 opt_freq(Jconf *jconf, char *arg[], int argnum)
 {
@@ -234,42 +263,56 @@ opt_freq(Jconf *jconf, char *arg[], int argnum)
   jconf->amnow->analysis.para.smp_period = freq2period(jconf->amnow->analysis.para.smp_freq);
   return TRUE;
 }
+
+// option "-nosegment" handler
 static boolean
 opt_nosegment(Jconf *jconf, char *arg[], int argnum)
 {
   jconf->detect.silence_cut = 0;
   return TRUE;
 }
+
+// option "-segment" handler
 static boolean
 opt_segment(Jconf *jconf, char *arg[], int argnum)
 {
   jconf->detect.silence_cut = 1;
   return TRUE;
 }
+
+// option "-oneshot" handler
 static boolean
 opt_oneshot(Jconf *jconf, char *arg[], int argnum)
 {
   global_a->conf.continuous_segment = FALSE;
   return TRUE;
 }
+
+// option "-raw" handler
 static boolean
 opt_raw(Jconf *jconf, char *arg[], int argnum)
 {
   global_a->conf.use_raw = TRUE;
   return TRUE;
 }
+
+// option "-autopause" handler
 static boolean
 opt_autopause(Jconf *jconf, char *arg[], int argnum)
 {
   global_a->conf.pause_each = TRUE;
   return TRUE;
 }
+
+// option "-loosesync" handler
 static boolean
 opt_loosesync(Jconf *jconf, char *arg[], int argnum)
 {
   global_a->conf.loose_sync = TRUE;
   return TRUE;
 }
+
+// option "-rewind" handler
 static boolean
 opt_rewind(Jconf *jconf, char *arg[], int argnum)
 {
@@ -277,6 +320,7 @@ opt_rewind(Jconf *jconf, char *arg[], int argnum)
   return TRUE;
 }
 
+// option handler loader
 void register_options_to_julius()
 {
   /* register additional options */
@@ -303,3 +347,5 @@ void register_options_to_julius()
   j_add_option("--help", 0, 0, "display this help", show_help_and_exit);
   
 }
+
+/* end of options.c */

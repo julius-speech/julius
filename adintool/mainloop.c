@@ -1,25 +1,37 @@
+/*
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
+ * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
+ * All rights reserved
+ */
+
 #include "adintool.h"
 
 extern AdinTool *global_a;
 
 static int sdl_check_command();
 
-/**********************************************************************/
-/*****************************/
-/***** output processing *****/
-/*****************************/
-/**
- * Callback handler to record the sample fragments to file pointed by
- * the file descriptor "fd".
+/****************************/
+/***** audio processing *****/
+/****************************/
+
+/*
+ * functions to process the triggered audio data.
+ *
+ * they will be called for each triggered audio fragment.
+ *
+ * all output processing callback should have arguments:
  * 
  * @param now [in] recorded fragments of speech sample
  * @param len [in] length of above in samples
  * 
- * @return -1 on device error (require caller to exit and terminate input),
- * 0 on success (allow caller to continue),
- * 1 on succeeded but segmentation detected (require caller to exit but
+ * it should return -1 on device error (require caller to exit and
+ * terminate input), 0 on success (allow caller to continue), 1 on
+ * succeeded but segmentation detected (require caller to exit but
  * input will continue in the next call.
  */
+
+// callback to store to file
 static int
 process_callback_file(SP16 *now, int len, Recog *recog)
 {
@@ -130,18 +142,7 @@ process_callback_file(SP16 *now, int len, Recog *recog)
   return(0);
 }
 
-/**
- * Callback handler to record the sample fragments to adinnet server
- * pointed by the socket descriptor "fd".
- * 
- * @param now [in] recorded fragments of speech sample
- * @param len [in] length of above in samples
- * 
- * @return -1 on device error (require caller to exit and terminate input),
- * 0 on success (allow caller to continue),
- * 1 on succeeded but segmentation detected (require caller to exit but
- * input will continue in the next call.
- */
+// callback to send to adinnet server(s)
 static int
 process_callback_adinnet(SP16 *now, int len, Recog *recog)
 {
@@ -212,6 +213,8 @@ process_callback_adinnet(SP16 *now, int len, Recog *recog)
   return(0);
 }
 
+// callback and functions to send feature vector to adinnet server(s)
+// initialization
 boolean
 vecnet_init(Recog *recog)
 {
@@ -252,6 +255,7 @@ vecnet_init(Recog *recog)
   }
 }
 
+// sub function to send a data to socket
 static int
 vecnet_send_data(int sd, void *buf, int bytes)
 {
@@ -270,12 +274,14 @@ vecnet_send_data(int sd, void *buf, int bytes)
   return 0;
 }
 
+// HTK parameter file header
 typedef struct {
   int veclen;                 ///< (4 byte)Vector length of an input
   int fshift;                 ///< (4 byte) Frame shift in msec of the vector
   char outprob_p;             ///< (1 byte) != 0 if input is outprob vector
 } ConfigurationHeader;
 
+// send HTK parameter header to adinnet server
 static void
 vecnet_send_header(Recog *recog)
 {
@@ -291,6 +297,7 @@ vecnet_send_header(Recog *recog)
   }
 }
 
+// prepare for feature extraction
 static boolean
 vecnet_prepare(Recog *recog)
 {
@@ -314,6 +321,7 @@ vecnet_prepare(Recog *recog)
   
 }
 
+// advance calculation of feature vectors and send the new vectors to adinnet
 static void
 vecnet_sub(SP16 *Speech, int nowlen, Recog *recog)
 {
@@ -356,6 +364,7 @@ vecnet_sub(SP16 *Speech, int nowlen, Recog *recog)
   }
 }
 
+// finish feature calculation at end of audio segment
 static void
 vecnet_param_update(Recog *recog)
 {
@@ -379,7 +388,7 @@ vecnet_param_update(Recog *recog)
   }
 }
 
-
+// main callback to successively calculate feature vectors and send to adinnet
 static int
 process_callback_vecnet(SP16 *now, int len, Recog *recog)
 {
@@ -439,6 +448,7 @@ process_callback_vecnet(SP16 *now, int len, Recog *recog)
   return(0);
 }
 
+// send end of segment to adinnet, cause adinnet to segment input
 static void
 vecnet_send_end_of_segment()
 {
@@ -455,6 +465,7 @@ vecnet_send_end_of_segment()
   }
 }
 
+// send end of session to adinnet, cause adinnet to stop input
 static void
 vecnet_send_end_of_session()
 {
@@ -492,7 +503,13 @@ adin_send_end_of_segment()
   }
 }
 
+
 /**********************************************************************/
+
+/**************************/
+/***** process events *****/
+/**************************/
+
 /* reveice resume/pause command from adinnet server */
 /* (for SPOUT_ADINNET only) */
 /*'1' ... resume  '0' ... pause */
@@ -744,6 +761,7 @@ close_files()
   return TRUE;
 }  
 
+// open connection to output device (adinnet)
 static int
 connect_to_output_device()
 {
@@ -777,6 +795,7 @@ connect_to_output_device()
   return 0;
 }
 
+// close processing
 static void
 close_processing(Recog *recog)
 {
@@ -804,6 +823,7 @@ close_processing(Recog *recog)
 
 #ifdef USE_SDL
 
+// get statistics and draw waveform and other informations on window
 static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 {
   AdinTool *a = global_a;
@@ -824,7 +844,7 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
       fprintf(stderr, "SDL could not initialize: %s\n", SDL_GetError());
       exit(1);
     }
-    s->window = SDL_CreateWindow("adintool", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    s->window = SDL_CreateWindow("adintool", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
     if (s->window == NULL) {
       fprintf(stderr, "SDL window could not be created: %s\n", SDL_GetError());
       exit(1);
@@ -1202,6 +1222,7 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 
 }
 
+// check events on SDL
 static int
 sdl_check_command()
 {
@@ -1279,6 +1300,7 @@ sdl_check_command()
 
 #endif
 
+// Julius callback to temporally record when the last segment triggered
 static void
 record_trigger_time(Recog *recog, void *data)
 {
@@ -1306,7 +1328,7 @@ interrupt_record(int signum)
 }
 
 
-
+// main loop
 void
 mainloop()
 {
@@ -1589,3 +1611,5 @@ mainloop()
 #endif
   
 }
+
+/* end of mainloop.c */
