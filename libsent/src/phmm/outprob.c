@@ -469,5 +469,6 @@ outprob_cache_output(FILE *fp, HMMWork *wrk, int framenum)
       }
     }
   }
-  
+
+  return TRUE;
 }
