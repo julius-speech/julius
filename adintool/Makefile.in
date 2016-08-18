@@ -28,7 +28,6 @@ TARGET=adintool@EXEEXT@
 all: $(TARGET) @extra_target@
 
 gui:
-	$(RM) $(OBJ)
 	$(MAKE) -f Makefile.gui
 
 $(TARGET): $(OBJ) $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a

@@ -7,8 +7,7 @@
 #
 SHELL=/bin/sh
 .SUFFIXES:
-.SUFFIXES: .c .o
-.c.o:
+guiobj/%.o: %.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(SDL_CFLAGS) -o $@ -c $<
 
 LIBSENT=../libsent
@@ -25,7 +24,7 @@ INSTALL=@INSTALL@
 SDL_CFLAGS=`sdl2-config --cflags` -DUSE_SDL
 SDL_LDFLAGS=`sdl2-config --static-libs`
 
-OBJ=adintool.o options.o mainloop.o
+OBJ=guiobj/adintool.o guiobj/options.o guiobj/mainloop.o
 TARGET=adintool-gui@EXEEXT@
 
 all: $(TARGET)
