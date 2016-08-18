@@ -4,6 +4,7 @@
 
                                 Julius
 
+						(Rev 4.3.2 2016/08/20)
                                                 (Rev 4.3.1 2014/01/15)
                                                 (Rev 4.3   2013/12/25)
                                                 (Rev 4.2.3 2013/06/30)
@@ -19,10 +20,10 @@
                                                 (Rev 2.0   1999/02/20)
                                                 (Rev 1.0   1998/02/20)
 
- Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
  Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
  All rights reserved
 ======================================================================
 
@@ -51,42 +52,26 @@ on Windows (SAPI/console). Julius is distributed with open license
 together with source codes.
 
 
-What's new in Julius-4.3
+What's new in Julius-4.3.2
 ===========================
 
-Version 4.3 includes several new features to support on-line DNN-HMM
-decoding: decoding with state output probability vectors ("outprob
-vectors") as input, network-based feature / outprob vector input,
-improved cepstral variance normalization (CVN) for real-time
-recognition, FBANK/MELSPEC feature support and so on.  Also the tool
-"adintool" is now capable of extracting and sending feature vectors in
-real-time via network.
+From this release, Julius is hosted on GitHub:
+https://github.com/julius-speech/julius
 
-New options:
-  [-input vecnet]       read feature / outprob vectors from network
-  [-input outprob]      read outprob vectors from HTK parameter file
-  [-outprobout [file]]  save computed outprob vectors to HTK file (for debug)
+Version 4.3.2 includes several updates and new features.  Two new
+tools "adintool-gui" and "binlm2arpa" are added and "mkbingram" was
+updated for audio input and binary LM conversion.  Now does not exit
+on client disconnection on module mode, instead it pauses itself and
+wait for another client to come.  It also has many bug fixes and
+updates for recent OS and environments.  Some documents that may help
+users using Julius with DNN-HMM is also added.
 
-A short test of network-based feature transmission:
-
-  [server]
-  % julius -C file.jconf -input vecnet
-
-  [client with microphone]
-  % adintool -in mic -out vecnet -paramtype MFCC_E_D_N_Z -veclen 25 -C file.jconf
-
-You should set appropriate feature vector's type and length to
-adintool with "-paramtype TYPE", "-veclen length".  You should also
-set feature extraction parameters as the same as Julius.  Since
-adintool uses JuliusLib for the extraction, it accepts Jconf file and
-setting options as same as Julis.  So the easier way is to apply the
-same Jconf file to adintool with "-C" option as shown above.
-
-See the "Release.txt" file for the full list of updates.
-Run with "-help" to see full list of options.
+See "Release.txt" for full list of updates.
+Run "configure --help=recursive" to see all configure options.
+Run compiled Julius with "-help" to see the full list of available options.
 
 
-Contents of Julius-4.3
+Contents of Julius-4.3.2
 =========================
 
 	(Documents with suffix "ja" are written in Japanese)
@@ -94,6 +79,8 @@ Contents of Julius-4.3
 	00readme.txt		ReadMe (This file)
 	LICENSE.txt		Terms and conditions of use
 	Release.txt		Release note / ChangeLog
+	00readme-DNN.txt	DNN-HMM related issues
+	README.md		description about Julius for GitHub
 	configure		configure script
 	configure.in		
 	Sample.jconf		Sample configuration file
@@ -101,7 +88,7 @@ Contents of Julius-4.3
 	libjulius/		JuliusLib core engine library sources
 	libsent/		JuliusLib low-level library sources
 	adinrec/		Record one sentence utterance to a file
-	adintool/		Record/split/send/receive speech data
+	adintool/		Record/split/send/receive speech data (GUI)
 	generate-ngram/		Tool to generate random sentences from N-gram
 	gramtools/		Tools to build and test recognition grammar
 	jcontrol/		A sample network client module 
@@ -114,16 +101,8 @@ Contents of Julius-4.3
 	plugin/			Several plugin source codes and documentation
 	man/			Unix online manuals
 	msvc/			Files to compile on Microsoft VC++ 2008
- (new)  dnntools/		Sample programs for dnn and vecnet client
+	dnntools/		Sample programs for dnn and vecnet client
 	binlm2arpa/		Convert binary N-gram to ARPA format
-
-
-Documentation
-===============
-
-The up-to-date documentations are available at the Julius Web site:
-
-    http://julius.sourceforge.jp/en/
 
 
 License
@@ -145,16 +124,12 @@ Also see the copyrights in the files:
 Contact Us
 ===========
 
-For QA, discussion and development information, please see and join
-the Julius web forum at:
+Julius is now hosted on GitHub:
 
-    http://julius.sourceforge.jp/forum/
+        https://github.com/julius-speech/julius
 
+You can still find older documents and files in previous web page:
 
-The contact address of Julius/Julian development team is:
-(please replace 'at' with '@')
+        http://julius.osdn.jp/
+	https://osdn.jp/projects/julius/
 
-      "julius-info at lists.sourceforge.jp"
-
-
-EOF

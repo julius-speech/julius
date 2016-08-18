@@ -1,3 +1,15 @@
+4.3.2 (2016.08.20)
+===================
+- "adintool-gui": adintool with input monitoring (see adintool/README-GUI.txt)
+- "binlm2arpa": convert binary LM to ARPA format
+- "mkbingram" now can convert text encoding of an LM by "-c" option
+- fix not to exit at disconnection on module mode, wait for next instead.
+- fix compilation errors in some recent OS
+- fix memory leaks
+- work on autoconf >=2.6
+- added README.md, CONTRIBUTING.md and other files for GitHub hosting
+- added document to use Julius with DNN-HMM AM: "00readme-DNN.txt"
+
 4.3.1 (2014.01.15)
 ===================
 Fixed bugs:
