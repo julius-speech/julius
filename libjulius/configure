@@ -1982,7 +1982,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 JULIUS_PRODUCTNAME=JuliusLib
-JULIUS_VERSION=4.3.2
+JULIUS_VERSION=4.4
 
 
 # Check whether --enable-pthread was given.

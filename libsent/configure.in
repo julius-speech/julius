@@ -9,7 +9,7 @@ AC_INIT(src/phmm/outprob.c)
 AC_CONFIG_HEADER(include/sent/config.h)
 AC_CONFIG_AUX_DIR(../support)
 
-LIBSENT_VERSION=4.3.2
+LIBSENT_VERSION=4.4
 
 dnl Checks for options
 # specify mic type

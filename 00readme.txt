@@ -4,7 +4,7 @@
 
                                 Julius
 
-						(Rev 4.3.2 2016/08/20)
+						(Rev 4.4   2016/08/20)
                                                 (Rev 4.3.1 2014/01/15)
                                                 (Rev 4.3   2013/12/25)
                                                 (Rev 4.2.3 2013/06/30)
@@ -52,13 +52,13 @@ on Windows (SAPI/console). Julius is distributed with open license
 together with source codes.
 
 
-What's new in Julius-4.3.2
-===========================
+What's new in Julius-4.4
+=========================
 
-From this release, Julius is hosted on GitHub:
+Julius is now hosted on GitHub:
 https://github.com/julius-speech/julius
 
-Version 4.3.2 includes several updates and new features.  Two new
+Version 4.4 includes several updates and new features.  Two new
 tools "adintool-gui" and "binlm2arpa" are added and "mkbingram" was
 updated for audio input and binary LM conversion.  Now does not exit
 on client disconnection on module mode, instead it pauses itself and
@@ -71,8 +71,8 @@ Run "configure --help=recursive" to see all configure options.
 Run compiled Julius with "-help" to see the full list of available options.
 
 
-Contents of Julius-4.3.2
-=========================
+Contents of Julius-4.4
+=======================
 
 	(Documents with suffix "ja" are written in Japanese)
 

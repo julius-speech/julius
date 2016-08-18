@@ -1,5 +1,5 @@
-4.3.2 (2016.08.20)
-===================
+4.4 (2016.08.20)
+=================
 - "adintool-gui": adintool with input monitoring (see adintool/README-GUI.txt)
 - "binlm2arpa": convert binary LM to ARPA format
 - "mkbingram" now can convert text encoding of an LM by "-c" option
