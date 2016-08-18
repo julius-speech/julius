@@ -59,7 +59,7 @@ fopen_readfile(char *filename)
   if (gp == NULL) {
     jlog("Error: gzfile: unable to open %s\n", filename);
   }
-  return(gp);
+  return((FILE *)gp);
 }
 
 /** 
