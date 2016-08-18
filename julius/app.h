@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
+ * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
+ * All rights reserved
+ */
+
 #include <julius/juliuslib.h>
 
 #if defined(_WIN32) && !defined(__CYGWIN32__) && !defined(__MINGW32__)

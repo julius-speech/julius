@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
+ * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
+ * All rights reserved
+ */
+
 #include <sent/stddefs.h>
 #include <sent/ngram2.h>
 

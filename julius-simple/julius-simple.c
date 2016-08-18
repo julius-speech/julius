@@ -1,30 +1,8 @@
-/**
- * @file   julius-simple.c
- * 
- * <EN>
- * @brief  Sample code for JuliusLib
- *
- * This is a simple code to link JuliusLib and do recognition.
- * 
- * This program will output recognition result to stdout according
- * to the given jconf setting.
- * </EN>
- * 
- * <JA>
- * @brief  JuliusLib用サンプルコード
- *
- * このコードは JuliusLib をリンクして簡単な認識器を構築します．
- *
- * このプログラムは音声入力に対して与えられた jconf 設定のもとで
- * 認識を行い，結果を標準出力に出力します．
- * 
- * </JA>
- * 
- * @author Akinobu Lee
- * @date   Tue Dec 11 14:40:04 2007
- * 
- * $Revision: 1.5 $
- * 
+/*
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
+ * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
+ * All rights reserved
  */
 
 /* include top Julius library header */

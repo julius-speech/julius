@@ -22,15 +22,13 @@
  * 
  */
 /*
- * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- * Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
  * All rights reserved
  */
 
 /* mkbingram --- make binary n-gram for JULIUS from ARPA standard format */
-
-/* $Id: mkbingram.c,v 1.7 2013/06/20 17:14:27 sumomo Exp $ */
 
 #include <sent/stddefs.h>
 #include <sent/ngram2.h>

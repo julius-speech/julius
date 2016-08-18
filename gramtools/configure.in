@@ -1,8 +1,8 @@
-dnl Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+dnl Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
 dnl Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
-dnl Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+dnl Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
 dnl All rights reserved
-
+dnl
 AC_INIT(00readme.txt)
 AC_CONFIG_AUX_DIR(../support)
 dnl Checks for optimization flag

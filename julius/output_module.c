@@ -1,24 +1,7 @@
-/**
- * @file   output_module.c
- * 
- * <JA>
- * @brief  認識結果をソケットへ出力する. 
- * </JA>
- * 
- * <EN>
- * @brief  Output recoginition result via module socket.
- * </EN>
- * 
- * @author Akinobu Lee
- * @date   Tue Sep 06 14:46:49 2005
- *
- * $Revision: 1.12 $
- * 
- */
 /*
- * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- * Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
  * All rights reserved
  */
 

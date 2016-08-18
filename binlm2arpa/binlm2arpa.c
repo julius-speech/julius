@@ -1,31 +1,11 @@
-/**
- * @file   binlm2arpa.c
- * 
- * <JA>
- * @brief  Julius 用のバイナリN-gram からARPA形式に変換する．
- *
- * </JA>
- * 
- * <EN>
- * @brief  
- * </EN>
- * 
- * @author Akinobu LEE
- * @date   Thu Mar 24 12:22:27 2005
- *
- * $Revision: 1.7 $
- * 
- */
 /*
- * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- * Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
  * All rights reserved
  */
 
-/* binlm2arpa --- make binary n-gram for JULIUS from ARPA standard format */
-
-/* $Id: binlm2arpa.c,v 1.7 2013/06/20 17:14:27 sumomo Exp $ */
+/* binlm2arpa --- convert Julius binary N-gram to ARPA format */
 
 #include <sent/stddefs.h>
 #include <sent/ngram2.h>
