@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4F9DC42E-E874-4885-819E-5C901F4E6079}</ProjectGuid>
+    <RootNamespace>libjulius</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>../../libjulius/include;../../libsent/include;../config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>../../libjulius/include;../../libsent/include;../config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\libjulius\src\adin-cut.c" />
+    <ClCompile Include="..\..\libjulius\src\backtrellis.c" />
+    <ClCompile Include="..\..\libjulius\src\beam.c" />
+    <ClCompile Include="..\..\libjulius\src\callback.c" />
+    <ClCompile Include="..\..\libjulius\src\confnet.c" />
+    <ClCompile Include="..\..\libjulius\src\default.c" />
+    <ClCompile Include="..\..\libjulius\src\dfa_decode.c" />
+    <ClCompile Include="..\..\libjulius\src\factoring_sub.c" />
+    <ClCompile Include="..\..\libjulius\src\gmm.c" />
+    <ClCompile Include="..\..\libjulius\src\gramlist.c" />
+    <ClCompile Include="..\..\libjulius\src\graphout.c" />
+    <ClCompile Include="..\..\libjulius\src\hmm_check.c" />
+    <ClCompile Include="..\..\libjulius\src\instance.c" />
+    <ClCompile Include="..\..\libjulius\src\jfunc.c" />
+    <ClCompile Include="..\..\libjulius\src\multi-gram.c" />
+    <ClCompile Include="..\..\libjulius\src\m_adin.c" />
+    <ClCompile Include="..\..\libjulius\src\m_chkparam.c" />
+    <ClCompile Include="..\..\libjulius\src\m_fusion.c" />
+    <ClCompile Include="..\..\libjulius\src\m_info.c" />
+    <ClCompile Include="..\..\libjulius\src\m_jconf.c" />
+    <ClCompile Include="..\..\libjulius\src\m_options.c" />
+    <ClCompile Include="..\..\libjulius\src\m_usage.c" />
+    <ClCompile Include="..\..\libjulius\src\mbr.c" />
+    <ClCompile Include="..\..\libjulius\src\ngram_decode.c" />
+    <ClCompile Include="..\..\libjulius\src\outprob_style.c" />
+    <ClCompile Include="..\..\libjulius\src\pass1.c" />
+    <ClCompile Include="..\..\libjulius\src\plugin.c" />
+    <ClCompile Include="..\..\libjulius\src\realtime-1stpass.c" />
+    <ClCompile Include="..\..\libjulius\src\recogmain.c" />
+    <ClCompile Include="..\..\libjulius\src\search_bestfirst_main.c" />
+    <ClCompile Include="..\..\libjulius\src\search_bestfirst_v1.c" />
+    <ClCompile Include="..\..\libjulius\src\search_bestfirst_v2.c" />
+    <ClCompile Include="..\..\libjulius\src\spsegment.c" />
+    <ClCompile Include="..\..\libjulius\src\useropt.c" />
+    <ClCompile Include="..\..\libjulius\src\wav2mfcc.c" />
+    <ClCompile Include="..\..\libjulius\src\wchmm.c" />
+    <ClCompile Include="..\..\libjulius\src\wchmm_check.c" />
+    <ClCompile Include="..\..\libjulius\src\word_align.c" />
+    <ClCompile Include="..\config\version.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\libjulius\include\julius\beam.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\callback.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\define.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\extern.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\global.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\graph.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\jconf.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\jfunc.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\julius.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\juliuslib.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\misc.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\multi-gram.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\plugin.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\recog.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\search.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\trellis.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\useropt.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\wchmm.h" />
+    <ClInclude Include="..\config\config-msvc-libjulius.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libsent\libsent.vcxproj">
+      <Project>{0867de93-30f0-4d6e-ab7d-7e4545e5f24f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

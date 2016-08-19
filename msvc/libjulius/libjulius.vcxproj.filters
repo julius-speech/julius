@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\src">
+      <UniqueIdentifier>{00c5dba3-852d-4451-891d-6f5768525a33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\julius">
+      <UniqueIdentifier>{ab33d675-1fde-4cb6-8b03-8fd04be04148}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\config\version.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\adin-cut.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\backtrellis.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\beam.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\callback.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\confnet.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\default.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\dfa_decode.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\factoring_sub.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\gmm.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\gramlist.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\graphout.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\hmm_check.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\instance.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\jfunc.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\m_adin.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\m_chkparam.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\m_fusion.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\m_info.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\m_jconf.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\m_options.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\m_usage.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\multi-gram.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\ngram_decode.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\outprob_style.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\pass1.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\plugin.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\realtime-1stpass.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\recogmain.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\search_bestfirst_main.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\search_bestfirst_v1.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\search_bestfirst_v2.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\spsegment.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\useropt.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\wav2mfcc.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\wchmm.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\wchmm_check.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\word_align.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\config\config-msvc-libjulius.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\beam.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\callback.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\define.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\extern.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\global.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\graph.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\jconf.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\jfunc.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\julius.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\juliuslib.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\misc.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\multi-gram.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\plugin.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\recog.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\search.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\trellis.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\useropt.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\wchmm.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
