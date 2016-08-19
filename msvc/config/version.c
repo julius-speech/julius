@@ -66,10 +66,10 @@ j_put_version(FILE *strm){
   if (strm == NULL) return;
   fprintf(strm,"\n%s rev.%s (%s)  built for %s\n\n",
 	  JULIUS_PRODUCTNAME, JULIUS_VERSION, JULIUS_SETUP, JULIUS_HOSTINFO);
-  fprintf(strm,"Copyright (c) 1991-2013 Kawahara Lab., Kyoto University\n");
+  fprintf(strm,"Copyright (c) 1991-2016 Kawahara Lab., Kyoto University\n");
   fprintf(strm,"Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan\n");
   fprintf(strm,"Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology\n");
-  fprintf(strm,"Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology\n\n");
+  fprintf(strm,"Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology\n\n");
 }
 
 /** 

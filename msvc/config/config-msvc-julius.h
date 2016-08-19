@@ -12,4 +12,4 @@
 // #define ICONV_CONST const
 
 /* Define if you use libjcode */
-#define USE_LIBJCODE
+// #define USE_LIBJCODE
