@@ -1,13 +1,11 @@
-HOW TO COMPILE JULIUS ON MSVC / THE JULIUS CLASS
+HOW TO COMPILE JULIUS ON MSVC
 =================================================
 
-This file describes how to compile Julius on Microsoft Visual C++
-2008.  A sample application "SampleApp" and the Julius wrapper class
+This file describes how to compile Julius on Microsoft Visual Studio
+2013 and later.  A sample application "SampleApp" and the Julius wrapper class
 is also included.  See below to see how to compile and test it.
 
-The MSVC support has been developed and tested for MS Visual C++ 2008
-on both Professional and Express Edition, on Windows Vista
-32bit/64bit and XP.
+This version was tested on Microsoft Visual Studio 2013 on Windows 10.
 
 If you are totally new to Julius, please note that an acoustic model
 and a language model is needed to run Julius as speech recognizer.
@@ -19,10 +17,7 @@ from the Julius Web for details.
 1. Preparation
 ===============
 
-"Microsoft DirectX SDK" is required to compile Julius.
-You can get it from the Microsoft Web site.
-
-Also, Julius uses these two open-source libraries:
+Julius uses these two open-source libraries:
 
    - zlib
    - portaudio (V19)
@@ -30,21 +25,16 @@ Also, Julius uses these two open-source libraries:
 The pre-compiled win32 libraries and header files are already included
 under the "zlib" and "portaudio" directory.  If they don't work on
 your environment, compile them by yourself and replace the headers and
-libraries under each directory.  Also, please place the compiled
-portaudio DLL to both "Release" and "Debug" directories.
+libraries under each directory.
 
 
 2. Compile
 ===========
 
-Open "JuliusLib.sln" with MS VC++, and build it!  You will get
-libraries, "julius.exe" and "SampleApp.exe" under "Debug" or "Release"
-directory.
-
-If you got an error when linking "zlib" or "portaudio", compile them
-by yourself and replace the headers and libraries under each
-directory.  Also, please place the compiled portaudio DLL to both
-"Release" and "Debug" directories.
+Open "JuliusLib.sln" with Visual Studio, choose configuration from
+menu either "Release" or "Debug", then build the solution!  You will
+get libraries, "julius.exe", "adintool.exe" and "SampleApp.exe" under
+"Release" or "Debug" directory respectively.
 
 
 3. Test
@@ -128,6 +118,12 @@ If you want to read them in MSVC++, convert them to UTF-8.
 
 6.  History
 ==============
+
+2016/8/19 (ver.4.4)
+
+	updated for VS2013.
+	use static portaudio lib.
+	added adintool.
 
 2010/12 (ver.4.1.5.1)
 

@@ -1,14 +1,13 @@
-Juliusのコンパイル方法 / Julius クラス
-=======================================
+Juliusのコンパイル方法
+=======================
 
-このファイルでは Microsoft Visual C++ 2008 における Julius のコンパイル
-方法について解説します．また，GUI版サンプルアプリケーションである
-"SampleApp" と Julius のラッパークラスの定義についても解説します．コン
-パイルとテストの方法を知りたい方は以下をご覧ください．
+このファイルでは Microsoft Visual Studio 2013 以降における Julius のコン
+パイル方法について解説します．また，GUI版サンプルアプリケーションであ
+る"SampleApp" と Julius のラッパークラスの定義についても解説します．コ
+ンパイルとテストの方法を知りたい方は以下をご覧ください．
 
-サポートする MSVC のバージョンは 2008 のみであり，Professional Edition
-および Express Edition でのコンパイルを確認しています．また，Windows
-XP, Vista 32bit/64bit で動作確認しています．
+本バージョンは Microsoft Visual Studio 2013 で Windows10 にて動作確認
+しています．
 
 Julius を新たに使用する場合，音響モデル，言語モデル，および Julius の設
 定を記述した jconf ファイルが必要となります．詳細は以下をご覧ください．
@@ -20,10 +19,7 @@ Julius を新たに使用する場合，音響モデル，言語モデル，および Julius の設
 1.1 本体
 =========
 
-Julius をコンパイルするには "Microsoft DirectX SDK" が必要です．
-Microsoft の ウェブサイトから入手してください．
-
-また，Julius は以下の2つのオープンソースのライブラリを使用します．
+Julius は以下の2つのオープンソースのライブラリを使用します．
 
    - zlib
    - portaudio (V19)
@@ -31,8 +27,7 @@ Microsoft の ウェブサイトから入手してください．
 いずれもコンパイル済みの win32 ライブラリとヘッダが "zlib" と
 "portaudio" ディレクトリの中に含まれています．これらが正常に動作しない
 場合は自身でコンパイルし直し，ヘッダとライブラリを置き換えてください．
-また，portaudio をコンパイルした場合は "Release" と"Debug" ディレクトリ
-以下の DLL も置き換えてください．
+
 
 1.2 モデル
 ===========
@@ -50,14 +45,12 @@ Juliusを動かすためには音響モデル，言語モデルの2つのモデルと，Julius の
 2. コンパイル
 ==============
 
-"JuliusLib.sln" を MS VC++ で開き，ビルドしてください．"Debug" か
-"Release" ディレクトリの中に "julius.exe" と "SampleApp.exe" が生成され
-ます．
+"JuliusLib.sln" を VisualStudio で開き，ビルドしてください．"Debug" か
+"Release" ディレクトリの中に "julius.exe", "adintool.exe" および
+"SampleApp.exe" が生成されます．
 
 "zlib" か "portaudio" のリンク時にエラーが起きた場合は自身でコンパイル
-し直し，ヘッダとライブラリを置き換えてください．また，portaudio をコン
-パイルした場合は "Release" と"Debug" ディレクトリ以下の DLL も置き換え
-てください．
+し直し，ヘッダとライブラリを置き換えてください．
 
 
 3. テスト
@@ -141,6 +134,12 @@ Julius のソースコードでは日本語の文字を EUC-JP で記述しています．もしそ
 
 6.  更新履歴
 =============
+
+2016/8/19 (ver.4.4)
+
+	VisualStudio 2013 に合わせて変更．
+	Portaudio を DLL から静的リンクに変更
+	adintool を追加
 
 2010/12 (ver.4.1.5.1)
 
