@@ -9,7 +9,9 @@
 
 extern AdinTool *global_a;
 
+#ifdef USE_SDL
 static int sdl_check_command();
+#endif
 
 /****************************/
 /***** audio processing *****/
@@ -253,6 +255,8 @@ vecnet_init(Recog *recog)
       return FALSE;
     }
   }
+
+  return TRUE;
 }
 
 // sub function to send a data to socket
@@ -326,7 +330,7 @@ static void
 vecnet_sub(SP16 *Speech, int nowlen, Recog *recog)
 {
   AdinTool *a = global_a;
-  int i, j, k, now, ret;
+  int i, j, now;
   MFCCCalc *mfcc;
   RealBeam *r = &(recog->real);
 
@@ -393,9 +397,7 @@ static int
 process_callback_vecnet(SP16 *now, int len, Recog *recog)
 {
   AdinTool *a = global_a;
-  int count;
   int start, w;
-  int i;
 
   /* do nothing if not on processing */
   if (a->on_processing == FALSE) return 0;

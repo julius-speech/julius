@@ -229,8 +229,6 @@ opt_filename(Jconf *jconf, char *arg[], int argnum)
 static boolean
 opt_paramtype(Jconf *jconf, char *arg[], int argnum)
 {
-  short code;
-
   global_a->conf.vecnet_paramtype = param_str2code(arg[0]);
 
   return TRUE;
@@ -240,8 +238,6 @@ opt_paramtype(Jconf *jconf, char *arg[], int argnum)
 static boolean
 opt_veclen(Jconf *jconf, char *arg[], int argnum)
 {
-  short code;
-  
   global_a->conf.vecnet_veclen = atoi(arg[0]);
 
   return TRUE;
