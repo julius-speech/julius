@@ -1224,7 +1224,6 @@ j_recognize_stream_core(Recog *recog)
 
     if (jconf->outprob_outfile) {
       FILE *fp;
-      char *buf;
       /* store the whole state outprob cache as a state outprob vector file */
       if ((fp = fopen(jconf->outprob_outfile, "wb")) != NULL) {
 	for(r=recog->process_list;r;r=r->next) {

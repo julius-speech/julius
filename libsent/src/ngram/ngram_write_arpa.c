@@ -197,8 +197,6 @@ static void output_additional_bigram(FILE *fp, NGRAM_INFO *ndata)
 
 boolean ngram_write_arpa(NGRAM_INFO *ndata, FILE *fp, FILE *fp_rev)
 {
-  int i;
-
   output_all(fp, ndata);
 
   if (fp_rev != NULL && ndata->bo_wt_1 != NULL) {

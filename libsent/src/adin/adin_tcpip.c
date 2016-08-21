@@ -245,7 +245,7 @@ adin_tcpip_send_resume()
 {
   int count;
   char com;
-  int cnt, ret;
+  int cnt;
   fd_set rfds;
   struct timeval tv;
   int status;
@@ -265,7 +265,7 @@ adin_tcpip_send_resume()
     }
     if (status > 0) {		/* there are some data */
       if (tmpbuf == NULL) tmpbuf = (char *)mymalloc(MAXSPEECHLEN);
-      ret = rd(adinnet_asd, tmpbuf, &cnt, MAXSPEECHLEN * sizeof(SP16));
+      rd(adinnet_asd, tmpbuf, &cnt, MAXSPEECHLEN * sizeof(SP16));
     }
     if (cnt > 0) count += cnt;
   } while (status != 0);

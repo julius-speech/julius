@@ -459,8 +459,6 @@ config_string_parse(char *str, Jconf *jconf)
   int c_argc;
   char **c_argv;
   int maxnum;
-  char buf[BUFLEN];
-  char *cdir;
   int i;
   boolean ret;
 

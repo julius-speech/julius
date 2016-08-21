@@ -1443,7 +1443,6 @@ j_reload_adddict(Recog *recog, PROCESS_LM *lm)
 {
   RecogProcess *p, *ptmp;
   JCONF_SEARCH *sh;
-  PROCESS_AM *am, *atmp;
   
   jlog("STAT: *** reloading (additional) dictionary of LM%02d %s\n", lm->config->id, lm->config->name);
 

@@ -360,7 +360,6 @@ make_successor_list_unigram_factoring(WCHMM_INFO *wchmm)
   int i, j, n, f;
   int s;
   LOGPROB tmpprob;
-  WORD_ID *mtmp;
 
   jlog("STAT: make successor lists for unigram factoring\n");
 

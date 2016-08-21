@@ -143,6 +143,7 @@ void check_wchmm(WCHMM_INFO *wchmm);
 
 /* realtime.c --- callback for adin_cut() */
 boolean RealTimeInit(Recog *recog);
+void reset_mfcc(Recog *recog);
 boolean RealTimePipeLinePrepare(Recog *recog);
 boolean RealTimeMFCC(MFCCCalc *mfcc, SP16 *window, int windowlen);
 int RealTimePipeLine(SP16 *Speech, int len, Recog *recog);

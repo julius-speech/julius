@@ -140,7 +140,7 @@ adin_oss_open(char *devstr)
   int samplerate;	/* 16kHz */
   int frag;
   int frag_msec;
-  char *env, *p;
+  char *env;
 
   /* open device */
   if ((audio_fd = open(devstr, O_RDONLY|O_NONBLOCK)) == -1) {

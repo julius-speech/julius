@@ -496,7 +496,6 @@ msock_exec_command(char *command, Recog *recog)
   else if (strmatch(command, "ADDPROCESS")) {
     Jconf *jconf;
     JCONF_LM *lmconf;
-    JCONF_AM *amconf;
     JCONF_SEARCH *sconf;
     RecogProcess *r;
 

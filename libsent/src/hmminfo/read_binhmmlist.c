@@ -122,7 +122,6 @@ load_cdset_callback(void **data_p, void *data, FILE *fp)
   int len;
   int id;
   int i, j;
-  HTK_HMM_Trans *ttmp;
 
   new = (CD_Set *)mybmalloc2(sizeof(CD_Set), &(hmminfo->cdset_root));
   if (myfread(&len, sizeof(int), 1, fp) < 1) return FALSE;

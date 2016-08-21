@@ -864,20 +864,11 @@ read_binhmm(FILE *fp, HTK_HMM_INFO *hmm, boolean gzfile_p, Value *para)
 
   /* check state id */
   {
-    HTK_HMM_State *stmp;
-    int n;
-    boolean has_sid;
-
     /* check if each state is assigned a valid sid */
     if (htk_hmm_check_sid(hmm) == FALSE) {
       jlog("Error: rdhmmdef: error in SID\n");
       return FALSE;
     }
-#if 0
-    for (stmp = hmm->ststart; stmp; stmp = stmp->next) {
-      stmp->id = n++;
-    }
-#endif
   }
   /* assign ID number for all HTK_HMM_Trans */
   {

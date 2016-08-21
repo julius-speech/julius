@@ -416,7 +416,6 @@ mywrite(char *buf, size_t unitbyte, int unitnum, FILE *fp, boolean needswap)
 {
   size_t tmp;
 
-  int i;
   if (needswap) swap_bytes(buf, unitbyte, unitnum);
   if ((tmp = myfwrite(buf, unitbyte, unitnum, fp)) < (size_t)unitnum) {
     jlog("Error: outprob_cache_output: failed to write %d bytes\n", unitbyte * unitnum);

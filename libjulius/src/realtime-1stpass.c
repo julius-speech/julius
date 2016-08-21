@@ -220,12 +220,10 @@ boolean
 RealTimeInit(Recog *recog)
 {
   Value *para;
-  Jconf *jconf;
   RealBeam *r;
   MFCCCalc *mfcc;
 
 
-  jconf = recog->jconf;
   r = &(recog->real);
 
   /* 最大フレーム長を最大入力時間数から計算 */
@@ -322,9 +320,6 @@ reset_mfcc(Recog *recog)
 {
   Value *para;
   MFCCCalc *mfcc;
-  RealBeam *r;
-
-  r = &(recog->real);
 
   /* 特徴抽出モジュールを初期化 */
   /* initialize parameter extraction module */
@@ -1368,10 +1363,8 @@ RealTimeCMNUpdate(MFCCCalc *mfcc, Recog *recog)
 {
   boolean cmn_update_p;
   Value *para;
-  Jconf *jconf;
   RecogProcess *r;
 
-  jconf = recog->jconf;
   para = mfcc->para;
   
   /* update CMN vector for next speech */
@@ -1451,10 +1444,6 @@ RealTimeTerminate(Recog *recog)
 void
 realbeam_free(Recog *recog)
 {
-  RealBeam *r;
-
-  r = &(recog->real);
-
   if (recog->real.window) {
     free(recog->real.window);
     recog->real.window = NULL;

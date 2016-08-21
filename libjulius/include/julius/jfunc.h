@@ -81,9 +81,9 @@ boolean j_process_activate(Recog *recog, char *name);
 boolean j_process_activate_by_id(Recog *recog, int id);
 
 boolean j_process_add_lm(Recog *recog, JCONF_LM *lmconf, JCONF_SEARCH *sconf, char *name);
-boolean j_remove_search(Recog *recog, JCONF_SEARCH *sconf);
-boolean j_remove_lm(Recog *recog, JCONF_LM *lmconf);
-boolean j_remove_am(Recog *recog, JCONF_AM *amconf);
+boolean j_process_remove(Recog *recog, JCONF_SEARCH *sconf);
+boolean j_process_lm_remove(Recog *recog, JCONF_LM *lmconf);
+boolean j_process_am_remove(Recog *recog, JCONF_AM *amconf);
 
 #ifdef DEBUG_VTLN_ALPHA_TEST
 void vtln_alpha(Recog *recog, RecogProcess *r);

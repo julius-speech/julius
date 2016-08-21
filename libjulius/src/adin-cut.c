@@ -1048,7 +1048,6 @@ adin_thread_create(Recog *recog)
 boolean
 adin_thread_cancel(Recog *recog)
 {
-  ADIn *a;
   int ret;
 
   if (recog->adin->adinthread_ended) return TRUE;

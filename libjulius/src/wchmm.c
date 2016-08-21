@@ -213,7 +213,6 @@ wchmm_extend_startnode(WCHMM_INFO *wchmm)
 void
 wchmm_free(WCHMM_INFO *w)
 {
-  int i;
   /* wchmm->state[i].ac malloced by mybmalloc2() */
   /* wchmm->offset[][] malloced by mybmalloc2() */
 #ifdef PASS1_IWCD

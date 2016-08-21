@@ -358,7 +358,6 @@ plugin_get_func(int sid, char *name)
 {
   int id;
   PLUGIN_ENTRY *p;
-  FUNC_VOID func;
 
   if (global_plugin_list == NULL) return NULL;
 
@@ -601,7 +600,6 @@ mfc_module_set_header(MFCCCalc *mfcc, Recog *recog)
 boolean
 mfc_module_standby(MFCCCalc *mfcc)
 {
-  FUNC_INT func;
   int ret;
 
   if (mfcc->func.fv_standby) ret = mfcc->func.fv_standby();
@@ -613,7 +611,6 @@ mfc_module_standby(MFCCCalc *mfcc)
 boolean
 mfc_module_begin(MFCCCalc *mfcc)
 {
-  FUNC_INT func;
   int ret;
 
   if (mfcc->segmented_by_input) return TRUE; /* do nothing if last was segmented */
@@ -626,7 +623,6 @@ mfc_module_begin(MFCCCalc *mfcc)
 boolean
 mfc_module_end(MFCCCalc *mfcc)
 {
-  FUNC_INT func;
   int ret;
 
   if (mfcc->segmented_by_input) return TRUE; /* do nothing if last was segmented */
@@ -639,7 +635,6 @@ mfc_module_end(MFCCCalc *mfcc)
 int
 mfc_module_read(MFCCCalc *mfcc, int *new_t)
 {
-  FUNC_INT func;
   int ret;
 
   /* expand area if needed */
@@ -673,8 +668,6 @@ mfc_module_read(MFCCCalc *mfcc, int *new_t)
 char *
 mfc_module_input_name(MFCCCalc *mfcc)
 {
-  int ret;
-
   if (mfcc->func.fv_input_name) return(mfcc->func.fv_input_name());
   return NULL;
 }

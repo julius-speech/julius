@@ -301,10 +301,9 @@ void
 j_internal_error(char *fmt, ...)
 {
   va_list ap;
-  int ret;
 
   va_start(ap,fmt);
-  ret = vfprintf(stderr, fmt, ap);
+  vfprintf(stderr, fmt, ap);
   va_end(ap);
 
   /* clean up socket if already opened */
@@ -407,10 +406,6 @@ j_config_load_args(Jconf *jconf, int argc, char *argv[])
 int
 j_config_load_string(Jconf *jconf, char *string)
 {
-  int argc;
-  char **argv;
-  char *buf;
-  
   /* parse options and set variables */
   if (config_string_parse(string, jconf) == FALSE) {
     return -1;

@@ -448,8 +448,6 @@ aptree_read(FILE *fp, APATNODE **root, BMALLOC_BASE **mroot, void *data, boolean
 {
   int count_node, count_branch, count_data, maxbit;
   int *left, *right, *value;
-  int num, did;
-  boolean err;
   APATNODE *nodelist;
   APATNODE *node;
   int i;

@@ -216,8 +216,6 @@ main(int argc, char *argv[])
   /* if no grammar specified on startup, start with pause status */
   {
     RecogProcess *r;
-    boolean ok_p;
-    ok_p = TRUE;
     for(r=recog->process_list;r;r=r->next) {
       if (r->lmtype == LM_DFA) {
 	if (r->lm->winfo == NULL) { /* stop when no grammar found */

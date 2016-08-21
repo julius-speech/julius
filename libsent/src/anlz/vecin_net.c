@@ -215,6 +215,8 @@ vecin_get_configuration(int opcode)
   case 3:/* return 0 if feature vector input, 1 if outprob vector input */
     return(conf.outprob_p ? 1 : 0);
   }
+
+  return -1;
 }
 
 /**

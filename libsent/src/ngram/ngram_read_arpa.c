@@ -52,7 +52,6 @@ static char pbuf[800];			///< Local buffer for error string
 static int
 get_total_info(FILE *fp, NNID **numlist)
 {
-  char *p;
   int n;
   int maxn;
   unsigned long entry_num;
