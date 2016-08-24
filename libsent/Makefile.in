@@ -106,6 +106,7 @@ src/phmm/gprune_beam.o \
 src/phmm/addlog.o \
 src/phmm/mkwhmm.o \
 src/phmm/vsegment.o \
+src/phmm/calc_dnn.o \
 src/util/endian.o \
 src/util/jlog.o \
 src/util/mymalloc.o \

@@ -29,6 +29,7 @@
 #include <sent/stddefs.h>
 #include <sent/htk_hmm.h>
 #include <sent/htk_param.h>
+#include <sent/dnn.h>
 
 /**
  * @brief Symbols to specify which Gaussian pruning algorithm to use.
@@ -156,8 +157,9 @@ typedef struct __hmmwork__{
 
   boolean batch_computation;
 
-} HMMWork;  
+  DNNData dnn;			///< DNN definitions
 
+} HMMWork;
 
 #ifdef __cplusplus
 extern "C" {
@@ -228,6 +230,9 @@ boolean gprune_beam_init(HMMWork *wrk);
 void gprune_beam_free(HMMWork *wrk);
 void gprune_beam(HMMWork *wrk, HTK_HMM_Dens **g, int gnum, int *last_id, int lnum);
 
+boolean dnn_init(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize);
+
+boolean dnn_calc_outprob(HMMWork *wrk);
 
 #ifdef __cplusplus
 }

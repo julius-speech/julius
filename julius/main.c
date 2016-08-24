@@ -92,6 +92,33 @@ main(int argc, char *argv[])
     return -1;
   }
 
+  {
+    HMMWork wrk;
+    char *wfile[5] = {
+      "/home/ri/dictation-kit/model/dnn/W_l1.npy",
+      "/home/ri/dictation-kit/model/dnn/W_l2.npy",
+      "/home/ri/dictation-kit/model/dnn/W_l3.npy",
+      "/home/ri/dictation-kit/model/dnn/W_l4.npy",
+      "/home/ri/dictation-kit/model/dnn/W_l5.npy"};
+    char *bfile[5] = {
+      "/home/ri/dictation-kit/model/dnn/bias_l1.npy",
+      "/home/ri/dictation-kit/model/dnn/bias_l2.npy",
+      "/home/ri/dictation-kit/model/dnn/bias_l3.npy",
+      "/home/ri/dictation-kit/model/dnn/bias_l4.npy",
+      "/home/ri/dictation-kit/model/dnn/bias_l5.npy"};
+
+    dnn_init(&(wrk.dnn), 120, 11, 1320, 2004, 2048, 5, wfile, bfile, "/home/ri/dictation-kit/model/dnn/W_output.npy", "/home/ri/dictation-kit/model/dnn/bias_output.npy", "/home/ri/dictation-kit/model/dnn/prior.dnn", 1.0f, 64);
+    exit(1);
+  }
+
+
+
+
+
+
+
+
+
   /* add application options */
   record_add_option();
   module_add_option();
