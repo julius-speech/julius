@@ -359,8 +359,21 @@ void dnn_ff(DNNData *dnn, float *in, float *out_ret)
 
 #endif
 
-/* compute outprob by DNN for the current state and parameter */
+/* compute outprob by DNN for the current frame and store them to current frame state outprob cache */
 boolean dnn_calc_outprob(HMMWork *wrk)
 {
+  /* frame = wrk->OP_time */
+  /* param = wrk->OP_param */
+  /* input vector = wrk->OP_param[wrk->OP_time][] */
+  /* store state outprob to wrk->last_cache[]  */
+
+  printf("%d\n", wrk->OP_time);
+
+  {
+    int s;
+    for (s = 0; s < wrk->statenum; s++) {
+      wrk->last_cache[s] = 0.0f;
+    }
+  }
 }
 

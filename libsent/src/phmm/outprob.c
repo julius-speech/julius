@@ -215,6 +215,18 @@ outprob_state(HMMWork *wrk, int t, HTK_HMM_State *stateinfo, HTK_Param *param)
     return(param->parvec[t][sid]);
   }
 
+  if (wrk->OP_dnn != NULL) {
+    /* for DNN, if the frame is not computed yet, batch-compute for the frame and save them to current cache */
+    s = wrk->OP_hmminfo->ststart;
+    if (wrk->last_cache[s->id] == LOG_UNDEF) {
+      dnn_calc_outprob(wrk);
+    }
+    wrk->OP_state = stateinfo;
+    wrk->OP_state_id = sid;
+    /* consult cache and return the state prob */
+    return(wrk->last_cache[sid]);
+  }
+
   if (wrk->batch_computation) {
     /* batch computation: if the frame is not computed yet, pre-compute all */
     s = wrk->OP_hmminfo->ststart;
