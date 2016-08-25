@@ -154,6 +154,8 @@ jconf_set_default_values_am(JCONF_AM *j)
   j->frontend.sscalc_len		= 300;
   j->frontend.ssload_filename		= NULL;
   j->dnn.enabled                        = FALSE;
+  j->dnn.paramtype			= F_ERR_INVALID;
+  j->dnn.optionstring			= NULL;
   j->dnn.veclen                         = 0;
   j->dnn.contextlen                     = 0;
   j->dnn.inputnodes                     = 0;

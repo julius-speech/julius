@@ -125,8 +125,13 @@ initialize_HMM(JCONF_AM *amconf, Jconf *jconf)
       hmminfo_free(hmminfo);
       return NULL;
     }
-    /* set acoustic analysis parameters from HMM header */
-    calc_para_from_header(&(amconf->analysis.para), hmminfo->opt.param_type, hmminfo->opt.vec_size);
+    if (amconf->dnn.enabled) {
+      /* for DNN, use dnnconf */
+      calc_para_from_header(&(amconf->analysis.para), amconf->dnn.paramtype, amconf->dnn.veclen);
+    } else {
+      /* set acoustic analysis parameters from HMM header */
+      calc_para_from_header(&(amconf->analysis.para), hmminfo->opt.param_type, hmminfo->opt.vec_size);
+    }
   }
   /* check if tied_mixture */
   if (hmminfo->is_tied_mixture && hmminfo->codebooknum <= 0) {
@@ -163,7 +168,9 @@ initialize_HMM(JCONF_AM *amconf, Jconf *jconf)
   hmminfo->cdmax_num = amconf->iwcdmaxn;
 
   if (amconf->analysis.para_htk.loaded == 1) apply_para(&(amconf->analysis.para), &(amconf->analysis.para_htk));
-  if (amconf->analysis.para_hmm.loaded == 1) apply_para(&(amconf->analysis.para), &(amconf->analysis.para_hmm));
+  if (amconf->dnn.enabled == FALSE) { /* disable HMMDEFS-side parameter check on DNN */
+    if (amconf->analysis.para_hmm.loaded == 1) apply_para(&(amconf->analysis.para), &(amconf->analysis.para_hmm));
+  }
   apply_para(&(amconf->analysis.para), &(amconf->analysis.para_default));
 
   return(hmminfo);
@@ -884,7 +891,9 @@ mfcc_config_is_same(JCONF_AM *amconf, MFCCCalc *mfcc)
 	    s1 = amconf->frontend.ssload_filename;
 	    s2 = mfcc->frontend.ssload_filename;
 	    if (s1 == s2 || (s1 && s2 && strmatch(s1, s2))) {
-	      return TRUE;
+	      if (amconf->dnn.enabled == FALSE || amconf->dnn.contextlen == mfcc->splice) {
+		return TRUE;
+	      }
 	    }
 	  }
 	}

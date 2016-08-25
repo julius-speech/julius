@@ -1338,6 +1338,11 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
 	free(tmparg);
 	return FALSE;
       }
+      if (jconf->amnow->dnn.optionstring) {
+	if (config_string_parse(jconf->amnow->dnn.optionstring, jconf) == FALSE) {
+	  return FALSE;
+	}
+      }
       free(tmparg);
       continue;
     }

@@ -219,6 +219,8 @@ typedef struct __jconf_am__ {
    */
   struct {
     boolean enabled;
+    short paramtype;		/* feature type */
+    char *optionstring;		/* feature extraction option string  */
     int veclen;			/* vector length */
     int contextlen;		/* context length */
     int inputnodes;		/* number of input nodes (should match veclen * contextlen) */

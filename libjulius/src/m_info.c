@@ -223,6 +223,11 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
     jlog(" Julius defaults");
   }
   jlog("\n");
+
+  if (mfcc->splice > 1) {
+    jlog("\t  frame splicing = %d\n", mfcc->splice);
+    jlog("\n");
+  }
 }
 
 

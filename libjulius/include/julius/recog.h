@@ -633,11 +633,25 @@ typedef struct __mfcc_calc__ {
    * 
    */
   DeltaBuf *db;
+
   /**
    * accel MFCC cycle buffer
    * 
    */
   DeltaBuf *ab;
+  
+  /**
+   * splice cycle buffer
+   * 
+   */
+  VECT *splicedmfcc;
+  int splicedlen;
+  
+  /**
+   * splice number
+   */
+  int splice;
+
   /**
    * working buffer holding current computing mfcc vector
    * 

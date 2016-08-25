@@ -317,6 +317,8 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 	return FALSE;
       }
       dnn->state_prior[id] = val * prior_factor;
+      // log10-nize prior
+      dnn->state_prior[id] = log10(dnn->state_prior[id]);
     }
     fclose(fp);
     jlog("Stat: dnn_init: state prior loaded: %s\n", priorfile);
@@ -362,18 +364,56 @@ void dnn_ff(DNNData *dnn, float *in, float *out_ret)
 /* compute outprob by DNN for the current frame and store them to current frame state outprob cache */
 boolean dnn_calc_outprob(HMMWork *wrk)
 {
+  int hidx, i, j, d, n;
+  float *src, *dst;
+  DNNLayer *h;
+  float x;
+  DNNData *dnn = wrk->OP_dnn;
+
   /* frame = wrk->OP_time */
   /* param = wrk->OP_param */
   /* input vector = wrk->OP_param[wrk->OP_time][] */
   /* store state outprob to wrk->last_cache[]  */
 
-  printf("%d\n", wrk->OP_time);
+  printf("%d %d\n", wrk->OP_time, wrk->OP_param->veclen);
+  for (i = 0; i < wrk->OP_param->veclen; i++) {
+    printf("%4d: %f\n", i, wrk->OP_param->parvec[wrk->OP_time][i]);
+  }
 
-  {
-    int s;
-    for (s = 0; s < wrk->statenum; s++) {
-      wrk->last_cache[s] = 0.0f;
+  /* feed forward through hidden layers by standard logistic function */
+  src = &(wrk->OP_param->parvec[wrk->OP_time][0]);
+  n = 0;
+  for (hidx = 0; hidx < dnn->hnum; hidx++) {
+    h = &(dnn->h[hidx]);
+    d = 0;
+    for (i = 0; i < h->out; i++) {
+      x = 0.0f;
+      for (j = 0; j < h->in; j++) {
+	x += h->w[d] * src[j];
+	d++;
+      }
+      x += h->b[i];
+      dnn->work[n][i] = logistic_func(x);
     }
+    src = dnn->work[n];
+    if (++n > 1) n = 0;
+  }
+  /* output layer */
+  d = 0;
+  for (i = 0; i < dnn->o.out; i++) {
+    x = 0.0f;
+    for (j = 0; j < dnn->o.in; j++) {
+      x += dnn->o.w[d] * src[j];
+      d++;
+    }
+    x += dnn->o.b[i];
+    wrk->last_cache[i] = logistic_func(x);
+  }
+  /* do softmax */
+  /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
+  float logprob = addlog_array(wrk->last_cache, wrk->statenum);
+  for (i = 0; i < wrk->statenum; i++) {
+    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
   }
 }
 

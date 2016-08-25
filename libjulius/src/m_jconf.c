@@ -599,7 +599,11 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
     v = p;
     while (*v == ' ') v++;
     *p = '\0';
-    if (strmatch(buf, "feature_len")) am->dnn.veclen = atoi(v);
+    if (strmatch(buf, "feature_type")) {
+      am->dnn.paramtype = param_str2code(v);
+    } else if (strmatch(buf, "feature_options")) {
+      am->dnn.optionstring = strdup(v);
+    } else if (strmatch(buf, "feature_len")) am->dnn.veclen = atoi(v);
     else if (strmatch(buf, "context_len")) am->dnn.contextlen = atoi(v);
     else if (strmatch(buf, "input_nodes")) am->dnn.inputnodes = atoi(v);
     else if (strmatch(buf, "output_nodes")) am->dnn.outputnodes = atoi(v);

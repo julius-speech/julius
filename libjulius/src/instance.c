@@ -56,6 +56,11 @@ j_mfcccalc_new(JCONF_AM *amconf)
     mfcc->para = &(amconf->analysis.para);
     mfcc->hmm_loaded = (amconf->analysis.para_hmm.loaded == 1) ? TRUE : FALSE;
     mfcc->htk_loaded = (amconf->analysis.para_htk.loaded == 1) ? TRUE : FALSE;
+    if (amconf->dnn.enabled) {
+      mfcc->splice = amconf->dnn.contextlen;
+    } else {
+      mfcc->splice = 1;
+    }
     mfcc->wrk = WMP_work_new(mfcc->para);
     if (mfcc->wrk == NULL) {
       jlog("ERROR: j_mfcccalc_new: failed to initialize feature computation\n");
@@ -94,6 +99,7 @@ j_mfcccalc_free(MFCCCalc *mfcc)
   if (mfcc->rest_param) free_param(mfcc->rest_param);
   if (mfcc->param) free_param(mfcc->param);
   if (mfcc->wrk) WMP_free(mfcc->wrk);
+  if (mfcc->splicedmfcc) free(mfcc->splicedmfcc);
   if (mfcc->tmpmfcc) free(mfcc->tmpmfcc);
   if (mfcc->db) WMP_deltabuf_free(mfcc->db);
   if (mfcc->ab) WMP_deltabuf_free(mfcc->ab);
@@ -362,6 +368,10 @@ void
 j_jconf_am_free(JCONF_AM *amconf)
 {
   int i;
+
+  if (amconf->dnn.optionstring)
+    free(amconf->dnn.optionstring);
+
   if (amconf->dnn.wfile) {
     for (i = 0; i < amconf->dnn.hiddenlayernum; i++) {
       free(amconf->dnn.wfile[i]);
