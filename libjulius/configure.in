@@ -12,7 +12,9 @@ AC_CONFIG_HEADER(include/julius/config.h)
 AC_CONFIG_AUX_DIR(../support)
 
 JULIUS_PRODUCTNAME=JuliusLib
-JULIUS_VERSION=4.4
+JULIUS_MAJOR_VERSION=4
+JULIUS_MINOR_VERSION=4
+JULIUS_VERSION=${JULIUS_MAJOR_VERSION}.${JULIUS_MINOR_VERSION}
 
 dnl Checks for options
 
@@ -383,10 +385,12 @@ AC_DEFINE_UNQUOTED(JULIUS_VERSION, "$JULIUS_VERSION")
 AC_DEFINE_UNQUOTED(JULIUS_SETUP, "$easy_setup")
 AC_DEFINE_UNQUOTED(JULIUS_HOSTINFO, "$host")
 AC_SUBST(JULIUS_PRODUCTNAME)
+AC_SUBST(JULIUS_MAJOR_VERSION)
+AC_SUBST(JULIUS_MINOR_VERSION)
 AC_SUBST(JULIUS_VERSION)
 AC_SUBST(easy_setup)
 
 AC_OUTPUT_COMMANDS(
 [chmod +x libjulius-config libjulius-config-dist
 ])
-AC_OUTPUT(Makefile libjulius-config libjulius-config-dist src/version.c doxygen.conf.ver)
+AC_OUTPUT(Makefile libjulius-config libjulius-config-dist julius-$JULIUS_MAJOR_VERSION.pc:julius.pc.in src/version.c doxygen.conf.ver)

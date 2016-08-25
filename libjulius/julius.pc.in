@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${exec_prefix}/include
+
+Name: @JULIUS_PRODUCTNAME@
+Description: @JULIUS_PRODUCTNAME@ is the C library for Julius speech recognition suite
+Version: @JULIUS_VERSION@
+Libs: -ljulius @LDFLAGS@ @LIBS@
+Cflags: -I@includedir@ @CPPFLAGS@

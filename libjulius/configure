@@ -587,6 +587,8 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 easy_setup
 JULIUS_VERSION
+JULIUS_MINOR_VERSION
+JULIUS_MAJOR_VERSION
 JULIUS_PRODUCTNAME
 EGREP
 GREP
@@ -1982,7 +1984,9 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 JULIUS_PRODUCTNAME=JuliusLib
-JULIUS_VERSION=4.4
+JULIUS_MAJOR_VERSION=4
+JULIUS_MINOR_VERSION=4
+JULIUS_VERSION=${JULIUS_MAJOR_VERSION}.${JULIUS_MINOR_VERSION}
 
 
 # Check whether --enable-pthread was given.
@@ -4138,9 +4142,11 @@ _ACEOF
 
 
 
+
+
 ac_config_commands="$ac_config_commands default-1"
 
-ac_config_files="$ac_config_files Makefile libjulius-config libjulius-config-dist src/version.c doxygen.conf.ver"
+ac_config_files="$ac_config_files Makefile libjulius-config libjulius-config-dist julius-$JULIUS_MAJOR_VERSION.pc:julius.pc.in src/version.c doxygen.conf.ver"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4846,6 +4852,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "libjulius-config") CONFIG_FILES="$CONFIG_FILES libjulius-config" ;;
     "libjulius-config-dist") CONFIG_FILES="$CONFIG_FILES libjulius-config-dist" ;;
+    "julius-$JULIUS_MAJOR_VERSION.pc") CONFIG_FILES="$CONFIG_FILES julius-$JULIUS_MAJOR_VERSION.pc:julius.pc.in" ;;
     "src/version.c") CONFIG_FILES="$CONFIG_FILES src/version.c" ;;
     "doxygen.conf.ver") CONFIG_FILES="$CONFIG_FILES doxygen.conf.ver" ;;
 
