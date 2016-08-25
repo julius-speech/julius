@@ -265,7 +265,6 @@ RealTimeInit(Recog *recog)
     mfcc->tmpmfcc = (VECT *)mymalloc(sizeof(VECT) * para->vecbuflen);
     /* splice buffer */
     if (mfcc->splice > 1) {
-      printf("para->veclen=%d\n", para->veclen);
       mfcc->splicedmfcc = (VECT *)mymalloc(sizeof(VECT) * para->veclen * mfcc->splice);
       mfcc->splicedlen = 0;
     }
@@ -448,7 +447,7 @@ static boolean
 splice_mfcc(MFCCCalc *mfcc)
 {
   if (mfcc->splicedlen >= mfcc->splice) {
-    memmove(mfcc->splicedmfcc, &(mfcc->splicedmfcc[mfcc->para->veclen]), (mfcc->splice - 1) * mfcc->para->veclen);
+    memmove(mfcc->splicedmfcc, &(mfcc->splicedmfcc[mfcc->para->veclen]), sizeof(VECT) * (mfcc->splice - 1) * mfcc->para->veclen);
     mfcc->splicedlen --;
   }
   memcpy(&(mfcc->splicedmfcc[mfcc->para->veclen * mfcc->splicedlen]), mfcc->tmpmfcc, sizeof(VECT) * mfcc->para->veclen);
@@ -593,11 +592,6 @@ RealTimeMFCC(MFCCCalc *mfcc, SP16 *window, int windowlen)
   /* CMN ¤ò·×»» */
   /* perform CMN */
   if (para->cmn || para->cvn) CMN_realtime(mfcc->cmn.wrk, tmpmfcc);
-
-  for (i = 0; i < para->vecbuflen; i++) {
-    printf(" %f", tmpmfcc[i]);
-  }
-  printf("\n");
 
   /* splice */
   if (mfcc->splice > 1) {

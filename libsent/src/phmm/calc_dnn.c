@@ -154,7 +154,9 @@ static boolean load_npy(float *array, char *filename, int x, int y)
 /* standard logistic function value table: take range x[-6,6] */
 /* table size: LOGISTIC_TABLE_FACTOR * 12 * 4 (bytes) */
 #define LOGISTIC_TABLE_FACTOR 20000
-#define LOGISTIC_TABLE_MAX (12 * LOGISTIC_TABLE_FACTOR)
+#define LOGISTIC_TABLE_MAX (16 * LOGISTIC_TABLE_FACTOR)
+#define LOGISTIC_MIN 0.000334
+#define LOGISTIC_MAX 0.999666
 
 static float logistic_table[LOGISTIC_TABLE_MAX+1]; /* logistic value table */
 
@@ -166,7 +168,7 @@ static void logistic_table_build()
   double x;
   
   for (i = 0; i <= LOGISTIC_TABLE_MAX; i++) {
-    x = (double)i / (double)LOGISTIC_TABLE_FACTOR - 6.0;
+    x = (double)i / (double)LOGISTIC_TABLE_FACTOR - 8.0;
     d = 1.0 / (1.0 + exp(-x));
     logistic_table[i] = (float)d;
   }
@@ -175,9 +177,9 @@ static void logistic_table_build()
 /* return logistic function value, consulting table */
 static float logistic_func(float x)
 {
-  if (x <= -6.0f) return 0.0f;
-  if (x >=  6.0f) return 1.0f;
-  return logistic_table[(int)((x + 6.0f) * LOGISTIC_TABLE_FACTOR)];
+  if (x <= -8.0f) return LOGISTIC_MIN;
+  if (x >=  8.0f) return LOGISTIC_MAX;
+  return logistic_table[(int)((x + 8.0f) * LOGISTIC_TABLE_FACTOR + 0.5)];
 }
 
 /* initialize dnn layer */
@@ -233,7 +235,7 @@ void dnn_clear(DNNData *dnn)
     free(dnn->h);
   }
   if (dnn->state_prior) free(dnn->state_prior);
-  for (i = 0; i < 2; i++) {
+  for (i = 0; i < dnn->hnum; i++) {
     if (dnn->work[i]) free(dnn->work[i]);
   }
   memset(dnn, 0, sizeof(DNNData));
@@ -306,7 +308,7 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
     for (i = 0; i < dnn->state_prior_num; i++) {
       dnn->state_prior[i] = 0.0f;
     }
-    if ((fp = fopen(priorfile, "rb")) == NULL) {
+    if ((fp = fopen(priorfile, "r")) == NULL) {
       jlog("Error: cannot open %s\n", priorfile);
       return FALSE;
     }
@@ -325,44 +327,32 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   }
 
   /* allocate work area */
-  dnn->work[0] = (float *)mymalloc(sizeof(float) * dnn->hiddennodenum);
-  dnn->work[1] = (float *)mymalloc(sizeof(float) * dnn->hiddennodenum);
+  for (i = 0; i < dnn->hnum; i++) {
+    dnn->work[i] = (float *)mymalloc(sizeof(float) * dnn->hiddennodenum);
+  }
 
   return TRUE;
 }
 
-#if 0
-void dnn_ff(DNNData *dnn, float *in, float *out_ret)
+static void
+sub1(float *dst, float *src, float *w, float *b, int out, int in)
 {
-  int n;
-  float *src, *dst;
+  float x;
+  float *s;
+  int i, j;
 
-  /* feed forward by standard logistic function */
-  src = in;
-  n = 0;
-  for (int i = 0; i < dnn->hnum; i++) {
-    dnn->work[n] = logistic_func(dnn->h[i].w * src + dnn->h[i].b);
-    src = dnn->work[n];
-    if (++n > 1) n = 0;
+  for (i = 0; i < out; i++) {
+    x = 0.0f;
+    s = src;
+    for (j = 0; j < in; j++) {
+      x += *(w++) * *(s++);
+    }
+    *(dst++) = x + *(b++);
   }
-  out_ret = dnn->o.w * src + dnn->o.b;
-  /* do soft max */
-#if 0
-  /* log10( (exp(x)/sum(exp(x))) / state_prior) */
-  out_ret = exp(out_ret);
-  allsum = sum(out_ret);
-  out_ret /= allsum;
-  out_ret /= dnn->state_prior;
-  out_ret = log10(out_ret);
-#else
-  /* INV_LOG_TEN * (x - addlogarray(x) - log(state_prior)) */
-#endif
 }
 
-#endif
-
 /* compute outprob by DNN for the current frame and store them to current frame state outprob cache */
-boolean dnn_calc_outprob(HMMWork *wrk)
+static boolean dnn_calc_outprob0(HMMWork *wrk)
 {
   int hidx, i, j, d, n;
   float *src, *dst;
@@ -375,16 +365,12 @@ boolean dnn_calc_outprob(HMMWork *wrk)
   /* input vector = wrk->OP_param[wrk->OP_time][] */
   /* store state outprob to wrk->last_cache[]  */
 
-  printf("%d %d\n", wrk->OP_time, wrk->OP_param->veclen);
-  for (i = 0; i < wrk->OP_param->veclen; i++) {
-    printf("%4d: %f\n", i, wrk->OP_param->parvec[wrk->OP_time][i]);
-  }
-
   /* feed forward through hidden layers by standard logistic function */
   src = &(wrk->OP_param->parvec[wrk->OP_time][0]);
   n = 0;
   for (hidx = 0; hidx < dnn->hnum; hidx++) {
     h = &(dnn->h[hidx]);
+    dst = dnn->work[n];
     d = 0;
     for (i = 0; i < h->out; i++) {
       x = 0.0f;
@@ -393,7 +379,7 @@ boolean dnn_calc_outprob(HMMWork *wrk)
 	d++;
       }
       x += h->b[i];
-      dnn->work[n][i] = logistic_func(x);
+      dst[i] = logistic_func(x);
     }
     src = dnn->work[n];
     if (++n > 1) n = 0;
@@ -407,7 +393,7 @@ boolean dnn_calc_outprob(HMMWork *wrk)
       d++;
     }
     x += dnn->o.b[i];
-    wrk->last_cache[i] = logistic_func(x);
+    wrk->last_cache[i] = x;
   }
   /* do softmax */
   /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
@@ -417,3 +403,40 @@ boolean dnn_calc_outprob(HMMWork *wrk)
   }
 }
 
+boolean dnn_calc_outprob(HMMWork *wrk)
+{
+  int hidx, i, j, d, n;
+  float *src, *dst;
+  DNNLayer *h;
+  float x;
+  DNNData *dnn = wrk->OP_dnn;
+
+  /* frame = wrk->OP_time */
+  /* param = wrk->OP_param */
+  /* input vector = wrk->OP_param[wrk->OP_time][] */
+  /* store state outprob to wrk->last_cache[]  */
+
+  /* feed forward through hidden layers by standard logistic function */
+  n = 0;
+  src = &(wrk->OP_param->parvec[wrk->OP_time][0]);
+  dst = dnn->work[n];
+  for (hidx = 0; hidx < dnn->hnum; hidx++) {
+    h = &(dnn->h[hidx]);
+    sub1(dst, src, h->w, h->b, h->out, h->in);
+    for (i = 0; i < h->out; i++) {
+      dst[i] = logistic_func(dst[i]);
+    }
+    src = dst;
+    //if (++n > 1) n = 0;
+    dst = dnn->work[++n];
+  }
+  /* output layer */
+  sub1(wrk->last_cache, src, dnn->o.w, dnn->o.b, dnn->o.out, dnn->o.in);
+
+  /* do softmax */
+  /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
+  float logprob = addlog_array(wrk->last_cache, wrk->statenum);
+  for (i = 0; i < wrk->statenum; i++) {
+    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
+  }
+}

@@ -564,6 +564,10 @@ j_load_am(Recog *recog, JCONF_AM *amconf)
       jlog("ERROR: m_fusion: cannnot allocate DNN memory area\n");
       return FALSE;
     }
+    if (amconf->dnn.outputnodes != am->hmminfo->totalstatenum) {
+      jlog("ERROR: m_fusion: mismatch in DNN output and HMM states (%d != %d)\n", amconf->dnn.outputnodes, am->hmminfo->totalstatenum);
+      return FALSE;
+    }
     if (dnn_setup(am->dnn, 
 		  amconf->dnn.veclen,
 		  amconf->dnn.contextlen,
