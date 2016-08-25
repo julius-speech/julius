@@ -212,6 +212,7 @@ j_output_argument_help(FILE *fp)
   fprintf(fp, "\n Acoustic Model:\n");
   fprintf(fp, "    -h hmmdefsfile      HMM definition file name\n");
   fprintf(fp, "    [-hlist HMMlistfile] HMMlist filename (must for triphone model)\n");
+  fprintf(fp, "    [-dnnconf file]     DNN configuration file\n");
   fprintf(fp, "    [-iwcd1 methodname] switch IWCD triphone handling on 1st pass\n");
   fprintf(fp, "             best N     use N best score (default of n-gram, N=%d)\n", jconf->am_root->iwcdmaxn);
   fprintf(fp, "             max        use maximum score\n");
