@@ -551,6 +551,32 @@ j_load_am(Recog *recog, JCONF_AM *amconf)
       return FALSE;
     }
   }
+  /* DNN */
+  if (amconf->dnn.enabled == TRUE) {
+    if ((am->dnn = dnn_new()) == NULL) {
+      jlog("ERROR: m_fusion: cannnot allocate DNN memory area\n");
+      return FALSE;
+    }
+    if (dnn_setup(am->dnn, 
+		  amconf->dnn.veclen,
+		  amconf->dnn.contextlen,
+		  amconf->dnn.inputnodes,
+		  amconf->dnn.outputnodes,
+		  amconf->dnn.hiddennodes,
+		  amconf->dnn.hiddenlayernum,
+		  amconf->dnn.wfile, 
+		  amconf->dnn.bfile,
+		  amconf->dnn.output_wfile,
+		  amconf->dnn.output_bfile,
+		  amconf->dnn.priorfile,
+		  amconf->dnn.prior_factor,
+		  amconf->dnn.batchsize) == FALSE) {
+      jlog("ERROR: m_fusion: failed to initialize DNN\n");
+      dnn_free(am->dnn);
+      am->dnn = NULL;
+      return FALSE;
+    }
+  }
 
   /* fixate model-specific params */
   /* set params whose default will change by models and not specified in arg */
@@ -1330,11 +1356,11 @@ j_final_fusion(Recog *recog)
     }
 #endif
     if (am->config->hmm_gs_filename != NULL) {/* with GMS */
-      if (outprob_init(&(am->hmmwrk), am->hmminfo, am->hmm_gs, am->config->gs_statenum, am->config->gprune_method, am->config->mixnum_thres) == FALSE) {
+      if (outprob_init(&(am->hmmwrk), am->hmminfo, am->hmm_gs, am->config->gs_statenum, am->config->gprune_method, am->config->mixnum_thres, am->dnn) == FALSE) {
 	return FALSE;
       }
     } else {
-      if (outprob_init(&(am->hmmwrk), am->hmminfo, NULL, 0, am->config->gprune_method, am->config->mixnum_thres) == FALSE) {
+      if (outprob_init(&(am->hmmwrk), am->hmminfo, NULL, 0, am->config->gprune_method, am->config->mixnum_thres, am->dnn) == FALSE) {
 	return FALSE;
       }
     }

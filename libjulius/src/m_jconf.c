@@ -568,4 +568,110 @@ config_file_parse(char *conffile, Jconf *jconf)
   return(ret);
 }
 
+/* parse DNN config file */
+boolean
+dnn_config_file_parse(char *filename, JCONF_AM *am)
+{
+  FILE *fp;
+  char buf[BUFLEN];
+  char *p;
+  char *v;
+  int i, n;
+  boolean error_flag;
+
+  if (am->dnn.wfile != NULL) {
+    jlog("ERROR: dnn_config_file_parse: duplicated loading: %s\n", filename);
+    return FALSE;
+  }
+
+  if ((fp = fopen(filename, "r")) == NULL) {
+    jlog("ERROR: dnn_config_file_parse: failed to open %s\n", filename);
+    return FALSE;
+  }
+  while (fgets_jconf(buf, BUFLEN, fp) != NULL) {
+    if (buf[0] == '\0') continue;
+    p = strchr(buf, ' ');
+    if (p == NULL) {
+      jlog("ERROR: dnn_config_file_parse: wrong file format: %s\n", filename);
+      fclose(fp);
+      return FALSE;
+    }
+    v = p;
+    while (*v == ' ') v++;
+    *p = '\0';
+    if (strmatch(buf, "feature_len")) am->dnn.veclen = atoi(v);
+    else if (strmatch(buf, "context_len")) am->dnn.contextlen = atoi(v);
+    else if (strmatch(buf, "input_nodes")) am->dnn.inputnodes = atoi(v);
+    else if (strmatch(buf, "output_nodes")) am->dnn.outputnodes = atoi(v);
+    else if (strmatch(buf, "hidden_nodes")) am->dnn.hiddennodes = atoi(v);
+    else if (strmatch(buf, "hidden_layers")) {
+      am->dnn.hiddenlayernum = atoi(v);
+      am->dnn.wfile = (char **)mymalloc(sizeof(char *) * am->dnn.hiddenlayernum);
+      am->dnn.bfile = (char **)mymalloc(sizeof(char *) * am->dnn.hiddenlayernum);
+      for (i = 0; i < am->dnn.hiddenlayernum; i++) {
+	am->dnn.wfile[i] = NULL;
+	am->dnn.bfile[i] = NULL;
+      }
+    } else if (buf[0] == 'W') {
+      n = atoi(&(buf[1]));
+      if (n > am->dnn.hiddenlayernum) {
+	jlog("ERROR: dnn_config_file_parse: W%d > # of hidden_layers (%d)\n", n, am->dnn.hiddenlayernum);
+	fclose(fp);
+	return FALSE;
+      } else if (n <= 0) {
+	jlog("ERROR: dnn_config_file_parse: layer id should begin with 1\n");
+	fclose(fp);
+	return FALSE;
+      }
+      am->dnn.wfile[n-1] = strdup(v);
+    } else if (buf[0] == 'B') {
+      n = atoi(&(buf[1]));
+      if (n > am->dnn.hiddenlayernum) {
+	jlog("ERROR: dnn_config_file_parse: B%d > # of hidden_layers (%d)\n", n, am->dnn.hiddenlayernum);
+	fclose(fp);
+	return FALSE;
+      } else if (n <= 0) {
+	jlog("ERROR: dnn_config_file_parse: layer id should begin with 1\n");
+	fclose(fp);
+	return FALSE;
+      }
+      am->dnn.bfile[n-1] = strdup(v);
+    } else if (strmatch(buf, "output_W")) am->dnn.output_wfile = strdup(v);
+    else if (strmatch(buf, "output_B")) am->dnn.output_bfile = strdup(v);
+    else if (strmatch(buf, "state_prior")) am->dnn.priorfile = strdup(v);
+    else if (strmatch(buf, "state_prior_factor")) am->dnn.prior_factor = atof(v);
+    else if (strmatch(buf, "batch_size")) am->dnn.batchsize = atoi(v);
+    else {
+      jlog("ERROR: dnn_config_file_parse: unknown spec: %s %s\n", buf, v);
+      fclose(fp);
+      return FALSE;
+    }
+  }
+  if (fclose(fp) == -1) {
+    jlog("ERROR: dnn_config_file_parse: failed to close file\n");
+    return FALSE;
+  }
+
+  /* check validity */
+  error_flag = FALSE;
+  for (i = 0; i < am->dnn.hiddenlayernum; i++) {
+    if (am->dnn.wfile[i] == NULL) {
+      jlog("ERROR: dnn_config_file_parse: no W file specified for hidden layer #%d\n", i + 1);
+      error_flag = TRUE;
+    }
+    if (am->dnn.bfile[i] == NULL) {
+      jlog("ERROR: dnn_config_file_parse: no B file specified for hidden layer #%d\n", i + 1);
+      error_flag = TRUE;
+    }
+  }
+  if (error_flag == TRUE) {
+    return FALSE;
+  }
+
+  am->dnn.enabled = TRUE;
+  return TRUE;
+}
+
+
+
 /* end of file */

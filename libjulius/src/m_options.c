@@ -1329,6 +1329,17 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
       GET_TMPARG;
       jconf->outprob_outfile = filepath(tmparg, cwd);
       continue;
+    } else if (strmatch(argv[i],"-dnnconf")) {
+      if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
+      GET_TMPARG;
+      tmparg = filepath(tmparg, cwd);
+      if (dnn_config_file_parse(tmparg, jconf->amnow) == FALSE) {
+	jlog("ERROR: m_options: failed to read %s\n", tmparg);
+	free(tmparg);
+	return FALSE;
+      }
+      free(tmparg);
+      continue;
     }
     if (argv[i][0] == '-' && strlen(argv[i]) == 2) {
       /* 1-letter options */

@@ -14,7 +14,7 @@
 /************************************************************************/
 /* .npy file load */
 
-boolean load_npy(float *array, char *filename, int x, int y)
+static boolean load_npy(float *array, char *filename, int x, int y)
 {
   FILE *fp;
   unsigned char code;
@@ -181,7 +181,7 @@ static float logistic_func(float x)
 }
 
 /* initialize dnn layer */
-void dnn_layer_init(DNNLayer *l)
+static void dnn_layer_init(DNNLayer *l)
 {
   l->w = NULL;
   l->b = NULL;
@@ -190,7 +190,7 @@ void dnn_layer_init(DNNLayer *l)
 }
 
 /* load dnn layer parameter from files */
-boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *bfile)
+static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *bfile)
 {
   l->in = in;
   l->out = out;
@@ -204,20 +204,69 @@ boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *bfile)
 }
 
 /* clear dnn layer */
-void dnn_layer_clear(DNNLayer *l)
+static void dnn_layer_clear(DNNLayer *l)
 {
   if (l->w != NULL) free(l->w);
   if (l->b != NULL) free(l->b);
   dnn_layer_init(l);
 }
 
-/* initialize dnn */
-boolean dnn_init(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize)
+/*********************************************************************/
+DNNData *dnn_new()
+{
+  DNNData *d;
+
+  d = (DNNData *)mymalloc(sizeof(DNNData));
+  memset(d, 0, sizeof(DNNData));
+
+  return d;
+}
+
+void dnn_clear(DNNData *dnn)
 {
   int i;
 
+  if (dnn->h) {
+    for (i = 0; i < dnn->hnum; i++) {
+      dnn_layer_clear(&(dnn->h[i]));
+    }
+    free(dnn->h);
+  }
+  if (dnn->state_prior) free(dnn->state_prior);
+  for (i = 0; i < 2; i++) {
+    if (dnn->work[i]) free(dnn->work[i]);
+  }
+  memset(dnn, 0, sizeof(DNNData));
+}
+
+void dnn_free(DNNData *dnn)
+{
+  dnn_clear(dnn);
+  free(dnn);
+}
+
+
+/* initialize dnn */
+boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize)
+{
+  int i;
+
+  if (dnn == NULL) return FALSE;
+
+  /* clear old data if exist */
+  dnn_clear(dnn);
+
   /* build logistic table */
   logistic_table_build();
+
+  /* set values */
+  dnn->batch_size = batchsize;
+  dnn->veclen = veclen;
+  dnn->contextlen = contextlen;
+  dnn->inputnodenum = inputnodes;
+  dnn->hiddennodenum = hiddennodes;
+  dnn->outputnodenum = outputnodes;
+  dnn->prior_factor = prior_factor;
 
   /* check for input length */
   int inputlen = veclen * contextlen;
@@ -280,6 +329,7 @@ boolean dnn_init(DNNData *dnn, int veclen, int contextlen, int inputnodes, int o
   return TRUE;
 }
 
+#if 0
 void dnn_ff(DNNData *dnn, float *in, float *out_ret)
 {
   int n;
@@ -305,8 +355,9 @@ void dnn_ff(DNNData *dnn, float *in, float *out_ret)
 #else
   /* INV_LOG_TEN * (x - addlogarray(x) - log(state_prior)) */
 #endif
-
 }
+
+#endif
 
 /* compute outprob by DNN for the current state and parameter */
 boolean dnn_calc_outprob(HMMWork *wrk)

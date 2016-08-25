@@ -67,7 +67,7 @@
 boolean
 outprob_init(HMMWork *wrk, HTK_HMM_INFO *hmminfo,
 	     HTK_HMM_INFO *gshmm, int gms_num,
-	     int gprune_method, int gprune_mixnum
+	     int gprune_method, int gprune_mixnum, DNNData *dnn
 	     )
 {
   int i;
@@ -156,6 +156,7 @@ outprob_init(HMMWork *wrk, HTK_HMM_INFO *hmminfo,
   /* store common variable to global */
   wrk->OP_hmminfo = hmminfo;
   wrk->OP_gshmm = gshmm;		/* NULL if GMS not used */
+  wrk->OP_dnn = dnn;			/* NULL if DNN not used */
   wrk->OP_gprune_num = gprune_mixnum;
 
   /* store multi-stream data */

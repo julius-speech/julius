@@ -153,6 +153,20 @@ jconf_set_default_values_am(JCONF_AM *j)
   j->frontend.sscalc			= FALSE;
   j->frontend.sscalc_len		= 300;
   j->frontend.ssload_filename		= NULL;
+  j->dnn.enabled                        = FALSE;
+  j->dnn.veclen                         = 0;
+  j->dnn.contextlen                     = 0;
+  j->dnn.inputnodes                     = 0;
+  j->dnn.outputnodes                    = 0;
+  j->dnn.hiddennodes                    = 0;
+  j->dnn.hiddenlayernum                 = 0;
+  j->dnn.wfile                          = NULL;
+  j->dnn.bfile                          = NULL;
+  j->dnn.output_wfile                   = NULL;
+  j->dnn.output_bfile                   = NULL;
+  j->dnn.priorfile                      = NULL;
+  j->dnn.prior_factor                   = 1.0;
+  j->dnn.batchsize                      = 1;
 }
 
 /** 

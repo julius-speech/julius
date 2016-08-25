@@ -336,17 +336,20 @@ j_config_remove_initial(Jconf *jconf)
 
   if(jconf->am_root->next != NULL && jconf->am_root->id == 0) {
     am = jconf->am_root->next;
-    free(jconf->am_root);
+    /*free(jconf->am_root);*/
+    j_jconf_am_free(jconf->am_root);
     jconf->am_root = am;
   }
   if(jconf->lm_root->next != NULL && jconf->lm_root->id == 0) {
     lm = jconf->lm_root->next;
-    free(jconf->lm_root);
+    /*free(jconf->lm_root);*/
+    j_jconf_lm_free(jconf->lm_root);
     jconf->lm_root = lm;
   }
   if(jconf->search_root->next != NULL && jconf->search_root->id == 0) {
     s = jconf->search_root->next;
-    free(jconf->search_root);
+    /*free(jconf->search_root);*/
+    j_jconf_search_free(jconf->search_root);
     jconf->search_root = s;
   }
 }

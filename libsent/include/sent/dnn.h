@@ -27,6 +27,7 @@ typedef struct {
 
   float *state_prior;		/* state priors [id] */
   int state_prior_num;		/* num of above (= output layer length) */
+  float prior_factor;		/* prior factor */
 
   int batch_size;		/* batch size */
   

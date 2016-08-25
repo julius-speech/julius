@@ -164,6 +164,7 @@ j_process_am_free(PROCESS_AM *am)
   outprob_free(&(am->hmmwrk));
   if (am->hmminfo) hmminfo_free(am->hmminfo);
   if (am->hmm_gs) hmminfo_free(am->hmm_gs);
+  if (am->dnn) dnn_free(am->dnn);
   /* not free am->jconf  */
   free(am);
 }
@@ -360,6 +361,25 @@ j_jconf_am_new()
 void
 j_jconf_am_free(JCONF_AM *amconf)
 {
+  int i;
+  if (amconf->dnn.wfile) {
+    for (i = 0; i < amconf->dnn.hiddenlayernum; i++) {
+      free(amconf->dnn.wfile[i]);
+    }
+    free(amconf->dnn.wfile);
+  }
+  if (amconf->dnn.bfile) {
+    for (i = 0; i < amconf->dnn.hiddenlayernum; i++) {
+      free(amconf->dnn.bfile[i]);
+    }
+    free(amconf->dnn.bfile);
+  }
+  if (amconf->dnn.output_wfile)
+    free(amconf->dnn.output_wfile);
+  if (amconf->dnn.output_bfile)
+    free(amconf->dnn.output_bfile);
+  if (amconf->dnn.priorfile)
+    free(amconf->dnn.priorfile);
   free(amconf);
 }
 

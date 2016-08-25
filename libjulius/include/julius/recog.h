@@ -47,6 +47,7 @@
  *       +- *pointer to JCONF_AM
  *       +- *pointer to MFCCCalc
  *       +- hmminfo, hmm_gs
+ *       +- dnn
  *       +- hmmwrk
  *       +- multipath, ccd_flag, cmn_loaded
  *    +- PROCESS_LM[] (linked list)
@@ -753,6 +754,11 @@ typedef struct __process_am__ {
    * Work area and outprob cache for HMM output probability computation
    */
   HMMWork hmmwrk;
+
+  /**
+   * DNN definitions
+   */
+  DNNData *dnn;
 
   /**
    * pointer to next

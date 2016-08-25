@@ -382,6 +382,15 @@ print_engine_info(Recog *recog)
       jlog("   sp transition penalty = %+2.1f\n", am->config->iwsp_penalty);
     }
 
+    if (am->dnn) {
+      jlog("\n DNN parameters:\n");
+      jlog("          DNN input dim. = %d (%d x %d)\n", am->dnn->inputnodenum, am->dnn->veclen, am->dnn->contextlen);
+      jlog("         DNN output dim. = %d\n", am->dnn->outputnodenum);
+      jlog("      # of hidden layers = %d\n", am->dnn->hnum);
+      jlog("       hidden layer dim. = %d\n", am->dnn->hiddennodenum);
+      jlog("      state prior factor = %f\n", am->dnn->prior_factor);
+      jlog("              batch size = %d\n", am->dnn->batch_size);
+    }
     jlog("\n");
   }
 
