@@ -11,6 +11,12 @@
 #include <sent/hmm.h>
 #include <sent/hmm_calc.h>
 
+#define AVX
+
+#ifdef AVX
+#include <immintrin.h>
+#endif /* AVX */
+
 /************************************************************************/
 /* .npy file load */
 
@@ -196,20 +202,36 @@ static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *b
 {
   l->in = in;
   l->out = out;
+#ifdef AVX
+  if (l->in % 8 != 0) {
+    jlog("Error: dnn_layer_load: input vector length is not 8-element aligned (%d)\n", l->in);
+    return FALSE;
+  }
+  /* memory block should be aligned for 32 bytes for AVX instructions */
+  l->w = (float *)mymalloc_aligned(sizeof(float) * l->out * l->in, 32);
+  l->b = (float *)mymalloc_aligned(sizeof(float) * l->out, 32);
+#else
   l->w = (float *)mymalloc(sizeof(float) * l->out * l->in);
   l->b = (float *)mymalloc(sizeof(float) * l->out);
+#endif /* AVX */
   if (! load_npy(l->w, wfile, l->in, l->out)) return FALSE;
   jlog("Stat: dnn_layer_load: loaded %s\n", wfile);
   if (! load_npy(l->b, bfile, l->out, 1)) return FALSE;
   jlog("Stat: dnn_layer_load: loaded %s\n", bfile);
+
   return TRUE;
 }
 
 /* clear dnn layer */
 static void dnn_layer_clear(DNNLayer *l)
 {
+#ifdef AVX
+  if (l->w != NULL) myfree_aligned(l->w);
+  if (l->b != NULL) myfree_aligned(l->b);
+#else
   if (l->w != NULL) free(l->w);
   if (l->b != NULL) free(l->b);
+#endif /* AVX */
   dnn_layer_init(l);
 }
 
@@ -341,6 +363,27 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in)
   float *s;
   int i, j;
 
+#ifdef AVX
+  float *fstore;
+  fstore = (float *)mymalloc_aligned(32, 32);
+
+  int n = in / 8;
+  for (i = 0; i < out; i++) {
+    x = 0.0f;
+    s = src;
+    for (j = 0; j < n; j++) {
+      __m256 v1 = _mm256_load_ps(w);
+      __m256 v2 = _mm256_load_ps(s);
+      __m256 result = _mm256_dp_ps(v1, v2, 0xff);
+      _mm256_store_ps(fstore, result);
+      x += fstore[0] + fstore[4];
+      w += 8;
+      s += 8;
+    }
+    *(dst++) = x + *(b++);
+  }
+  myfree_aligned(fstore);
+#else
   for (i = 0; i < out; i++) {
     x = 0.0f;
     s = src;
@@ -349,6 +392,7 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in)
     }
     *(dst++) = x + *(b++);
   }
+#endif /* AVX */
 }
 
 /* compute outprob by DNN for the current frame and store them to current frame state outprob cache */
