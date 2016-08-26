@@ -258,8 +258,18 @@ void dnn_clear(DNNData *dnn)
   }
   if (dnn->state_prior) free(dnn->state_prior);
   for (i = 0; i < dnn->hnum; i++) {
-    if (dnn->work[i]) free(dnn->work[i]);
+    if (dnn->work[i]) {
+#ifdef AVX
+      myfree_aligned(dnn->work[i]);
+#else
+      free(dnn->work[i]);
+#endif	/* AVX */
+    }
   }
+#ifdef AVX
+  if (dnn->invec) myfree_aligned(dnn->invec);
+#endif	/* AVX */
+
   memset(dnn, 0, sizeof(DNNData));
 }
 
@@ -350,9 +360,15 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 
   /* allocate work area */
   for (i = 0; i < dnn->hnum; i++) {
+#ifdef AVX
+    dnn->work[i] = (float *)mymalloc_aligned(sizeof(float) * dnn->hiddennodenum, 32);
+#else
     dnn->work[i] = (float *)mymalloc(sizeof(float) * dnn->hiddennodenum);
+#endif	/* AVX */
   }
-
+#ifdef AVX
+  dnn->invec = (float *)mymalloc_aligned(sizeof(float) * inputnodes, 32);
+#endif	/* AVX */
   return TRUE;
 }
 
@@ -395,58 +411,6 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in)
 #endif /* AVX */
 }
 
-/* compute outprob by DNN for the current frame and store them to current frame state outprob cache */
-static boolean dnn_calc_outprob0(HMMWork *wrk)
-{
-  int hidx, i, j, d, n;
-  float *src, *dst;
-  DNNLayer *h;
-  float x;
-  DNNData *dnn = wrk->OP_dnn;
-
-  /* frame = wrk->OP_time */
-  /* param = wrk->OP_param */
-  /* input vector = wrk->OP_param[wrk->OP_time][] */
-  /* store state outprob to wrk->last_cache[]  */
-
-  /* feed forward through hidden layers by standard logistic function */
-  src = &(wrk->OP_param->parvec[wrk->OP_time][0]);
-  n = 0;
-  for (hidx = 0; hidx < dnn->hnum; hidx++) {
-    h = &(dnn->h[hidx]);
-    dst = dnn->work[n];
-    d = 0;
-    for (i = 0; i < h->out; i++) {
-      x = 0.0f;
-      for (j = 0; j < h->in; j++) {
-	x += h->w[d] * src[j];
-	d++;
-      }
-      x += h->b[i];
-      dst[i] = logistic_func(x);
-    }
-    src = dnn->work[n];
-    if (++n > 1) n = 0;
-  }
-  /* output layer */
-  d = 0;
-  for (i = 0; i < dnn->o.out; i++) {
-    x = 0.0f;
-    for (j = 0; j < dnn->o.in; j++) {
-      x += dnn->o.w[d] * src[j];
-      d++;
-    }
-    x += dnn->o.b[i];
-    wrk->last_cache[i] = x;
-  }
-  /* do softmax */
-  /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
-  float logprob = addlog_array(wrk->last_cache, wrk->statenum);
-  for (i = 0; i < wrk->statenum; i++) {
-    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
-  }
-}
-
 boolean dnn_calc_outprob(HMMWork *wrk)
 {
   int hidx, i, j, d, n;
@@ -463,6 +427,10 @@ boolean dnn_calc_outprob(HMMWork *wrk)
   /* feed forward through hidden layers by standard logistic function */
   n = 0;
   src = &(wrk->OP_param->parvec[wrk->OP_time][0]);
+#ifdef AVX
+  memcpy(dnn->invec, src, sizeof(float) * dnn->inputnodenum);
+  src = dnn->invec;
+#endif	/* AVX */
   dst = dnn->work[n];
   for (hidx = 0; hidx < dnn->hnum; hidx++) {
     h = &(dnn->h[hidx]);

@@ -38,6 +38,7 @@ typedef struct {
   int hiddennodenum;		/* hidden layer node number */
   int outputnodenum;		/* output layer node number */
 
+  float *invec;
   float *work[2];
   
 } DNNData;
