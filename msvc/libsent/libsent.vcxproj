@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -161,6 +161,7 @@
     <ClCompile Include="..\..\libsent\src\phmm\outprob.c" />
     <ClCompile Include="..\..\libsent\src\phmm\outprob_init.c" />
     <ClCompile Include="..\..\libsent\src\phmm\vsegment.c" />
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn.c" />
     <ClCompile Include="..\..\libsent\src\util\aptree.c" />
     <ClCompile Include="..\..\libsent\src\util\confout.c" />
     <ClCompile Include="..\..\libsent\src\util\endian.c" />
