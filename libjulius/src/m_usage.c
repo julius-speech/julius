@@ -204,7 +204,8 @@ j_output_argument_help(FILE *fp)
   fprintf(fp, "    [-usepower/-nousepower] use power in fbank analysis       (OFF)\n");
   fprintf(fp, "    [-cmnload file]     load initial CMN param from file on startup\n");
   fprintf(fp, "    [-cmnsave file]     save CMN param to file after each input\n");
-  fprintf(fp, "    [-cmnnoupdate]      not update CMN param while recog. (use with -cmnload)\n");
+  fprintf(fp, "    [-cmnstatic]        no MAP, use static CMN (use with -cmnload)\n");
+  fprintf(fp, "    [-cmnnoupdate]      not update initial param while recog. (use with -cmnload)\n");
   fprintf(fp, "    [-cmnmapweight]     weight value of initial cm for MAP-CMN (%6.2f)\n", jconf->am_root->analysis.cmn_map_weight);
   fprintf(fp, "    [-cvn]              cepstral variance normalisation       (%s)\n", jconf->amnow->analysis.para.cvn ? "on" : "off");
   fprintf(fp, "    [-vtln alpha lowcut hicut] enable VTLN (1.0 to disable)   (%f)\n", jconf->am_root->analysis.para_default.vtln_alpha);

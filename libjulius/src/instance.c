@@ -67,6 +67,7 @@ j_mfcccalc_new(JCONF_AM *amconf)
       return NULL;
     }
     mfcc->cmn.load_filename = amconf->analysis.cmnload_filename;
+    mfcc->cmn.map_cmn = amconf->analysis.map_cmn;
     mfcc->cmn.update = amconf->analysis.cmn_update;
     mfcc->cmn.save_filename = amconf->analysis.cmnsave_filename;
     mfcc->cmn.map_weight = amconf->analysis.cmn_map_weight;

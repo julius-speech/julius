@@ -887,6 +887,7 @@ mfcc_config_is_same(JCONF_AM *amconf, MFCCCalc *mfcc)
       s2 = mfcc->cmn.save_filename;
       if (s1 == s2 || (s1 && s2 && strmatch(s1, s2))) {
 	if (amconf->analysis.cmn_update == mfcc->cmn.update
+	    && amconf->analysis.map_cmn == mfcc->cmn.map_cmn
 	    && amconf->analysis.cmn_map_weight == mfcc->cmn.map_weight) {
 	  if (amconf->frontend.ss_alpha == mfcc->frontend.ss_alpha
 	      && amconf->frontend.ss_floor == mfcc->frontend.ss_floor
@@ -1437,7 +1438,7 @@ j_final_fusion(Recog *recog)
       for(mfcc = recog->mfcclist; mfcc; mfcc = mfcc->next) {
 	if (mfcc->cmn.load_filename) {
 	  if (mfcc->para->cmn || mfcc->para->cvn) {
-	    mfcc->cmn.wrk = CMN_realtime_new(mfcc->para, mfcc->cmn.map_weight);
+	    mfcc->cmn.wrk = CMN_realtime_new(mfcc->para, mfcc->cmn.map_weight, mfcc->cmn.map_cmn);
 	    if ((mfcc->cmn.loaded = CMN_load_from_file(mfcc->cmn.wrk, mfcc->cmn.load_filename))== FALSE) {
 	      jlog("ERROR: m_fusion: failed to read initial cepstral mean from \"%s\"\n", mfcc->cmn.load_filename);
 	      return FALSE;

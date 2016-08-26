@@ -270,7 +270,7 @@ RealTimeInit(Recog *recog)
     }
     /* MAP-CMN 用の初期ケプストラム平均を読み込んで初期化する */
     /* Initialize the initial cepstral mean data from file for MAP-CMN */
-    if (para->cmn || para->cvn) mfcc->cmn.wrk = CMN_realtime_new(para, mfcc->cmn.map_weight);
+    if (para->cmn || para->cvn) mfcc->cmn.wrk = CMN_realtime_new(para, mfcc->cmn.map_weight, mfcc->cmn.map_cmn);
     /* -cmnload 指定時, CMN用のケプストラム平均の初期値をファイルから読み込む */
     /* if "-cmnload", load initial cepstral mean data from file for CMN */
     if (mfcc->cmn.load_filename) {

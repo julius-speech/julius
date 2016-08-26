@@ -145,6 +145,7 @@ jconf_set_default_values_am(JCONF_AM *j)
   make_default_para(&(j->analysis.para_default));
   make_default_para_htk(&(j->analysis.para_htk));
   j->analysis.cmnload_filename		= NULL;
+  j->analysis.map_cmn			= TRUE;
   j->analysis.cmn_update		= TRUE;
   j->analysis.cmnsave_filename		= NULL;
   j->analysis.cmn_map_weight		= 100.0;

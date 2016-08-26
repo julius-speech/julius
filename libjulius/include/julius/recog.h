@@ -546,6 +546,10 @@ typedef struct __mfcc_calc__ {
      */
     char *load_filename;
     /**
+     * CMN: perform map cmn
+     */
+    boolean map_cmn;
+    /**
      * CMN: update cepstral mean while recognition
      * (-cmnnoupdate to unset)
      */

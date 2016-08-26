@@ -1148,6 +1148,11 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
       if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
       jconf->amnow->analysis.cmn_update = FALSE;
       continue;
+    } else if (strmatch(argv[i],"-cmnstatic")) { /* no map, just use static parameter */
+      if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
+      jconf->amnow->analysis.map_cmn = FALSE;
+      jconf->amnow->analysis.cmn_update = FALSE;
+      continue;
     } else if (strmatch(argv[i],"-cmnmapweight")) { /* CMN weight for MAP */
       if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
       GET_TMPARG;

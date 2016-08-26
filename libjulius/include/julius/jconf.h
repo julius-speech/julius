@@ -160,6 +160,10 @@ typedef struct __jconf_am__ {
      */
     char *cmnload_filename;
     /**
+     * CMN: perform map-cmn
+     */
+    boolean map_cmn;
+    /**
      * CMN: update cepstral mean while recognition
      * (-cmnnoupdate to unset)
      */

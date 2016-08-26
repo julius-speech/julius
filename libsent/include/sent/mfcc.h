@@ -198,6 +198,7 @@ typedef struct {
   CMEAN now;		///< Work area to hold current cepstral mean and variance
   CMEAN all;		///< Work area to hold all cepstral mean and variance
   boolean loaded_from_file;	///< TRUE if loaded from file
+  boolean do_map;		///< TRUE when perform MAP-CMN
 } CMNWork;
 
 /**
@@ -263,7 +264,7 @@ void WMP_deltabuf_prepare(DeltaBuf *db);
 boolean WMP_deltabuf_proceed(DeltaBuf *db, float *new_mfcc);
 boolean WMP_deltabuf_flush(DeltaBuf *db);
 
-CMNWork *CMN_realtime_new(Value *para, float weight);
+CMNWork *CMN_realtime_new(Value *para, float weight, boolean map);
 void CMN_realtime_free(CMNWork *c);
 void CMN_realtime_prepare(CMNWork *c);
 void CMN_realtime(CMNWork *c, float *mfcc);

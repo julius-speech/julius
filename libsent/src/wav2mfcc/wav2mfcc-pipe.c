@@ -246,7 +246,7 @@ WMP_deltabuf_flush(DeltaBuf *db)
  * 
  */
 CMNWork *
-CMN_realtime_new(Value *para, float weight)
+CMN_realtime_new(Value *para, float weight, boolean map)
 {
   int i;
 
@@ -276,6 +276,8 @@ CMN_realtime_new(Value *para, float weight)
   c->cmean_init_set = FALSE;
 
   c->loaded_from_file = FALSE;
+
+  c->do_map = map;
 
   if (c->var) {
     for(i = 0; i < c->veclen; i++) c->all.mfcc_var[i] = 0.0;
@@ -347,12 +349,18 @@ CMN_realtime(CMNWork *c, float *mfcc)
     for(d=0;d<c->veclen;d++) {
       /* accumulate current MFCC to sum */
       c->now.mfcc_sum[d] += mfcc[d];
-      /* calculate map-mean */
-      x = c->now.mfcc_sum[d] + c->cweight * c->cmean_init[d];
-      y = (double)c->now.framenum + c->cweight;
-      x /= y;
+      /* calculate mean */
+      if (c->do_map) {
+	/* map */
+	x = c->now.mfcc_sum[d] + c->cweight * c->cmean_init[d];
+	y = (double)c->now.framenum + c->cweight;
+	x /= y;
+      } else {
+	/* static */
+	x = c->cmean_init[d];
+      }
       if (c->var) {
-	/* calculate map-var */
+	/* calculate var */
 	c->now.mfcc_var[d] += (mfcc[d] - x) * (mfcc[d] - x);
       }
       if (c->mean && d < c->mfcc_dim) {
