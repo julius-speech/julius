@@ -377,7 +377,6 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 static void
 sub1(float *dst, float *src, float *w, float *b, int out, int in)
 {
-  float x;
   float *s;
   int i, j;
 
@@ -387,18 +386,18 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in)
 
   int n = in / 8;
   for (i = 0; i < out; i++) {
-    x = 0.0f;
+    __m256 x = _mm256_setzero_ps();
     s = src;
     for (j = 0; j < n; j++) {
       __m256 v1 = _mm256_load_ps(w);
       __m256 v2 = _mm256_load_ps(s);
-      __m256 result = _mm256_dp_ps(v1, v2, 0xff);
-      _mm256_store_ps(fstore, result);
-      x += fstore[0] + fstore[4];
+      v2 = _mm256_mul_ps(v1, v2);
+      x = _mm256_add_ps(x, v2);
       w += 8;
       s += 8;
     }
-    *(dst++) = x + *(b++);
+    _mm256_store_ps(fstore, x);
+    *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
   }
   myfree_aligned(fstore);
 #else
