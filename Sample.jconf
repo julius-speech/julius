@@ -306,6 +306,7 @@
 #-cmnnoupdate			# keep initial mean, disable "-cmnupdate"
 #-cmnmapweight 100.0		# weight for MAP-CMN
 #-cvn				# enable variance normalization
+#-cmnstatic			# totally static cmn/cvn
 
 ## Vocal tract length normalization (VTLN)
 #-vtln 1.0 300 4800		# enable VTLN (alpha, lowerfreq, upperfreq)
@@ -316,6 +317,9 @@
 #-ssload filename		# do SS, load noise spectrum saved by "mkss"
 #-ssalpha 2.0			# alpha coef. for spectral subtraction
 #-ssfloor 0.5			# spectral floor coef.
+
+## DNN-HMM definition (default disabled (= GMM-HMM))
+#-dnnconf file			# DNN configuration file
 
 ## Others
 #-htkconf configfile		# load analysis settings from HTK Config file 
