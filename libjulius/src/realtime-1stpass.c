@@ -173,7 +173,7 @@ init_param(MFCCCalc *mfcc)
   if (para->cmn) mfcc->param->header.samptype |= F_CEPNORM;
   
   mfcc->param->header.wshift = para->smp_period * para->frameshift;
-  mfcc->param->header.sampsize = para->veclen * sizeof(VECT); /* not compressed */
+  mfcc->param->header.sampsize = para->veclen * mfcc->splice * sizeof(VECT); /* not compressed */
   mfcc->param->veclen = para->veclen * mfcc->splice;
   
   /* 認識処理中/終了後にセットされる変数:

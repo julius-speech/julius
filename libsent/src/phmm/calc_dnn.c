@@ -266,6 +266,7 @@ void dnn_clear(DNNData *dnn)
 #endif	/* AVX */
     }
   }
+  free(dnn->work);
 #ifdef AVX
   if (dnn->invec) myfree_aligned(dnn->invec);
 #endif	/* AVX */
@@ -359,6 +360,7 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   }
 
   /* allocate work area */
+  dnn->work = (float **)mymalloc(sizeof(float *) * dnn->hnum);
   for (i = 0; i < dnn->hnum; i++) {
 #ifdef AVX
     dnn->work[i] = (float *)mymalloc_aligned(sizeof(float) * dnn->hiddennodenum, 32);

@@ -375,13 +375,13 @@ j_jconf_am_free(JCONF_AM *amconf)
 
   if (amconf->dnn.wfile) {
     for (i = 0; i < amconf->dnn.hiddenlayernum; i++) {
-      free(amconf->dnn.wfile[i]);
+      if (amconf->dnn.wfile[i]) free(amconf->dnn.wfile[i]);
     }
     free(amconf->dnn.wfile);
   }
   if (amconf->dnn.bfile) {
     for (i = 0; i < amconf->dnn.hiddenlayernum; i++) {
-      free(amconf->dnn.bfile[i]);
+      if (amconf->dnn.bfile[i]) free(amconf->dnn.bfile[i]);
     }
     free(amconf->dnn.bfile);
   }
