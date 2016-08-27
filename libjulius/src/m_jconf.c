@@ -574,7 +574,7 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
 {
   FILE *fp;
   char buf[BUFLEN];
-  char *p;
+  char *p, *pp;
   char *v;
   int i, n;
   boolean error_flag;
@@ -589,26 +589,31 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
     return FALSE;
   }
   while (fgets_jconf(buf, BUFLEN, fp) != NULL) {
-    if (buf[0] == '\0') continue;
-    p = strchr(buf, ' ');
+    if ((p = strchr(buf, '#')) != NULL) {
+      *p = '\0';
+    }
+    pp = &(buf[0]);
+    while (*pp == ' ' || *pp == '\t') pp++;
+    if (*pp == '\0') continue;
+    p = strchr(pp, ' ');
     if (p == NULL) {
-      jlog("ERROR: dnn_config_file_parse: wrong file format: %s\n", filename);
+      jlog("ERROR: dnn_config_file_parse: wrong file format: %s\n", buf);
       fclose(fp);
       return FALSE;
     }
     v = p;
     while (*v == ' ') v++;
     *p = '\0';
-    if (strmatch(buf, "feature_type")) {
+    if (strmatch(pp, "feature_type")) {
       am->dnn.paramtype = param_str2code(v);
-    } else if (strmatch(buf, "feature_options")) {
+    } else if (strmatch(pp, "feature_options")) {
       am->dnn.optionstring = strdup(v);
-    } else if (strmatch(buf, "feature_len")) am->dnn.veclen = atoi(v);
-    else if (strmatch(buf, "context_len")) am->dnn.contextlen = atoi(v);
-    else if (strmatch(buf, "input_nodes")) am->dnn.inputnodes = atoi(v);
-    else if (strmatch(buf, "output_nodes")) am->dnn.outputnodes = atoi(v);
-    else if (strmatch(buf, "hidden_nodes")) am->dnn.hiddennodes = atoi(v);
-    else if (strmatch(buf, "hidden_layers")) {
+    } else if (strmatch(pp, "feature_len")) am->dnn.veclen = atoi(v);
+    else if (strmatch(pp, "context_len")) am->dnn.contextlen = atoi(v);
+    else if (strmatch(pp, "input_nodes")) am->dnn.inputnodes = atoi(v);
+    else if (strmatch(pp, "output_nodes")) am->dnn.outputnodes = atoi(v);
+    else if (strmatch(pp, "hidden_nodes")) am->dnn.hiddennodes = atoi(v);
+    else if (strmatch(pp, "hidden_layers")) {
       am->dnn.hiddenlayernum = atoi(v);
       am->dnn.wfile = (char **)mymalloc(sizeof(char *) * am->dnn.hiddenlayernum);
       am->dnn.bfile = (char **)mymalloc(sizeof(char *) * am->dnn.hiddenlayernum);
@@ -616,8 +621,8 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
 	am->dnn.wfile[i] = NULL;
 	am->dnn.bfile[i] = NULL;
       }
-    } else if (buf[0] == 'W') {
-      n = atoi(&(buf[1]));
+    } else if (pp[0] == 'W') {
+      n = atoi(&(pp[1]));
       if (n > am->dnn.hiddenlayernum) {
 	jlog("ERROR: dnn_config_file_parse: W%d > # of hidden_layers (%d)\n", n, am->dnn.hiddenlayernum);
 	fclose(fp);
@@ -628,8 +633,8 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
 	return FALSE;
       }
       am->dnn.wfile[n-1] = strdup(v);
-    } else if (buf[0] == 'B') {
-      n = atoi(&(buf[1]));
+    } else if (pp[0] == 'B') {
+      n = atoi(&(pp[1]));
       if (n > am->dnn.hiddenlayernum) {
 	jlog("ERROR: dnn_config_file_parse: B%d > # of hidden_layers (%d)\n", n, am->dnn.hiddenlayernum);
 	fclose(fp);
@@ -640,13 +645,13 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
 	return FALSE;
       }
       am->dnn.bfile[n-1] = strdup(v);
-    } else if (strmatch(buf, "output_W")) am->dnn.output_wfile = strdup(v);
-    else if (strmatch(buf, "output_B")) am->dnn.output_bfile = strdup(v);
-    else if (strmatch(buf, "state_prior")) am->dnn.priorfile = strdup(v);
-    else if (strmatch(buf, "state_prior_factor")) am->dnn.prior_factor = atof(v);
-    else if (strmatch(buf, "batch_size")) am->dnn.batchsize = atoi(v);
+    } else if (strmatch(pp, "output_W")) am->dnn.output_wfile = strdup(v);
+    else if (strmatch(pp, "output_B")) am->dnn.output_bfile = strdup(v);
+    else if (strmatch(pp, "state_prior")) am->dnn.priorfile = strdup(v);
+    else if (strmatch(pp, "state_prior_factor")) am->dnn.prior_factor = atof(v);
+    else if (strmatch(pp, "batch_size")) am->dnn.batchsize = atoi(v);
     else {
-      jlog("ERROR: dnn_config_file_parse: unknown spec: %s %s\n", buf, v);
+      jlog("ERROR: dnn_config_file_parse: unknown spec: %s %s\n", pp, v);
       fclose(fp);
       return FALSE;
     }
