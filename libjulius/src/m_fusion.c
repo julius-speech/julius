@@ -113,22 +113,22 @@ initialize_HMM(JCONF_AM *amconf, Jconf *jconf)
   /* MFCC_{0|E}[_D][_A][_Z][_N] is supported */
   /* check parameter type of this acoustic HMM */
   if (jconf->input.type == INPUT_WAVEFORM) {
-    /* Decode parameter extraction type according to the training
-       parameter type in the header of the given acoustic HMM */
-    switch(hmminfo->opt.param_type & F_BASEMASK) {
-    case F_MFCC:
-    case F_FBANK:
-    case F_MELSPEC:
-      break;
-    default:
-      jlog("ERROR: m_fusion: for direct speech input, only HMM trained by MFCC ior filterbank is supported\n");
-      hmminfo_free(hmminfo);
-      return NULL;
-    }
     if (amconf->dnn.enabled) {
       /* for DNN, use dnnconf */
       calc_para_from_header(&(amconf->analysis.para), amconf->dnn.paramtype, amconf->dnn.veclen);
     } else {
+      /* Decode parameter extraction type according to the training
+	 parameter type in the header of the given acoustic HMM */
+      switch(hmminfo->opt.param_type & F_BASEMASK) {
+      case F_MFCC:
+      case F_FBANK:
+      case F_MELSPEC:
+	break;
+      default:
+	jlog("ERROR: m_fusion: for direct speech input, only HMM trained by MFCC ior filterbank is supported\n");
+	hmminfo_free(hmminfo);
+	return NULL;
+      }
       /* set acoustic analysis parameters from HMM header */
       calc_para_from_header(&(amconf->analysis.para), hmminfo->opt.param_type, hmminfo->opt.vec_size);
     }
