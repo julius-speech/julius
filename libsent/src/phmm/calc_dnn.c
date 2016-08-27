@@ -31,7 +31,6 @@ static boolean load_npy(float *array, char *filename, int x, int y)
   char *header;
   size_t len;
   boolean fortran_order;
-  int i, j;
 
   if ((fp = fopen_readfile(filename)) == NULL) {
     jlog("Error: load_npy: unable to open: %s\n", filename);
@@ -108,48 +107,25 @@ static boolean load_npy(float *array, char *filename, int x, int y)
     fortran_order = FALSE;
   }
 
-  /* all arrays are transposed when used in the original python script, so */
-  /* we can assume all data in fortran-order, and read them as is */
-  if (fortran_order == FALSE) {
-    jlog("Error: load_npy: data array should be in fortran order: %s\n", filename);
-    free(header);
-    fclose_readfile(fp);
-    return FALSE;
-  }
-    
   char buf[100];
   sprintf(buf, "'shape': (%d, %d)", x, y);
   if (strstr(header, buf) == NULL) {
-    jlog("Error: load_npy: not a (%d, %d) array? %s\n", x, y, filename);
-    free(header);
-    fclose_readfile(fp);
-    return FALSE;
+    sprintf(buf, "'shape': (%d, %d)", y, x);
+    if (strstr(header, buf) == NULL) {
+      jlog("Error: load_npy: not a (%d, %d) array? %s\n", x, y, filename);
+      free(header);
+      fclose_readfile(fp);
+      return FALSE;
+    }
   }
   free(header);
 
-#if 1
   /* just read them in the order */
   if ((len = myfread(array, 4, x * y, fp)) < x * y) {
     jlog("Error: load_npy: failed to read %d bytes: %s\n", x * y, filename);
     fclose_readfile(fp);
     return FALSE;
   }
-#else
-  float *f;
-  f = (float *)mymalloc(sizeof(float) * y);
-  for (i = 0; i < x; i++) {
-    if ((len = myfread(f, 4, y, fp)) < y) {
-      jlog("Error: load_npy: failed to read %d bytes: %s\n", y * 4, filename);
-      fclose_readfile(fp);
-      free(f);
-      return FALSE;
-    }
-    for (j = 0; j < y; j++) {
-      array[i * y + j] = f[j];
-    }
-  }
-  free(f);
-#endif
 
   fclose_readfile(fp);
   return TRUE;
@@ -412,12 +388,11 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in)
 #endif /* AVX */
 }
 
-boolean dnn_calc_outprob(HMMWork *wrk)
+void dnn_calc_outprob(HMMWork *wrk)
 {
-  int hidx, i, j, d, n;
+  int hidx, i, n;
   float *src, *dst;
   DNNLayer *h;
-  float x;
   DNNData *dnn = wrk->OP_dnn;
 
   /* frame = wrk->OP_time */
