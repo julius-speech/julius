@@ -9,14 +9,19 @@
 # feature type, in HTK parameter specification format
 feature_type FBANK_D_A_Z
 
-# julius options to specify the acoustic parameter configuration
-# it will be passed to Julius to set feature extractor
+# julius options to configure the acoustic parameter extraction.
 #
-#   This example indicates the typical feature extraction for DNN:
-#     1. feature extraction parameter will be loaded from HTK config file
-#     2. use CMN/CVN
-#     3. load ceptral mean and variance from the specified file
-#     4. use the values as static, not update while processing
+#   The example below indicates that:
+#     1. parameters should be loaded from an HTK config file,
+#     2. use CMN/CVN,
+#     3. load ceptral mean and variance from the specified file,
+#     4. keep the cepstral mean/variance static, not update while processing
+#
+# the specified string will be expanded inline at the point where this
+# dnnconf file is specified by "-dnnconf", and passed to Julius.
+# As the same as other options in Julius, the later option will override
+# former. Please check the start-up messages to check if the 
+# feature extraction are correctly set up.
 #
 feature_options -htkconf model/dnn/config.lmfb.40ch.jnas -cvn -cmnload model/dnn/norm.jnas -cmnstatic
 
