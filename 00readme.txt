@@ -4,7 +4,7 @@
 
                                 Julius
 
-						(Rev 4.4   2016/08/20)
+						(Rev 4.4   2016/08/30)
                                                 (Rev 4.3.1 2014/01/15)
                                                 (Rev 4.3   2013/12/25)
                                                 (Rev 4.2.3 2013/06/30)
@@ -58,13 +58,14 @@ What's new in Julius-4.4
 Julius is now hosted on GitHub:
 https://github.com/julius-speech/julius
 
-Version 4.4 includes several updates and new features.  Two new
-tools "adintool-gui" and "binlm2arpa" are added and "mkbingram" was
-updated for audio input and binary LM conversion.  Now does not exit
-on client disconnection on module mode, instead it pauses itself and
-wait for another client to come.  It also has many bug fixes and
-updates for recent OS and environments.  Some documents that may help
-users using Julius with DNN-HMM is also added.
+Version 4.4 now supports stand-alone DNN-HMM support. (see 00readme-DNN.txt)
+Other features include:
+- New tools:
+  - adintool-gui: GUI version of adintool
+  - binlm2arpa: reverse convert binary N-gram to ARPA format
+- "mkbingram" now support direct charset conversion of binary LM
+- Now does not exit at connection lost in module mode
+- Bug fixes
 
 See "Release.txt" for full list of updates.
 Run "configure --help=recursive" to see all configure options.
@@ -84,6 +85,7 @@ Contents of Julius-4.4
 	configure		configure script
 	configure.in		
 	Sample.jconf		Sample configuration file
+	Sample.dnnconf		Sample DNN configuration file
 	julius/			Julius sources
 	libjulius/		JuliusLib core engine library sources
 	libsent/		JuliusLib low-level library sources

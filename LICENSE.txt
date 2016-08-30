@@ -3,10 +3,10 @@
 	「大語彙連続音声認識エンジン Julius」
 			利用許諾書
 
-  Copyright (c)   1991-2013 京都大学 河原研究室
+  Copyright (c)   1991-2063 京都大学 河原研究室
   Copyright (c)   1997-2000 情報処理振興事業協会(IPA)
   Copyright (c)   2000-2005 奈良先端科学技術大学院大学 鹿野研究室
-  Copyright (c)   2005-2013 名古屋工業大学 Julius開発チーム
+  Copyright (c)   2005-2016 名古屋工業大学 Julius開発チーム
 
 ----------------------------------------------------------------------------
 
@@ -40,10 +40,10 @@ Julius開発チームで開発されています。1997年度から3年間、情報処理振興事
 なくそのまま表示し添付しなければなりません。
 
 			記
-  Copyright (c) 1991-2013 京都大学 河原研究室
+  Copyright (c) 1991-2016 京都大学 河原研究室
   Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
   Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
-  Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
+  Copyright (c) 2005-2016 名古屋工業大学 Julius開発チーム
 
 3. 本ソフトウェアを利用して得られた知見に関して発表を行なう際には、
 「大語彙連続音声認識エンジン Julius」を利用したことを明記して下さい。
@@ -79,10 +79,10 @@ Julius開発チームで開発されています。1997年度から3年間、情報処理振興事
      Large Vocabulary Continuous Speech Recognition Engine Julius
 
 
- Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
  Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
 
 "Large Vocabulary Continuous Speech Recognition Engine Julius",
 including Julian, is being developed at Kawahara Lab., Kyoto
@@ -129,10 +129,10 @@ whatsoever.
 
                       Form of copyright notice:
 
- Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
  Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
 
 3. When you publish or present any results by using the Software, you
 must explicitly mention your use of "Large Vocabulary Continuous
