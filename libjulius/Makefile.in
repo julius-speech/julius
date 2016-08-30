@@ -29,12 +29,14 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@
+pkgconfigdir = $(libdir)/pkgconfig
 INSTALL=@INSTALL@
 INSTALL_DATA=@INSTALL_DATA@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
 
 ############################################################
 
+PKGCONF_FILE = julius-@JULIUS_MAJOR_VERSION@.pc
 TARGET = libjulius.a
 
 OBJ = \
@@ -93,6 +95,7 @@ install: install.lib install.include install.bin
 install.lib: $(TARGET)
 	${INSTALL} -d ${libdir}
 	${INSTALL_DATA} $(TARGET) ${libdir}
+	${INSTALL_DATA} $(PKGCONF_FILE) ${pkgconfigdir}
 
 install.include:
 	${INSTALL} -d ${includedir}/julius
@@ -120,6 +123,7 @@ distclean:
 	$(RM) src/version.c
 	$(RM) libjulius-config libjulius-config-dist
 	$(RM) doxygen.conf.ver
+	$(RM) $(PKGCONF_FILE)
 	$(RM) config.status include/julius/config.h
 	$(RM) Makefile
 
