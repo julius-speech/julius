@@ -56,12 +56,18 @@ j_mfcccalc_new(JCONF_AM *amconf)
     mfcc->para = &(amconf->analysis.para);
     mfcc->hmm_loaded = (amconf->analysis.para_hmm.loaded == 1) ? TRUE : FALSE;
     mfcc->htk_loaded = (amconf->analysis.para_htk.loaded == 1) ? TRUE : FALSE;
+    if (amconf->dnn.enabled) {
+      mfcc->splice = amconf->dnn.contextlen;
+    } else {
+      mfcc->splice = 1;
+    }
     mfcc->wrk = WMP_work_new(mfcc->para);
     if (mfcc->wrk == NULL) {
       jlog("ERROR: j_mfcccalc_new: failed to initialize feature computation\n");
       return NULL;
     }
     mfcc->cmn.load_filename = amconf->analysis.cmnload_filename;
+    mfcc->cmn.map_cmn = amconf->analysis.map_cmn;
     mfcc->cmn.update = amconf->analysis.cmn_update;
     mfcc->cmn.save_filename = amconf->analysis.cmnsave_filename;
     mfcc->cmn.map_weight = amconf->analysis.cmn_map_weight;
@@ -94,6 +100,7 @@ j_mfcccalc_free(MFCCCalc *mfcc)
   if (mfcc->rest_param) free_param(mfcc->rest_param);
   if (mfcc->param) free_param(mfcc->param);
   if (mfcc->wrk) WMP_free(mfcc->wrk);
+  if (mfcc->splicedmfcc) free(mfcc->splicedmfcc);
   if (mfcc->tmpmfcc) free(mfcc->tmpmfcc);
   if (mfcc->db) WMP_deltabuf_free(mfcc->db);
   if (mfcc->ab) WMP_deltabuf_free(mfcc->ab);
@@ -164,6 +171,7 @@ j_process_am_free(PROCESS_AM *am)
   outprob_free(&(am->hmmwrk));
   if (am->hmminfo) hmminfo_free(am->hmminfo);
   if (am->hmm_gs) hmminfo_free(am->hmm_gs);
+  if (am->dnn) dnn_free(am->dnn);
   /* not free am->jconf  */
   free(am);
 }
@@ -360,6 +368,29 @@ j_jconf_am_new()
 void
 j_jconf_am_free(JCONF_AM *amconf)
 {
+  int i;
+
+  if (amconf->dnn.optionstring)
+    free(amconf->dnn.optionstring);
+
+  if (amconf->dnn.wfile) {
+    for (i = 0; i < amconf->dnn.hiddenlayernum; i++) {
+      if (amconf->dnn.wfile[i]) free(amconf->dnn.wfile[i]);
+    }
+    free(amconf->dnn.wfile);
+  }
+  if (amconf->dnn.bfile) {
+    for (i = 0; i < amconf->dnn.hiddenlayernum; i++) {
+      if (amconf->dnn.bfile[i]) free(amconf->dnn.bfile[i]);
+    }
+    free(amconf->dnn.bfile);
+  }
+  if (amconf->dnn.output_wfile)
+    free(amconf->dnn.output_wfile);
+  if (amconf->dnn.output_bfile)
+    free(amconf->dnn.output_bfile);
+  if (amconf->dnn.priorfile)
+    free(amconf->dnn.priorfile);
   free(amconf);
 }
 

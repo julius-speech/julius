@@ -349,7 +349,7 @@ vecnet_sub(SP16 *Speech, int nowlen, Recog *recog)
 #if 0
 	{
 	  int i;
-	  for (i = 0; i < vecnet_veclen; i++) {
+	  for (i = 0; i < a->conf.vecnet_veclen; i++) {
 	    printf(" %f", mfcc->tmpmfcc[i]);
 	  }
 	  printf("\n");

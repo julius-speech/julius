@@ -61,6 +61,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -80,6 +81,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsC</CompileAs>
       <DisableSpecificWarnings>4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
@@ -161,6 +163,7 @@
     <ClCompile Include="..\..\libsent\src\phmm\outprob.c" />
     <ClCompile Include="..\..\libsent\src\phmm\outprob_init.c" />
     <ClCompile Include="..\..\libsent\src\phmm\vsegment.c" />
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn.c" />
     <ClCompile Include="..\..\libsent\src\util\aptree.c" />
     <ClCompile Include="..\..\libsent\src\util\confout.c" />
     <ClCompile Include="..\..\libsent\src\util\endian.c" />

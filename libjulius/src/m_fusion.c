@@ -113,20 +113,25 @@ initialize_HMM(JCONF_AM *amconf, Jconf *jconf)
   /* MFCC_{0|E}[_D][_A][_Z][_N] is supported */
   /* check parameter type of this acoustic HMM */
   if (jconf->input.type == INPUT_WAVEFORM) {
-    /* Decode parameter extraction type according to the training
-       parameter type in the header of the given acoustic HMM */
-    switch(hmminfo->opt.param_type & F_BASEMASK) {
-    case F_MFCC:
-    case F_FBANK:
-    case F_MELSPEC:
-      break;
-    default:
-      jlog("ERROR: m_fusion: for direct speech input, only HMM trained by MFCC ior filterbank is supported\n");
-      hmminfo_free(hmminfo);
-      return NULL;
+    if (amconf->dnn.enabled) {
+      /* for DNN, use dnnconf */
+      calc_para_from_header(&(amconf->analysis.para), amconf->dnn.paramtype, amconf->dnn.veclen);
+    } else {
+      /* Decode parameter extraction type according to the training
+	 parameter type in the header of the given acoustic HMM */
+      switch(hmminfo->opt.param_type & F_BASEMASK) {
+      case F_MFCC:
+      case F_FBANK:
+      case F_MELSPEC:
+	break;
+      default:
+	jlog("ERROR: m_fusion: for direct speech input, only HMM trained by MFCC ior filterbank is supported\n");
+	hmminfo_free(hmminfo);
+	return NULL;
+      }
+      /* set acoustic analysis parameters from HMM header */
+      calc_para_from_header(&(amconf->analysis.para), hmminfo->opt.param_type, hmminfo->opt.vec_size);
     }
-    /* set acoustic analysis parameters from HMM header */
-    calc_para_from_header(&(amconf->analysis.para), hmminfo->opt.param_type, hmminfo->opt.vec_size);
   }
   /* check if tied_mixture */
   if (hmminfo->is_tied_mixture && hmminfo->codebooknum <= 0) {
@@ -163,7 +168,9 @@ initialize_HMM(JCONF_AM *amconf, Jconf *jconf)
   hmminfo->cdmax_num = amconf->iwcdmaxn;
 
   if (amconf->analysis.para_htk.loaded == 1) apply_para(&(amconf->analysis.para), &(amconf->analysis.para_htk));
-  if (amconf->analysis.para_hmm.loaded == 1) apply_para(&(amconf->analysis.para), &(amconf->analysis.para_hmm));
+  if (amconf->dnn.enabled == FALSE) { /* disable HMMDEFS-side parameter check on DNN */
+    if (amconf->analysis.para_hmm.loaded == 1) apply_para(&(amconf->analysis.para), &(amconf->analysis.para_hmm));
+  }
   apply_para(&(amconf->analysis.para), &(amconf->analysis.para_default));
 
   return(hmminfo);
@@ -551,6 +558,36 @@ j_load_am(Recog *recog, JCONF_AM *amconf)
       return FALSE;
     }
   }
+  /* DNN */
+  if (amconf->dnn.enabled == TRUE) {
+    if ((am->dnn = dnn_new()) == NULL) {
+      jlog("ERROR: m_fusion: cannnot allocate DNN memory area\n");
+      return FALSE;
+    }
+    if (amconf->dnn.outputnodes != am->hmminfo->totalstatenum) {
+      jlog("ERROR: m_fusion: mismatch in DNN output and HMM states (%d != %d)\n", amconf->dnn.outputnodes, am->hmminfo->totalstatenum);
+      return FALSE;
+    }
+    if (dnn_setup(am->dnn, 
+		  amconf->dnn.veclen,
+		  amconf->dnn.contextlen,
+		  amconf->dnn.inputnodes,
+		  amconf->dnn.outputnodes,
+		  amconf->dnn.hiddennodes,
+		  amconf->dnn.hiddenlayernum,
+		  amconf->dnn.wfile, 
+		  amconf->dnn.bfile,
+		  amconf->dnn.output_wfile,
+		  amconf->dnn.output_bfile,
+		  amconf->dnn.priorfile,
+		  amconf->dnn.prior_factor,
+		  amconf->dnn.batchsize) == FALSE) {
+      jlog("ERROR: m_fusion: failed to initialize DNN\n");
+      dnn_free(am->dnn);
+      am->dnn = NULL;
+      return FALSE;
+    }
+  }
 
   /* fixate model-specific params */
   /* set params whose default will change by models and not specified in arg */
@@ -850,6 +887,7 @@ mfcc_config_is_same(JCONF_AM *amconf, MFCCCalc *mfcc)
       s2 = mfcc->cmn.save_filename;
       if (s1 == s2 || (s1 && s2 && strmatch(s1, s2))) {
 	if (amconf->analysis.cmn_update == mfcc->cmn.update
+	    && amconf->analysis.map_cmn == mfcc->cmn.map_cmn
 	    && amconf->analysis.cmn_map_weight == mfcc->cmn.map_weight) {
 	  if (amconf->frontend.ss_alpha == mfcc->frontend.ss_alpha
 	      && amconf->frontend.ss_floor == mfcc->frontend.ss_floor
@@ -858,7 +896,9 @@ mfcc_config_is_same(JCONF_AM *amconf, MFCCCalc *mfcc)
 	    s1 = amconf->frontend.ssload_filename;
 	    s2 = mfcc->frontend.ssload_filename;
 	    if (s1 == s2 || (s1 && s2 && strmatch(s1, s2))) {
-	      return TRUE;
+	      if (amconf->dnn.enabled == FALSE || amconf->dnn.contextlen == mfcc->splice) {
+		return TRUE;
+	      }
 	    }
 	  }
 	}
@@ -1330,11 +1370,11 @@ j_final_fusion(Recog *recog)
     }
 #endif
     if (am->config->hmm_gs_filename != NULL) {/* with GMS */
-      if (outprob_init(&(am->hmmwrk), am->hmminfo, am->hmm_gs, am->config->gs_statenum, am->config->gprune_method, am->config->mixnum_thres) == FALSE) {
+      if (outprob_init(&(am->hmmwrk), am->hmminfo, am->hmm_gs, am->config->gs_statenum, am->config->gprune_method, am->config->mixnum_thres, am->dnn) == FALSE) {
 	return FALSE;
       }
     } else {
-      if (outprob_init(&(am->hmmwrk), am->hmminfo, NULL, 0, am->config->gprune_method, am->config->mixnum_thres) == FALSE) {
+      if (outprob_init(&(am->hmmwrk), am->hmminfo, NULL, 0, am->config->gprune_method, am->config->mixnum_thres, am->dnn) == FALSE) {
 	return FALSE;
       }
     }
@@ -1398,7 +1438,7 @@ j_final_fusion(Recog *recog)
       for(mfcc = recog->mfcclist; mfcc; mfcc = mfcc->next) {
 	if (mfcc->cmn.load_filename) {
 	  if (mfcc->para->cmn || mfcc->para->cvn) {
-	    mfcc->cmn.wrk = CMN_realtime_new(mfcc->para, mfcc->cmn.map_weight);
+	    mfcc->cmn.wrk = CMN_realtime_new(mfcc->para, mfcc->cmn.map_weight, mfcc->cmn.map_cmn);
 	    if ((mfcc->cmn.loaded = CMN_load_from_file(mfcc->cmn.wrk, mfcc->cmn.load_filename))== FALSE) {
 	      jlog("ERROR: m_fusion: failed to read initial cepstral mean from \"%s\"\n", mfcc->cmn.load_filename);
 	      return FALSE;

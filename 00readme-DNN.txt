@@ -1,27 +1,64 @@
-
+f
 	Julius for DNN-based speech recognition
 
+						(revised 2016/08/30)
 						(updated 2013/09/29)
 
-A. How it works
-================
+A. Julius and DNN-HMM
+======================
 
-This version of Julius can perform, Julius can perform DNN-HMM based
-recognition by receiving pre-computed state probabilities.  In that mode,
-Julius does not read any feature parameter vectors and compute the state
-output probability of an HMM state in it, but just read the "output
-probabilities vectors" of the HMM states already computed in other tools,
-via socket or file.
+From 4.4, Julius can perform DNN-HMM based recognition in two ways:
 
-The "output probabilities input" is called "outprob vector" in Julius,
-which contains a sequence of vectors, each of them consists of
-pre-computed state probabilities a vector of state-num-of-HMM dimension.
+  1. standalone: directly compute DNN for HMM inside Julius (>= 4.4)
 
-The most important thing to know before using this scheme is that,
-each dimension in the input outprob vector and each state in the HMM in
-Julius should corresponds.  In other words, the index of HMM states
-and outprob vector should match. The details are described in the
-following section.
+  2. network: receive state probabilities calculated by other process
+     via socket (<= 4.3.1)
+
+Both are described below.
+
+ A.1. Standalone mode
+ =====================
+
+From version 4.4, Julius is capable of performing DNN-HMM based
+recognition by itself.  It can read a DNN definition along with a HMM,
+and can compute the network against input (spliced) feature vectors
+and output the node scores of output layer for each frame, which will
+be used as output probabilities of corresponding HMM states in the
+HMM.  All computation will be done in a single process.
+
+Note that the current implementation is very simple and limited.  Only
+basic functions are implemented for NN.  Any number of hidden layers
+can be defined, but the number of the nodes in the hidden layers
+should be the same.  No batch computation is performed: all
+frame-wise.  SIMD instruction (Intel AVX) is used to speed up the
+computation.  Only tested on Windows and Ubuntu on Intel PC.
+See "libsent/src/phmm/calc_dnn.c" for the actual implementation.
+
+To run, you need
+
+ 1) an HMM AM (GMM defs are ignored, only its structure is used)
+ 2) a DNN definition that corresponds to 1)
+ 3) ".dnnconf" configuration file (text)
+
+The .dnnconf file specifies the parameters, options, DNN definition
+files, and other parameters all relating to DNN computation. A sample
+file is located in the top directory of Julius archive as
+"Sample.dnnconf".
+
+The the matrix/vector definitions should be given in ".npy" format
+(i. e. python's "NumPy.save" format).  Only 32bit-float little endian
+datatype is acceptable.
+
+To perpare a model for DNN-HMM, note that the orders are important.
+The order of the output nodes in the DNN should be the order of HMM
+state definition id.  If not, Julius won't work properly.
+
+
+ A.2. Modular mode
+ =====================
+
+Julius still has capability of receiving state output probability
+vector from other process.  This is an older way before 4.4.
 
 To run, you need 
 
@@ -85,8 +122,8 @@ perform DNN-based recognition, please re-convert from ASCII hmmdefs
 with the newest version of mkbinhmm.
 
 
-D. Making outprob vector
-==========================
+D. Making outprob vector for Modular mode
+==========================================
 
 D.1. Format of outprob vector file
 ===================================

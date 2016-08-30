@@ -352,8 +352,12 @@ calc_para_from_header(Value *para, short param_type, short vec_size)
   /* on filter-bank output, also overwrite the number of filterbank */
   if (para->basetype == F_FBANK || para->basetype == F_MELSPEC) {
     if (para->fbank_num != dim) {
-      jlog("Warning: number of filterbank is set to %d, but AM requires %d\n", para->fbank_num, dim);
-      jlog("Warning: use value of AM: %d\n", dim);
+      if (para->fbank_num != -1) {
+	jlog("Warning: number of filterbank is set to %d, but computed number from vector length is %d\n", para->fbank_num, dim);
+	jlog("Warning: overwrite: %d -> %d\n", para->fbank_num, dim);
+      } else {
+	jlog("Warning: number of filterbank was set to %d, estimated from vector length (%d) and parameter type\n", dim, vec_size);
+      }
       para->fbank_num = dim;
     }
   }

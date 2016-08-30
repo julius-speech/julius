@@ -88,6 +88,8 @@ wav2mfcc(SP16 speech[], int speechlen, Recog *recog)
   int len;
   Value *para;
   MFCCCalc *mfcc;
+  int veclen;
+  int t, i;
 
   /* calculate frame length from speech length, frame size and frame shift */
   framenum = (int)((speechlen - recog->jconf->input.framesize) / recog->jconf->input.frameshift) + 1;
@@ -125,10 +127,16 @@ wav2mfcc(SP16 speech[], int speechlen, Recog *recog)
   for(mfcc=recog->mfcclist;mfcc;mfcc=mfcc->next) {
 
     para = mfcc->para;
+    veclen = para->veclen * mfcc->splice;
+
+    if (framenum - (mfcc->splice - 1) < 1) {
+      jlog("WARNING: input too short (%d samples), ignored\n", speechlen);
+      return FALSE;
+    }
 
     /* malloc new param */
     param_init_content(mfcc->param);
-    if (param_alloc(mfcc->param, framenum, para->veclen) == FALSE) {
+    if (param_alloc(mfcc->param, framenum, veclen) == FALSE) {
       jlog("ERROR: failed to allocate memory for converted parameter vectors\n");
       return FALSE;
     }
@@ -151,19 +159,28 @@ wav2mfcc(SP16 speech[], int speechlen, Recog *recog)
       return FALSE;
     }
 
+    /* splicing */
+    if (mfcc->splice > 1) {
+      for (t = 0; t < framenum - (mfcc->splice - 1); t++) {
+	for (i = 1; i < mfcc->splice; i++) {
+	  memcpy(&(mfcc->param->parvec[t][para->veclen * i]), &(mfcc->param->parvec[t + i][0]), sizeof(VECT) * para->veclen);
+	}
+      }
+    }
+
     /* set miscellaneous parameters */
-    mfcc->param->header.samplenum = framenum;
+    mfcc->param->header.samplenum = framenum - (mfcc->splice - 1);
     mfcc->param->header.wshift = para->smp_period * para->frameshift;
-    mfcc->param->header.sampsize = para->veclen * sizeof(VECT); /* not compressed */
-    mfcc->param->header.samptype = F_MFCC;
+    mfcc->param->header.sampsize = veclen * sizeof(VECT); /* not compressed */
+    mfcc->param->header.samptype = para->basetype;
     if (para->delta) mfcc->param->header.samptype |= F_DELTA;
     if (para->acc) mfcc->param->header.samptype |= F_ACCL;
     if (para->energy) mfcc->param->header.samptype |= F_ENERGY;
     if (para->c0) mfcc->param->header.samptype |= F_ZEROTH;
     if (para->absesup) mfcc->param->header.samptype |= F_ENERGY_SUP;
     if (para->cmn) mfcc->param->header.samptype |= F_CEPNORM;
-    mfcc->param->veclen = para->veclen;
-    mfcc->param->samplenum = framenum;
+    mfcc->param->veclen = veclen;
+    mfcc->param->samplenum = framenum - (mfcc->splice - 1);
 
     if (mfcc->frontend.sscalc) {
       free(mfcc->frontend.ssbuf);

@@ -29,6 +29,7 @@
 #include <sent/stddefs.h>
 #include <sent/htk_hmm.h>
 #include <sent/htk_param.h>
+#include <sent/dnn.h>
 
 /**
  * @brief Symbols to specify which Gaussian pruning algorithm to use.
@@ -84,6 +85,7 @@ typedef struct __hmmwork__{
   /* local storage of pointers to the HMM */
   HTK_HMM_INFO *OP_hmminfo; ///< Current %HMM definition data
   HTK_HMM_INFO *OP_gshmm; ///< Current GMS %HMM data
+  DNNData *OP_dnn;	  ///< DNN definition data
 
   /* local storage of input parameters */
   HTK_Param *OP_param;	///< Current parameter
@@ -156,8 +158,7 @@ typedef struct __hmmwork__{
 
   boolean batch_computation;
 
-} HMMWork;  
-
+} HMMWork;
 
 #ifdef __cplusplus
 extern "C" {
@@ -172,7 +173,7 @@ LOGPROB addlog_array(LOGPROB *x, int n);
 boolean
 outprob_init(HMMWork *wrk, HTK_HMM_INFO *hmminfo,
 	     HTK_HMM_INFO *gshmm, int gms_num,
-	     int gprune_method, int gprune_mixnum
+	     int gprune_method, int gprune_mixnum, DNNData *dnn
 	     );
 boolean outprob_prepare(HMMWork *wrk, int framenum);
 void outprob_free(HMMWork *wrk);
@@ -228,6 +229,13 @@ boolean gprune_beam_init(HMMWork *wrk);
 void gprune_beam_free(HMMWork *wrk);
 void gprune_beam(HMMWork *wrk, HTK_HMM_Dens **g, int gnum, int *last_id, int lnum);
 
+/* calc_dnn.c */
+DNNData *dnn_new();
+void dnn_clear(DNNData *dnn);
+void dnn_free(DNNData *dnn);
+boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize);
+
+void dnn_calc_outprob(HMMWork *wrk);
 
 #ifdef __cplusplus
 }

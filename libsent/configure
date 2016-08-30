@@ -3274,6 +3274,57 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+xxxxAVX=yes
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD AVX instruction" >&5
+$as_echo_n "checking for SIMD AVX instruction... " >&6; }
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <immintrin.h>
+
+int
+main ()
+{
+__m256 v;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+xxxxAVX=no
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+if test "$xxxxAVX" = no; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD AVX instruction with -mavx" >&5
+$as_echo_n "checking for SIMD AVX instruction with -mavx... " >&6; }
+  CFLAGS="$CFLAGS -mavx"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <immintrin.h>
+
+int
+main ()
+{
+__m256 v;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  as_fn_error $? "no support for SIMD AVX instruction" "$LINENO" 5
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
 # incompatible versions:
@@ -3546,7 +3597,6 @@ case "$host_os" in
     EXTRALIB="-static $EXTRALIB"
     ;;
 esac
-
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5

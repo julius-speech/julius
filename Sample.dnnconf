@@ -1,0 +1,74 @@
+####
+#### Sample DNN Configuration for DNN-HMM Decoding (-dnnconf)
+####
+
+####
+#### Feature Extraction
+####
+
+# feature type, in HTK parameter specification format
+feature_type FBANK_D_A_Z
+
+# julius options to configure the acoustic parameter extraction.
+#
+#   The example below indicates that:
+#     1. parameters should be loaded from an HTK config file,
+#     2. use CMN/CVN,
+#     3. load ceptral mean and variance from the specified file,
+#     4. keep the cepstral mean/variance static, not update while processing
+#
+# the specified string will be expanded inline at the point where this
+# dnnconf file is specified by "-dnnconf", and passed to Julius.
+# As the same as other options in Julius, the later option will override
+# former. Please check the start-up messages to check if the 
+# feature extraction are correctly set up.
+#
+feature_options -htkconf model/dnn/config.lmfb.40ch.jnas -cvn -cmnload model/dnn/norm.jnas -cmnstatic
+
+# feature vector length (including delta or accel, before splicing)
+feature_len 120
+
+# splicing length
+context_len 11
+
+####
+#### NN Definition
+####
+
+# number of input nodes (should be equal to (feature_len * context_len))
+input_nodes 1320
+
+# number of output nodes (num and order should correspond to HMM definition)
+output_nodes 2004
+
+# number of nodes in hidden layers
+hidden_nodes 2048
+
+# number of hidden layers (layers excluding input and output)
+hidden_layers 5
+
+# weights W and biases b for hidden layers, in numpy np.save() format
+#   dtype of these file should be '<f4' (32-bit float little indian)!
+W1 model/dnn/W_l1.npy
+W2 model/dnn/W_l2.npy
+W3 model/dnn/W_l3.npy
+W4 model/dnn/W_l4.npy
+W5 model/dnn/W_l5.npy
+B1 model/dnn/bias_l1.npy
+B2 model/dnn/bias_l2.npy
+B3 model/dnn/bias_l3.npy
+B4 model/dnn/bias_l4.npy
+B5 model/dnn/bias_l5.npy
+
+# also weights and biases for output layer
+output_W model/dnn/W_output.npy
+output_B model/dnn/bias_output.npy
+
+# state prior in 'state_id(%d) prior(%e)' format
+state_prior model/dnn/prior.dnn
+
+# state prior factor
+state_prior_factor 1.0
+
+# batch size (not used)
+batch_size 64

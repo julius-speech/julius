@@ -167,14 +167,26 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
   if (mfcc->para->cmn) {
     jlog("yes, ");
     if (jconf->decodeopt.realtime_flag) {
-      jlog("real-time MAP-CMN, updating mean with last %.1f sec. input\n");
-      jlog("  initial mean from file = ");
+      if (mfcc->cmn.update == TRUE) {
+	jlog("real-time MAP-CMN, updating initial mean with last %d input frames\n", CPMAX);
+	jlog("  initial mean from file = ");
+      } else {
+	if (mfcc->cmn.map_cmn == TRUE) {
+	  jlog("real-time MAP-CMN, static initial mean\n");
+	  jlog("  initial mean from file = ");
+	} else {
+	  jlog("CMN with static mean\n");
+	  jlog("   static mean from file = ");
+	}
+      }
       if (mfcc->cmn.loaded) {
 	jlog("%s\n", mfcc->cmn.load_filename);
       } else {
 	jlog("N/A\n");
       }
-      jlog("   beginning data weight = %6.2f\n", mfcc->cmn.map_weight);
+      if (mfcc->cmn.map_cmn == TRUE) {
+	jlog("   beginning data weight = %6.2f\n", mfcc->cmn.map_weight);
+      }
     } else {
       if (mfcc->cmn.loaded) {
 	jlog("with a static mean\n");
@@ -223,6 +235,11 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
     jlog(" Julius defaults");
   }
   jlog("\n");
+
+  if (mfcc->splice > 1) {
+    jlog("\t  frame splicing = %d\n", mfcc->splice);
+    jlog("\n");
+  }
 }
 
 
@@ -382,6 +399,15 @@ print_engine_info(Recog *recog)
       jlog("   sp transition penalty = %+2.1f\n", am->config->iwsp_penalty);
     }
 
+    if (am->dnn) {
+      jlog("\n DNN parameters:\n");
+      jlog("          DNN input dim. = %d (%d x %d)\n", am->dnn->inputnodenum, am->dnn->veclen, am->dnn->contextlen);
+      jlog("         DNN output dim. = %d\n", am->dnn->outputnodenum);
+      jlog("      # of hidden layers = %d\n", am->dnn->hnum);
+      jlog("       hidden layer dim. = %d\n", am->dnn->hiddennodenum);
+      jlog("      state prior factor = %f\n", am->dnn->prior_factor);
+      jlog("              batch size = %d\n", am->dnn->batch_size);
+    }
     jlog("\n");
   }
 

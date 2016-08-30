@@ -173,8 +173,8 @@ init_param(MFCCCalc *mfcc)
   if (para->cmn) mfcc->param->header.samptype |= F_CEPNORM;
   
   mfcc->param->header.wshift = para->smp_period * para->frameshift;
-  mfcc->param->header.sampsize = para->veclen * sizeof(VECT); /* not compressed */
-  mfcc->param->veclen = para->veclen;
+  mfcc->param->header.sampsize = para->veclen * mfcc->splice * sizeof(VECT); /* not compressed */
+  mfcc->param->veclen = para->veclen * mfcc->splice;
   
   /* 認識処理中/終了後にセットされる変数:
      param->parvec (パラメータベクトル系列)
@@ -249,7 +249,6 @@ RealTimeInit(Recog *recog)
       mfcc->wrk->ss_floor = mfcc->frontend.ss_floor;
     }
   }
-
   for(mfcc = recog->mfcclist; mfcc; mfcc = mfcc->next) {
   
     para = mfcc->para;
@@ -264,9 +263,14 @@ RealTimeInit(Recog *recog)
     /* デルタ計算のためのワークエリアを確保 */
     /* allocate work area for the delta computation */
     mfcc->tmpmfcc = (VECT *)mymalloc(sizeof(VECT) * para->vecbuflen);
+    /* splice buffer */
+    if (mfcc->splice > 1) {
+      mfcc->splicedmfcc = (VECT *)mymalloc(sizeof(VECT) * para->veclen * mfcc->splice);
+      mfcc->splicedlen = 0;
+    }
     /* MAP-CMN 用の初期ケプストラム平均を読み込んで初期化する */
     /* Initialize the initial cepstral mean data from file for MAP-CMN */
-    if (para->cmn || para->cvn) mfcc->cmn.wrk = CMN_realtime_new(para, mfcc->cmn.map_weight);
+    if (para->cmn || para->cvn) mfcc->cmn.wrk = CMN_realtime_new(para, mfcc->cmn.map_weight, mfcc->cmn.map_cmn);
     /* -cmnload 指定時, CMN用のケプストラム平均の初期値をファイルから読み込む */
     /* if "-cmnload", load initial cepstral mean data from file for CMN */
     if (mfcc->cmn.load_filename) {
@@ -334,6 +338,7 @@ reset_mfcc(Recog *recog)
     /* set the delta cycle buffer */
     if (para->delta) WMP_deltabuf_prepare(mfcc->db);
     if (para->acc) WMP_deltabuf_prepare(mfcc->ab);
+    if (mfcc->splice > 1) mfcc->splicedlen = 0;
   }
 
 }
@@ -401,6 +406,7 @@ RealTimePipeLinePrepare(Recog *recog)
   /* check type coherence between param and hmminfo here */
   if (recog->jconf->input.paramtype_check_flag) {
     for(am=recog->amlist;am;am=am->next) {
+      if (am->config->dnn.enabled) continue;
       if (!check_param_coherence(am->hmminfo, am->mfcc->param)) {
 	jlog("ERROR: input parameter type does not match AM\n");
 	return FALSE;
@@ -433,6 +439,24 @@ RealTimePipeLinePrepare(Recog *recog)
   recog->speechlen = 0;
 #endif
 
+  return TRUE;
+}
+
+/* splice */
+static boolean
+splice_mfcc(MFCCCalc *mfcc)
+{
+  if (mfcc->splicedlen >= mfcc->splice) {
+    memmove(mfcc->splicedmfcc, &(mfcc->splicedmfcc[mfcc->para->veclen]), sizeof(VECT) * (mfcc->splice - 1) * mfcc->para->veclen);
+    mfcc->splicedlen --;
+  }
+  memcpy(&(mfcc->splicedmfcc[mfcc->para->veclen * mfcc->splicedlen]), mfcc->tmpmfcc, sizeof(VECT) * mfcc->para->veclen);
+  mfcc->splicedlen++;
+  if (mfcc->splicedlen < mfcc->splice) {
+    /* if ret == FALSE, there is no available frame.  So just wait for
+       next input */
+    return FALSE;
+  }
   return TRUE;
 }
 
@@ -568,6 +592,11 @@ RealTimeMFCC(MFCCCalc *mfcc, SP16 *window, int windowlen)
   /* CMN を計算 */
   /* perform CMN */
   if (para->cmn || para->cvn) CMN_realtime(mfcc->cmn.wrk, tmpmfcc);
+
+  /* splice */
+  if (mfcc->splice > 1) {
+    return(splice_mfcc(mfcc));
+  }
 
   return TRUE;
 }
@@ -786,6 +815,7 @@ RealTimePipeLine(SP16 *Speech, int nowlen, Recog *recog) /* Speech[0...nowlen] =
   int i, now, ret;
   MFCCCalc *mfcc;
   RealBeam *r;
+  VECT *mfccvec;
 
   r = &(recog->real);
 
@@ -839,9 +869,14 @@ RealTimePipeLine(SP16 *Speech, int nowlen, Recog *recog) /* Speech[0...nowlen] =
       /* calculate a parameter vector from current waveform windows
 	 and store to r->tmpmfcc */
       if ((*(recog->calc_vector))(mfcc, r->window, r->windowlen)) {
+	if (mfcc->splice > 1) {
+	  mfccvec = mfcc->splicedmfcc;
+	} else {
+	  mfccvec = mfcc->tmpmfcc;
+	}
 #ifdef ENABLE_PLUGIN
 	/* call post-process plugin if exist */
-	plugin_exec_vector_postprocess(mfcc->tmpmfcc, mfcc->param->veclen, mfcc->f);
+	plugin_exec_vector_postprocess(mfccvec, mfcc->param->veclen, mfcc->f);
 #endif
 	/* MFCC完成，登録 */
   	mfcc->valid = TRUE;
@@ -850,7 +885,7 @@ RealTimePipeLine(SP16 *Speech, int nowlen, Recog *recog) /* Speech[0...nowlen] =
 	  jlog("ERROR: failed to allocate memory for incoming MFCC vectors\n");
 	  return -1;
 	}
-	memcpy(mfcc->param->parvec[mfcc->f], mfcc->tmpmfcc, sizeof(VECT) * mfcc->param->veclen);
+	memcpy(mfcc->param->parvec[mfcc->f], mfccvec, sizeof(VECT) * mfcc->param->veclen);
 #ifdef RDEBUG
 	printf("DeltaBuf: %02d: got frame %d\n", mfcc->id, mfcc->f);
 #endif
@@ -1114,6 +1149,7 @@ RealTimeParam(Recog *recog)
 #ifdef RDEBUG
   int i;
 #endif
+  VECT *mfccvec;
 
   r = &(recog->real);
 
@@ -1251,12 +1287,21 @@ RealTimeParam(Recog *recog)
       }
       /* a new frame has been obtained from delta buffer to tmpmfcc */
       if(para->cmn || para->cvn) CMN_realtime(mfcc->cmn.wrk, mfcc->tmpmfcc);
+      /* splice */
+      if (mfcc->splice > 1) {
+	if (splice_mfcc(mfcc) == FALSE) {
+	  continue;
+	}
+	mfccvec = mfcc->splicedmfcc;
+      } else {
+	mfccvec = mfcc->tmpmfcc;
+      }
       if (param_alloc(mfcc->param, mfcc->f + 1, mfcc->param->veclen) == FALSE) {
 	jlog("ERROR: failed to allocate memory for incoming MFCC vectors\n");
 	return FALSE;
       }
       /* store to mfcc->f */
-      memcpy(mfcc->param->parvec[mfcc->f], mfcc->tmpmfcc, sizeof(VECT) * mfcc->param->veclen);
+      memcpy(mfcc->param->parvec[mfcc->f], mfccvec, sizeof(VECT) * mfcc->param->veclen);
 #ifdef ENABLE_PLUGIN
       /* call postprocess plugin if any */
       plugin_exec_vector_postprocess(mfcc->param->parvec[mfcc->f], mfcc->param->veclen, mfcc->f);

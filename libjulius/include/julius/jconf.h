@@ -160,6 +160,10 @@ typedef struct __jconf_am__ {
      */
     char *cmnload_filename;
     /**
+     * CMN: perform map-cmn
+     */
+    boolean map_cmn;
+    /**
      * CMN: update cepstral mean while recognition
      * (-cmnnoupdate to unset)
      */
@@ -213,6 +217,28 @@ typedef struct __jconf_am__ {
    * Plugin source ID when using plugin (gprune_method is GPRUNE_SEL_USER)
    */
   int gprune_plugin_source;
+
+  /**
+   * DNN configuration for DNN-HMM
+   */
+  struct {
+    boolean enabled;
+    short paramtype;		/* feature type */
+    char *optionstring;		/* feature extraction option string  */
+    int veclen;			/* vector length */
+    int contextlen;		/* context length */
+    int inputnodes;		/* number of input nodes (should match veclen * contextlen) */
+    int outputnodes;		/* number of output nodes (should match HMM state for num and order */
+    int hiddennodes;		/* number of nodes in a hidden layer */
+    int hiddenlayernum;		/* number of hidden layers */
+    char **wfile;		/* W matrix files for hidden layers */
+    char **bfile;		/* b vector files for hidden layers */
+    char *output_wfile;		/* W matrix file for output layer */
+    char *output_bfile;		/* b vector file for output layer */
+    char *priorfile;		/* state prior file */
+    float prior_factor;		/* state prior factor */
+    int batchsize;		/* batch size */
+  } dnn;
 
   /* pointer to next instance */
   struct __jconf_am__ *next;

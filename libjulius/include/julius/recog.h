@@ -47,6 +47,7 @@
  *       +- *pointer to JCONF_AM
  *       +- *pointer to MFCCCalc
  *       +- hmminfo, hmm_gs
+ *       +- dnn
  *       +- hmmwrk
  *       +- multipath, ccd_flag, cmn_loaded
  *    +- PROCESS_LM[] (linked list)
@@ -545,6 +546,10 @@ typedef struct __mfcc_calc__ {
      */
     char *load_filename;
     /**
+     * CMN: perform map cmn
+     */
+    boolean map_cmn;
+    /**
      * CMN: update cepstral mean while recognition
      * (-cmnnoupdate to unset)
      */
@@ -632,11 +637,25 @@ typedef struct __mfcc_calc__ {
    * 
    */
   DeltaBuf *db;
+
   /**
    * accel MFCC cycle buffer
    * 
    */
   DeltaBuf *ab;
+  
+  /**
+   * splice cycle buffer
+   * 
+   */
+  VECT *splicedmfcc;
+  int splicedlen;
+  
+  /**
+   * splice number
+   */
+  int splice;
+
   /**
    * working buffer holding current computing mfcc vector
    * 
@@ -753,6 +772,11 @@ typedef struct __process_am__ {
    * Work area and outprob cache for HMM output probability computation
    */
   HMMWork hmmwrk;
+
+  /**
+   * DNN definitions
+   */
+  DNNData *dnn;
 
   /**
    * pointer to next

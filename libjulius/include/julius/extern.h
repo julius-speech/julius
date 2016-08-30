@@ -174,6 +174,7 @@ void opt_release(Jconf *jconf);
 void get_dirname(char *path);
 boolean config_string_parse(char *str, Jconf *jconf);
 boolean config_file_parse(char *conffile, Jconf *jconf);
+boolean dnn_config_file_parse(char *filename, JCONF_AM *am);
 /* m_chkparam.c */
 boolean checkpath(char *filename);
 boolean j_jconf_finalize(Jconf *jconf);

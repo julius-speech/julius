@@ -88,6 +88,8 @@ void *mymalloc(size_t size);
 void *mymalloc_big(size_t elsize, size_t nelem);
 void *myrealloc(void *, size_t);
 void *mycalloc(size_t, size_t);
+void *mymalloc_aligned(size_t size, size_t align);
+void myfree_aligned(void *ptr);
 
 /* endian.c */
 void swap_sample_bytes(SP16 *buf, int len);

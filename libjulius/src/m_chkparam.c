@@ -239,6 +239,10 @@ j_jconf_finalize(Jconf *jconf)
 	jlog("ERROR: m_chkparam: when \"-cmnnoupdate\", initial cepstral normalisation data should be given by \"-cmnload\"\n");
 	ok_p = FALSE;
       }
+      if (am->analysis.map_cmn == FALSE && am->analysis.cmnload_filename == NULL) {
+	jlog("ERROR: m_chkparam: with \"-cmnstatic\", the static cepstral mean (and variance) should be given by \"-cmnload\"\n");
+	ok_p = FALSE;
+      }
     }
   }
 

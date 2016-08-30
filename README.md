@@ -49,12 +49,12 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 
 # Download Julius
 
-The latest release version is [4.3.1](https://github.com/julius-speech/julius/releases), released on January 15, 2014.
+The latest release version is [4.4](https://github.com/julius-speech/julius/releases), released on August 30, 2016.
 You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
 
-Version 4.3.1 is a bug fix release. Several bugs has been fixed.
-See the "Release.txt" file for the full list of updates.
-Run with "-help" to see full list of options.
+Version 4.4 supports stand-alone DNN-HMM support, and several new
+tools and bug fixes are included.  See the "Release.txt" file for the
+full list of updates.  Run with "-help" to see full list of options.
 
 # Toolkit and Assets
 
