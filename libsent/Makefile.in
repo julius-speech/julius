@@ -18,6 +18,7 @@ CPPFLAGS=-Iinclude @CPPFLAGS@ @SOUNDINC@ @DEFS@
 RM=@RM@ -f
 AR=@AR@ r
 RANLIB=@RANLIB@
+PKGCONF_FILE = sent-@LIBSENT_MAJOR_VERSION@.pc
 TARGET=libsent.a
 
 ## install
@@ -26,6 +27,7 @@ exec_prefix=@exec_prefix@
 bindir=@bindir@
 libdir=@libdir@
 includedir=@includedir@
+pkgconfigdir = $(libdir)/pkgconfig
 INSTALL=@INSTALL@
 INSTALL_DATA=@INSTALL_DATA@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
@@ -147,6 +149,7 @@ install: install.lib install.include install.bin
 install.lib: $(TARGET)
 	${INSTALL} -d ${libdir}
 	${INSTALL_DATA} $(TARGET) ${libdir}
+	${INSTALL_DATA} $(PKGCONF_FILE) ${pkgconfigdir}
 
 install.include:
 	${INSTALL} -d ${includedir}/sent
@@ -165,5 +168,6 @@ distclean:
 	$(RM) config.log config.cache
 	$(RM) libsent-config libsent-config-dist
 	$(RM) config.status include/sent/config.h
+	$(RM) $(PKGCONF_FILE)
 	$(RM) $(TARGET)
 	$(RM) Makefile
