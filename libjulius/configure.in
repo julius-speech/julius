@@ -362,6 +362,8 @@ if test "$want_pthread" = yes; then
 	)
 	CFLAGS="$ac_save_CFLAGS"
 	;;
+  mingw*)
+	;;
   *)
 	# other with libpthread
 	AC_MSG_CHECKING([for POSIX thread library in -lpthread])

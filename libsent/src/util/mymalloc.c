@@ -137,7 +137,7 @@ mycalloc(size_t nelem, size_t elsize)
 void *mymalloc_aligned(size_t size, size_t align)
 {
    void *ptr;
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(_WIN32)
    ptr = _aligned_malloc(size, align);
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
    ptr = aligned_alloc(align, size);
@@ -153,7 +153,7 @@ void *mymalloc_aligned(size_t size, size_t align)
 /* MMDFiles_alignedfree: free aligned malloc */
 void myfree_aligned(void *ptr)
 {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) || defined(_WIN32)
    _aligned_free(ptr);
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
    free(ptr);
