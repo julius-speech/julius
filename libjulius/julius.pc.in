@@ -8,3 +8,4 @@ Description: @JULIUS_PRODUCTNAME@ is the C library for Julius speech recognition
 Version: @JULIUS_VERSION@
 Libs: -ljulius @LDFLAGS@ @LIBS@
 Cflags: -I@includedir@ @CPPFLAGS@
+Depends: sent-4
