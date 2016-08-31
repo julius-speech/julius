@@ -128,7 +128,7 @@ dnl Checks for AVX capability
 xxxxAVX=yes
 AC_MSG_CHECKING([for SIMD AVX instruction])
 AC_TRY_COMPILE([#include <immintrin.h>
-],[__m256 v;],
+],[__m256 v = _mm256_setzero_ps();],
 AC_MSG_RESULT([yes]),
 AC_MSG_RESULT([no])
 xxxxAVX=no
@@ -138,7 +138,7 @@ if test "$xxxxAVX" = no; then
   AC_MSG_CHECKING([for SIMD AVX instruction with -mavx])
   CFLAGS="$CFLAGS -mavx"
   AC_TRY_COMPILE([#include <immintrin.h>
-  ],[__m256 v;],
+  ],[__m256 v = _mm256_setzero_ps();],
   AC_MSG_RESULT([yes]),
     AC_MSG_ERROR([no support for SIMD AVX instruction]))
 fi

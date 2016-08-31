@@ -3285,7 +3285,7 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 int
 main ()
 {
-__m256 v;
+__m256 v = _mm256_setzero_ps();
   ;
   return 0;
 }
@@ -3301,7 +3301,7 @@ xxxxAVX=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 if test "$xxxxAVX" = no; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD AVX instruction with -mavx" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD AVX instruction with -mavx" >&5
 $as_echo_n "checking for SIMD AVX instruction with -mavx... " >&6; }
   CFLAGS="$CFLAGS -mavx"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -3311,7 +3311,7 @@ $as_echo_n "checking for SIMD AVX instruction with -mavx... " >&6; }
 int
 main ()
 {
-__m256 v;
+__m256 v = _mm256_setzero_ps();
   ;
   return 0;
 }
