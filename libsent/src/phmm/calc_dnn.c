@@ -378,7 +378,7 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in)
   myfree_aligned(fstore);
 #else
   for (i = 0; i < out; i++) {
-    x = 0.0f;
+    float x = 0.0f;
     s = src;
     for (j = 0; j < in; j++) {
       x += *(w++) * *(s++);
