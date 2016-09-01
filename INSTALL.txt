@@ -1,0 +1,61 @@
+Quick guide to build Julius
+
+-----------------------------------------------
+Ubuntu:
+
+  % sudo apt-get install build-essential zlib1g-dev libasound2-dev (or libpulse-dev, whichever you like)
+  % ./configure
+  % make
+
+Julius will be built in the "julius" directory, and other tools in their respective directories.
+
+You can run "make install" to install the files into system directries:
+
+  ${prefix}/bin        executables
+  ${prefix}/lib        libsent/libjulius libraries
+  ${prefix}/include    headers
+
+The target location "${prefix}" is /usr/local by default.  You can specify other location
+by giving "--prefix=..." option to the configure script.  For example, if you want to install
+Julius under "/opt" directory instead of /usr/local, run configure like this:
+
+  % ./configure --prefix=/opt
+
+
+-----------------------------------------------
+Cygwin-x86  (tested on 2.5.2, 08/31/2016)
+
+  1. Install the following packages
+
+    gcc-core
+    make
+    zlib
+    zlib-devel
+    perl
+    libportaudio2
+    libportaudio-devel
+
+  2. On cygwin terminal, do
+
+    % ./configure; make
+
+-----------------------------------------------
+Mingw on cygwin-x86  (tested on 2.5.2, 08/31/2016)
+
+  1. Install the following packages, in addition to above
+
+    mingw64-i686-gcc-core
+    mingw64-i686-zlib
+
+  2. On cygwin terminal, do
+
+    % ./configure --host=i686-w64-mingw32; make
+
+-----------------------------------------------
+Visual Studio:
+
+  1. Open msvc/JuliusLib.sln
+  2. Choose build type to "Release"
+  3. Build
+
+The compiled binaries will be placed in "msvc/Release" folder.
