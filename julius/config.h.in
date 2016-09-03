@@ -12,3 +12,9 @@
 
 /* Define if you use libjcode */
 #undef USE_LIBJCODE
+
+/* Define if you want to enable search space visualization on Gtk+ */
+#undef VISUALIZE
+
+/* Define for playing capability*/
+#undef PLAYCOMMAND
