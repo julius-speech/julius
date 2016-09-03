@@ -165,7 +165,7 @@
 #undef CM_MULTIPLE_ALPHA
 
 /**
- * Enable search space visualization feature.  You need X11 and GTK to
+ * Enable search space visualization feature.  You need Gtk+ >= 3.16 to
  * use this.
  * 
  */
