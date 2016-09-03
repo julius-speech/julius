@@ -24,6 +24,7 @@
  */
 
 #include "app.h"
+#include "config.h"
 
 boolean separate_score_flag = FALSE;
 boolean outfile_enabled = FALSE;
@@ -32,6 +33,57 @@ static char *logfile = NULL;
 static boolean nolog = FALSE;
 
 /************************************************************************/
+
+#ifdef VISUALIZE
+
+/**
+ * Callbacks for the graphical interface.
+ *
+ */
+
+static void
+show_visual(Recog *recog, void *dummy)
+{
+  RecogProcess *process = recog->process_list;
+  visual_show(process->backtrellis);
+}
+
+static void
+init_visual2(Recog *recog, void *dummy)
+{
+  JCONF_SEARCH *conf = recog->process_list->config;
+  visual2_init(conf->pass2.hypo_overflow);
+}
+
+static void
+pop_visual2(Recog *recog, void *dummy)
+{
+  StackDecode *pass2 = &(recog->process_list->pass2);
+  visual2_popped(pass2->current, pass2->popctr);
+}
+
+static void
+next_word_visual2(Recog *recog, void *dummy)
+{
+  RecogProcess *process;
+  StackDecode *pass2;
+  NODE *prev, *next;
+  int popctr;
+
+  process = recog->process_list;
+  pass2 = &(process->pass2);
+  prev = pass2->current;
+  popctr = pass2->popctr;
+
+  process = process->next;
+  pass2 = &(process->pass2);
+  next = pass2->current;
+
+  visual2_next_word(prev, next, popctr);
+}
+
+#endif
+
 /**
  * Callbacks for application option handling.
  * 
@@ -202,15 +254,10 @@ main(int argc, char *argv[])
 #ifdef VISUALIZE
   /* Visualize: initialize GTK */
   visual_init(recog);
-  callback_add(recog, CALLBACK_EVENT_RECOGNITION_END, visual_show, NULL);
-  callback_add(recog, CALLBACK_EVENT_PASS2_BEGIN, visual2_init, NULL);
-  callback_add(recog, CALLBACK_DEBUG_PASS2_POP, visual2_popped, NULL);
-  callback_add(recog, CALLBACK_DEBUG_PASS2_PUSH, visual2_next_word, NULL);
-  /* below should be called at result */
-  visual2_best(now, winfo);
-  /* 音声取り込みはコールバックで新規作成 */
-  /* 第2パスで認識結果出力時に以下を実行 */
-  visual2_best(now, recog->model->winfo);
+  callback_add(recog, CALLBACK_EVENT_RECOGNITION_END, show_visual, NULL);
+  callback_add(recog, CALLBACK_EVENT_PASS2_BEGIN, init_visual2, jconf);
+  callback_add(recog, CALLBACK_DEBUG_PASS2_POP, pop_visual2, NULL);
+  callback_add(recog, CALLBACK_DEBUG_PASS2_PUSH, next_word_visual2, NULL);
 #endif
   
   /* if no grammar specified on startup, start with pause status */

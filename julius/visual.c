@@ -30,7 +30,6 @@
  * All rights reserved
  */
 
-#include <libmain.h>
 #include "app.h"
 
 #ifdef VISUALIZE
@@ -41,15 +40,11 @@
 #define WINTITLE "Julius word trellis viewer" ///< Window title
 #define DEFAULT_WINDOW_WIDTH 800 ///< Default window width
 #define DEFAULT_WINDOW_HEIGHT 600 ///< Default window height
-#define CANVAS_MARGIN 16 ///< Margin of drawable
 #define WAVE_HEIGHT 48 ///< Height of wave drawing canvas
 #define WAVE_MARGIN 6 ///< Height margin of wave drawing canvas
-#define RESULT_HEIGHT 0 ///< Offset of text output for each node
-#define FONTSET "-*-fixed-medium-r-normal--10-*-*-*-*-*-*-*" ///< Fontset
 
 /* global valuables for window handling */
-static GdkFont *fontset;	///< Fontset
-static GdkPixmap *pixmap = NULL; ///< Pixmap for the drawable
+static GtkAdjustment *adj;
 static gint canvas_width;	///< Current width of the drawable
 static gint canvas_height;	///< Current height of the drawable
 
@@ -63,6 +58,7 @@ static boolean sw_text = TRUE;	///< Text display on/off
 static boolean sw_line = TRUE;	///< Arc line display on/off
 static boolean sw_level_thres = FALSE; ///< Show level thres on waveform
 static boolean sw_hypo = FALSE;		///< Y axis is hypothesis score
+static boolean draw_nodes = FALSE;
 
 /**********************************************************************/
 /* data to plot (1st pass / 2nd pass) */
@@ -80,49 +76,20 @@ static POPNODE *lastpop = NULL;	///< Pointer to the last popped node
 /* GTK color allocation */
 /**********************************************************************/
 
-#define NCOLS 15
-static GdkColor cols[NCOLS] = {
-  {0, 63000, 63000, 63000},	/* background */
-  {0,     0,     0, 40000},	/* waveform */
-  {0, 50000, 20000,     0},	/* waveform level threshold line */
-  {0,     0,     0, 65535},	/* begin node of word arc */
-  {0, 60000, 60000,     0},	/* end node of word arc */
-  {0, 24000, 32000, 24000},	/* line (context word / word graph) */
-  {0, 10000, 10000, 40000},	/* text (context word / word graph) */
-  {0, 50000, 54000, 50000},	/* line (word indexed trellis = all survived words) */
-  {0, 50000, 30000,     0},	/* line (best path) */
-  {0, 55535,     0,     0},	/* end node (best path) */
-  {0, 50000, 30000,     0},	/* text (best path) */
-  {0, 12000, 20000, 12000},	/* line and text (2nd pass) */
-  {0, 50000, 50000, 12000},	/* line and text (2nd pass popped) */
-  {0, 50000,     0,     0},	/* 2nd pass best */
-  {0,     0,     0,     0}	/* shadow for text decoration */
-};
-typedef enum {C_BG, C_WAVEFORM, C_LEVELTHRES, C_BGN, C_END, C_LINE, C_TEXT, C_LINE_FAINT, C_LINE_BEST, C_END_BEST, C_TEXT_BEST, C_PASS2_NEXT, C_PASS2, C_PASS2_BEST, C_SHADOW} UserColors;
-
-static GdkGC *dgc = NULL;		///< gc for drawing
-
-/** 
- * <JA>
- * øß§Œ≥‰…’
- * </JA>
- * <EN>
- * Assign color.
- * </EN>
- */
-static void
-color_init()
-{
-  GdkColormap *defcolmap;
-  gboolean success[NCOLS];
-  
-  defcolmap = gdk_colormap_get_system();
-  if (gdk_colormap_alloc_colors(defcolmap, cols, NCOLS, FALSE, TRUE, success) > 0) {
-    fprintf(stderr, "Warning: some colors are not allocated\n");
-  }
-
-}
-
+static gchar *css_colors =
+".waveform {color: rgb(0, 0, 155);} \n"
+".waveform-treshold {color: rgb(195, 78, 0);} \n"
+".arc-begin {color: rgb(0, 0, 255);} \n"
+".arc-end {color: rgb(245, 245, 0);} \n"
+".line {color: rgb(93, 125, 93);} \n"
+".word {color: rgb(39, 39, 155);} \n"
+".line-faint {color: rgb(195, 210, 195);} \n"
+".line-best {color: rgb(195, 117, 0);} \n"
+".arc-end-best {color: rgb(245, 245, 0);} \n"
+".text-best {color: rgb(195, 117, 0); font-weight: bold;} \n"
+".pass2 {color: rgb(47, 47, 47);} \n"
+".pass2-best {color: rgb(195, 195, 47);} \n"
+".shadow {color: rgb(0, 0, 0);}";
 
 /**********************************************************************/
 /* graph scaling */
@@ -207,7 +174,7 @@ get_max_frame_score(BACKTRELLIS *bt)
 static gint
 scale_x(int t)
 {
-  return(t * (canvas_width - CANVAS_MARGIN * 2) / btlocal->framelen + CANVAS_MARGIN);
+  return(t * canvas_width / btlocal->framelen);
 }
 
 /** 
@@ -249,8 +216,8 @@ scale_y(LOGPROB s, int t)
     bottom = lowest * (float)t / (float)btlocal->framelen - maxrange2;
   }
 
-  yoffset = CANVAS_MARGIN + RESULT_HEIGHT + (re->speechlen != 0 ? (WAVE_MARGIN + WAVE_HEIGHT): 0);
-  height = canvas_height - yoffset - CANVAS_MARGIN;
+  yoffset = (re->speechlen != 0 ? (WAVE_MARGIN + WAVE_HEIGHT): 0);
+  height = canvas_height - yoffset;
   if (top <= bottom) {	/* single or no token on the time */
     y = yoffset;
   } else {
@@ -280,13 +247,16 @@ scale_y_wid(WORD_ID wid)
 {
   gint y;
   gint yoffset, height;
+  WORD_INFO *winfo;
+
+  winfo = re->process_list->lm->winfo;
   
-  yoffset = CANVAS_MARGIN + RESULT_HEIGHT + (re->speechlen != 0 ? (WAVE_MARGIN + WAVE_HEIGHT) : 0);
-  height = canvas_height - yoffset - CANVAS_MARGIN;
+  yoffset = (re->speechlen != 0 ? (WAVE_MARGIN + WAVE_HEIGHT) : 0);
+  height = canvas_height - yoffset;
   if (wid == WORD_INVALID) {
     y = yoffset;
   } else {
-    y = wid * height / re->model->winfo->num + yoffset;
+    y = wid * height / winfo->num + yoffset;
   }
   return(y);
 }
@@ -316,7 +286,7 @@ static SP16 max_level;		///< Maximum level of input waveform
 static gint
 scale_x_wave(int t)
 {
-  return(t * (canvas_width - CANVAS_MARGIN * 2) / re->speechlen + CANVAS_MARGIN);
+  return(t * canvas_width / re->speechlen);
 }
 
 /** 
@@ -383,61 +353,76 @@ get_max_waveform_level()
  * </EN>
  */
 static void
-draw_waveform(GtkWidget *widget)
+draw_waveform(GtkWidget *widget,
+              cairo_t   *cr)
 {
+  GtkStyleContext *ctx;
+  PangoLayout *layout;
   int t;
   gint text_width;
   static char buf[20];
 
   if (re->speechlen == 0) return;	/* no waveform data (MFCC) */
 
-  /* first time, make gc for drawing */
-  if (dgc == NULL) {
-    dgc = gdk_gc_new(widget->window);
-    gdk_gc_copy(dgc, widget->style->fg_gc[GTK_STATE_NORMAL]);
-  }
-  
+  ctx = gtk_widget_get_style_context(widget);
 
   /* draw frame */
-  gdk_gc_set_foreground(dgc, &(cols[C_WAVEFORM]));
-  gdk_draw_rectangle(pixmap, dgc, FALSE,
-		     scale_x_wave(0), scale_y_wave(max_level),
-		     scale_x_wave(re->speechlen-1) - scale_x_wave(0),
-		     scale_y_wave(-max_level) - scale_y_wave(max_level));
+  gtk_style_context_save(ctx);
+  gtk_style_context_add_class(ctx, "waveform");
+  gtk_render_frame(ctx, cr,
+                   scale_x_wave(0), scale_y_wave(max_level),
+                   scale_x_wave(re->speechlen-1) - scale_x_wave(0),
+                   scale_y_wave(-max_level) - scale_y_wave(max_level));
+  gtk_style_context_restore(ctx);
 
   if (sw_level_thres) {
     /* draw level threshold line */
-    gdk_gc_set_foreground(dgc, &(cols[C_LEVELTHRES]));
-    gdk_draw_line(pixmap, dgc,
-		  scale_x_wave(0), scale_y_wave(re->jconf->detect.level_thres),
-		  scale_x_wave(re->speechlen-1), scale_y_wave(re->jconf->detect.level_thres));
-    gdk_draw_line(pixmap, dgc,
-		  scale_x_wave(0), scale_y_wave(- re->jconf->detect.level_thres),
-		  scale_x_wave(re->speechlen-1), scale_y_wave(- re->jconf->detect.level_thres));
+    gtk_style_context_save(ctx);
+    gtk_style_context_add_class(ctx, "waveform-treshold");
+
+    gtk_render_line(ctx, cr,
+                    scale_x_wave(0), scale_y_wave(re->jconf->detect.level_thres),
+                    scale_x_wave(re->speechlen-1), scale_y_wave(re->jconf->detect.level_thres));
+
+    gtk_render_line(ctx, cr,
+                    scale_x_wave(0), scale_y_wave(-re->jconf->detect.level_thres),
+                    scale_x_wave(re->speechlen-1), scale_y_wave(-re->jconf->detect.level_thres));
+
     snprintf(buf, 20, "-lv %d", re->jconf->detect.level_thres);
-    text_width = gdk_string_width(fontset, buf) + 1;
-    gdk_draw_string(pixmap, fontset, dgc,
-		    canvas_width - CANVAS_MARGIN - text_width - 2,
-		    scale_y_wave(-max_level) - 2,
-		    buf);
+    layout = gtk_widget_create_pango_layout(widget, buf);
+    pango_layout_get_pixel_size(layout, &text_width, NULL);
+
+    gtk_render_layout(ctx, cr,
+                      canvas_width - text_width - 2,
+                      scale_y_wave(-max_level) - 2,
+                      layout);
+
+    gtk_style_context_restore (ctx);
+    g_clear_object(&layout);
   }
   
   /* draw text */
+  gtk_style_context_save(ctx);
+  gtk_style_context_add_class(ctx, "waveform");
+
   snprintf(buf, 20, "max: %d", max_level);
-  text_width = gdk_string_width(fontset, buf) + 1;
-  gdk_gc_set_foreground(dgc, &(cols[C_WAVEFORM]));
-  gdk_draw_string(pixmap, fontset, dgc,
-		  canvas_width - CANVAS_MARGIN - text_width - 2,
-		  scale_y_wave(max_level) + 12,
-		  buf);
+  layout = gtk_widget_create_pango_layout(widget, buf);
+  pango_layout_get_pixel_size(layout, &text_width, NULL);
+
+  gtk_render_layout(ctx, cr,
+                    canvas_width - text_width - 2,
+                    scale_y_wave(max_level) + 12,
+                    layout);
 
   /* draw waveform */
   for(t=1;t<re->speechlen;t++) {
-    gdk_gc_set_line_attributes(dgc, 1, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-    gdk_draw_line(pixmap, dgc,
-		  scale_x_wave(t-1), scale_y_wave(re->speech[t-1]),
-		  scale_x_wave(t), scale_y_wave(re->speech[t]));
+    gtk_render_line(ctx, cr,
+                    scale_x_wave(t-1), scale_y_wave(re->speech[t-1]),
+                    scale_x_wave(t), scale_y_wave(re->speech[t]));
   }
+
+  gtk_style_context_restore (ctx);
+  g_clear_object(&layout);
 }
 
 
@@ -468,73 +453,89 @@ draw_waveform(GtkWidget *widget)
  * </EN>
  */
 static void
-mygdk_draw_arc(GtkWidget *widget, int x1, int y1, int x2, int y2, int sw)
+my_render_arc(GtkWidget *widget,
+              cairo_t   *cr,
+              int        x1,
+              int        y1,
+              int        x2,
+              int        y2,
+              int        sw)
 {
+  GtkStyleContext *ctx;
+  const gchar *css_class;
   int width;
-  UserColors c;
 
-  /* first time, make gc for drawing */
-  if (dgc == NULL) {
-    dgc = gdk_gc_new(widget->window);
-    gdk_gc_copy(dgc, widget->style->fg_gc[GTK_STATE_NORMAL]);
-  }
+  ctx = gtk_widget_get_style_context(widget);
 
   /* change arc style by sw */
   switch(sw) {
-  case 0: c = C_LINE_FAINT; width = 1; break;
-  case 1: c = C_LINE; width = 1; break;
-  case 2: c = C_LINE_BEST; width = 3; break;
-  case 3: c = C_PASS2_NEXT; width = 1; break; /* next */
-  case 4: c = C_PASS2; width = 1; break; /* popper (realigned) */
-  case 5: c = C_PASS2_NEXT; width = 2; break; /* popped (original) */
-  case 6: c = C_PASS2_BEST; width = 3; break;
-  default: c = C_LINE; width = 1; break;
+  case 0:  css_class = "line-faint"; width = 1; break;
+  case 1:  css_class = "line";       width = 1; break;
+  case 2:  css_class = "line-best";  width = 3; break;
+  case 3:  css_class = "pass2-next"; width = 1; break; /* next */
+  case 4:  css_class = "pass2";      width = 1; break; /* popper (realigned) */
+  case 5:  css_class = "pass2-next"; width = 2; break; /* popped (original) */
+  case 6:  css_class = "pass2-best"; width = 3; break;
+  default: css_class = "line";       width = 1; break;
   }
-  
+
   /* draw arc line */
   if (sw_line) {
-    gdk_gc_set_line_attributes(dgc, width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-    gdk_gc_set_foreground(dgc, &(cols[c]));
-    gdk_draw_line(pixmap, dgc, x1, y1, x2, y2);
-    gdk_gc_set_line_attributes(dgc, 1, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+    gtk_style_context_save(ctx);
+    gtk_style_context_add_class(ctx, css_class);
+
+    //gdk_gc_set_line_attributes(dgc, width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+    gtk_render_line(ctx, cr, x1, y1, x2, y2);
+    //gdk_gc_set_line_attributes(dgc, 1, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+
+    gtk_style_context_restore(ctx);
   }
 
   /* draw begin/end point rectangle */
   if (sw != 0 && sw != 5) {
+    gtk_style_context_save(ctx);
+    gtk_style_context_add_class(ctx, "shadow");
+
     /* make edge */
-    gdk_gc_set_foreground(dgc, &(cols[C_SHADOW]));
-    gdk_draw_rectangle(pixmap, dgc,
-		       TRUE,
-		       x1 - width/2 - 2,
-		       y1 - width/2 -2,
-		       width+4,
-		       width+4);
-    gdk_draw_rectangle(pixmap, dgc,
-		       TRUE,
-		       x2 - width/2 - 2,
-		       y2 - width/2 -2,
-		       width+4,
-		       width+4);
+    gtk_render_frame(ctx, cr,
+                     x1 - width/2 - 2,
+                     y1 - width/2 - 2,
+                     width + 4,
+                     width + 4);
+
+    gtk_render_frame(ctx, cr,
+                     x2 - width/2 - 2,
+                     y2 - width/2 - 2,
+                     width + 4,
+                     width + 4);
+
+    gtk_style_context_restore(ctx);
   }
-  gdk_gc_set_foreground(dgc, &(cols[C_BGN]));
-  gdk_draw_rectangle(pixmap, dgc,
-		     TRUE,
-		     x1 - width/2 - 1,
-		     y1 - width/2 -1,
-		     width+2,
-		     width+2);
-  if (c == C_LINE_BEST || c == C_PASS2_BEST) {
-    gdk_gc_set_foreground(dgc, &(cols[C_END_BEST]));
+
+  gtk_style_context_save(ctx);
+  gtk_style_context_add_class(ctx, "arc-begin");
+
+  gtk_render_frame(ctx, cr,
+                     x1 - width/2 - 1,
+                     y1 - width/2 - 1,
+                     width + 2,
+                     width + 2);
+  gtk_style_context_restore(ctx);
+
+  gtk_style_context_save(ctx);
+  if (g_strcmp0 (css_class, "line-best") == 0 || g_strcmp0 (css_class, "pass2-best") == 0) {
+    gtk_style_context_add_class(ctx, "arc-end-best");
   } else {
-    gdk_gc_set_foreground(dgc, &(cols[C_END]));
+    gtk_style_context_add_class(ctx, "arc-end");
   }
-  gdk_draw_rectangle(pixmap, dgc,
-		     TRUE,
-		     x2 - width/2 - 1,
-		     y2 - width/2 - 1,
-		     width+2,
-		     width+2);
-  
+
+  gtk_render_frame(ctx, cr,
+                     x1 - width/2 - 1,
+                     y1 - width/2 - 1,
+                     width + 2,
+                     width + 2);
+
+  gtk_style_context_restore(ctx);
 }
 
 /** 
@@ -556,7 +557,11 @@ mygdk_draw_arc(GtkWidget *widget, int x1, int y1, int x2, int y2, int sw)
  * </EN>
  */
 static void
-draw_atom_sub(GtkWidget *widget, TRELLIS_ATOM *tre, TRELLIS_ATOM *last_tre, int sw)
+draw_atom_sub(GtkWidget    *widget,
+              cairo_t      *cr,
+              TRELLIS_ATOM *tre,
+              TRELLIS_ATOM *last_tre,
+              int           sw)
 {
   int from_t;
   LOGPROB from_s;
@@ -571,7 +576,7 @@ draw_atom_sub(GtkWidget *widget, TRELLIS_ATOM *tre, TRELLIS_ATOM *last_tre, int 
       from_t = last_tre->endtime;
       from_w = last_tre->wid;
     }
-    mygdk_draw_arc(widget,
+    my_render_arc(widget, cr,
 		   scale_x(from_t),
 		   scale_y_wid(from_w),
 		   scale_x(tre->endtime),
@@ -585,7 +590,7 @@ draw_atom_sub(GtkWidget *widget, TRELLIS_ATOM *tre, TRELLIS_ATOM *last_tre, int 
       from_t = last_tre->endtime;
       from_s = last_tre->backscore;
     }
-    mygdk_draw_arc(widget,
+    my_render_arc(widget, cr,
 		   scale_x(from_t),
 		   scale_y(from_s, from_t),
 		   scale_x(tre->endtime),
@@ -611,9 +616,12 @@ draw_atom_sub(GtkWidget *widget, TRELLIS_ATOM *tre, TRELLIS_ATOM *last_tre, int 
  * </EN>
  */
 static void
-draw_atom(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
+draw_atom(GtkWidget    *widget,
+          cairo_t      *cr,
+          TRELLIS_ATOM *tre,
+          int           sw)
 {
-  draw_atom_sub(widget, tre, tre->last_tre, sw);
+  draw_atom_sub(widget, cr, tre, tre->last_tre, sw);
 }
 
 /* draw word output text */
@@ -634,51 +642,80 @@ draw_atom(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
  * </EN>
  */
 static void
-draw_atom_text(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
+draw_atom_text(GtkWidget    *widget,
+               cairo_t      *cr,
+               TRELLIS_ATOM *tre,
+               int           sw)
 {
+  GtkStyleContext *ctx;
+  PangoLayout *layout;
   gint text_width;
-  UserColors c;
+  const gchar *css_class;
   int style;
   int dx, dy, x, y;
   WORD_INFO *winfo;
 
-  winfo = re->model->winfo;
-  
-  if (winfo->woutput[tre->wid] != NULL && strlen(winfo->woutput[tre->wid]) > 0) {
-    switch(sw) {
-    case 0: style = -1; break;
-    case 1: c = C_TEXT; style = 0; break;
-    case 2: c = C_TEXT_BEST; style = 1; break;
-    case 3: c = C_PASS2_NEXT; style = 0; break;
-    case 4: c = C_PASS2; style = 0; break;
-    case 5: c = C_PASS2; style = 1; break;
-    case 6: c = C_PASS2_BEST; style = 1; break;
-    default: c = C_TEXT; style = 0; break;
-    }
-    if (style == -1) return;	/* do not draw text */
-    
-    text_width = gdk_string_width(fontset, winfo->woutput[tre->wid]) + 1;
-    x = scale_x(tre->endtime) - text_width;
-    if (sw_wid_axis) {
-      y = scale_y_wid(tre->wid) - 4;
-    } else {
-      y = scale_y(tre->backscore, tre->endtime) - 4;
-    }
-    
-    if (style == 1) {		/* make edge */
-      gdk_gc_set_foreground(dgc, &cols[C_SHADOW]);
-      for (dx = -1; dx <= 1; dx++) {
-	for (dy = -1; dy <= 1; dy++) {
-	  if (dx == 0 && dy == 0) continue;
-	  gdk_draw_string(pixmap, fontset, dgc, x + dx, y + dy, 
-			  winfo->woutput[tre->wid]);
-	}
+  winfo = re->process_list->lm->winfo;
+  ctx = gtk_widget_get_style_context(widget);
+
+  if (!winfo->woutput[tre->wid] || strlen(winfo->woutput[tre->wid]) == 0)
+    return;
+
+  switch(sw) {
+  case 0:  style = -1; break;
+  case 1:  css_class = "text";       style = 0; break;
+  case 2:  css_class = "text-best";  style = 1; break;
+  case 3:  css_class = "pass2-next"; style = 0; break;
+  case 4:  css_class = "pass2";      style = 0; break;
+  case 5:  css_class = "pass2";      style = 1; break;
+  case 6:  css_class = "pass2-best"; style = 1; break;
+  default: css_class = "text";       style = 0; break;
+  }
+  if (style == -1) return;	/* do not draw text */
+
+  /* Retrieve the text width */
+  gtk_style_context_save(ctx);
+  gtk_style_context_add_class(ctx, css_class);
+
+  layout = gtk_widget_create_pango_layout(widget, winfo->woutput[tre->wid]);
+  pango_layout_get_pixel_size(layout, &text_width, NULL);
+
+  gtk_style_context_restore(ctx);
+  g_clear_object(&layout);
+
+  x = scale_x(tre->endtime) - text_width;
+  if (sw_wid_axis) {
+    y = scale_y_wid(tre->wid) - 4;
+  } else {
+    y = scale_y(tre->backscore, tre->endtime) - 4;
+  }
+
+  if (style == 1) {		/* make edge */
+    gtk_style_context_save(ctx);
+    gtk_style_context_add_class(ctx, "shadow");
+
+    layout = gtk_widget_create_pango_layout(widget, winfo->woutput[tre->wid]);
+
+    for (dx = -1; dx <= 1; dx++) {
+      for (dy = -1; dy <= 1; dy++) {
+        if (dx == 0 && dy == 0) continue;
+        gtk_render_layout(ctx, cr, x + dx, y + dy, layout);
       }
     }
-    gdk_gc_set_foreground(dgc, &cols[c]);
-    gdk_draw_string(pixmap, fontset, dgc, x, y, 
-		    winfo->woutput[tre->wid]);
+
+    gtk_style_context_restore(ctx);
+    g_clear_object(&layout);
   }
+
+  gtk_style_context_save(ctx);
+  gtk_style_context_add_class(ctx, css_class);
+
+  layout = gtk_widget_create_pango_layout(widget, winfo->woutput[tre->wid]);
+
+  gtk_render_layout(ctx, cr, x, y, layout);
+
+  gtk_style_context_restore(ctx);
+  g_clear_object(&layout);
 }
 
 
@@ -748,10 +785,13 @@ wordlist_find(WORD_ID wid)
  * </EN>
  */
 static void
-draw_atom_top(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
+draw_atom_top(GtkWidget    *widget,
+              cairo_t      *cr,
+              TRELLIS_ATOM *tre,
+              int           sw)
 {
   if (wordlistnum == 0 || wordlist_find(tre->wid)) {
-    draw_atom(widget, tre, sw);
+    draw_atom(widget, cr, tre, sw);
   }
 }
 
@@ -774,10 +814,13 @@ draw_atom_top(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
  * </EN>
  */
 static void
-draw_atom_text_top(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
+draw_atom_text_top(GtkWidget    *widget,
+                   cairo_t      *cr,
+                   TRELLIS_ATOM *tre,
+                   int           sw)
 {
   if (wordlistnum == 0 || wordlist_find(tre->wid)) {
-    draw_atom_text(widget, tre, sw);
+    draw_atom_text(widget, cr, tre, sw);
   }
 }
 
@@ -799,22 +842,23 @@ draw_atom_text_top(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
  * </EN>
  */
 static void
-draw_all_atom(GtkWidget *widget)
+draw_all_atom(GtkWidget *widget,
+              cairo_t   *cr)
 {
   int t, i;
   TRELLIS_ATOM *tre;
-  
+
   for (t=0;t<btlocal->framelen;t++) {
     for (i=0;i<btlocal->num[t];i++) {
       tre = btlocal->rw[t][i];
-      draw_atom_top(widget, tre, 0);
+      draw_atom_top(widget, cr, tre, 0);
     }
   }
   if (sw_text) {
     for (t=0;t<btlocal->framelen;t++) {
       for (i=0;i<btlocal->num[t];i++) {
-	tre = btlocal->rw[t][i];
-	draw_atom_text_top(widget, tre, 0);
+        tre = btlocal->rw[t][i];
+        draw_atom_text_top(widget, cr, tre, 0);
       }
     }
   }
@@ -833,7 +877,8 @@ draw_all_atom(GtkWidget *widget)
  * </EN>
  */
 static void
-draw_context_valid_atom(GtkWidget *widget)
+draw_context_valid_atom(GtkWidget *widget,
+                        cairo_t   *cr)
 {
   int t, i;
   TRELLIS_ATOM *tre;
@@ -842,7 +887,7 @@ draw_context_valid_atom(GtkWidget *widget)
     for (i=0;i<btlocal->num[t];i++) {
       tre = btlocal->rw[t][i];
       if (tre->last_tre != NULL && tre->last_tre->wid != WORD_INVALID) {
-	draw_atom_top(widget, tre->last_tre, 1);
+	draw_atom_top(widget, cr, tre->last_tre, 1);
       }
     }
   }
@@ -851,7 +896,7 @@ draw_context_valid_atom(GtkWidget *widget)
       for (i=0;i<btlocal->num[t];i++) {
 	tre = btlocal->rw[t][i];
 	if (tre->last_tre != NULL && tre->last_tre->wid != WORD_INVALID) {
-	  draw_atom_text_top(widget, tre->last_tre, 1);
+	  draw_atom_text_top(widget, cr, tre->last_tre, 1);
 	}
       }
     }
@@ -872,7 +917,8 @@ draw_context_valid_atom(GtkWidget *widget)
  * </EN>
  */
 static void
-draw_word_graph(GtkWidget *widget)
+draw_word_graph(GtkWidget *widget,
+                cairo_t   *cr)
 {
   int t, i;
   TRELLIS_ATOM *tre;
@@ -883,7 +929,7 @@ draw_word_graph(GtkWidget *widget)
     for (i=0;i<btlocal->num[t];i++) {
       tre = btlocal->rw[t][i];
       if (tre->within_wordgraph) {
-	draw_atom_top(widget, tre, 1);
+	draw_atom_top(widget, cr, tre, 1);
       }
     }
   }
@@ -892,7 +938,7 @@ draw_word_graph(GtkWidget *widget)
       for (i=0;i<btlocal->num[t];i++) {
 	tre = btlocal->rw[t][i];
 	if (tre->within_wordgraph) {
-	  draw_atom_text_top(widget, tre, 1);
+	  draw_atom_text_top(widget, cr, tre, 1);
 	}
       }
     }
@@ -914,7 +960,8 @@ draw_word_graph(GtkWidget *widget)
  * </EN>
  */
 static void
-draw_best_path(GtkWidget *widget)
+draw_best_path(GtkWidget *widget,
+               cairo_t   *cr)
 {
   int last_time;
   LOGPROB maxscore;
@@ -945,18 +992,18 @@ draw_best_path(GtkWidget *widget)
   if (last_time < 0) return;		/* last_tre not found */
 
   /* parse from the beginning word to find the best path */
-  draw_atom_top(widget, last_tre, 2);
+  draw_atom_top(widget, cr, last_tre, 2);
   tre = last_tre;
   while (tre->begintime > 0) {
     tre = tre->last_tre;
-    draw_atom_top(widget, tre, 2);
+    draw_atom_top(widget, cr, tre, 2);
   }
   if (sw_text) {
-    draw_atom_text_top(widget, last_tre, 2);
+    draw_atom_text_top(widget, cr, last_tre, 2);
     tre = last_tre;
     while (tre->begintime > 0) {
       tre = tre->last_tre;
-      draw_atom_text_top(widget, tre, 2);
+      draw_atom_text_top(widget, cr, tre, 2);
     }
   }
 }
@@ -1109,30 +1156,31 @@ visual2_best(NODE *now, WORD_INFO *winfo)
 /* draw 2nd pass results */
 /** 
  * <JA>
- * ¬Ë2•—•π√µ∫˜√Ê§À°§•π•ø•√•Ø§´§ÈºË§ÍΩ–§µ§Ï§ø≤æ¿‚§»§Ω§Œº°√±∏ÏΩ∏πÁ§Ú…¡≤Ë§π§Î. 
+ * √Ç√®2¬•√ë¬•¬π√É¬µ¬∫√∑√É√¶¬§√ã¬°¬§¬•¬π¬•¬ø¬•√É¬•¬Ø¬§¬´¬§√©¬º√®¬§√™¬Ω√ê¬§¬µ¬§√¨¬§¬ø¬≤¬æ√Ä√¢¬§√à¬§¬Ω¬§√é¬º¬°√É¬±¬∏√¨¬Ω¬∏¬π√ß¬§√≤√â√Å¬≤√®¬§¬π¬§√´.
  * 
- * @param widget …¡≤Ë•¶•£•∏•ß•√•»
+ * @param widget √â√Å¬≤√®¬•¬¶¬•¬£¬•¬∏¬•¬ß¬•√É¬•√à
  * </JA>
  * <EN>
  * Draw popped hypotheses and their next candidates appeared while search.
  * 
- * @param widget …¡≤Ë•¶•£•∏•ß•√•»
+ * @param widget √â√Å¬≤√®¬•¬¶¬•¬£¬•¬∏¬•¬ß¬•√É¬•√à
  * </EN>
  */
 static void
-draw_final_results(GtkWidget *widget)
+draw_final_results(GtkWidget *widget,
+                   cairo_t   *cr)
 {
   POPNODE *firstp, *lastp, *p;
 
   for(firstp = lastpop; firstp; firstp = firstp->next) {
     if (firstp->tre != NULL) {
-      draw_atom(widget, firstp->tre, 6);
+      draw_atom(widget, cr, firstp->tre, 6);
     }
     lastp = firstp;
     for(p = firstp->last; p; p = p->last) {
       if (p->tre != NULL) {
-	draw_atom_sub(widget, p->tre, lastp->tre, 6);
-	draw_atom_text_top(widget, p->tre, 6);
+	draw_atom_sub(widget, cr, p->tre, lastp->tre, 6);
+	draw_atom_text_top(widget, cr, p->tre, 6);
       }
       lastp = p;
     }
@@ -1187,8 +1235,8 @@ scale_hypo_y(LOGPROB s)
   gint y;
   gint yoffset, height;
 
-  yoffset = CANVAS_MARGIN + RESULT_HEIGHT + (re->speechlen != 0 ? (WAVE_MARGIN + WAVE_HEIGHT) : 0);
-  height = canvas_height - yoffset - CANVAS_MARGIN;
+  yoffset = (re->speechlen != 0 ? (WAVE_MARGIN + WAVE_HEIGHT) : 0);
+  height = canvas_height - yoffset;
   y = (maxscore - s) * height / (maxscore - minscore) + yoffset;
   return(y);
 }
@@ -1215,55 +1263,66 @@ scale_hypo_y(LOGPROB s)
  * </EN>
  */
 static void
-draw_popped(GtkWidget *widget, POPNODE *p, UserColors c, int width, int style)
+draw_popped(GtkWidget   *widget,
+            cairo_t     *cr,
+            const gchar *styleclass,
+            int          width,
+            int          style,
+            POPNODE     *p)
 {
+  GtkStyleContext *ctx;
   int text_width;
   gint x, y;
 
   if (p->tre == NULL) return;
 
+  ctx = gtk_widget_get_style_context(widget);
+
   if (p->last != NULL && p->last->tre != NULL) {
-    gdk_gc_set_line_attributes(dgc, width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-    gdk_gc_set_foreground(dgc, &(cols[c]));
-    gdk_draw_line(pixmap, dgc,
-		  scale_x(p->last->tre->endtime),
-		  scale_hypo_y(p->last->score),
-		  scale_x(p->tre->endtime),
-		  scale_hypo_y(p->score));
-    gdk_gc_set_line_attributes(dgc, 1, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+    gtk_style_context_save(ctx);
+    gtk_style_context_add_class(ctx, styleclass);
+
+    gtk_render_line(ctx, cr,
+                    scale_x(p->last->tre->endtime),
+                    scale_hypo_y(p->last->score),
+                    scale_x(p->tre->endtime),
+                    scale_hypo_y(p->score));
+
+    gtk_style_context_restore(ctx);
   }
-  
+
   if (p->tre != NULL) {
     x = scale_x(p->tre->endtime);
     y = scale_hypo_y(p->score);
+
+    gtk_style_context_save(ctx);
+
     if (style == 1) {
-      gdk_gc_set_foreground(dgc, &(cols[C_SHADOW]));
-      gdk_draw_rectangle(pixmap, dgc,
-			 TRUE,
-			 x - 3,
-			 y - 3,
-			 7,
-			 7);
+      gtk_style_context_add_class(ctx, "shadow");
     } else if (style == 2) {
-      gdk_gc_set_foreground(dgc, &(cols[c]));
-      gdk_draw_rectangle(pixmap, dgc,
-			 TRUE,
-			 x - 3,
-			 y - 3,
-			 7,
-			 7);
+      gtk_style_context_add_class(ctx, styleclass);
     }
-    gdk_gc_set_foreground(dgc, &(cols[c]));
-    gdk_draw_rectangle(pixmap, dgc,
-		       TRUE,
-		       x - 2,
-		       y - 2,
-		       5,
-		       5);
+
+    gtk_render_frame(ctx, cr, x - 3, y - 3, 7, 7);
+    gtk_style_context_restore(ctx);
+
+
+    gtk_style_context_save(ctx);
+    gtk_style_context_add_class(ctx, styleclass);
+    gtk_render_frame(ctx, cr, x - 2, y - 2, 5, 5);
+
     if (p->tre->wid != WORD_INVALID) {
-      text_width = gdk_string_width(fontset, re->model->winfo->woutput[p->tre->wid]) + 1;
-      gdk_draw_string(pixmap, fontset, dgc, x - text_width-1, y - 5, 
-		      re->model->winfo->woutput[p->tre->wid]);
+      PangoLayout *layout;
+      WORD_INFO *winfo;
+
+      winfo = re->process_list->lm->winfo;
+      layout = gtk_widget_create_pango_layout(widget, winfo->woutput[p->tre->wid]);
+
+      pango_layout_get_pixel_size(layout, &text_width, NULL);
+
+      gtk_render_layout(ctx, cr, x - text_width - 1, y - 5, layout);
+
+      g_clear_object(&layout);
     }
   }
     
@@ -1289,7 +1348,7 @@ static int old_popctr;		///< popctr of previously popped hypo.
  * </EN>
  */
 static void
-draw_popnodes(GtkWidget *widget, int popctr)
+draw_popnodes(GtkWidget *widget, cairo_t *cr, int popctr)
 {
   POPNODE *p, *porg;
 
@@ -1302,14 +1361,14 @@ draw_popnodes(GtkWidget *widget, int popctr)
 
   /* draw expanded atoms */
   for(p = porg->next; p; p = p->next) {
-    draw_popped(widget, p, C_LINE_BEST, 1, 0);
+    draw_popped(widget, cr, "line-best", 1, 0, p);
   }
 
   /* draw hypothesis context */
   for(p = porg->last; p; p = p->last) {
-    draw_popped(widget, p, C_PASS2_BEST, 2, 0);
+    draw_popped(widget, cr, "pass2-best", 2, 0, p);
   }
-  draw_popped(widget, porg, C_PASS2_BEST, 3, 1);
+  draw_popped(widget, cr, "pass2-best", 3, 1, porg);
 
   old_popctr = popctr;
 }
@@ -1326,7 +1385,8 @@ draw_popnodes(GtkWidget *widget, int popctr)
  * </EN>
  */
 static void
-draw_popnodes_old(GtkWidget *widget)
+draw_popnodes_old(GtkWidget *widget,
+                  cairo_t   *cr)
 {
   POPNODE *p, *porg;
 
@@ -1334,14 +1394,14 @@ draw_popnodes_old(GtkWidget *widget)
 
   /* draw expanded atoms */
   for(p = porg->next; p; p = p->next) {
-    draw_popped(widget, p, C_LINE_FAINT, 1, 0);
+    draw_popped(widget, cr, "line-faint", 1, 0, p);
   }
 
   /* draw hypothesis context */
   for(p = porg->last; p; p = p->last) {
-    draw_popped(widget, p, C_PASS2, 2, 0);
+    draw_popped(widget, cr, "pass2", 2, 0, p);
   }
-  draw_popped(widget, porg, C_PASS2, 3, 2);
+  draw_popped(widget, cr, "pass2", 3, 2, porg);
 }
 
 /**********************************************************************/
@@ -1363,31 +1423,37 @@ static boolean fitscreen = TRUE; ///< •’•£•√•»•π•Ø•Í°º•ÛªÿƒÍª˛ TRUE
  * </EN>
  */
 static void
-draw_background(GtkWidget *widget)
+draw_background(GtkWidget *widget,
+                cairo_t   *cr)
 {
-  static char buf[MAX_HMMNAME_LEN];
-  
-  /* first time, make gc for drawing */
-  if (dgc == NULL) {
-    dgc = gdk_gc_new(widget->window);
-    gdk_gc_copy(dgc, widget->style->fg_gc[GTK_STATE_NORMAL]);
-  }
+  GtkStyleContext *ctx;
+  PangoLayout *layout;
+  gchar *dimentions;
+  gint font_height;
+
+  ctx = gtk_widget_get_style_context(widget);
+
   /* clear pixmap background */
-  gdk_gc_set_foreground(dgc, &(cols[C_BG]));
-  gdk_draw_rectangle(pixmap, dgc, TRUE,
-		     0,0,canvas_width,canvas_height);
+  gtk_render_background(ctx, cr, 0, 0, canvas_width, canvas_height);
 
   /* display view mode and zoom status */
-  gdk_gc_set_foreground(dgc, &(cols[C_TEXT]));
+  layout = gtk_widget_create_pango_layout(widget, NULL);
   if (sw_hypo) {
-    gdk_draw_string(pixmap, fontset, dgc, 0, canvas_height - 16,
-		    "Hypothesis score (2nd pass)");
+    pango_layout_set_text(layout, "Hypothesis score (2nd pass)", -1);
   } else {
-    gdk_draw_string(pixmap, fontset, dgc, 0, canvas_height - 16,
-		    sw_wid_axis ? "Word ID" : (sw_score_beam ? "Beam score" : "Accumulated score (normalized by time)"));
+    pango_layout_set_text(layout,
+                          sw_score_beam ? "Beam score" : "Accumulated score (normalized by time)",
+                          -1);
   }
-  snprintf(buf, 50, "x%3.1f", (float)canvas_width / (float)btlocal->framelen);
-  gdk_draw_string(pixmap, fontset, dgc, 0, canvas_height - 3, buf);
+  pango_layout_get_pixel_size(layout, NULL, &font_height);
+  gtk_render_layout(ctx, cr, 0, canvas_height - font_height, layout);
+
+  dimentions = g_strdup_printf("x%3.1f", (float)canvas_width / (float)btlocal->framelen);
+  pango_layout_set_text(layout, dimentions, -1);
+  gtk_render_layout(ctx, cr, 0, canvas_height - font_height * 2, layout);
+
+  g_clear_object(&layout);
+  g_free (dimentions);
 }
 
 /** 
@@ -1403,97 +1469,43 @@ draw_background(GtkWidget *widget)
  * </EN>
  */
 static void
-drawarea_draw(GtkWidget *widget)
+drawarea_draw(GtkWidget *widget,
+              cairo_t   *cr,
+              gpointer   user_data)
 {
-  /* allocate (new) pixmap */
-  if (pixmap) {
-    gdk_pixmap_unref(pixmap);	/* destroy old one */
-  }
-  pixmap = gdk_pixmap_new(widget->window, canvas_width, canvas_height, -1);
-  
   /* make background */
-  draw_background(widget);
+  draw_background(widget, cr);
 
   if (re->speechlen != 0) {
-    draw_waveform(widget);
+    draw_waveform(widget, cr);
   }
 
   if (!sw_hypo) {
     if (btlocal != NULL) {
       /* draw objects */
-      draw_all_atom(widget);
+      draw_all_atom(widget, cr);
 #ifdef WORD_GRAPH
-      draw_word_graph(widget);
+      draw_word_graph(widget, cr);
 #else
-      draw_context_valid_atom(widget);
+      draw_context_valid_atom(widget, cr);
 #endif
-      draw_best_path(widget);
+      draw_best_path(widget, cr);
     }
     if (popped != NULL) {
       /* draw 2nd pass objects */
-      draw_final_results(widget);
+      draw_final_results(widget, cr);
+    }
+  } else {
+    if (draw_nodes) {
+      double popctr = gtk_adjustment_get_value (adj);
+      draw_popnodes_old(widget, cr);
+      draw_popnodes(widget, cr, (int) popctr);
+      draw_nodes = FALSE;
     }
   }
 }
 
-/** 
- * <JA>
- * Expose •§•Ÿ•Û•»§Ú»Øπ‘§π§Î. 
- * 
- * @param widget [in] …¡≤Ë•¶•£•∏•ß•√•»
- * </JA>
- * <EN>
- * Tell X to issue expose event on this window.
- * 
- * @param widget [in] drawing widget
- * </EN>
- */
-static void
-drawarea_expose(GtkWidget *widget)
-{
-  GdkRectangle r;
-
-  r.x = 0;
-  r.y = 0;
-  r.width = canvas_width;
-  r.height = canvas_height;
-  gtk_widget_draw(widget, &r);
-}
-
-/** 
- * <JA>
- * Expose •§•Ÿ•Û•»ΩËÕ˝°ß§¢§È§´§∏§·…¡≤Ë§µ§Ï§ø pixmap §Ú≤ËÃÃ§À…Ωº®§π§Î. 
- * 
- * @param widget [in] …¡≤Ë•¶•£•∏•ß•√•»
- * @param event [in] •§•Ÿ•Û•»æ Û
- * @param user_data [in] •Ê°º•∂•«°º•ø° Ã§ª»Õ—°À
- * 
- * @return gboolean §Ú ÷§π. 
- * </JA>
- * <EN>
- * Expose event handler: show the already drawn pixmap to the screen.
- * 
- * @param widget [in] drawing widget
- * @param event [in] event information
- * @param user_data [in] user data (unused)
- * 
- * @return gboolean value.
- * </EN>
- */
-static gboolean
-event_drawarea_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
-{
-  if (pixmap != NULL) {
-    gdk_draw_pixmap(widget->window,
-		    widget->style->fg_gc[GTK_STATE_NORMAL],
-		    pixmap,
-		    event->area.x, event->area.y,
-		    event->area.x, event->area.y,
-		    event->area.width, event->area.height);
-  }
-}
-
-/** 
+/**
  * <JA>
  * Configure •§•Ÿ•Û•»ΩËÕ˝°ßresize §ﬁ§ø§œ map ª˛§À∫∆…¡≤Ë§π§Î. 
  * 
@@ -1514,16 +1526,20 @@ event_drawarea_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_da
  * </EN>
  */
 static gboolean
-event_drawarea_configure(GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
+drawarea_configure(GtkWidget      *widget,
+                   GdkEventExpose *event,
+                   gpointer        user_data)
 {
   if (fitscreen) {		/* if in zoom mode, resizing window does not cause resize of the canvas */
-    canvas_width = widget->allocation.width; /* get canvas size */
+    canvas_width = gtk_widget_get_allocated_width(widget); /* get canvas size */
   }
   /* canvas height will be always automatically changed by resizing */
-  canvas_height = widget->allocation.height;
+  canvas_height = gtk_widget_get_allocated_height(widget);
 
   /* redraw objects to pixmap */
-  drawarea_draw(widget);
+  gtk_widget_queue_draw(widget);
+
+  return(FALSE);
 }
 
 
@@ -1555,10 +1571,7 @@ action_toggle_thres(GtkWidget *widget)
   else sw_level_thres = TRUE;
 
   /* redraw objects to pixmap */
-  drawarea_draw(widget);
-
-  /* tell X to issue expose event on this window */
-  drawarea_expose(widget);
+  gtk_widget_queue_draw(widget);
 }
 
 #ifdef PLAYCOMMAND
@@ -1595,7 +1608,7 @@ action_play_waveform(GtkWidget *widget)
   }
   close(fd);
   
-  snprintf(command, 250, PLAYCOMMAND, re->jconf->analysis.para.smp_freq, buf);
+  snprintf(command, 250, PLAYCOMMAND, re->jconf->amnow->analysis.para.smp_freq, buf);
   printf("play: [%s]\n", command);
   system(command);
 
@@ -1620,14 +1633,12 @@ action_play_waveform(GtkWidget *widget)
 static void
 action_view_wid(GtkWidget *button, GtkWidget *widget)
 {
-  if (GTK_TOGGLE_BUTTON(button)->active) {
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) {
     /* set switch */
     sw_wid_axis = TRUE;
     sw_hypo = FALSE;
     /* redraw objects to pixmap */
-    drawarea_draw(widget);
-    /* tell X to issue expose event on this window */
-    drawarea_expose(widget);
+    gtk_widget_queue_draw(widget);
   } else {
     sw_wid_axis = FALSE;
   }
@@ -1650,14 +1661,13 @@ action_view_wid(GtkWidget *button, GtkWidget *widget)
 static void
 action_view_score(GtkWidget *button, GtkWidget *widget)
 {
-  if (GTK_TOGGLE_BUTTON(button)->active) {
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) {
     /* set switch */
     sw_score_beam = FALSE;
     sw_hypo = FALSE;
-    /* redraw objects to pixmap */
-    drawarea_draw(widget);
-    /* tell X to issue expose event on this window */
-    drawarea_expose(widget);
+
+    /* redraw objects */
+    gtk_widget_queue_draw(widget);
   }
 }
 
@@ -1680,14 +1690,13 @@ action_view_score(GtkWidget *button, GtkWidget *widget)
 static void
 action_view_beam(GtkWidget *button, GtkWidget *widget)
 {
-  if (GTK_TOGGLE_BUTTON(button)->active) {
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) {
     /* set switch */
     sw_score_beam = TRUE;
     sw_hypo = FALSE;
-    /* redraw objects to pixmap */
-    drawarea_draw(widget);
-    /* tell X to issue expose event on this window */
-    drawarea_expose(widget);
+
+    /* redraw objects */
+    gtk_widget_queue_draw(widget);
   }
 }
 
@@ -1710,17 +1719,12 @@ action_view_beam(GtkWidget *button, GtkWidget *widget)
 static void
 action_toggle_arc(GtkWidget *button, GtkWidget *widget)
 {
-  if (GTK_TOGGLE_BUTTON(button)->active) {
-    sw_text = TRUE;
-    sw_line = TRUE;
-  } else {
-    sw_text = FALSE;
-    sw_line = FALSE;
-  }
-  /* redraw objects to pixmap */
-  drawarea_draw(widget);
-  /* tell X to issue expose event on this window */
-  drawarea_expose(widget);
+  boolean active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+  sw_text = active;
+  sw_line = active;
+
+  /* redraw objects */
+  gtk_widget_queue_draw(widget);
 }
 
 /** 
@@ -1742,14 +1746,20 @@ action_toggle_arc(GtkWidget *button, GtkWidget *widget)
 static void
 action_set_wid(GtkWidget *widget, GtkWidget *draw)
 {
-  gchar *entry_text;
+
+  RecogProcess *r;
+  Sentence *s;
+  WORD_ID *seq;
+  const gchar *entry_text;
   WORD_ID i;
   
   entry_text = gtk_entry_get_text(GTK_ENTRY(widget));
+  r = re->process_list;
+  s = &(r->result.sent[0]);
 
   /* allocate */
   if (wordlist == NULL) {
-    wordlist = mymalloc(sizeof(WORD_ID) * re->model->winfo->num);
+    wordlist = mymalloc(sizeof(WORD_ID) * s->word_num);
   }
   wordlistnum = 0;
 
@@ -1757,8 +1767,9 @@ action_set_wid(GtkWidget *widget, GtkWidget *draw)
   if (strlen(entry_text) == 0) {
     wordlistnum = 0;
   } else {
-    for (i=0;i<re->model->winfo->num;i++) {
-      if (strmatch(entry_text, re->model->winfo->woutput[i])) {
+    for (i=0;i<s->word_num;i++) {
+      WORD_INFO *winfo = r->lm->winfo;
+      if (strmatch(entry_text, winfo->woutput[i])) {
 	wordlist[wordlistnum] = i;
 	wordlistnum++;
       }
@@ -1771,9 +1782,7 @@ action_set_wid(GtkWidget *widget, GtkWidget *draw)
   }
   
   /* redraw objects to pixmap */
-  drawarea_draw(draw);
-  /* tell X to issue expose event on this window */
-  drawarea_expose(draw);
+  gtk_widget_queue_draw(draw);
 }
 
 /** 
@@ -1796,11 +1805,10 @@ action_zoom(GtkWidget *widget)
   fitscreen = FALSE;
   if (btlocal != NULL) {
     canvas_width = btlocal->framelen * 2;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(widget), canvas_width, canvas_height);
+    gtk_widget_set_size_request(widget, canvas_width, canvas_height);
 
   }
-  drawarea_draw(widget);
-  drawarea_expose(widget);
+  gtk_widget_queue_draw(widget);
 }
 
 /** 
@@ -1823,11 +1831,10 @@ action_zoom_4(GtkWidget *widget)
   fitscreen = FALSE;
   if (btlocal != NULL) {
     canvas_width = btlocal->framelen * 4;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(widget), canvas_width, canvas_height);
+    gtk_widget_set_size_request(widget, canvas_width, canvas_height);
   }
  
-  drawarea_draw(widget);
-  drawarea_expose(widget);
+  gtk_widget_queue_draw(widget);
 }
 
 /** 
@@ -1850,11 +1857,10 @@ action_zoom_8(GtkWidget *widget)
   fitscreen = FALSE;
   if (btlocal != NULL) {
     canvas_width = btlocal->framelen * 8;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(widget), canvas_width, canvas_height);
+    gtk_widget_set_size_request(widget, canvas_width, canvas_height);
   }
   
-  drawarea_draw(widget);
-  drawarea_expose(widget);
+  gtk_widget_queue_draw(widget);
 }
 
 /** 
@@ -1874,12 +1880,13 @@ action_zoom_8(GtkWidget *widget)
 static void
 action_fit_screen(GtkWidget *widget)
 {
+  GtkWidget *parent = gtk_widget_get_parent(widget);
+
   fitscreen = TRUE;
-  canvas_width = widget->parent->allocation.width;
-  gtk_drawing_area_size(GTK_DRAWING_AREA(widget), canvas_width, canvas_height);
-  
-  drawarea_draw(widget);
-  drawarea_expose(widget);
+  canvas_width = gtk_widget_get_allocated_width(parent);
+  gtk_widget_set_size_request(widget, canvas_width, canvas_height);
+
+  gtk_widget_queue_draw(widget);
 }
 
 /** 
@@ -1900,13 +1907,9 @@ action_fit_screen(GtkWidget *widget)
 static void
 action_toggle_popctr(GtkWidget *button, GtkWidget *widget)
 {
-  if (GTK_TOGGLE_BUTTON(button)->active) {
-    sw_hypo = TRUE;
-  } else {
-    sw_hypo = FALSE;
-  }
-  drawarea_draw(widget);
-  drawarea_expose(widget);
+  sw_hypo = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button));
+
+  gtk_widget_queue_draw(widget);
 }
 
 /** 
@@ -1929,47 +1932,11 @@ action_toggle_popctr(GtkWidget *button, GtkWidget *widget)
 static void
 action_change_popctr(GtkAdjustment *adj, GtkWidget *widget)
 {
-  int popctr;
-
-  if (sw_hypo) {
-    popctr = adj->value;
-    draw_popnodes_old(widget);
-    draw_popnodes(widget, popctr);
-    drawarea_expose(widget);
-  }
+  draw_nodes = TRUE;
+  gtk_widget_queue_draw(widget);
 }
 
-/**********************************************************************/
-/* GTK delete/destroy event handler */
-/**********************************************************************/
-
-/** 
- * <JA>
- * GTK§Œ∫ÔΩ¸•§•Ÿ•Û•»•œ•Û•…•È
- * 
- * @param widget [in] •¶•£•∏•ß•√•»
- * @param event [in] •§•Ÿ•Û•»
- * @param data [in] •Ê°º•∂•«°º•ø
- * 
- * @return FALSE§ÚæÔ§À ÷§π° destroy signal§Ú»Øπ‘§π§Î§ø§·°À. 
- * </JA>
- * <EN>
- * GTK delete event handler.
- * 
- * @param widget [in] widget
- * @param event [in] event
- * @param data [in] user data
- * 
- * @return always FALSE, to emit destroy signal.
- * </EN>
- */
-static gint
-delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
-{
-  return (FALSE);		/* emit destroy signal */
-}
-
-/** 
+/**
  * <JA>
  * GTK§ŒΩ™Œª•§•Ÿ•Û•»•œ•Û•…•È. •¢•◊•Í•±°º•∑•Á•Û§ÚΩ™Œª§π§Î. 
  * 
@@ -2004,36 +1971,39 @@ destroy(GtkWidget *widget, gpointer data)
 void
 visual_init(Recog *recog)
 {
-  POPNODE *p;
-
   /* hold recognition instance to local */
   re = recog;
 
   /* reset values */
   btlocal = NULL;
-  
+
   /* initialize Gtk/Gdk libraries */
   /* no argument passed as gtk options */
   /*gtk_init (&argc, &argv);*/
   gtk_init(NULL, NULL);
 
-  /* set locale */
-  gtk_set_locale();
-
-  /* load fontset */
-  fontset = gdk_fontset_load(FONTSET);
-  if (fontset == NULL) {
-    fprintf(stderr, "cannot load X font \"%s\" for visualize\n", FONTSET); exit(-1);
-  }
-
-  /* initialize color */
-  color_init();
-
   fprintf(stderr, "GTK initialized\n");
 
 }
 
-/** 
+static void
+setup_css(void)
+{
+  GtkCssProvider *provider;
+  GError *error;
+
+  error = NULL;
+  provider = gtk_css_provider_new();
+
+  gtk_css_provider_load_from_data(provider, css_colors, -1, &error);
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(),
+                                            GTK_STYLE_PROVIDER (provider),
+                                            GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+  g_clear_object (&provider);
+}
+
+/**
  * <JA>
  * «ßº±∑Î≤Ã§Ú∏µ§À°§√µ∫˜∂ı¥÷§Œ≤ƒªÎ≤Ω§Úº¬π‘§π§Î. 
  * 
@@ -2048,13 +2018,12 @@ visual_init(Recog *recog)
 void
 visual_show(BACKTRELLIS *bt)
 {
-  GtkWidget *window, *button, *draw, *entry, *scrolled_window, *scale;
+  GtkWidget *window, *button, *draw, *entry, *scrolled_window, *scale, *headerbar;
   GtkWidget *box1, *box2, *label, *frame, *box3;
-  GtkObject *adj;
   GSList *group;
   GList *glist;
 
-  
+
   fprintf(stderr, "*** Showing word trellis view (close window to proceed)\n");
 
   /* store pointer to backtrellis data */
@@ -2074,180 +2043,165 @@ visual_show(BACKTRELLIS *bt)
 
   /* reset value */
   fitscreen = TRUE;
-  if (dgc != NULL) {
-    gdk_gc_unref(dgc);
-    dgc = NULL;
-  }
+
+  /* load css style classes */
+  setup_css();
 
   /* create main window */
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_widget_set_usize(GTK_WIDGET(window), DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-  gtk_window_set_title(GTK_WINDOW(window), WINTITLE);
-  gtk_signal_connect(GTK_OBJECT(window), "delete_event",
-		     GTK_SIGNAL_FUNC(delete_event), NULL);
-  gtk_signal_connect(GTK_OBJECT(window), "destroy",
-		     GTK_SIGNAL_FUNC(destroy), NULL);
-  gtk_container_border_width(GTK_CONTAINER(window), 10);
+  gtk_window_resize(GTK_WINDOW(window), DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+  g_signal_connect(window, "destroy", G_CALLBACK(destroy), NULL);
+
+  /* headerbar */
+  headerbar = g_object_new(GTK_TYPE_HEADER_BAR,
+                           "title", WINTITLE,
+                           "show-close-button", TRUE,
+                           NULL);
+  gtk_window_set_titlebar(GTK_WINDOW(window), headerbar);
 
   /* create horizontal packing box */
-  box1 = gtk_hbox_new(FALSE, 5);
+  box1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
   gtk_container_add(GTK_CONTAINER(window), box1);
 
   /* create scrolled window */
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_ALWAYS,GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 18);
 
   /* create drawing area */
   draw = gtk_drawing_area_new();
-  /*  gtk_drawing_area_size(GTK_DRAWING_AREA(draw), DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT);*/
-  gtk_signal_connect(GTK_OBJECT(draw), "expose-event", GTK_SIGNAL_FUNC(event_drawarea_expose), NULL);
-  gtk_signal_connect(GTK_OBJECT(draw), "configure-event", GTK_SIGNAL_FUNC(event_drawarea_configure), NULL);
-  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_window), draw);
+  g_signal_connect(draw, "draw", G_CALLBACK(drawarea_draw), NULL);
+  g_signal_connect(draw, "configure-event", G_CALLBACK(drawarea_configure), NULL);
+  gtk_container_add(GTK_CONTAINER(scrolled_window), draw);
   gtk_box_pack_start(GTK_BOX(box1), scrolled_window, TRUE, TRUE, 0);
 
   /* create packing box for buttons */
-  box2 = gtk_vbox_new(FALSE, 5);
+  box2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
   gtk_box_pack_start(GTK_BOX(box1), box2, FALSE, TRUE, 0);
+  gtk_container_set_border_width(GTK_CONTAINER(box2), 18);
 
   if (re->speechlen != 0) {
     /* create waveform related frame */
-    frame = gtk_frame_new("waveform");
+    frame = gtk_frame_new("Waveform");
     gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-    box3 = gtk_hbox_new(FALSE, 5);
-    gtk_container_set_border_width(GTK_CONTAINER(box3), 5);
+    box3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+    gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
     gtk_container_add(GTK_CONTAINER(frame), box3);
-    
+
     /* create play button if supported */
 #ifdef PLAYCOMMAND
-    button = gtk_button_new_with_label("play");
-    gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-			      GTK_SIGNAL_FUNC(action_play_waveform), GTK_OBJECT(draw));
+    button = gtk_button_new_with_label("Play");
+    g_signal_connect_object(button, "clicked",
+                            G_CALLBACK(action_play_waveform), draw,
+                            G_CONNECT_AFTER);
     gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 #endif
-    
+
     /* create level thres toggle button */
-    button = gtk_button_new_with_label("thres");
-    gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-			      GTK_SIGNAL_FUNC(action_toggle_thres), GTK_OBJECT(draw));
+    button = gtk_button_new_with_label("Threshold");
+    g_signal_connect_object(button, "clicked",
+                            G_CALLBACK(action_toggle_thres), draw,
+                            G_CONNECT_AFTER);
     gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
   }
-    
+
   /* create scaling frame */
-  frame = gtk_frame_new("change view");
+  frame = gtk_frame_new("Change view");
   gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_hbox_new(FALSE, 5);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 5);
+  box3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
   gtk_container_add(GTK_CONTAINER(frame), box3);
 
   /* create word view button */
-  button = gtk_radio_button_new_with_label(NULL, "word");
+  button = gtk_radio_button_new_with_label(NULL, "Word");
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
-  gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		     GTK_SIGNAL_FUNC(action_view_wid), GTK_OBJECT(draw));
+  g_signal_connect(button, "toggled", G_CALLBACK(action_view_wid), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create score view button */
-  group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
-  button = gtk_radio_button_new_with_label(group, "score");
-  gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		     GTK_SIGNAL_FUNC(action_view_score), GTK_OBJECT(draw));
+  group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
+  button = gtk_radio_button_new_with_label(group, "Score");
+  g_signal_connect(button, "toggled", G_CALLBACK(action_view_score), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create beam view button */
-  group = gtk_radio_button_group(GTK_RADIO_BUTTON(button));
-  button = gtk_radio_button_new_with_label(group, "beam");
-  gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		     GTK_SIGNAL_FUNC(action_view_beam), GTK_OBJECT(draw));
+  group = gtk_radio_button_get_group(GTK_RADIO_BUTTON(button));
+  button = gtk_radio_button_new_with_label(group, "Beam");
+  g_signal_connect(button, "toggled", G_CALLBACK(action_view_beam), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create show/hide frame */
-  frame = gtk_frame_new("show/hide");
+  frame = gtk_frame_new("Show/hide");
   gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_vbox_new(FALSE, 5);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 5);
+  box3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
   gtk_container_add(GTK_CONTAINER(frame), box3);
 
   /* create text toggle button */
-  button = gtk_toggle_button_new_with_label("arcs");
+  button = gtk_toggle_button_new_with_label("Arcs");
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
-  gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		     GTK_SIGNAL_FUNC(action_toggle_arc), GTK_OBJECT(draw));
+  g_signal_connect(button, "toggled", G_CALLBACK(action_toggle_arc), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create word entry frame */
-  frame = gtk_frame_new("view words");
+  frame = gtk_frame_new("View Words");
   gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_vbox_new(FALSE, 5);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 5);
+  box3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
   gtk_container_add(GTK_CONTAINER(frame), box3);
 
   /* create word ID entry */
-  entry = gtk_entry_new_with_max_length(16);
-  gtk_signal_connect(GTK_OBJECT(entry), "activate",
-		     GTK_SIGNAL_FUNC(action_set_wid), GTK_OBJECT(draw));
+  entry = gtk_entry_new();
+  gtk_entry_set_max_length(GTK_ENTRY(entry), 16);
+  g_signal_connect(entry, "activate", G_CALLBACK(action_set_wid), draw);
   gtk_box_pack_start(GTK_BOX(box3), entry, FALSE, FALSE, 0);
 
   /* create zoom frame */
-  frame = gtk_frame_new("zoom");
+  frame = gtk_frame_new("Zoom");
   gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_hbox_new(FALSE, 5);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 5);
+  box3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
   gtk_container_add(GTK_CONTAINER(frame), box3);
 
   /* create x zoom button */
   button = gtk_button_new_with_label("x2");
-  gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-			    GTK_SIGNAL_FUNC(action_zoom), GTK_OBJECT(draw));
+  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create x zoom button */
   button = gtk_button_new_with_label("x4");
-  gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-			    GTK_SIGNAL_FUNC(action_zoom_4), GTK_OBJECT(draw));
+  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom_4), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create x more zoom button */
   button = gtk_button_new_with_label("x8");
-  gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-			    GTK_SIGNAL_FUNC(action_zoom_8), GTK_OBJECT(draw));
+  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom_8), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create fit screen button */
-  button = gtk_button_new_with_label("fit");
-  gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-			    GTK_SIGNAL_FUNC(action_fit_screen), GTK_OBJECT(draw));
+  button = gtk_button_new_with_label("Fit");
+  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_fit_screen), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create replay frame */
-  frame = gtk_frame_new("pass2 replay");
+  frame = gtk_frame_new("Pass2 Replay");
   gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_vbox_new(FALSE, 5);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 5);
+  box3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
   gtk_container_add(GTK_CONTAINER(frame), box3);
 
-  adj = gtk_adjustment_new(0.0, 0.0, (pnum-1) + 5, 1.0, 1.0, 5.0);
-  gtk_signal_connect(GTK_OBJECT(adj), "value_changed",
-		     GTK_SIGNAL_FUNC(action_change_popctr), GTK_OBJECT(draw));
-
   /* create replay start button */
-  button = gtk_toggle_button_new_with_label("start");
-  gtk_signal_connect(GTK_OBJECT(button), "toggled",
-		     GTK_SIGNAL_FUNC(action_toggle_popctr), GTK_OBJECT(draw));
+  button = gtk_toggle_button_new_with_label("Start");
+  g_signal_connect(button, "toggled", G_CALLBACK (action_toggle_popctr), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
-  
+
   /* create replay scale widget */
-  scale = gtk_hscale_new(GTK_ADJUSTMENT(adj));
+  adj = gtk_adjustment_new(0.0, 0.0, (pnum-1) + 5.0, 1.0, 1.0, 5.0);
+  g_signal_connect(adj, "value_changed", G_CALLBACK(action_change_popctr), draw);
+
+  scale = gtk_scale_new(GTK_ORIENTATION_HORIZONTAL, adj);
   gtk_scale_set_digits(GTK_SCALE(scale), 0);
   gtk_box_pack_start(GTK_BOX(box3), scale, FALSE, FALSE, 0);
-  
-  /* create close button */
-  button = gtk_button_new_with_label("close");
-  /* connect click event to close the window */
-  gtk_signal_connect_object(GTK_OBJECT(button), "clicked",
-			    GTK_SIGNAL_FUNC(gtk_widget_destroy),
-			    GTK_OBJECT(window));
-  
-  gtk_box_pack_start(GTK_BOX(box2), button, FALSE, FALSE, 0);
 
   /* show all the widget */
   gtk_widget_show_all(window);
