@@ -679,6 +679,7 @@ enable_gmm_vad
 enable_decoder_vad
 enable_power_reject
 enable_plugin
+enable_visualize
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1337,6 +1338,7 @@ Optional Features:
   --enable-decoder-vad       enable a new decoder-based VAD by NAIST team
   --enable-power-reject      enable post rejection by power
   --disable-plugin           disable plugin support
+  --enable-visualize    enable search space visualization on Gtk+
 
 Some influential environment variables:
   CC          C compiler command
@@ -2230,6 +2232,16 @@ else
 fi
 
 
+# enable gtk+ ui
+# Check whether --enable-visualize was given.
+if test "${enable_visualize+set}" = set; then :
+  enableval=$enable_visualize; use_gtk=$enableval
+
+else
+  use_gtk=no
+fi
+
+
 if test "$use_cm" = yes; then
   $as_echo "#define CONFIDENCE_MEASURE 1" >>confdefs.h
 
@@ -2269,6 +2281,11 @@ if test "$use_graphout_nbest" = no; then
     $as_echo "#define GRAPHOUT_DYNAMIC 1" >>confdefs.h
 
     $as_echo "#define GRAPHOUT_SEARCH 1" >>confdefs.h
+
+fi
+
+if test "$use_gtk" = yes; then
+    $as_echo "#define VISUALIZE 1" >>confdefs.h
 
 fi
 
