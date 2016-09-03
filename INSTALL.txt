@@ -1,56 +1,70 @@
-Quick guide to build Julius
+How to build Julius
+=====================
 
------------------------------------------------
-Ubuntu:
+This document describes how to build Julius on several platform.
+See each section for details.
 
-  % sudo apt-get install build-essential zlib1g-dev libasound2-dev (or libpulse-dev, whichever you like)
-  % ./configure
-  % make
+After build, compiled binaries of Julius and tools will be placed in
+their respective directories.  You can run "make install" will install
+binaries into system directries:
 
-Julius will be built in the "julius" directory, and other tools in their respective directories.
+  ${prefix}/bin      executables
+  ${prefix}/lib      libraries
+  ${prefix}/include  headers
 
-You can run "make install" to install the files into system directries:
-
-  ${prefix}/bin        executables
-  ${prefix}/lib        libsent/libjulius libraries
-  ${prefix}/include    headers
-
-The target location "${prefix}" is /usr/local by default.  You can specify other location
-by giving "--prefix=..." option to the configure script.  For example, if you want to install
-Julius under "/opt" directory instead of /usr/local, run configure like this:
+"${prefix}" will be "/usr/local" by default.  You can change it by
+specifying "--prefix=..." to configure script.
 
   % ./configure --prefix=/opt
 
 
 -----------------------------------------------
-Cygwin-x86  (tested on 2.5.2, 08/31/2016)
+Linux  (tested on Ubuntu-14.04)
 
-  1. Install the following packages
+  % sudo apt-get install build-essential zlib1g-dev libsdl2-dev
+  % sudo apt-get libasound2-dev (or libpulse-dev, whichever you like)
+  % ./configure
+  % make
+  % (optional) make install
+
+-----------------------------------------------
+Cygwin
+
+  Required packages:
 
     gcc-core
     make
-    zlib
     zlib-devel
+    libSDL2-devel
+    pkg-config
     perl
-    libportaudio2
-    libportaudio-devel
 
-  2. On cygwin terminal, do
+  On cygwin terminal, do
 
-    % ./configure; make
+    % ./configure
+    % make
+    % (optional) make install
+
+(tested on cygwin-x86 setup-v2.5.2, 08/31/2016)
 
 -----------------------------------------------
-Mingw on cygwin-x86  (tested on 2.5.2, 08/31/2016)
+Mingw on cygwin
 
-  1. Install the following packages, in addition to above
+  Required packages (also cygwin packages above are required)
 
     mingw64-i686-gcc-core
     mingw64-i686-zlib
+    mingw64-i686-SDL2
+    mingw64-i686-pkg-config
 
-  2. On cygwin terminal, do
+  On cygwin terminal, do
 
-    % ./configure --host=i686-w64-mingw32; make
+    % ./configure --host=i686-w64-mingw32 --disable-sdlmain
+    % make
 
+  If "adintool-gui.exe" fails or not run, try removing "--disable-sdlmain".
+
+(tested on cygwin-x86 setup-v2.5.2, 08/31/2016)
 -----------------------------------------------
 Visual Studio:
 
