@@ -45,6 +45,9 @@
 
 /* global valuables for window handling */
 static GtkAdjustment *adj;
+static GtkWidget *zoom_label;
+static GtkWidget *op_label;
+
 static gint canvas_width;	///< Current width of the drawable
 static gint canvas_height;	///< Current height of the drawable
 
@@ -481,13 +484,26 @@ my_render_arc(GtkWidget *widget,
 
   /* draw arc line */
   if (sw_line) {
+    GdkRGBA line_color;
+
     gtk_style_context_save(ctx);
     gtk_style_context_add_class(ctx, css_class);
 
-    //gdk_gc_set_line_attributes(dgc, width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-    gtk_render_line(ctx, cr, x1, y1, x2, y2);
-    //gdk_gc_set_line_attributes(dgc, 1, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+    cairo_save(cr);
 
+    gtk_style_context_get_color (ctx, gtk_style_context_get_state(ctx), &line_color);
+    gdk_cairo_set_source_rgba(cr, &line_color);
+
+    cairo_set_line_width(cr, width);
+    cairo_set_line_join(cr, CAIRO_LINE_JOIN_BEVEL);
+    cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
+    cairo_move_to(cr, x1 + 0.5, y1 + 0.5);
+    cairo_line_to(cr, x2 + 0.5, y2 + 0.5);
+
+    cairo_stroke(cr);
+
+    cairo_restore(cr);
     gtk_style_context_restore(ctx);
   }
 
@@ -680,37 +696,12 @@ draw_atom_text(GtkWidget    *widget,
   layout = gtk_widget_create_pango_layout(widget, winfo->woutput[tre->wid]);
   pango_layout_get_pixel_size(layout, &text_width, NULL);
 
-  gtk_style_context_restore(ctx);
-  g_clear_object(&layout);
-
   x = scale_x(tre->endtime) - text_width;
   if (sw_wid_axis) {
-    y = scale_y_wid(tre->wid) - 4;
+    y = scale_y_wid(tre->wid);
   } else {
-    y = scale_y(tre->backscore, tre->endtime) - 4;
+    y = scale_y(tre->backscore, tre->endtime);
   }
-
-  if (style == 1) {		/* make edge */
-    gtk_style_context_save(ctx);
-    gtk_style_context_add_class(ctx, "shadow");
-
-    layout = gtk_widget_create_pango_layout(widget, winfo->woutput[tre->wid]);
-
-    for (dx = -1; dx <= 1; dx++) {
-      for (dy = -1; dy <= 1; dy++) {
-        if (dx == 0 && dy == 0) continue;
-        gtk_render_layout(ctx, cr, x + dx, y + dy, layout);
-      }
-    }
-
-    gtk_style_context_restore(ctx);
-    g_clear_object(&layout);
-  }
-
-  gtk_style_context_save(ctx);
-  gtk_style_context_add_class(ctx, css_class);
-
-  layout = gtk_widget_create_pango_layout(widget, winfo->woutput[tre->wid]);
 
   gtk_render_layout(ctx, cr, x, y, layout);
 
@@ -1412,52 +1403,6 @@ static boolean fitscreen = TRUE; ///< フィットスクリーン指定時 TRUE
 
 /** 
  * <JA>
- * キャンバスの背景を pixmap に作成する
- * 
- * @param widget [in] 描画ウィジェット
- * </JA>
- * <EN>
- * Make the white background to the pixmap of the given canvas widget.
- * 
- * @param widget [in] drawing widget
- * </EN>
- */
-static void
-draw_background(GtkWidget *widget,
-                cairo_t   *cr)
-{
-  GtkStyleContext *ctx;
-  PangoLayout *layout;
-  gchar *dimentions;
-  gint font_height;
-
-  ctx = gtk_widget_get_style_context(widget);
-
-  /* clear pixmap background */
-  gtk_render_background(ctx, cr, 0, 0, canvas_width, canvas_height);
-
-  /* display view mode and zoom status */
-  layout = gtk_widget_create_pango_layout(widget, NULL);
-  if (sw_hypo) {
-    pango_layout_set_text(layout, "Hypothesis score (2nd pass)", -1);
-  } else {
-    pango_layout_set_text(layout,
-                          sw_score_beam ? "Beam score" : "Accumulated score (normalized by time)",
-                          -1);
-  }
-  pango_layout_get_pixel_size(layout, NULL, &font_height);
-  gtk_render_layout(ctx, cr, 0, canvas_height - font_height, layout);
-
-  dimentions = g_strdup_printf("x%3.1f", (float)canvas_width / (float)btlocal->framelen);
-  pango_layout_set_text(layout, dimentions, -1);
-  gtk_render_layout(ctx, cr, 0, canvas_height - font_height * 2, layout);
-
-  g_clear_object(&layout);
-  g_free (dimentions);
-}
-
-/** 
- * <JA>
  * 描画キャンパス内に表示すべき全ての単語情報を pixmap に描画する. 
  * 
  * @param widget 
@@ -1473,8 +1418,6 @@ drawarea_draw(GtkWidget *widget,
               cairo_t   *cr,
               gpointer   user_data)
 {
-  /* make background */
-  draw_background(widget, cr);
 
   if (re->speechlen != 0) {
     draw_waveform(widget, cr);
@@ -1503,6 +1446,19 @@ drawarea_draw(GtkWidget *widget,
       draw_nodes = FALSE;
     }
   }
+}
+
+static gboolean
+update_zoom_label(gpointer *data)
+{
+  gchar *dimentions;
+
+  /* Update zoom label */
+  dimentions = g_strdup_printf("x%3.1f", (float)canvas_width / (float)btlocal->framelen);
+  gtk_label_set_label(GTK_LABEL(zoom_label), dimentions);
+  g_free(dimentions);
+
+  return(G_SOURCE_REMOVE);
 }
 
 /**
@@ -1538,6 +1494,8 @@ drawarea_configure(GtkWidget      *widget,
 
   /* redraw objects to pixmap */
   gtk_widget_queue_draw(widget);
+
+  g_idle_add((GSourceFunc) update_zoom_label, NULL);
 
   return(FALSE);
 }
@@ -1666,6 +1624,8 @@ action_view_score(GtkWidget *button, GtkWidget *widget)
     sw_score_beam = FALSE;
     sw_hypo = FALSE;
 
+    gtk_label_set_label(GTK_LABEL(op_label), "Accumulated score (normalized by time)");
+
     /* redraw objects */
     gtk_widget_queue_draw(widget);
   }
@@ -1694,6 +1654,8 @@ action_view_beam(GtkWidget *button, GtkWidget *widget)
     /* set switch */
     sw_score_beam = TRUE;
     sw_hypo = FALSE;
+
+    gtk_label_set_label(GTK_LABEL(op_label), "Beam score");
 
     /* redraw objects */
     gtk_widget_queue_draw(widget);
@@ -2019,7 +1981,7 @@ void
 visual_show(BACKTRELLIS *bt)
 {
   GtkWidget *window, *button, *draw, *entry, *scrolled_window, *scale, *headerbar;
-  GtkWidget *box1, *box2, *label, *frame, *box3;
+  GtkWidget *box1, *box2, *label, *frame, *box3, *start_box;
   GSList *group;
   GList *glist;
 
@@ -2061,7 +2023,14 @@ visual_show(BACKTRELLIS *bt)
 
   /* create horizontal packing box */
   box1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+  gtk_container_set_border_width(GTK_CONTAINER(box1), 18);
   gtk_container_add(GTK_CONTAINER(window), box1);
+
+  /* box containing the drawing area and labels */
+  start_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+  gtk_widget_set_hexpand(start_box, TRUE);
+  gtk_widget_set_vexpand(start_box, TRUE);
+  gtk_container_add(GTK_CONTAINER(box1), start_box);
 
   /* create scrolled window */
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
@@ -2070,15 +2039,25 @@ visual_show(BACKTRELLIS *bt)
 
   /* create drawing area */
   draw = gtk_drawing_area_new();
+  gtk_widget_set_hexpand(draw, TRUE);
+  gtk_widget_set_vexpand(draw, TRUE);
   g_signal_connect(draw, "draw", G_CALLBACK(drawarea_draw), NULL);
   g_signal_connect(draw, "configure-event", G_CALLBACK(drawarea_configure), NULL);
   gtk_container_add(GTK_CONTAINER(scrolled_window), draw);
-  gtk_box_pack_start(GTK_BOX(box1), scrolled_window, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(start_box), scrolled_window, TRUE, TRUE, 0);
+
+  /* labels */
+  zoom_label = gtk_label_new("");
+  gtk_widget_set_halign(zoom_label, GTK_ALIGN_START);
+  gtk_container_add(GTK_CONTAINER(start_box), zoom_label);
+
+  op_label = gtk_label_new("Accumulated score (normalized by time)");
+  gtk_widget_set_halign(op_label, GTK_ALIGN_START);
+  gtk_container_add(GTK_CONTAINER(start_box), op_label);
 
   /* create packing box for buttons */
   box2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
   gtk_box_pack_start(GTK_BOX(box1), box2, FALSE, TRUE, 0);
-  gtk_container_set_border_width(GTK_CONTAINER(box2), 18);
 
   if (re->speechlen != 0) {
     /* create waveform related frame */
