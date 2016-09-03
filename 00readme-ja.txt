@@ -62,7 +62,6 @@ Julius-4.4
 DNN-HMMを用いたオンライン音声認識が行えるようになりました。
 詳細は 00readme-DNN.txt をご覧ください。
 
-
 新ツールとして adintool の GUI バージョンである "adintool-gui" と
 バイナリN-gramを ARPA 形式に逆変換する "binlm2arpa" が追加されました．
 また，"mkbingram" でバイナリN-gramを直接文字コード変換できます。
@@ -88,7 +87,7 @@ Julius-4.4のファイルの構成
 	Sample.jconf		jconf 設定ファイルサンプル
 	Sample.dnnconf		DNN 設定ファイルのサンプル
 	julius/			Julius ソース
-o	libjulius/		JuliusLib コアエンジンライブラリ ソース
+	libjulius/		JuliusLib コアエンジンライブラリ ソース
 	libsent/		JuliusLib 汎用ライブラリ ソース
 	adinrec/		録音ツール adinrec
 	adintool/		音声録音/送受信ツール adintool
@@ -99,10 +98,11 @@ o	libjulius/		JuliusLib コアエンジンライブラリ ソース
 	mkbinhmm/		バイナリHMM作成ツール mkbinhmm
 	mkgshmm/		GMS用音響モデル変換ツール mkgshmm
 	mkss/			ノイズ平均スペクトル算出ツール mkss
+	support/		開発用スクリプト
 	jclient-perl/		A simple perl version of module mode client
 	plugin/			プラグインソースコードのサンプルと仕様文書
 	man/			マニュアル類
-	support/		開発用スクリプト
+	msvc/			Microsoft Visual Studio 2013 用ファイル
 	dnntools/		Sample programs for dnn and vecnet client
 	binlm2arpa/		バイナリN-gramからARPAへの変換ツール
 

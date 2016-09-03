@@ -10,6 +10,7 @@
 - バージョン2.6以降の Autoconf で動作するよう修正
 - GitHub用のファイルを追加（README.md, CONTRIBUTING.md 等）
 - DNN-HMMを使った認識の説明テキスト "00readme-DNN.txt" を追加
+- VisualStudio2013以降をサポート
 
 4.3.1 (2014.01.15)
 ===================

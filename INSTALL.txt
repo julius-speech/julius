@@ -62,7 +62,7 @@ Mingw on cygwin
     % ./configure --host=i686-w64-mingw32 --disable-sdlmain
     % make
 
-  If "adintool-gui.exe" fails or not run, try removing "--disable-sdlmain".
+  If "adintool-gui.exe" fails or not run, try without "--disable-sdlmain".
 
 (tested on cygwin-x86 setup-v2.5.2, 08/31/2016)
 -----------------------------------------------
