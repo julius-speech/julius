@@ -15,6 +15,9 @@
 
 // headers
 #ifdef USE_SDL
+#ifdef NO_SDL_MAIN
+#define SDL_MAIN_HANDLED
+#endif
 #include <SDL.h>
 #endif
 #include <julius/juliuslib.h>

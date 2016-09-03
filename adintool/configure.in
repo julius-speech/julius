@@ -14,10 +14,10 @@ AC_ARG_ENABLE(sdl,
 [  --disable-sdl      do not compile gui version, which requires SDL2],
 want_gui=$enableval
 ,want_gui=yes)
-AC_ARG_ENABLE(sdl,
-[  --disable-sdl2     do not compile gui version, which requires SDL2],
-want_gui=$enableval
-,want_gui=yes)
+AC_ARG_ENABLE(sdlmain,
+[  --disable-sdlmain  do not use SDL main function],
+want_sdlmain=$enableval
+,want_sdlmain=yes)
 
 AC_CANONICAL_HOST
 AC_PROG_CC
