@@ -19,8 +19,8 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 INSTALL=@INSTALL@
 
-SDL_CFLAGS=`sdl2-config --cflags` -DUSE_SDL
-SDL_LDFLAGS=`sdl2-config --static-libs`
+SDL_CFLAGS=@SDL_CFLAGS@ -DUSE_SDL
+SDL_LDFLAGS=@SDL_LIBS@
 
 OBJ=guiobj/adintool.o guiobj/options.o guiobj/mainloop.o
 TARGET=adintool-gui@EXEEXT@

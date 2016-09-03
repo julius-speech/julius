@@ -3238,7 +3238,7 @@ else
 fi
 
 
-  min_sdl_version=2.0
+  min_sdl_version=2.0.0
 
   if test "x$sdl_prefix$sdl_exec_prefix" = x ; then
 

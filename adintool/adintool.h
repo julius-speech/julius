@@ -14,13 +14,13 @@
 #endif
 
 // headers
+#ifdef USE_SDL
+#include <SDL.h>
+#endif
 #include <julius/juliuslib.h>
 #include <signal.h>
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
-#endif
-#ifdef USE_SDL
-#include <SDL.h>
 #endif
 
 // definition of speech output selection

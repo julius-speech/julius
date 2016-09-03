@@ -27,7 +27,7 @@ AC_PATH_PROG(RM,rm)
 AC_EXEEXT
 extra_target=""
 if test "$want_gui" = yes; then
-   AM_PATH_SDL2(2.0, extra_target="gui")
+   AM_PATH_SDL2(2.0.0, extra_target="gui")
 fi
 AC_SUBST(extra_target)
 AC_OUTPUT(Makefile Makefile.gui)
