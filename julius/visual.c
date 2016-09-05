@@ -45,7 +45,8 @@
 
 /* global valuables for window handling */
 static GtkAdjustment *adj;
-static GtkWidget *zoom_label;
+static GtkWidget *default_zoom_button;
+static GtkWidget *scrolled_window;
 static GtkWidget *op_label;
 
 static gint canvas_width;	///< Current width of the drawable
@@ -62,6 +63,8 @@ static boolean sw_line = TRUE;	///< Arc line display on/off
 static boolean sw_level_thres = FALSE; ///< Show level thres on waveform
 static boolean sw_hypo = FALSE;		///< Y axis is hypothesis score
 static boolean draw_nodes = FALSE;
+
+static gdouble zoom_level = 1.0;
 
 /**********************************************************************/
 /* data to plot (1st pass / 2nd pass) */
@@ -1399,7 +1402,6 @@ draw_popnodes_old(GtkWidget *widget,
 /* GTK TopLevel draw/redraw functions */
 /* will be called for each exposure/configure event */
 /**********************************************************************/
-static boolean fitscreen = TRUE; ///< フィットスクリーン指定時 TRUE
 
 /** 
  * <JA>
@@ -1449,13 +1451,15 @@ drawarea_draw(GtkWidget *widget,
 }
 
 static gboolean
-update_zoom_label(gpointer *data)
+update_zoom_button(gpointer *data)
 {
+  gdouble current_zoom;
   gchar *dimentions;
 
   /* Update zoom label */
-  dimentions = g_strdup_printf("x%3.1f", (float)canvas_width / (float)btlocal->framelen);
-  gtk_label_set_label(GTK_LABEL(zoom_label), dimentions);
+  current_zoom = (gdouble)canvas_width / (gdouble)gtk_widget_get_allocated_width(scrolled_window);
+  dimentions = g_strdup_printf("%d%%", (gint)ceil(current_zoom * 100));
+  gtk_button_set_label(GTK_BUTTON(default_zoom_button), dimentions);
   g_free(dimentions);
 
   return(G_SOURCE_REMOVE);
@@ -1486,7 +1490,10 @@ drawarea_configure(GtkWidget      *widget,
                    GdkEventExpose *event,
                    gpointer        user_data)
 {
-  if (fitscreen) {		/* if in zoom mode, resizing window does not cause resize of the canvas */
+  if (zoom_level == 1.0) {
+    canvas_width = gtk_widget_get_allocated_width(scrolled_window);
+    gtk_widget_set_size_request(widget, canvas_width, -1);
+  } else {
     canvas_width = gtk_widget_get_allocated_width(widget); /* get canvas size */
   }
   /* canvas height will be always automatically changed by resizing */
@@ -1495,7 +1502,7 @@ drawarea_configure(GtkWidget      *widget,
   /* redraw objects to pixmap */
   gtk_widget_queue_draw(widget);
 
-  g_idle_add((GSourceFunc) update_zoom_label, NULL);
+  g_idle_add((GSourceFunc) update_zoom_button, NULL);
 
   return(FALSE);
 }
@@ -1755,47 +1762,24 @@ action_set_wid(GtkWidget *widget, GtkWidget *draw)
  * @param widget [in] 描画ウィジェット
  * </JA>
  * <EN>
- * Callback when [x2] zoom button is clicked: expand X axis to "x2".
+ * Callback when [-] zoom button is clicked: shrink X axis.
  * If FITSCREEN is enabled, it will be disabled.
  * 
  * @param widget [in] drawing widget
  * </EN>
  */
 static void
-action_zoom(GtkWidget *widget)
+action_zoom_out(GtkWidget *widget)
 {
-  fitscreen = FALSE;
   if (btlocal != NULL) {
-    canvas_width = btlocal->framelen * 2;
+    zoom_level = MAX(zoom_level - 0.1, 0.1);
+    canvas_width = gtk_widget_get_allocated_width(scrolled_window) * zoom_level;
     gtk_widget_set_size_request(widget, canvas_width, canvas_height);
 
+    /* Clicking the middle button resets zoom level */
+    gtk_widget_set_sensitive(default_zoom_button, zoom_level != 1.0);
   }
-  gtk_widget_queue_draw(widget);
-}
 
-/** 
- * <JA>
- * [x4] ズームボタンクリック時のcallback: X軸を4倍に伸張する. なおFITSCREENは
- * OFFになる. 
- * 
- * @param widget [in] 描画ウィジェット
- * </JA>
- * <EN>
- * Callback when [x4] zoom button is clicked: expand X axis to "x4".
- * If FITSCREEN is enabled, it will be disabled.
- * 
- * @param widget [in] drawing widget
- * </EN>
- */
-static void
-action_zoom_4(GtkWidget *widget)
-{
-  fitscreen = FALSE;
-  if (btlocal != NULL) {
-    canvas_width = btlocal->framelen * 4;
-    gtk_widget_set_size_request(widget, canvas_width, canvas_height);
-  }
- 
   gtk_widget_queue_draw(widget);
 }
 
@@ -1807,21 +1791,24 @@ action_zoom_4(GtkWidget *widget)
  * @param widget [in] 描画ウィジェット
  * </JA>
  * <EN>
- * Callback when [x8] zoom button is clicked: expand X axis to "x8".
+ * Callback when [+] zoom button is clicked: expand X axis.
  * If FITSCREEN is enabled, it will be disabled.
  * 
  * @param widget [in] drawing widget
  * </EN>
  */
 static void
-action_zoom_8(GtkWidget *widget)
+action_zoom_in(GtkWidget *widget)
 {
-  fitscreen = FALSE;
   if (btlocal != NULL) {
-    canvas_width = btlocal->framelen * 8;
+    zoom_level += 0.1;
+    canvas_width = gtk_widget_get_allocated_width(scrolled_window) * zoom_level;
     gtk_widget_set_size_request(widget, canvas_width, canvas_height);
+
+    /* Clicking the middle button resets zoom level */
+    gtk_widget_set_sensitive(default_zoom_button, zoom_level != 1.0);
   }
-  
+
   gtk_widget_queue_draw(widget);
 }
 
@@ -1842,11 +1829,12 @@ action_zoom_8(GtkWidget *widget)
 static void
 action_fit_screen(GtkWidget *widget)
 {
-  GtkWidget *parent = gtk_widget_get_parent(widget);
-
-  fitscreen = TRUE;
-  canvas_width = gtk_widget_get_allocated_width(parent);
+  zoom_level = 1.0;
+  canvas_width = gtk_widget_get_allocated_width(scrolled_window);
   gtk_widget_set_size_request(widget, canvas_width, canvas_height);
+
+  /* Clicking the middle button resets zoom level */
+  gtk_widget_set_sensitive(default_zoom_button, FALSE);
 
   gtk_widget_queue_draw(widget);
 }
@@ -1980,8 +1968,8 @@ setup_css(void)
 void
 visual_show(BACKTRELLIS *bt)
 {
-  GtkWidget *window, *button, *draw, *entry, *scrolled_window, *scale, *headerbar;
-  GtkWidget *box1, *box2, *label, *frame, *box3, *start_box;
+  GtkWidget *window, *button, *draw, *entry, *scale, *headerbar;
+  GtkWidget *box1, *box2, *label, *frame, *box3, *start_box, *zoom_box;
   GSList *group;
   GList *glist;
 
@@ -2002,9 +1990,6 @@ visual_show(BACKTRELLIS *bt)
 
   /* start with trellis view */
   sw_hypo = FALSE;
-
-  /* reset value */
-  fitscreen = TRUE;
 
   /* load css style classes */
   setup_css();
@@ -2039,18 +2024,32 @@ visual_show(BACKTRELLIS *bt)
 
   /* create drawing area */
   draw = gtk_drawing_area_new();
-  gtk_widget_set_hexpand(draw, TRUE);
-  gtk_widget_set_vexpand(draw, TRUE);
+  gtk_widget_set_halign(draw, GTK_ALIGN_START);
   g_signal_connect(draw, "draw", G_CALLBACK(drawarea_draw), NULL);
   g_signal_connect(draw, "configure-event", G_CALLBACK(drawarea_configure), NULL);
   gtk_container_add(GTK_CONTAINER(scrolled_window), draw);
   gtk_box_pack_start(GTK_BOX(start_box), scrolled_window, TRUE, TRUE, 0);
 
-  /* labels */
-  zoom_label = gtk_label_new("");
-  gtk_widget_set_halign(zoom_label, GTK_ALIGN_START);
-  gtk_container_add(GTK_CONTAINER(start_box), zoom_label);
+    /* zoom widgets */
+  zoom_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_style_context_add_class(gtk_widget_get_style_context(zoom_box), "linked");
+  gtk_container_add(GTK_CONTAINER(headerbar), zoom_box);
 
+  button = gtk_button_new_from_icon_name("zoom-out-symbolic", GTK_ICON_SIZE_BUTTON);
+  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom_out), draw);
+  gtk_container_add(GTK_CONTAINER(zoom_box), button);
+
+  default_zoom_button = gtk_button_new_with_label("100%");
+  gtk_widget_set_sensitive(default_zoom_button, FALSE);
+  g_signal_connect_swapped(default_zoom_button, "clicked", G_CALLBACK(action_fit_screen), draw);
+  gtk_container_add(GTK_CONTAINER(zoom_box), default_zoom_button);
+
+  button = gtk_button_new_from_icon_name("zoom-in-symbolic", GTK_ICON_SIZE_BUTTON);
+  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom_in), draw);
+  gtk_container_add(GTK_CONTAINER(zoom_box), button);
+
+
+  /* labels */
   op_label = gtk_label_new("Accumulated score (normalized by time)");
   gtk_widget_set_halign(op_label, GTK_ALIGN_START);
   gtk_container_add(GTK_CONTAINER(start_box), op_label);
@@ -2134,33 +2133,6 @@ visual_show(BACKTRELLIS *bt)
   gtk_entry_set_max_length(GTK_ENTRY(entry), 16);
   g_signal_connect(entry, "activate", G_CALLBACK(action_set_wid), draw);
   gtk_box_pack_start(GTK_BOX(box3), entry, FALSE, FALSE, 0);
-
-  /* create zoom frame */
-  frame = gtk_frame_new("Zoom");
-  gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
-  gtk_container_add(GTK_CONTAINER(frame), box3);
-
-  /* create x zoom button */
-  button = gtk_button_new_with_label("x2");
-  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom), draw);
-  gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
-
-  /* create x zoom button */
-  button = gtk_button_new_with_label("x4");
-  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom_4), draw);
-  gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
-
-  /* create x more zoom button */
-  button = gtk_button_new_with_label("x8");
-  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom_8), draw);
-  gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
-
-  /* create fit screen button */
-  button = gtk_button_new_with_label("Fit");
-  g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_fit_screen), draw);
-  gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
   /* create replay frame */
   frame = gtk_frame_new("Pass2 Replay");
