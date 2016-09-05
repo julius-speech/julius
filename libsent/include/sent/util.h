@@ -115,6 +115,7 @@ void confout_lm(FILE *strm);
 void confout_am(FILE *strm);
 void confout_lib(FILE *strm);
 void confout_process(FILE *strm);
+void confout_simd(FILE *strm);
 
 /* qsort.c */
 void qsort_reentrant(void *base, int count, int size, int (*compare)(const void *, const void *, void *), void *pointer);

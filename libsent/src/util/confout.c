@@ -150,6 +150,23 @@ confout_process(FILE *strm)
 #endif
 }
 
+void
+confout_simd(FILE *strm)
+{
+  fprintf(strm, " - SIMD instruction set for DNN\n");
+#ifdef __SSE__
+  fprintf(strm, "    SSE                     : on\n");
+#else
+  fprintf(strm, "    SSE                     : off\n");
+#endif
+#ifdef __AVX__
+  fprintf(strm, "    Intel AVX               : on\n");
+#else
+  fprintf(strm, "    Intel AVX               : off\n");
+#endif
+}
+
+
 /** 
  * Output all information of this libsent library.
  * 
@@ -164,4 +181,5 @@ confout(FILE *strm)
   confout_am(strm);
   confout_lib(strm);
   confout_process(strm);
+  confout_simd(strm);
 }

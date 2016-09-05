@@ -13,6 +13,8 @@
 #include <sent/htk_param.h>
 #include <sent/hmm_calc.h>
 
+typedef void (*DNN_FUNC_VOID)();
+
 typedef struct {
   float *w;			/* w [out * in]*/
   float *b;			/* b [out] */
@@ -40,6 +42,9 @@ typedef struct {
 
   float *invec;		    /* input vector holder (32byte aligned) */
   float **work;		    /* working buffer for ff computation */
+  float *accum;		    /* working buffer for accumulation */
+
+  DNN_FUNC_VOID subfunc;	/* sub function for DNN computation */
   
 } DNNData;
 
