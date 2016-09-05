@@ -3307,6 +3307,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 if test "$xxxxAVX" = no; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD AVX instruction with -mavx" >&5
 $as_echo_n "checking for SIMD AVX instruction with -mavx... " >&6; }
+  xxxCFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -mavx"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -3324,7 +3325,9 @@ if ac_fn_c_try_compile "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
-  as_fn_error $? "no support for SIMD AVX instruction" "$LINENO" 5
+  CFLAGS="$xxxCFLAGS"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: no support for SIMD AVX instruction" >&5
+$as_echo "$as_me: WARNING: no support for SIMD AVX instruction" >&2;}
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi

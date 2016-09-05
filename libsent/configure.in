@@ -138,11 +138,13 @@ xxxxAVX=no
 if test "$xxxxAVX" = no; then
   dnl retry with "-mavx" option
   AC_MSG_CHECKING([for SIMD AVX instruction with -mavx])
+  xxxCFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -mavx"
   AC_TRY_COMPILE([#include <immintrin.h>
   ],[__m256 v = _mm256_setzero_ps();],
   AC_MSG_RESULT([yes]),
-    AC_MSG_ERROR([no support for SIMD AVX instruction]))
+    CFLAGS="$xxxCFLAGS"
+    AC_MSG_WARN([no support for SIMD AVX instruction]))
 fi
 
 dnl Checks for programs.
