@@ -254,7 +254,7 @@ main(int argc, char *argv[])
 #ifdef VISUALIZE
   /* Visualize: initialize GTK */
   visual_init(recog);
-  callback_add(recog, CALLBACK_EVENT_RECOGNITION_END, show_visual, NULL);
+  callback_add(recog, CALLBACK_RESULT, show_visual, NULL);
   callback_add(recog, CALLBACK_EVENT_PASS2_BEGIN, init_visual2, jconf);
   callback_add(recog, CALLBACK_DEBUG_PASS2_POP, pop_visual2, NULL);
   callback_add(recog, CALLBACK_DEBUG_PASS2_PUSH, next_word_visual2, NULL);
