@@ -275,6 +275,7 @@ print_engine_info(Recog *recog)
   jlog("----------------------- System Information begin ---------------------\n");
   j_put_header(fp);
   j_put_compile_defs(fp);
+  j_put_library_defs(fp);
   jlog("\n");
   
   /* print current argument setting to log */

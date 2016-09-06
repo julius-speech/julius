@@ -28,17 +28,12 @@
 #define SIMD_ENABLED
 #endif
 
+static int use_simd = USE_SIMD_NONE;
+
 /************************************************************************/
 /* determine which SIMD code to run */
 
 #ifdef SIMD_ENABLED
-
-#define USE_SIMD_NONE 0
-#define USE_SIMD_SSE  1
-#define USE_SIMD_AVX  2
-#define USE_SIMD_FMA  3
-#define USE_SIMD_NEON 4
-static int use_simd = USE_SIMD_NONE;
 
 static void cpu_id_check()
 {
@@ -72,13 +67,13 @@ static void cpu_id_check()
 
   if (__get_cpuid(1, &eax, &ebx, &ecx, &edx) == 0)
     return;
-  if (edx & bit_SSE == bit_SSE) {
+  if (edx & bit_SSE) {
     sse = TRUE;
   }
-  if (ecx & bit_AVX == bit_AVX) {
+  if (ecx & bit_AVX) {
     avx = TRUE;
   }
-  if (ecx & bit_FMA == bit_FMA) {
+  if (ecx & bit_FMA) {
     fma = TRUE;
   }
 #endif	/* _WIN32 */
@@ -150,6 +145,30 @@ static void myfree_simd_aligned(void *ptr)
 }
 
 #endif	/* SIMD_ENABLED */
+
+void get_builtin_simd_string(char *buf)
+{
+  buf[0] = '\0';
+
+#ifdef USE_ARM_NEON
+  strcat(buf, " NEON");
+#endif
+#ifdef __SSE__
+  strcat(buf, " SSE");
+#endif
+#ifdef __AVX__
+  strcat(buf, " AVX");
+#endif
+#ifdef __FMA__
+  strcat(buf, " FMA");
+#endif
+}
+
+int check_avail_simd()
+{
+  cpu_id_check();
+  return use_simd;
+}
 
 static void output_use_simd()
 {

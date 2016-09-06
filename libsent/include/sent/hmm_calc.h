@@ -230,6 +230,8 @@ void gprune_beam_free(HMMWork *wrk);
 void gprune_beam(HMMWork *wrk, HTK_HMM_Dens **g, int gnum, int *last_id, int lnum);
 
 /* calc_dnn.c */
+void get_builtin_simd_string(char *buf);
+int check_avail_simd();
 DNNData *dnn_new();
 void dnn_clear(DNNData *dnn);
 void dnn_free(DNNData *dnn);
