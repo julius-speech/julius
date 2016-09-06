@@ -95,7 +95,8 @@ static gchar *css_colors =
 ".text-best {color: rgb(195, 117, 0); font-weight: bold;} \n"
 ".pass2 {color: rgb(47, 47, 47);} \n"
 ".pass2-best {color: rgb(195, 195, 47);} \n"
-".shadow {color: rgb(0, 0, 0);}";
+".shadow {color: rgb(0, 0, 0);}"
+".stripe {color: #dcdcdc;}";
 
 /**********************************************************************/
 /* graph scaling */
@@ -505,6 +506,10 @@ my_render_arc(GtkWidget *widget,
     cairo_line_to(cr, x2 + 0.5, y2 + 0.5);
 
     cairo_stroke(cr);
+
+    /* draw a small dot at the end of the line */
+    cairo_arc(cr, x2 + 0.5, y2 + 0.5, 2.0, 0.0, 2.0 * M_PI);
+    cairo_fill(cr);
 
     cairo_restore(cr);
     gtk_style_context_restore(ctx);
@@ -1403,7 +1408,28 @@ draw_popnodes_old(GtkWidget *widget,
 /* will be called for each exposure/configure event */
 /**********************************************************************/
 
-/** 
+static void
+draw_horizontal_stripes(GtkWidget *widget,
+                        cairo_t   *cr)
+{
+  GtkStyleContext *ctx;
+  WORD_INFO *winfo;
+  gint i;
+
+  ctx = gtk_widget_get_style_context(widget);
+  winfo = re->process_list->lm->winfo;
+
+  gtk_style_context_save(ctx);
+  gtk_style_context_add_class(ctx, "stripe");
+
+  for(i=0;i<winfo->num;i++) {
+    gtk_render_line(ctx, cr, 0, scale_y_wid(i), canvas_width, scale_y_wid(i));
+  }
+
+  gtk_style_context_restore(ctx);
+}
+
+/**
  * <JA>
  * 描画キャンパス内に表示すべき全ての単語情報を pixmap に描画する. 
  * 
@@ -1420,6 +1446,7 @@ drawarea_draw(GtkWidget *widget,
               cairo_t   *cr,
               gpointer   user_data)
 {
+  draw_horizontal_stripes(widget, cr);
 
   if (re->speechlen != 0) {
     draw_waveform(widget, cr);
