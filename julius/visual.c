@@ -1969,7 +1969,7 @@ void
 visual_show(BACKTRELLIS *bt)
 {
   GtkWidget *window, *button, *draw, *entry, *scale, *headerbar;
-  GtkWidget *box1, *box2, *label, *frame, *box3, *start_box, *zoom_box;
+  GtkWidget *box1, *box2, *label, *box3, *start_box, *zoom_box;
   GSList *group;
   GList *glist;
 
@@ -2007,20 +2007,19 @@ visual_show(BACKTRELLIS *bt)
   gtk_window_set_titlebar(GTK_WINDOW(window), headerbar);
 
   /* create horizontal packing box */
-  box1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
-  gtk_container_set_border_width(GTK_CONTAINER(box1), 18);
+  box1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_container_add(GTK_CONTAINER(window), box1);
 
   /* box containing the drawing area and labels */
-  start_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+  start_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
   gtk_widget_set_hexpand(start_box, TRUE);
   gtk_widget_set_vexpand(start_box, TRUE);
   gtk_container_add(GTK_CONTAINER(box1), start_box);
 
   /* create scrolled window */
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+  gtk_widget_set_margin_top(scrolled_window, 12);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_container_set_border_width(GTK_CONTAINER(scrolled_window), 18);
 
   /* create drawing area */
   draw = gtk_drawing_area_new();
@@ -2048,23 +2047,34 @@ visual_show(BACKTRELLIS *bt)
   g_signal_connect_swapped(button, "clicked", G_CALLBACK(action_zoom_in), draw);
   gtk_container_add(GTK_CONTAINER(zoom_box), button);
 
+  /* vertical separator */
+  gtk_container_add(GTK_CONTAINER(start_box), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL));
 
   /* labels */
   op_label = gtk_label_new("Accumulated score (normalized by time)");
   gtk_widget_set_halign(op_label, GTK_ALIGN_START);
   gtk_container_add(GTK_CONTAINER(start_box), op_label);
+  gtk_widget_set_margin_start(op_label, 18);
+  gtk_widget_set_margin_bottom(op_label, 12);
+
+  /* vertical separator */
+  gtk_container_add(GTK_CONTAINER(box1), gtk_separator_new(GTK_ORIENTATION_VERTICAL));
 
   /* create packing box for buttons */
   box2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
   gtk_box_pack_start(GTK_BOX(box1), box2, FALSE, TRUE, 0);
+  gtk_container_set_border_width(GTK_CONTAINER(box2), 12);
+  gtk_widget_set_size_request(box2, 200, -1);
 
   if (re->speechlen != 0) {
-    /* create waveform related frame */
-    frame = gtk_frame_new("Waveform");
-    gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
+    /* create waveform related section */
+    label = gtk_label_new("<b>Waveform</b>");
+    gtk_box_pack_start(GTK_BOX(box2), label, FALSE, FALSE, 0);
     box3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+    gtk_widget_set_margin_start(box3, 12);
+    gtk_widget_set_margin_bottom(box3, 12);
     gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
-    gtk_container_add(GTK_CONTAINER(frame), box3);
+    gtk_container_add(GTK_CONTAINER(box2), box3);
 
     /* create play button if supported */
 #ifdef PLAYCOMMAND
@@ -2084,11 +2094,15 @@ visual_show(BACKTRELLIS *bt)
   }
 
   /* create scaling frame */
-  frame = gtk_frame_new("Change view");
-  gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+  label = gtk_label_new("<b>Change view</b>");
+  gtk_widget_set_halign(label, GTK_ALIGN_START);
+  gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+  gtk_box_pack_start(GTK_BOX(box2), label, FALSE, FALSE, 0);
+  box3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+  gtk_widget_set_margin_start(box3, 12);
+  gtk_widget_set_margin_bottom(box3, 12);
   gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
-  gtk_container_add(GTK_CONTAINER(frame), box3);
+  gtk_container_add(GTK_CONTAINER(box2), box3);
 
   /* create word view button */
   button = gtk_radio_button_new_with_label(NULL, "Word");
@@ -2108,38 +2122,34 @@ visual_show(BACKTRELLIS *bt)
   g_signal_connect(button, "toggled", G_CALLBACK(action_view_beam), draw);
   gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
 
-  /* create show/hide frame */
-  frame = gtk_frame_new("Show/hide");
-  gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
-  gtk_container_add(GTK_CONTAINER(frame), box3);
-
   /* create text toggle button */
-  button = gtk_toggle_button_new_with_label("Arcs");
+  button = gtk_check_button_new_with_label("Hide arcs");
+  gtk_widget_set_halign(button, GTK_ALIGN_START);
+  gtk_widget_set_margin_start(button, 12);
+  gtk_widget_set_margin_bottom(button, 18);
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
   g_signal_connect(button, "toggled", G_CALLBACK(action_toggle_arc), draw);
-  gtk_box_pack_start(GTK_BOX(box3), button, FALSE, FALSE, 0);
-
-  /* create word entry frame */
-  frame = gtk_frame_new("View Words");
-  gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
-  box3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
-  gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
-  gtk_container_add(GTK_CONTAINER(frame), box3);
+  gtk_box_pack_start(GTK_BOX(box2), button, FALSE, FALSE, 0);
 
   /* create word ID entry */
-  entry = gtk_entry_new();
-  gtk_entry_set_max_length(GTK_ENTRY(entry), 16);
+  entry = gtk_search_entry_new();
+  gtk_entry_set_max_length(GTK_ENTRY(entry), 32);
+  gtk_entry_set_width_chars(GTK_ENTRY(entry), 32);
+  gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Type the word to search...");
   g_signal_connect(entry, "activate", G_CALLBACK(action_set_wid), draw);
-  gtk_box_pack_start(GTK_BOX(box3), entry, FALSE, FALSE, 0);
+  g_signal_connect(entry, "search-changed", G_CALLBACK(action_set_wid), draw);
+  gtk_header_bar_set_custom_title(GTK_HEADER_BAR(headerbar), entry);
 
-  /* create replay frame */
-  frame = gtk_frame_new("Pass2 Replay");
-  gtk_box_pack_start(GTK_BOX(box2), frame, FALSE, FALSE, 0);
+  /* create replay section */
+  label = gtk_label_new("<b>Pass2 Replay</b>");
+  gtk_widget_set_halign(label, GTK_ALIGN_START);
+  gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
+  gtk_box_pack_start(GTK_BOX(box2), label, FALSE, FALSE, 0);
   box3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 6);
+  gtk_widget_set_margin_start(box3, 12);
+  gtk_widget_set_margin_bottom(box3, 12);
   gtk_container_set_border_width(GTK_CONTAINER(box3), 12);
-  gtk_container_add(GTK_CONTAINER(frame), box3);
+  gtk_container_add(GTK_CONTAINER(box2), box3);
 
   /* create replay start button */
   button = gtk_toggle_button_new_with_label("Start");
