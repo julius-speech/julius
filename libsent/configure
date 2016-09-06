@@ -646,6 +646,7 @@ RM
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+SIMD_CFLAGS
 CPP
 OBJEXT
 EXEEXT
@@ -3290,7 +3291,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-xxxxFMA=yes
+xxxxFMA=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD FMA instruction" >&5
 $as_echo_n "checking for SIMD FMA instruction... " >&6; }
 
@@ -3309,10 +3310,10 @@ _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
+  xxxxFMA=yes
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-xxxxFMA=no
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
@@ -3336,17 +3337,20 @@ _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-  xxxxFMA=yes
+    SIMD_CFLAGS="-mfma"
+    xxxxFMA=yes
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-    CFLAGS="$xxxCFLAGS"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS="$xxxCFLAGS"
 fi
 
-xxxxAVX=yes
-if test "$xxxxFMA" = no; then
+if test "$xxxxFMA" = yes; then
+  xxxxAVX=yes
+else
+  xxxxAVX=no
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD AVX instruction" >&5
 $as_echo_n "checking for SIMD AVX instruction... " >&6; }
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -3364,10 +3368,10 @@ _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
+    xxxxAVX=yes
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-  xxxxAVX=no
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
@@ -3391,13 +3395,73 @@ _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-    xxxxAVX=yes
+      SIMD_CFLAGS="-mavx"
+      xxxxAVX=yes
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: no support for Intel SIMD instruction" >&5
-$as_echo "$as_me: WARNING: no support for Intel SIMD instruction" >&2;}
-      CFLAGS="$xxxCFLAGS"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$xxxCFLAGS"
+  fi
+fi
+
+if test "$xxxxAVX" = yes; then
+  xxxxSSE=yes
+else
+  xxxxSSE=no
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD SSE instruction" >&5
+$as_echo_n "checking for SIMD SSE instruction... " >&6; }
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <immintrin.h>
+
+int
+main ()
+{
+__m128 x = _mm_setzero_ps();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+    xxxxSSE=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  if test "$xxxxSSE" = no; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD SSE instruction with -msse" >&5
+$as_echo_n "checking for SIMD SSE instruction with -msse... " >&6; }
+    xxxCFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -msse"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <immintrin.h>
+
+int
+main ()
+{
+__m128 x = _mm_setzero_ps();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+      SIMD_CFLAGS="-msse"
+      xxxxSSE=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$xxxCFLAGS"
   fi
 fi
 
@@ -3423,7 +3487,7 @@ $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-  xxxxNEON=no
+    xxxxNEON=no
 
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
@@ -3447,19 +3511,21 @@ _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-    xxxxNEON=yes
+      SIMD_CFLAGS="-mfpu=neon"
+      xxxxNEON=yes
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-      CFLAGS="$xxxCFLAGS"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    CFLAGS="$xxxCFLAGS"
   fi
   if test "$xxxxNEON" = yes; then
     $as_echo "#define USE_ARM_NEON 1" >>confdefs.h
 
   fi
 fi
+
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
