@@ -1953,6 +1953,37 @@ setup_css(void)
   g_clear_object (&provider);
 }
 
+static GtkWidget*
+create_wordlist_sidebar(void)
+{
+  GtkWidget *box;
+  WORD_INFO *winfo;
+  gint i;
+
+  winfo = re->process_list->lm->winfo;
+  box = g_object_new(GTK_TYPE_BOX,
+                     "orientation",  GTK_ORIENTATION_VERTICAL,
+                     "vexpand",      TRUE,
+                     "margin-start", 6,
+                     "margin-end",   6,
+                     NULL);
+
+  for(i=0;i<winfo->num;i++) {
+    GtkWidget *label;
+
+    label = g_object_new(GTK_TYPE_LABEL,
+                         "xalign",     1.0,
+                         "yalign",     0.0,
+                         "label",      winfo->woutput[i],
+                         "vexpand",    TRUE,
+                         NULL);
+
+    gtk_container_add(GTK_CONTAINER(box), label);
+  }
+
+  return(box);
+}
+
 /**
  * <JA>
  * 認識結果を元に，探索空間の可視化を実行する. 
@@ -1970,6 +2001,7 @@ visual_show(BACKTRELLIS *bt)
 {
   GtkWidget *window, *button, *draw, *entry, *scale, *headerbar;
   GtkWidget *box1, *box2, *label, *box3, *start_box, *zoom_box;
+  GtkWidget *draw_box;
   GSList *group;
   GList *glist;
 
@@ -2016,9 +2048,18 @@ visual_show(BACKTRELLIS *bt)
   gtk_widget_set_vexpand(start_box, TRUE);
   gtk_container_add(GTK_CONTAINER(box1), start_box);
 
+  /* drawing area box */
+  draw_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_widget_set_margin_top(draw_box, 12);
+  gtk_widget_set_vexpand(draw_box, TRUE);
+  gtk_container_add(GTK_CONTAINER(start_box), draw_box);
+
+  /* list of words */
+  gtk_container_add(GTK_CONTAINER(draw_box), create_wordlist_sidebar());
+  gtk_container_add(GTK_CONTAINER(draw_box), gtk_separator_new(GTK_ORIENTATION_VERTICAL));
+
   /* create scrolled window */
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
-  gtk_widget_set_margin_top(scrolled_window, 12);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
   /* create drawing area */
@@ -2027,7 +2068,7 @@ visual_show(BACKTRELLIS *bt)
   g_signal_connect(draw, "draw", G_CALLBACK(drawarea_draw), NULL);
   g_signal_connect(draw, "configure-event", G_CALLBACK(drawarea_configure), NULL);
   gtk_container_add(GTK_CONTAINER(scrolled_window), draw);
-  gtk_box_pack_start(GTK_BOX(start_box), scrolled_window, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(draw_box), scrolled_window, TRUE, TRUE, 0);
 
     /* zoom widgets */
   zoom_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
