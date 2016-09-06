@@ -166,7 +166,9 @@ void get_builtin_simd_string(char *buf)
 
 int check_avail_simd()
 {
+#ifdef SIMD_ENABLED
   cpu_id_check();
+#endif
   return use_simd;
 }
 
@@ -567,7 +569,9 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   int i;
 
   /* check if CPU has SIMD instruction support */
+#ifdef SIMD_ENABLED
   cpu_id_check();
+#endif
 
   if (dnn == NULL) return FALSE;
 
