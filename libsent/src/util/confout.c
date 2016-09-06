@@ -153,7 +153,18 @@ confout_process(FILE *strm)
 void
 confout_simd(FILE *strm)
 {
-  fprintf(strm, " - SIMD instruction set for DNN\n");
+  fprintf(strm, " - built-in SIMD instruction set for DNN\n");
+
+#ifdef __arm__
+
+#ifdef USE_ARM_NEON
+  fprintf(strm, "    NEON                    : on\n");
+#else
+  fprintf(strm, "    NEON                    : off\n");
+#endif
+
+#else
+
 #ifdef __SSE__
   fprintf(strm, "    SSE                     : on\n");
 #else
@@ -164,6 +175,13 @@ confout_simd(FILE *strm)
 #else
   fprintf(strm, "    Intel AVX               : off\n");
 #endif
+#ifdef __FMA__
+  fprintf(strm, "    FMA                     : on\n");
+#else
+  fprintf(strm, "    FMA                     : off\n");
+#endif
+
+#endif	/* __arm__ */
 }
 
 

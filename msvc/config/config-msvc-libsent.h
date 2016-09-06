@@ -120,3 +120,6 @@
 
 /* Define if MBR support is enabled */
 #undef USE_MBR
+
+/* Define if use ARM NEON instruction for DNN */
+#undef USE_ARM_NEON

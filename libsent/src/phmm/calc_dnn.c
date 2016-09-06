@@ -11,20 +11,20 @@
 #include <sent/hmm.h>
 #include <sent/hmm_calc.h>
 
-#if defined(__AVX__) || defined(__SSE__)
+#if defined(__AVX__) || defined(__SSE__) || defined(__FMA__)
 #include <immintrin.h>
 #ifdef _WIN32
 #include <intrin.h>
 #else
 #include <cpuid.h>
 #endif	/* _WIN32 */
-#endif	/* __AVX__ || __SSE__ */
+#endif	/* __AVX__ || __SSE__ || __FMA__ */
 
-#ifdef __ARM_NEON__
+#ifdef USE_ARM_NEON
 #include <arm_neon.h>
-#endif	/* __ARM_NEON__ */
+#endif
 
-#if defined(__AVX__) || defined(__SSE__) || defined(__ARM_NEON__)
+#if defined(__FMA__) || defined(__AVX__) || defined(__SSE__) || defined(USE_ARM_NEON)
 #define SIMD_ENABLED
 #endif
 
@@ -36,28 +36,36 @@
 #define USE_SIMD_NONE 0
 #define USE_SIMD_SSE  1
 #define USE_SIMD_AVX  2
-#define USE_SIMD_NEON 3
+#define USE_SIMD_FMA  3
+#define USE_SIMD_NEON 4
 static int use_simd = USE_SIMD_NONE;
 
 static void cpu_id_check()
 {
   int cpuinfo[4];
-  boolean sse = FALSE, avx = FALSE;
+  boolean sse = FALSE, avx = FALSE, fma = FALSE;
 
-#ifdef __ARM_NEON__
+#ifdef __arm__
+  /* on ARM NEON */
 
-  /* on ARM NEON, fix to use */
+#ifdef USE_ARM_NEON
   use_simd = USE_SIMD_NEON;
+#else
+  use_simd = USE_SIMD_NONE;
+#endif
 
-#else  /* ~__ARM_NEON__ */
+#else  /* ~USE_ARM_NEON */
 
 #ifdef _WIN32
   __cpuid(cpuinfo, 0x00000001);
-  if(cpuinfo[3] & (1 << 26)) {
+  if(cpuinfo[3] & (1 << 25)) {
     sse = TRUE;
   }
   if(cpuinfo[2] & (1 << 28)) {
     avx = TRUE;
+  }
+  if(cpuinfo[2] & (1 << 12)) {
+    fma = TRUE;
   }
 #else  /* ~_WIN32 */
   unsigned int eax, ebx, ecx, edx;
@@ -70,9 +78,22 @@ static void cpu_id_check()
   if (ecx & bit_AVX == bit_AVX) {
     avx = TRUE;
   }
+  if (ecx & bit_FMA == bit_FMA) {
+    fma = TRUE;
+  }
 #endif	/* _WIN32 */
 
-#ifdef __AVX__
+#ifdef __FMA__
+  if (fma == TRUE) {
+    use_simd = USE_SIMD_FMA;
+  } else if (avx == TRUE) {
+    use_simd = USE_SIMD_AVX;
+  } else if (sse == TRUE) {
+    use_simd = USE_SIMD_SSE;
+  } else {
+    use_simd = USE_SIMD_NONE;
+  }
+#elif __AVX__
   if (avx == TRUE) {
     use_simd = USE_SIMD_AVX;
   } else if (sse == TRUE) {
@@ -88,7 +109,7 @@ static void cpu_id_check()
   }
 #endif
 
-#endif  /* ~__ARM_NEON__ */
+#endif  /* ~USE_ARM_NEON */
 
 }
 
@@ -97,12 +118,11 @@ static void *mymalloc_simd_aligned(size_t size)
   void *ptr;
 
   switch(use_simd) {
+  case USE_SIMD_FMA:
   case USE_SIMD_AVX:
     ptr = mymalloc_aligned(size, 32);
     break;
   case USE_SIMD_SSE:
-    ptr = mymalloc_aligned(size, 16);
-    break;
   case USE_SIMD_NEON:
     ptr = mymalloc_aligned(size, 16);
     break;
@@ -117,6 +137,7 @@ static void *mymalloc_simd_aligned(size_t size)
 static void myfree_simd_aligned(void *ptr)
 {
   switch(use_simd) {
+  case USE_SIMD_FMA:
   case USE_SIMD_AVX:
   case USE_SIMD_SSE:
   case USE_SIMD_NEON:
@@ -132,8 +153,10 @@ static void myfree_simd_aligned(void *ptr)
 
 static void output_use_simd()
 {
-#ifdef __ARM_NEON__
+#ifdef USE_ARM_NEON
   jlog("Stat: calc_dnn: ARM NEON instructions built-in\n");
+#elif __FMA__
+  jlog("Stat: calc_dnn: FMA/AVX/SSE instructions built-in\n");
 #elif __AVX__
   jlog("Stat: calc_dnn: AVX/SSE instructions built-in\n");
 #elif __SSE__
@@ -145,13 +168,15 @@ static void output_use_simd()
 
 #ifdef SIMD_ENABLED
   if (use_simd == USE_SIMD_SSE) {
-    jlog("Stat: clac_dnn: CPU supports SSE SIMD instruction (128bit), use it\n");
+    jlog("Stat: clac_dnn: use SSE SIMD instruction (128bit)\n");
   } else if (use_simd == USE_SIMD_AVX) {
-    jlog("Stat: clac_dnn: CPU supports AVX SIMD instruction (256bit), use it\n");
+    jlog("Stat: clac_dnn: use AVX SIMD instruction (256bit)\n");
+  } else if (use_simd == USE_SIMD_FMA) {
+    jlog("Stat: clac_dnn: use FMA SIMD instruction (256bit)\n");
   } else if (use_simd == USE_SIMD_NEON) {
     jlog("Stat: use ARM NEON instruction\n");
   } else {
-    jlog("Warning: clac_dnn: CPU has no SSE/AVX support, DNN computation may be too slow!\n");
+    jlog("Warning: clac_dnn: no SIMD support, DNN computation may be too slow!\n");
   }
 #endif	/* SIMD_ENABLED */
 }
@@ -400,7 +425,7 @@ void dnn_free(DNNData *dnn)
 }
 
 /************************************************************************/
-#ifdef __ARM_NEON__
+#ifdef USE_ARM_NEON
 static void
 sub1_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
 {
@@ -409,7 +434,7 @@ sub1_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fs
 
   int n = in / 4;
   for (i = 0; i < out; i++) {
-    float32x4_t x = _mm_setzero_ps();
+    float32x4_t x = vdupq_n_f32(0);
     s = src;
     for (j = 0; j < n; j++) {
       float32x4_t v1 = vld1q_f32(w);
@@ -424,6 +449,30 @@ sub1_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fs
 }
 #endif
 
+
+#ifdef __FMA__
+static void
+sub1_fma(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
+{
+  float *s;
+  int i, j;
+
+  int n = in / 8;
+  for (i = 0; i < out; i++) {
+    __m256 x = _mm256_setzero_ps();
+    s = src;
+    for (j = 0; j < n; j++) {
+      __m256 v1 = _mm256_load_ps(w);
+      __m256 v2 = _mm256_load_ps(s);
+      x = _mm256_fmadd_ps(v1, v2, x);
+      w += 8;
+      s += 8;
+    }
+    _mm256_store_ps(fstore, x);
+    *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
+  }
+}
+#endif	/* __FMA__ */
 
 #ifdef __AVX__
 static void
@@ -591,6 +640,11 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   /* choose sub function */
 #ifdef SIMD_ENABLED
   switch(use_simd) {
+  case USE_SIMD_FMA:
+#ifdef __FMA__
+    dnn->subfunc = sub1_fma;
+#endif
+    break;
   case USE_SIMD_AVX:
 #ifdef __AVX__
     dnn->subfunc = sub1_avx;
@@ -602,8 +656,12 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 #endif
     break;
   case USE_SIMD_NEON:
-#ifdef __ARM_NEON__
+#ifdef __arm__
+#ifdef USE_ARM_NEON
     dnn->subfunc = sub1_neon;
+#else
+    dnn->subfunc = sub1;
+#endif
 #endif
     break;
   default:
