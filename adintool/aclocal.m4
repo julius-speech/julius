@@ -370,6 +370,12 @@ int main(int argc, char *argv[])
      SDL_LIBS=""
      ifelse([$3], , :, [$3])
   fi
+  dnl tweak for strange cygwin pakcage behavior in which SDLmain is broken
+  if test "x$want_sdlmain" != "xyes"; then
+    SDL_CFLAGS=`echo $SDL_CFLAGS | sed -e 's/-Dmain=SDL_main//g'`
+    SDL_LIBS=`echo $SDL_LIBS | sed -e 's/-lSDL2main//g'`
+    SDL_CFLAGS="$SDL_CFLAGS -DNO_SDL_MAIN"
+  fi
   AC_SUBST(SDL_CFLAGS)
   AC_SUBST(SDL_LIBS)
   rm -f conf.sdltest

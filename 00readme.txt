@@ -36,8 +36,8 @@ speech-related researchers and developers.  Based on word N-gram and
 triphone context-dependent HMM, it can perform almost real-time
 decoding on most current PCs with small amount of memory.
 
-It also has high vesatility. The acoustic models and language models
-are pluggable, and you can build various types of speech recognition
+It also has high versatility. The acoustic models and language models
+are plug-gable, and you can build various types of speech recognition
 system by building your own models and modules to be suitable for your
 task.  It also adopts standard formats to cope with other toolkit such
 as HTK, CMU-Cam SLM toolkit, etc.
@@ -65,6 +65,7 @@ Other features include:
   - binlm2arpa: reverse convert binary N-gram to ARPA format
 - "mkbingram" now support direct charset conversion of binary LM
 - Now does not exit at connection lost in module mode
+- update support for VS2013
 - Bug fixes
 
 See "Release.txt" for full list of updates.
@@ -98,11 +99,11 @@ Contents of Julius-4.4
 	mkbinhmm/		Convert ascii hmmdefs to binary format
 	mkgshmm/		Model conversion for Gaussian Mixture Selection
 	mkss/			Estimate noise spectrum from mic input
-	support/		some tools to compile julius/julian from source
+	support/		some tools to compile from source
 	jclient-perl/		A simple perl version of module mode client
 	plugin/			Several plugin source codes and documentation
 	man/			Unix online manuals
-	msvc/			Files to compile on Microsoft VC++ 2008
+	msvc/			Files to compile on Microsoft VC++ 2013
 	dnntools/		Sample programs for dnn and vecnet client
 	binlm2arpa/		Convert binary N-gram to ARPA format
 

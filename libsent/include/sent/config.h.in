@@ -160,3 +160,6 @@
 /* Define if MBR support is enabled */
 /* MBR Extension by Hiroaki Nanjo and Ryo Furutani */
 #undef USE_MBR
+
+/* Define if use ARM NEON instruction for DNN */
+#undef USE_ARM_NEON

@@ -27,6 +27,7 @@
 #include <sent/ngram2.h>
 #include <sent/speech.h>
 #include <sent/adin.h>
+#include <sent/hmm_calc.h>
 
 /** 
  * Output version of this libsent library.
@@ -150,6 +151,35 @@ confout_process(FILE *strm)
 #endif
 }
 
+void
+confout_simd(FILE *strm)
+{
+  char buf[100];
+
+  get_builtin_simd_string(buf);
+  fprintf(strm, " - built-in SIMD instruction set for DNN\n   %s\n", buf);
+
+  switch(check_avail_simd()) {
+  case USE_SIMD_SSE:
+    fprintf(strm, "    SSE is available maximum on this cpu, use it\n");
+    break;
+  case USE_SIMD_AVX:
+    fprintf(strm, "    AVX is available maximum on this cpu, use it\n");
+    break;
+  case USE_SIMD_FMA:
+    fprintf(strm, "    FMA is available maximum on this cpu, use it\n");
+    break;
+  case USE_SIMD_NEON:
+    fprintf(strm, "    NEON will be used\n");
+    break;
+  case USE_SIMD_NONE:
+    fprintf(strm, "    NONE AVAILABLE, DNN computation may be too slow!\n");
+    break;
+  }
+
+}
+
+
 /** 
  * Output all information of this libsent library.
  * 
@@ -164,4 +194,5 @@ confout(FILE *strm)
   confout_am(strm);
   confout_lib(strm);
   confout_process(strm);
+  confout_simd(strm);
 }

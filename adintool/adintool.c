@@ -305,6 +305,10 @@ main(int argc, char *argv[])
   AdinTool *a;
   int i;
 
+#ifdef NO_SDL_MAIN
+  SDL_SetMainReady();
+#endif
+
   /* create instance */
   a = adintool_new();
   if (a == NULL) exit(1);

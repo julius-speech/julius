@@ -147,6 +147,24 @@ load_cdset_callback(void **data_p, void *data, FILE *fp)
 }
 
 /** 
+ * qsort callback function to sort state pointers by their
+ * address for indexing.
+ * 
+ * @param s1 [in] data 1
+ * @param s2 [in] data 2
+ * 
+ * @return value required for qsort.
+ */
+static int
+qsort_st_index(HTK_HMM_State **s1, HTK_HMM_State **s2)
+{
+  /* keep ID order */
+  if ((*s1)->id > (*s2)->id) return 1;
+  else if ((*s1)->id < (*s2)->id) return -1;
+  else return 0;
+}
+
+/** 
  * Load HMMList and CDSet data from binary file.
  * 
  * @param fp [in] file pointer to read
@@ -174,6 +192,8 @@ load_hmmlist_bin(FILE *fp, HTK_HMM_INFO *hmminfo)
   for (s = hmminfo->ststart; s; s = s->next) {
     ld.st[n++] = s;
   }
+  qsort(ld.st, hmminfo->totalstatenum, sizeof(HTK_HMM_State *), (int (*)(const void *, const void *))qsort_st_index);
+
   /* set it to hook */
   hmminfo->hook = &ld;
 

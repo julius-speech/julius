@@ -142,6 +142,10 @@ $(TARGET): $(OBJ)
 	$(AR) $@ $?
 	$(RANLIB) $@
 
+src/phmm/calc_dnn.o: src/phmm/calc_dnn.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_CFLAGS@ -o $@ -c $<
+
+
 ############################################################
 
 install: install.lib install.include install.bin

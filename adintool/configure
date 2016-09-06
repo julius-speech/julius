@@ -654,6 +654,7 @@ ac_user_opts='
 enable_option_checking
 enable_gui
 enable_sdl
+enable_sdlmain
 with_sdl_prefix
 with_sdl_exec_prefix
 enable_sdltest
@@ -1285,7 +1286,7 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-gui      do not compile gui version, which requires SDL2
   --disable-sdl      do not compile gui version, which requires SDL2
-  --disable-sdl2     do not compile gui version, which requires SDL2
+  --disable-sdlmain  do not use SDL main function
   --disable-sdltest       Do not try to compile and run a test SDL program
 
 Optional Packages:
@@ -1951,12 +1952,12 @@ else
   want_gui=yes
 fi
 
-# Check whether --enable-sdl was given.
-if test "${enable_sdl+set}" = set; then :
-  enableval=$enable_sdl; want_gui=$enableval
+# Check whether --enable-sdlmain was given.
+if test "${enable_sdlmain+set}" = set; then :
+  enableval=$enable_sdlmain; want_sdlmain=$enableval
 
 else
-  want_gui=yes
+  want_sdlmain=yes
 fi
 
 
@@ -3238,7 +3239,7 @@ else
 fi
 
 
-  min_sdl_version=2.0
+  min_sdl_version=2.0.0
 
   if test "x$sdl_prefix$sdl_exec_prefix" = x ; then
 
@@ -3549,6 +3550,11 @@ rm -f core conftest.err conftest.$ac_objext \
      SDL_CFLAGS=""
      SDL_LIBS=""
      :
+  fi
+    if test "x$want_sdlmain" != "xyes"; then
+    SDL_CFLAGS=`echo $SDL_CFLAGS | sed -e 's/-Dmain=SDL_main//g'`
+    SDL_LIBS=`echo $SDL_LIBS | sed -e 's/-lSDL2main//g'`
+    SDL_CFLAGS="$SDL_CFLAGS -DNO_SDL_MAIN"
   fi
 
 

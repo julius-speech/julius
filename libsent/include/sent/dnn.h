@@ -13,6 +13,14 @@
 #include <sent/htk_param.h>
 #include <sent/hmm_calc.h>
 
+#define USE_SIMD_NONE 0
+#define USE_SIMD_SSE  1
+#define USE_SIMD_AVX  2
+#define USE_SIMD_FMA  3
+#define USE_SIMD_NEON 4
+
+typedef void (*DNN_FUNC_VOID)();
+
 typedef struct {
   float *w;			/* w [out * in]*/
   float *b;			/* b [out] */
@@ -40,6 +48,9 @@ typedef struct {
 
   float *invec;		    /* input vector holder (32byte aligned) */
   float **work;		    /* working buffer for ff computation */
+  float *accum;		    /* working buffer for accumulation */
+
+  DNN_FUNC_VOID subfunc;	/* sub function for DNN computation */
   
 } DNNData;
 

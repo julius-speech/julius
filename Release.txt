@@ -10,6 +10,7 @@
 - work on autoconf >=2.6
 - added README.md, CONTRIBUTING.md and other files for GitHub hosting
 - added document to use Julius with DNN-HMM AM: "00readme-DNN.txt"
+- update support for VS2013
 
 4.3.1 (2014.01.15)
 ===================
