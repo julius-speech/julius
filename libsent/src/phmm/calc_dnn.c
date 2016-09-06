@@ -20,20 +20,36 @@
 #endif	/* _WIN32 */
 #endif	/* __AVX__ || __SSE__ */
 
+#ifdef __ARM_NEON__
+#include <arm_neon.h>
+#endif	/* __ARM_NEON__ */
+
+#if defined(__AVX__) || defined(__SSE__) || defined(__ARM_NEON__)
+#define SIMD_ENABLED
+#endif
+
 /************************************************************************/
 /* determine which SIMD code to run */
 
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
 
 #define USE_SIMD_NONE 0
 #define USE_SIMD_SSE  1
 #define USE_SIMD_AVX  2
+#define USE_SIMD_NEON 3
 static int use_simd = USE_SIMD_NONE;
 
 static void cpu_id_check()
 {
   int cpuinfo[4];
   boolean sse = FALSE, avx = FALSE;
+
+#ifdef __ARM_NEON__
+
+  /* on ARM NEON, fix to use */
+  use_simd = USE_SIMD_NEON;
+
+#else  /* ~__ARM_NEON__ */
 
 #ifdef _WIN32
   __cpuid(cpuinfo, 0x00000001);
@@ -48,7 +64,7 @@ static void cpu_id_check()
 
   if (__get_cpuid(1, &eax, &ebx, &ecx, &edx) == 0)
     return;
-  if (ecx & bit_SSE == bit_SSE) {
+  if (edx & bit_SSE == bit_SSE) {
     sse = TRUE;
   }
   if (ecx & bit_AVX == bit_AVX) {
@@ -71,6 +87,9 @@ static void cpu_id_check()
     use_simd = USE_SIMD_NONE;
   }
 #endif
+
+#endif  /* ~__ARM_NEON__ */
+
 }
 
 static void *mymalloc_simd_aligned(size_t size)
@@ -82,6 +101,9 @@ static void *mymalloc_simd_aligned(size_t size)
     ptr = mymalloc_aligned(size, 32);
     break;
   case USE_SIMD_SSE:
+    ptr = mymalloc_aligned(size, 16);
+    break;
+  case USE_SIMD_NEON:
     ptr = mymalloc_aligned(size, 16);
     break;
   default:
@@ -96,9 +118,8 @@ static void myfree_simd_aligned(void *ptr)
 {
   switch(use_simd) {
   case USE_SIMD_AVX:
-    if (ptr != NULL) myfree_aligned(ptr);
-    break;
   case USE_SIMD_SSE:
+  case USE_SIMD_NEON:
     if (ptr != NULL) myfree_aligned(ptr);
     break;
   default:
@@ -107,11 +128,13 @@ static void myfree_simd_aligned(void *ptr)
   }
 }
 
-#endif	/* __AVX__ || __SSE__ */
+#endif	/* SIMD_ENABLED */
 
 static void output_use_simd()
 {
-#ifdef __AVX__
+#ifdef __ARM_NEON__
+  jlog("Stat: calc_dnn: ARM NEON instructions built-in\n");
+#elif __AVX__
   jlog("Stat: calc_dnn: AVX/SSE instructions built-in\n");
 #elif __SSE__
   jlog("Stat: calc_dnn: SSE instructions built-in\n");
@@ -120,15 +143,17 @@ static void output_use_simd()
   return;
 #endif
 
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
   if (use_simd == USE_SIMD_SSE) {
     jlog("Stat: clac_dnn: CPU supports SSE SIMD instruction (128bit), use it\n");
   } else if (use_simd == USE_SIMD_AVX) {
     jlog("Stat: clac_dnn: CPU supports AVX SIMD instruction (256bit), use it\n");
+  } else if (use_simd == USE_SIMD_NEON) {
+    jlog("Stat: use ARM NEON instruction\n");
   } else {
     jlog("Warning: clac_dnn: CPU has no SSE/AVX support, DNN computation may be too slow!\n");
   }
-#endif	/* __AVX__ || __SSE__ */
+#endif	/* SIMD_ENABLED */
 }
 
 /************************************************************************/
@@ -292,7 +317,7 @@ static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *b
 {
   l->in = in;
   l->out = out;
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
   if (use_simd == USE_SIMD_AVX && l->in % 8 != 0) {
     jlog("Error: dnn_layer_load: input vector length is not 8-element aligned (%d)\n", l->in);
     return FALSE;
@@ -306,7 +331,7 @@ static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *b
 #else
   l->w = (float *)mymalloc(sizeof(float) * l->out * l->in);
   l->b = (float *)mymalloc(sizeof(float) * l->out);
-#endif	/* __AVX__ || __SSE__ */
+#endif	/* SIMD_ENABLED */
   if (! load_npy(l->w, wfile, l->in, l->out)) return FALSE;
   jlog("Stat: dnn_layer_load: loaded %s\n", wfile);
   if (! load_npy(l->b, bfile, l->out, 1)) return FALSE;
@@ -318,13 +343,13 @@ static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *b
 /* clear dnn layer */
 static void dnn_layer_clear(DNNLayer *l)
 {
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
   if (l->w != NULL) myfree_simd_aligned(l->w);
   if (l->b != NULL) myfree_simd_aligned(l->b);
 #else
   if (l->w != NULL) free(l->w);
   if (l->b != NULL) free(l->b);
-#endif	/* __AVX__ || __SSE__ */
+#endif	/* SIMD_ENABLED */
   dnn_layer_init(l);
 }
 
@@ -352,7 +377,7 @@ void dnn_clear(DNNData *dnn)
   if (dnn->state_prior) free(dnn->state_prior);
   for (i = 0; i < dnn->hnum; i++) {
     if (dnn->work[i]) {
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
       myfree_simd_aligned(dnn->work[i]);
 #else
       free(dnn->work[i]);
@@ -360,7 +385,7 @@ void dnn_clear(DNNData *dnn)
     }
   }
   free(dnn->work);
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
   if (dnn->invec) myfree_simd_aligned(dnn->invec);
   if (dnn->accum) myfree_aligned(dnn->accum);
 #endif
@@ -375,6 +400,31 @@ void dnn_free(DNNData *dnn)
 }
 
 /************************************************************************/
+#ifdef __ARM_NEON__
+static void
+sub1_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
+{
+  float *s;
+  int i, j;
+
+  int n = in / 4;
+  for (i = 0; i < out; i++) {
+    float32x4_t x = _mm_setzero_ps();
+    s = src;
+    for (j = 0; j < n; j++) {
+      float32x4_t v1 = vld1q_f32(w);
+      float32x4_t v2 = vld1q_f32(s);
+      x = vmlaq_f32(x, v1, v2);
+      w += 4;
+      s += 4;
+    }
+    vst1q_f32(fstore, x);
+    *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + *(b++);
+  }
+}
+#endif
+
+
 #ifdef __AVX__
 static void
 sub1_avx(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
@@ -527,19 +577,19 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   /* allocate work area */
   dnn->work = (float **)mymalloc(sizeof(float *) * dnn->hnum);
   for (i = 0; i < dnn->hnum; i++) {
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
     dnn->work[i] = (float *)mymalloc_simd_aligned(sizeof(float) * dnn->hiddennodenum);
 #else
     dnn->work[i] = (float *)mymalloc(sizeof(float) * dnn->hiddennodenum);
 #endif
   }
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
   dnn->invec = (float *)mymalloc_simd_aligned(sizeof(float) * inputnodes);
   dnn->accum = (float *)mymalloc_simd_aligned(32);
 #endif
 
   /* choose sub function */
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
   switch(use_simd) {
   case USE_SIMD_AVX:
 #ifdef __AVX__
@@ -551,13 +601,18 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
     dnn->subfunc = sub1_sse;
 #endif
     break;
+  case USE_SIMD_NEON:
+#ifdef __ARM_NEON__
+    dnn->subfunc = sub1_neon;
+#endif
+    break;
   default:
     dnn->subfunc = sub1;
     break;
   }
 #else
   dnn->subfunc = sub1;
-#endif	/* __AVX__ || __SSE__ */
+#endif	/* SIMD_ENABLED */
 
   /* output CPU related info */
   output_use_simd();
@@ -579,12 +634,12 @@ void dnn_calc_outprob(HMMWork *wrk)
 
   /* feed forward through hidden layers by standard logistic function */
   n = 0;
-#if defined(__AVX__) || defined(__SSE__)
+#ifdef SIMD_ENABLED
   memcpy(dnn->invec, &(wrk->OP_param->parvec[wrk->OP_time][0]), sizeof(float) * dnn->inputnodenum);
   src = dnn->invec;
 #else
   src = &(wrk->OP_param->parvec[wrk->OP_time][0]);
-#endif	/* __AVX__ || __SSE__ */
+#endif	/* SIMD_ENABLED */
   dst = dnn->work[n];
   for (hidx = 0; hidx < dnn->hnum; hidx++) {
     h = &(dnn->h[hidx]);
