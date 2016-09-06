@@ -139,6 +139,9 @@ void *mymalloc_aligned(size_t size, size_t align)
    void *ptr;
 #if defined(_MSC_VER) || defined(_WIN32)
    ptr = _aligned_malloc(size, align);
+#elif __APPLE__
+   if (posix_memalign(&ptr, align, size) != 0)
+      ptr = NULL;
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
    ptr = aligned_alloc(align, size);
 #elif defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
@@ -155,6 +158,8 @@ void myfree_aligned(void *ptr)
 {
 #if defined(_MSC_VER) || defined(_WIN32)
    _aligned_free(ptr);
+#elif __APPLE__
+   free(ptr);
 #elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
    free(ptr);
 #elif defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
