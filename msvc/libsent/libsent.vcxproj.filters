@@ -335,6 +335,9 @@
     <ClCompile Include="..\..\libsent\src\ngram\ngram_write_arpa.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libsent\src\adin\lpfcoef_2to1.h">

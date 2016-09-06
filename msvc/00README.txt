@@ -13,44 +13,20 @@ You should also have a jconf configuration file to specify Julius
 models and other option values.  If you don't know what to do, learn
 from the Julius Web for details.
 
-
-1. Preparation
-===============
-
-Julius uses these two open-source libraries:
-
-   - zlib
-   - portaudio (V19)
-
-The pre-compiled win32 libraries and header files are already included
-under the "zlib" and "portaudio" directory.  If they don't work on
-your environment, compile them by yourself and replace the headers and
-libraries under each directory.
+From ver.4.4:, the PortAudio and zlib library has been also included in 
+the source archive, so you can build Julius without any extra source.
 
 
-2. Compile
-===========
+1. Build
+------------
 
-Open "JuliusLib.sln" with Visual Studio, choose configuration from
+Just open "JuliusLib.sln" with Visual Studio, choose configuration from
 menu either "Release" or "Debug", then build the solution!  You will
 get libraries, "julius.exe", "adintool.exe" and "SampleApp.exe" under
 "Release" or "Debug" directory respectively.
 
 
-3. Test
-========
-
-3.1  julius.exe
------------------
-
-"julius.exe" is a console application, which runs as the same as the
-distributed win32 version of Julius.  You can run it from command
-prompt with a working jconf file, just the same way as the
-pre-compiled win32 version:
-
-    % julius.exe -C xxx.jconf
-
-3.2  SampleApp.exe
+2  SampleApp.exe
 -------------------
 
 "SampleApp.exe" is a sample GUI version of Julius which uses a simple
@@ -69,8 +45,8 @@ The Julius enging output will be stored in a text file "juliuslog.txt".
 Please check it if you encounter engine error.
 
 
-4. The Julius Class
-====================
+3. The Julius Class
+--------------------
 
 A simple class definition "Julius.cpp" and "Julius.h" is used in
 SampleApp.  They defines a wrapper class named "cJulius" that utilizes
@@ -109,20 +85,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 See SampleApp.cpp and Julius.cpp for details.
 
 
-5.  About the character codes in the sources
-=============================================
+4.  About the character codes in the sources
+----------------------------------------------
 
 The source code of Julius contains Japanese characters at EUC-JP encoding.
 If you want to read them in MSVC++, convert them to UTF-8.
 
 
 6.  History
-==============
+-------------
 
 2016/8/19 (ver.4.4)
 
 	updated for VS2013.
-	use static portaudio lib.
+	included PortAudio and zlib sources.
 	added adintool.
 
 2010/12 (ver.4.1.5.1)

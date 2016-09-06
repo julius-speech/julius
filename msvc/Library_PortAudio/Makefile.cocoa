@@ -1,0 +1,42 @@
+
+TARGET   = lib/PortAudio.a
+
+SOURCES  = src/src/common/pa_allocation.c \
+           src/src/common/pa_converters.c \
+           src/src/common/pa_cpuload.c \
+           src/src/common/pa_debugprint.c \
+           src/src/common/pa_dither.c \
+           src/src/common/pa_front.c \
+           src/src/common/pa_process.c \
+           src/src/common/pa_ringbuffer.c \
+           src/src/common/pa_stream.c \
+           src/src/common/pa_trace.c \
+           src/src/hostapi/coreaudio/pa_mac_core.c \
+           src/src/hostapi/coreaudio/pa_mac_core_blocking.c \
+           src/src/hostapi/coreaudio/pa_mac_core_old.c \
+           src/src/hostapi/coreaudio/pa_mac_core_utilities.c \
+           src/src/os/unix/pa_unix_hostapis.c \
+           src/src/os/unix/pa_unix_util.c
+
+OBJECTS  = $(SOURCES:.c=.o)
+
+CXX      = gcc
+AR       = ar
+CXXFLAGS = -Wall -O3 -fomit-frame-pointer -fPIC \
+           -DPA_USE_COREAUDIO=1
+INCLUDE  = -I src/include \
+           -I src/src/common \
+           -I src/src/hostapi/coreaudio \
+           -I src/src/os/unix
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(AR) cru $(TARGET) $(OBJECTS)
+	cp src/include/*.h include
+
+.c.o:
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $(<:.c=.o) -c $<
+
+clean:
+	rm -f $(OBJECTS) $(TARGET)
