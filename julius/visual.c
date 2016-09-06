@@ -1966,6 +1966,7 @@ create_wordlist_sidebar(void)
                      "vexpand",      TRUE,
                      "margin-start", 6,
                      "margin-end",   6,
+                     "margin-top",   12,
                      NULL);
 
   for(i=0;i<winfo->num;i++) {
@@ -2043,15 +2044,15 @@ visual_show(BACKTRELLIS *bt)
   gtk_container_add(GTK_CONTAINER(window), box1);
 
   /* box containing the drawing area and labels */
-  start_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 12);
+  start_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   gtk_widget_set_hexpand(start_box, TRUE);
   gtk_widget_set_vexpand(start_box, TRUE);
   gtk_container_add(GTK_CONTAINER(box1), start_box);
 
   /* drawing area box */
   draw_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-  gtk_widget_set_margin_top(draw_box, 12);
   gtk_widget_set_vexpand(draw_box, TRUE);
+  gtk_style_context_add_class(gtk_widget_get_style_context(draw_box), "view");
   gtk_container_add(GTK_CONTAINER(start_box), draw_box);
 
   /* list of words */
@@ -2060,6 +2061,7 @@ visual_show(BACKTRELLIS *bt)
 
   /* create scrolled window */
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+  gtk_widget_set_margin_top(scrolled_window, 12);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
   /* create drawing area */
@@ -2097,6 +2099,7 @@ visual_show(BACKTRELLIS *bt)
   gtk_container_add(GTK_CONTAINER(start_box), op_label);
   gtk_widget_set_margin_start(op_label, 18);
   gtk_widget_set_margin_bottom(op_label, 12);
+  gtk_widget_set_margin_top(op_label, 12);
 
   /* vertical separator */
   gtk_container_add(GTK_CONTAINER(box1), gtk_separator_new(GTK_ORIENTATION_VERTICAL));
