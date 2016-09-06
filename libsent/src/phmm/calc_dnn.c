@@ -539,6 +539,7 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 #endif
 
   /* choose sub function */
+#if defined(__AVX__) || defined(__SSE__)
   switch(use_simd) {
   case USE_SIMD_AVX:
 #ifdef __AVX__
@@ -554,6 +555,9 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
     dnn->subfunc = sub1;
     break;
   }
+#else
+  dnn->subfunc = sub1;
+#endif	/* __AVX__ || __SSE__ */
 
   /* output CPU related info */
   output_use_simd();
