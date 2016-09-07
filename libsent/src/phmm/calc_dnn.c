@@ -5,12 +5,6 @@
  * All rights reserved
  */
 
-#include <sent/stddefs.h>
-#include <sent/htk_hmm.h>
-#include <sent/htk_param.h>
-#include <sent/hmm.h>
-#include <sent/hmm_calc.h>
-
 #if defined(__AVX__) || defined(__SSE__) || defined(__FMA__)
 #include <immintrin.h>
 #ifdef _WIN32
@@ -19,6 +13,12 @@
 #include <cpuid.h>
 #endif	/* _WIN32 */
 #endif	/* __AVX__ || __SSE__ || __FMA__ */
+
+#include <sent/stddefs.h>
+#include <sent/htk_hmm.h>
+#include <sent/htk_param.h>
+#include <sent/hmm.h>
+#include <sent/hmm_calc.h>
 
 #ifdef USE_ARM_NEON
 #include <arm_neon.h>
