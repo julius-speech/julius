@@ -49,7 +49,7 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 
 # Download Julius
 
-The latest release version is [4.4](https://github.com/julius-speech/julius/releases), released on August 30, 2016.
+The latest release version is [4.4.1](https://github.com/julius-speech/julius/releases), released on September 7, 2016.
 You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
 
 Version 4.4 supports stand-alone DNN-HMM support, and several new

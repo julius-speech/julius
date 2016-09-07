@@ -1,3 +1,14 @@
+4.4.1 (2016.09.07)
+===================
+- DNNのSIMD計算の高速化と安定化：SSE命令、FMA命令、ARMのNEON命令を実装
+- DNN使用時にCPUを自動チェックして最適なSIMDコードを選択使用するよう拡張
+- VisualStudio2013でのコンパイル用に PortAudio と zlib のソースを同梱
+- mkbinhmmlistで作ったバイナリHMMListが正しく読めないことがあるバグを修正
+- adintool-gui コンパイル時のSDL周りが動かないのを修正
+- "INSTALL.txt" に各OSでのビルドのセットアップと実行方法を記述
+- pkg-config に対応
+- その他バグの修正
+
 4.4 (2016.08.30)
 =================
 - DNN-HMMの計算をサポート

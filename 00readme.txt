@@ -4,6 +4,7 @@
 
                                 Julius
 
+						(Rev 4.4.1 2016/09/07)
 						(Rev 4.4   2016/08/30)
                                                 (Rev 4.3.1 2014/01/15)
                                                 (Rev 4.3   2013/12/25)
@@ -52,8 +53,8 @@ on Windows (SAPI/console). Julius is distributed with open license
 together with source codes.
 
 
-What's new in Julius-4.4
-=========================
+What's new in Julius-4.4/4.4.1
+===============================
 
 Julius is now hosted on GitHub:
 https://github.com/julius-speech/julius
@@ -68,13 +69,15 @@ Other features include:
 - update support for VS2013
 - Bug fixes
 
+4.4.1 is a bug fix release.
+
 See "Release.txt" for full list of updates.
 Run "configure --help=recursive" to see all configure options.
 Run compiled Julius with "-help" to see the full list of available options.
 
 
-Contents of Julius-4.4
-=======================
+Contents of Julius-4.4.1
+=========================
 
 	(Documents with suffix "ja" are written in Japanese)
 

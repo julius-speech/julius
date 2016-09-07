@@ -53,6 +53,16 @@ To prepare a model for DNN-HMM, note that the orders are important.
 The order of the output nodes in the DNN should be the order of HMM
 state definition id.  If not, Julius won't work properly.
 
+Julius uses SIMD instruction for internal DNN computation. For Intel
+CPU, dispatch function for several Intel SIMD instruction sets (SSE,
+AVX and FMA) are implemented. You need gcc-4.7 or later to compile all
+the codes.  They are all compiled and built-in into Julius, and will
+be determined which one to use at run time.  Run "julius -setting" and
+see which code will be used on your cpu.  AVX can be run on Sandy
+Bridge, and FMA on Haswell, later one will run faster.  And for ARM
+architecture, you can enable NEON SIMD codes by adding "--enable-neon"
+to configure.
+
 
  A.2. Modular mode
  =====================

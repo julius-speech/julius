@@ -1,3 +1,14 @@
+4.4.1 (2016.09.07)
+===================
+- more stable and fast SIMD code: SSE, FMA and ARM_NEON
+- automatically select suitable SIMD code at run time for DNN computation
+- msvc support updated: PortAudio and zlib sources are now included in dist.
+- fix incorrect reading of binary hmmlist made by "mkbinhmmlist"
+- fix SDL detection in adintool-gui
+- "INSTALL.txt" to share how to build Julius on various platform.
+- pkg-config support
+- other fixes
+
 4.4 (2016.08.30)
 =================
 - DNN-HMM computation support
