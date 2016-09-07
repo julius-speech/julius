@@ -332,11 +332,11 @@
     <ClCompile Include="..\..\libsent\src\voca\voca_util.c">
       <Filter>ソース ファイル\voca</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libsent\src\ngram\ngram_write_arpa.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\libsent\src\phmm\calc_dnn.c">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\phmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libsent\src\ngram\ngram_write_arpa.c">
+      <Filter>ソース ファイル\ngram</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

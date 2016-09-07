@@ -733,7 +733,7 @@ void dnn_calc_outprob(HMMWork *wrk)
     dst = dnn->work[++n];
   }
   /* output layer */
-  (*dnn->subfunc)(wrk->last_cache, src, dnn->o.w, dnn->o.b, dnn->o.out, dnn->o.in);
+  (*dnn->subfunc)(wrk->last_cache, src, dnn->o.w, dnn->o.b, dnn->o.out, dnn->o.in, dnn->accum);
 
   /* do softmax */
   /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
