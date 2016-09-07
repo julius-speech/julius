@@ -2131,7 +2131,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 LIBSENT_MAJOR_VERSION=4
-LIBSENT_MINOR_VERSION=4
+LIBSENT_MINOR_VERSION=4.1
 LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
 
 # specify mic type

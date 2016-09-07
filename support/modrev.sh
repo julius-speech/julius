@@ -3,6 +3,8 @@
 # change version
 # (should be executed in the parent directory)
 #
+# ./support/modrev.sh 4 4.1
+#
 newver_major=$1
 newver_minor=$2
 
@@ -20,9 +22,21 @@ for i in ./libjulius/configure.in ; do
 	diff $i tmp
 	mv tmp ${i}
 done
+for i in ./msvc/config/config-msvc-libjulius.h; do
+	echo $i
+	sed -e "s/^#define JULIUS_VERSION \"[^ ]*\"/#define JULIUS_VERSION \"$newver\"/" < $i > tmp
+	diff $i tmp
+	mv tmp ${i}
+done
 for i in ./libsent/configure.in; do
 	echo $i
-	sed -e "s/^LIBSENT_VERSION=[^ ]*/LIBSENT_VERSION=$newver/" < $i > tmp
+	cat $i | sed -e "s/^LIBSENT_MAJOR_VERSION=[^ ]*/LIBSENT_MAJOR_VERSION=$newver_major/" | sed -e "s/^LIBSENT_MINOR_VERSION=[^ ]*/LIBSENT_MINOR_VERSION=$newver_minor/"  > tmp
+	diff $i tmp
+	mv tmp ${i}
+done
+for i in ./msvc/config/config-msvc-libsent.h; do
+	echo $i
+	sed -e "s/^#define LIBSENT_VERSION \"[^ ]*\"/#define LIBSENT_VERSION \"$newver\"/" < $i > tmp
 	diff $i tmp
 	mv tmp ${i}
 done
