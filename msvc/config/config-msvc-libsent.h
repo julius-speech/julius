@@ -121,5 +121,16 @@
 /* Define if MBR support is enabled */
 #undef USE_MBR
 
-/* Define if use ARM NEON instruction for DNN */
-#undef USE_ARM_NEON
+/* define SIMD definitions from compiler defs to automatically choose
+   one according to compiler setting (no runtime dispatch) on VisualStudio */
+#if defined(__FMA__)
+#define HAS_SIMD_FMA
+#elif defined(__AVX__)
+#define HAS_SIMD_AVX
+#elif defined(__SSE__)
+#define HAS_SIMD_SSE
+#endif
+
+#ifdef __ARM_NEON__
+#define HAS_SIMD_NEON
+#endif

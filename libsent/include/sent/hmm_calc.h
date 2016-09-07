@@ -236,8 +236,13 @@ DNNData *dnn_new();
 void dnn_clear(DNNData *dnn);
 void dnn_free(DNNData *dnn);
 boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize);
-
 void dnn_calc_outprob(HMMWork *wrk);
+
+/* calc_dnn_*.c */
+void calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
+void calc_dnn_sse(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
+void calc_dnn_fma(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
+void calc_dnn_avx(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
 
 #ifdef __cplusplus
 }

@@ -161,5 +161,14 @@
 /* MBR Extension by Hiroaki Nanjo and Ryo Furutani */
 #undef USE_MBR
 
-/* Define if use ARM NEON instruction for DNN */
-#undef USE_ARM_NEON
+/* Define if include SIMD FMA instruction set */
+#undef HAS_SIMD_FMA
+
+/* Define if include SIMD AVX instruction set */
+#undef HAS_SIMD_AVX
+
+/* Define if include SIMD SSE instruction set */
+#undef HAS_SIMD_SSE
+
+/* Define if include SIMD NEON instruction set */
+#undef HAS_SIMD_NEON

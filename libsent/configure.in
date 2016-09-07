@@ -139,6 +139,7 @@ AC_MSG_CHECKING([for SIMD FMA instruction])
 AC_TRY_COMPILE([#include <immintrin.h>
   ],[__m256 v1, v2; __m256 x = _mm256_fmadd_ps(v1, v2, x);],
   AC_MSG_RESULT([yes])
+  SIMD_FMA_CFLAGS=""
   xxxxFMA=yes,
   AC_MSG_RESULT([no])
 )
@@ -150,72 +151,76 @@ if test "$xxxxFMA" = no; then
   AC_TRY_COMPILE([#include <immintrin.h>
     ],[__m256 v1, v2; __m256 x = _mm256_fmadd_ps(v1, v2, x);],
     AC_MSG_RESULT([yes])
-    SIMD_CFLAGS="-mfma"
+    SIMD_FMA_CFLAGS="-mfma"
     xxxxFMA=yes,
     AC_MSG_RESULT([no]))
   CFLAGS="$xxxCFLAGS"
 fi
-
 if test "$xxxxFMA" = yes; then
-  xxxxAVX=yes
-else
-  xxxxAVX=no
-  AC_MSG_CHECKING([for SIMD AVX instruction])
+  AC_DEFINE(HAS_SIMD_FMA)
+fi
+
+xxxxAVX=no
+AC_MSG_CHECKING([for SIMD AVX instruction])
+AC_TRY_COMPILE([#include <immintrin.h>
+  ],[__m256 v = _mm256_setzero_ps();],
+  AC_MSG_RESULT([yes])
+  SIMD_AVX_CFLAGS=""
+  xxxxAVX=yes,
+  AC_MSG_RESULT([no])
+)
+if test "$xxxxAVX" = no; then
+  dnl retry with "-mavx" option
+  AC_MSG_CHECKING([for SIMD AVX instruction with -mavx])
+  xxxCFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS -mavx"
   AC_TRY_COMPILE([#include <immintrin.h>
     ],[__m256 v = _mm256_setzero_ps();],
     AC_MSG_RESULT([yes])
+    SIMD_AVX_CFLAGS="-mavx"
     xxxxAVX=yes,
-    AC_MSG_RESULT([no])
-  )
-  if test "$xxxxAVX" = no; then
-    dnl retry with "-mavx" option
-    AC_MSG_CHECKING([for SIMD AVX instruction with -mavx])
-    xxxCFLAGS="$CFLAGS"
-    CFLAGS="$CFLAGS -mavx"
-    AC_TRY_COMPILE([#include <immintrin.h>
-      ],[__m256 v = _mm256_setzero_ps();],
-      AC_MSG_RESULT([yes])
-      SIMD_CFLAGS="-mavx"
-      xxxxAVX=yes,
-      AC_MSG_RESULT([no]))
-    CFLAGS="$xxxCFLAGS"
-  fi
+    AC_MSG_RESULT([no]))
+  CFLAGS="$xxxCFLAGS"
+fi
+if test "$xxxxAVX" = yes; then
+  AC_DEFINE(HAS_SIMD_AVX)
 fi
 
-if test "$xxxxAVX" = yes; then
-  xxxxSSE=yes
-else
-  xxxxSSE=no
-  AC_MSG_CHECKING([for SIMD SSE instruction])
+xxxxSSE=no
+AC_MSG_CHECKING([for SIMD SSE instruction])
+AC_TRY_COMPILE([#include <immintrin.h>
+  ],[__m128 x = _mm_setzero_ps();],
+  AC_MSG_RESULT([yes])
+  SIMD_SSE_CFLAGS=""
+  xxxxSSE=yes,
+  AC_MSG_RESULT([no])
+)
+if test "$xxxxSSE" = no; then
+  dnl retry with "-msse" option
+  AC_MSG_CHECKING([for SIMD SSE instruction with -msse])
+  xxxCFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS -msse"
   AC_TRY_COMPILE([#include <immintrin.h>
     ],[__m128 x = _mm_setzero_ps();],
     AC_MSG_RESULT([yes])
+    SIMD_SSE_CFLAGS="-msse"
     xxxxSSE=yes,
-    AC_MSG_RESULT([no])
-  )
-  if test "$xxxxSSE" = no; then
-    dnl retry with "-msse" option
-    AC_MSG_CHECKING([for SIMD SSE instruction with -msse])
-    xxxCFLAGS="$CFLAGS"
-    CFLAGS="$CFLAGS -msse"
-    AC_TRY_COMPILE([#include <immintrin.h>
-      ],[__m128 x = _mm_setzero_ps();],
-      AC_MSG_RESULT([yes])
-      SIMD_CFLAGS="-msse"
-      xxxxSSE=yes,
-      AC_MSG_RESULT([no]))
-    CFLAGS="$xxxCFLAGS"
-  fi
+    AC_MSG_RESULT([no]))
+  CFLAGS="$xxxCFLAGS"
+fi
+if test "$xxxxSSE" = yes; then
+  AC_DEFINE(HAS_SIMD_SSE)
 fi
 
 if test "$use_neon" = yes; then
-  xxxxNEON=yes
+  xxxxNEON=no
   AC_MSG_CHECKING([for NEON SIMD instruction for ARM])
   AC_TRY_COMPILE([#include <arm_neon.h>
     ],[float32x4_t x = vdupq_n_f32(0);],
-    AC_MSG_RESULT([yes]),
+    AC_MSG_RESULT([yes])
+    SIMD_NEON_CFLAGS=""
+    xxxxNEON=yes,
     AC_MSG_RESULT([no])
-    xxxxNEON=no
   )
   if test "$xxxxNEON" = no; then
     dnl retry with "-mfpu=neon" option
@@ -225,16 +230,20 @@ if test "$use_neon" = yes; then
     AC_TRY_COMPILE([#include <arm_neon.h>
       ],[float32x4_t x = vdupq_n_f32(0);],
       AC_MSG_RESULT([yes])
-      SIMD_CFLAGS="-mfpu=neon"
+      SIMD_NEON_CFLAGS="-mfpu=neon"
       xxxxNEON=yes,
-      AC_MSG_RESULT([no]))
+      AC_MSG_RESULT([no])
+    )
     CFLAGS="$xxxCFLAGS"
   fi
   if test "$xxxxNEON" = yes; then
-    AC_DEFINE(USE_ARM_NEON)
+    AC_DEFINE(HAS_SIMD_NEON)
   fi
 fi
-AC_SUBST(SIMD_CFLAGS)
+AC_SUBST(SIMD_FMA_CFLAGS)
+AC_SUBST(SIMD_AVX_CFLAGS)
+AC_SUBST(SIMD_SSE_CFLAGS)
+AC_SUBST(SIMD_NEON_CFLAGS)
 
 dnl Checks for programs.
 AC_PROG_INSTALL

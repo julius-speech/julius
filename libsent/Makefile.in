@@ -109,6 +109,10 @@ src/phmm/addlog.o \
 src/phmm/mkwhmm.o \
 src/phmm/vsegment.o \
 src/phmm/calc_dnn.o \
+src/phmm/calc_dnn_fma.o \
+src/phmm/calc_dnn_avx.o \
+src/phmm/calc_dnn_sse.o \
+src/phmm/calc_dnn_neon.o \
 src/util/endian.o \
 src/util/jlog.o \
 src/util/mymalloc.o \
@@ -142,8 +146,17 @@ $(TARGET): $(OBJ)
 	$(AR) $@ $?
 	$(RANLIB) $@
 
-src/phmm/calc_dnn.o: src/phmm/calc_dnn.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_CFLAGS@ -o $@ -c $<
+src/phmm/calc_dnn_fma.o: src/phmm/calc_dnn_fma.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_FMA_CFLAGS@ -o $@ -c $<
+
+src/phmm/calc_dnn_avx.o: src/phmm/calc_dnn_avx.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_AVX_CFLAGS@ -o $@ -c $<
+
+src/phmm/calc_dnn_sse.o: src/phmm/calc_dnn_sse.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_SSE_CFLAGS@ -o $@ -c $<
+
+src/phmm/calc_dnn_neon.o: src/phmm/calc_dnn_neon.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_NEON_CFLAGS@ -o $@ -c $<
 
 
 ############################################################
