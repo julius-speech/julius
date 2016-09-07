@@ -73,3 +73,7 @@ Visual Studio:
   3. Build
 
 The compiled binaries will be placed in "msvc/Release" folder.
+
+SIMD instruction is fixed for AVX by default.
+You can change it at "libsent"'s project property:
+  C/C++ -> Code Generation -> Enable Enhanced Instruction Set
