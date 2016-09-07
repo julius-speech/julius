@@ -41,25 +41,33 @@ static boolean nolog = FALSE;
  *
  */
 
+static boolean show_gui = FALSE;
+
 static void
 show_visual(Recog *recog, void *dummy)
 {
   RecogProcess *process = recog->process_list;
-  visual_show(process->backtrellis);
+
+  if (show_gui)
+    visual_show(process->backtrellis);
 }
 
 static void
 init_visual2(Recog *recog, void *dummy)
 {
   JCONF_SEARCH *conf = recog->process_list->config;
-  visual2_init(conf->pass2.hypo_overflow);
+
+  if (show_gui)
+    visual2_init(conf->pass2.hypo_overflow);
 }
 
 static void
 pop_visual2(Recog *recog, void *dummy)
 {
   StackDecode *pass2 = &(recog->process_list->pass2);
-  visual2_popped(pass2->current, pass2->popctr);
+
+  if (show_gui)
+    visual2_popped(pass2->current, pass2->popctr);
 }
 
 static void
@@ -69,6 +77,9 @@ next_word_visual2(Recog *recog, void *dummy)
   StackDecode *pass2;
   NODE *prev, *next;
   int popctr;
+
+  if (!show_gui)
+    return;
 
   process = recog->process_list;
   pass2 = &(process->pass2);
@@ -80,6 +91,13 @@ next_word_visual2(Recog *recog, void *dummy)
   next = pass2->current;
 
   visual2_next_word(prev, next, popctr);
+}
+
+static boolean
+opt_visualize(Jconf *jconf, char *arg[], int argnum)
+{
+  show_gui = TRUE;
+  return TRUE;
 }
 
 #endif
@@ -154,6 +172,9 @@ main(int argc, char *argv[])
   j_add_option("-outfile", 0, 0, "save result in separate .out file", opt_outfile);
   j_add_option("-help", 0, 0, "display this help", opt_help);
   j_add_option("--help", 0, 0, "display this help", opt_help);
+#ifdef VISUALIZE
+  j_add_option("-visualize", 0, 0, "show a visual interface for the parsed input", opt_visualize);
+#endif /*VISUALIZE*/
 
   /* create a configuration variables container */
   jconf = j_jconf_new();
