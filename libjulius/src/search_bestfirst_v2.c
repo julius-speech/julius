@@ -597,7 +597,10 @@ do_viterbi(LOGPROB *g, LOGPROB *g_new, HMM_Logical **phmmseq, boolean *has_sp, i
     /* 時間 [startt] 上の値を初期化 */
     /* initialize scores on frame [startt] */
     for(i=0;i<wordhmmnum-1;i++) dwrk->wordtrellis[tn][i] = LOG_ZERO;
-    dwrk->wordtrellis[tn][wordhmmnum-1] = g[startt] + outprob(&(r->am->hmmwrk), startt, &(whmm->state[wordhmmnum-1]), param);
+    if (g[startt] <= LOG_ZERO)
+      dwrk->wordtrellis[tn][wordhmmnum-1] = LOG_ZERO;
+    else
+      dwrk->wordtrellis[tn][wordhmmnum-1] = g[startt] + outprob(&(r->am->hmmwrk), startt, &(whmm->state[wordhmmnum-1]), param);
     g_new[startt] = dwrk->wordtrellis[tn][0];
 #ifdef GRAPHOUT_PRECISE_BOUNDARY
     if (r->graphout) {
@@ -1253,6 +1256,7 @@ next_word(NODE *now, NODE *new, NEXTWORD *nword, HTK_Param *param, RecogProcess 
     /* すべてのフレームにわたって最尤を探す */
     /* search for best trellis word throughout all frame */
     for(t = startt; t >= 0; t--) {
+      if (new->g[t] <= LOG_ZERO) continue;
       tre = bt_binsearch_atom(backtrellis, t, (WORD_ID) word);
       if (tre == NULL) continue;
       totalscore = new->g[t] + tre->backscore;
@@ -1283,6 +1287,7 @@ next_word(NODE *now, NODE *new, NEXTWORD *nword, HTK_Param *param, RecogProcess 
   /* search for best trellis word only around the estimated time */
   /* 1. search forward */
   for(t = (nword->tre)->endtime; t >= 0; t--) {
+    if (new->g[t] <= LOG_ZERO) continue;
     tre = bt_binsearch_atom(backtrellis, t, (WORD_ID) word);
     if (tre == NULL) break;	/* go to 2 if the trellis word disappear */
     totalscore = new->g[t] + tre->backscore;
@@ -1303,6 +1308,7 @@ next_word(NODE *now, NODE *new, NEXTWORD *nword, HTK_Param *param, RecogProcess 
   }
   /* 2. search bckward */
   for(t = (nword->tre)->endtime + 1; t <= startt; t++) {
+    if (new->g[t] <= LOG_ZERO) continue;
     tre = bt_binsearch_atom(backtrellis, t, (WORD_ID) word);
     if (tre == NULL) break;	/* end if the trellis word disapper */
     totalscore = new->g[t] + tre->backscore;
