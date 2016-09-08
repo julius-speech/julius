@@ -2032,6 +2032,22 @@ IFS=$ac_save_IFS
 case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host-specific optimization flag" >&5
+$as_echo_n "checking host-specific optimization flag... " >&6; }
+if test -z "$CFLAGS" ; then
+    OPTFLAG=../support/cflags.${host_cpu}-${host_vendor}-${host_os}
+    if test -f "$OPTFLAG" ; then
+	. $OPTFLAG
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $OPTFLAG" >&5
+$as_echo "$OPTFLAG" >&6; }
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    fi
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: skipped" >&5
+$as_echo "skipped" >&6; }
+fi
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3490,7 +3506,7 @@ $as_echo "no" >&6; }
     fi
   fi
   if test "x$no_sdl" = x ; then
-     extra_target="gui"
+     extra_target="adintool-gui"
   else
      if test "$SDL2_CONFIG" = "no" ; then
        echo "*** The sdl2-config script installed by SDL could not be found"
@@ -3562,7 +3578,7 @@ rm -f core conftest.err conftest.$ac_objext \
 
 fi
 
-ac_config_files="$ac_config_files Makefile Makefile.gui"
+ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4271,7 +4287,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "Makefile.gui") CONFIG_FILES="$CONFIG_FILES Makefile.gui" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

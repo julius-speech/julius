@@ -20,6 +20,18 @@ want_sdlmain=$enableval
 ,want_sdlmain=yes)
 
 AC_CANONICAL_HOST
+AC_MSG_CHECKING([host-specific optimization flag])
+if test -z "$CFLAGS" ; then
+    OPTFLAG=../support/cflags.${host_cpu}-${host_vendor}-${host_os}
+    if test -f "$OPTFLAG" ; then
+	. $OPTFLAG
+	AC_MSG_RESULT([$OPTFLAG])
+    else
+	AC_MSG_RESULT([no])
+    fi
+else
+    AC_MSG_RESULT([skipped])
+fi
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
@@ -27,7 +39,7 @@ AC_PATH_PROG(RM,rm)
 AC_EXEEXT
 extra_target=""
 if test "$want_gui" = yes; then
-   AM_PATH_SDL2(2.0.0, extra_target="gui")
+   AM_PATH_SDL2(2.0.0, extra_target="adintool-gui")
 fi
 AC_SUBST(extra_target)
-AC_OUTPUT(Makefile Makefile.gui)
+AC_OUTPUT(Makefile)
