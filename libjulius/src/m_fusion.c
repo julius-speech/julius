@@ -89,17 +89,6 @@ initialize_HMM(JCONF_AM *amconf, Jconf *jconf)
     hmminfo_free(hmminfo);
     return NULL;
   }
-  if (debug2_flag) {
-    HTK_HMM_Data *dtmp;
-    int i;
-    for (dtmp = hmminfo->start; dtmp; dtmp = dtmp->next) {
-      printf("***\nname: %s\n", dtmp->name);
-      for (i=0;i<dtmp->state_num;i++) {
-	if (dtmp->s[i] == NULL) continue;
-	printf("state %d: id=%d   %s\n", i + 1, dtmp->s[i]->id, (dtmp->s[i]->name) ? dtmp->s[i]->name : "");
-      }
-    }
-  }
 
   /* set multipath mode flag */
   if (amconf->force_multipath) {

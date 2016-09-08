@@ -1483,7 +1483,9 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
     now = get_best_from_stack(&start,&stacknum);
     if (now == NULL) {  /* stack empty ---> Ãµº÷½ªÎ»*/
       jlog("WARNING: %02d %s: hypothesis stack exhausted, terminate search now\n", r->config->id, r->config->name);
-      jlog("STAT: %02d %s: %d sentences have been found\n", r->config->id, r->config->name, dwrk->finishnum);
+      if (verbose_flag) {
+	jlog("STAT: %02d %s: %d sentences have been found\n", r->config->id, r->config->name, dwrk->finishnum);
+      }
       break;
     }
     /* (bogus score check) */
@@ -1694,7 +1696,9 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 #endif
     scan_word(now, param, r);
     if (now->score < LOG_ZERO) { /* another end-of-search detecter */
-      jlog("WARNING: too low score, ignore: score=%f",now->score);
+      if (verbose_flag) {
+	jlog("WARNING: too low score, ignore: score=%f",now->score);
+      }
       put_hypo_woutput(now, r->lm->winfo);
       free_node(now);
       continue;
