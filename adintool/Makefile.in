@@ -41,7 +41,7 @@ adintool@EXEEXT@: $(OBJ) $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 adintool-gui@EXEEXT@: $(GUIOBJ) $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(SDL_CFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(SDL_LDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(SDL_CFLAGS) -o $@ $(GUIOBJ) $(LDFLAGS) $(SDL_LDFLAGS)
 
 install: install.bin
 
