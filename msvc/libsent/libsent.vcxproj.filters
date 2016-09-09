@@ -338,6 +338,21 @@
     <ClCompile Include="..\..\libsent\src\ngram\ngram_write_arpa.c">
       <Filter>ソース ファイル\ngram</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_avx.c">
+      <Filter>ソース ファイル\phmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_fma.c">
+      <Filter>ソース ファイル\phmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_neon.c">
+      <Filter>ソース ファイル\phmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_neonv2.c">
+      <Filter>ソース ファイル\phmm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_sse.c">
+      <Filter>ソース ファイル\phmm</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libsent\src\adin\lpfcoef_2to1.h">
