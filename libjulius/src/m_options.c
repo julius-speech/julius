@@ -1338,15 +1338,10 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
       if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
       GET_TMPARG;
       tmparg = filepath(tmparg, cwd);
-      if (dnn_config_file_parse(tmparg, jconf->amnow) == FALSE) {
+      if (dnn_config_file_parse(tmparg, jconf->amnow, jconf) == FALSE) {
 	jlog("ERROR: m_options: failed to read %s\n", tmparg);
 	free(tmparg);
 	return FALSE;
-      }
-      if (jconf->amnow->dnn.optionstring) {
-	if (config_string_parse(jconf->amnow->dnn.optionstring, jconf) == FALSE) {
-	  return FALSE;
-	}
       }
       free(tmparg);
       continue;

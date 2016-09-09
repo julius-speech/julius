@@ -454,7 +454,14 @@ add_to_arglist(char *buf, char ***argv_ret, int *argc_ret, int *maxnum_ret)
  * @callergraph
  */
 boolean
-config_string_parse(char *str, Jconf *jconf)
+config_string_parse(char *str, Jconf *jconf) {
+  /* relative paths in string are relative to current */
+  return(config_string_parse_basedir(str, jconf, NULL));
+}
+
+/* config_string_parse with base dir */
+boolean
+config_string_parse_basedir(char *str, Jconf *jconf, char *dir)
 {
   int c_argc;
   char **c_argv;
@@ -475,8 +482,7 @@ config_string_parse(char *str, Jconf *jconf)
     c_argv[i] = expand_env(c_argv[i]);
   }
   /* now that options are in c_argv[][], call opt_parse() to process them */
-  /* relative paths in string are relative to current */
-  ret = opt_parse(c_argc, c_argv, NULL, jconf);
+  ret = opt_parse(c_argc, c_argv, dir, jconf);
 
   /* free arguments */
   while (c_argc-- > 0) {
@@ -570,7 +576,7 @@ config_file_parse(char *conffile, Jconf *jconf)
 
 /* parse DNN config file */
 boolean
-dnn_config_file_parse(char *filename, JCONF_AM *am)
+dnn_config_file_parse(char *filename, JCONF_AM *am, Jconf *jconf)
 {
   FILE *fp;
   char buf[BUFLEN];
@@ -578,6 +584,7 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
   char *v;
   int i, n;
   boolean error_flag;
+  char *cdir;
 
   if (am->dnn.wfile != NULL) {
     jlog("ERROR: dnn_config_file_parse: duplicated loading: %s\n", filename);
@@ -588,6 +595,14 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
     jlog("ERROR: dnn_config_file_parse: failed to open %s\n", filename);
     return FALSE;
   }
+
+  cdir = strcpy((char *)mymalloc(strlen(filename)+1), filename);
+  get_dirname(cdir);
+  if (cdir[0] == '\0') {
+    free(cdir);
+    cdir = NULL;
+  }
+
   while (fgets_jconf(buf, BUFLEN, fp) != NULL) {
     if ((p = strchr(buf, '#')) != NULL) {
       *p = '\0';
@@ -598,6 +613,7 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
     p = strchr(pp, ' ');
     if (p == NULL) {
       jlog("ERROR: dnn_config_file_parse: wrong file format: %s\n", buf);
+      if (cdir) free(cdir);
       fclose(fp);
       return FALSE;
     }
@@ -625,39 +641,45 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
       n = atoi(&(pp[1]));
       if (n > am->dnn.hiddenlayernum) {
 	jlog("ERROR: dnn_config_file_parse: W%d > # of hidden_layers (%d)\n", n, am->dnn.hiddenlayernum);
+	if (cdir) free(cdir);
 	fclose(fp);
 	return FALSE;
       } else if (n <= 0) {
 	jlog("ERROR: dnn_config_file_parse: layer id should begin with 1\n");
+	if (cdir) free(cdir);
 	fclose(fp);
 	return FALSE;
       }
-      am->dnn.wfile[n-1] = strdup(v);
+      am->dnn.wfile[n-1] = filepath(v, cdir);
     } else if (pp[0] == 'B') {
       n = atoi(&(pp[1]));
       if (n > am->dnn.hiddenlayernum) {
 	jlog("ERROR: dnn_config_file_parse: B%d > # of hidden_layers (%d)\n", n, am->dnn.hiddenlayernum);
+	if (cdir) free(cdir);
 	fclose(fp);
 	return FALSE;
       } else if (n <= 0) {
 	jlog("ERROR: dnn_config_file_parse: layer id should begin with 1\n");
+	if (cdir) free(cdir);
 	fclose(fp);
 	return FALSE;
       }
-      am->dnn.bfile[n-1] = strdup(v);
-    } else if (strmatch(pp, "output_W")) am->dnn.output_wfile = strdup(v);
-    else if (strmatch(pp, "output_B")) am->dnn.output_bfile = strdup(v);
-    else if (strmatch(pp, "state_prior")) am->dnn.priorfile = strdup(v);
+      am->dnn.bfile[n-1] = filepath(v, cdir);
+    } else if (strmatch(pp, "output_W")) am->dnn.output_wfile = filepath(v, cdir);
+    else if (strmatch(pp, "output_B")) am->dnn.output_bfile = filepath(v, cdir);
+    else if (strmatch(pp, "state_prior")) am->dnn.priorfile = filepath(v, cdir);
     else if (strmatch(pp, "state_prior_factor")) am->dnn.prior_factor = atof(v);
     else if (strmatch(pp, "batch_size")) am->dnn.batchsize = atoi(v);
     else {
       jlog("ERROR: dnn_config_file_parse: unknown spec: %s %s\n", pp, v);
+      if (cdir) free(cdir);
       fclose(fp);
       return FALSE;
     }
   }
   if (fclose(fp) == -1) {
     jlog("ERROR: dnn_config_file_parse: failed to close file\n");
+    if (cdir) free(cdir);
     return FALSE;
   }
 
@@ -674,10 +696,22 @@ dnn_config_file_parse(char *filename, JCONF_AM *am)
     }
   }
   if (error_flag == TRUE) {
+    if (cdir) free(cdir);
     return FALSE;
   }
 
   am->dnn.enabled = TRUE;
+
+  /* load options */
+  if (am->dnn.optionstring) {
+    if (config_string_parse_basedir(jconf->amnow->dnn.optionstring, jconf, cdir) == FALSE) {
+      if (cdir) free(cdir);
+      return FALSE;
+    }
+  }
+
+  if (cdir) free(cdir);
+
   return TRUE;
 }
 
