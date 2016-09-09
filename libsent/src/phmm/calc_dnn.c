@@ -8,7 +8,9 @@
 #ifdef _WIN32
 #include <intrin.h>
 #else
+#ifndef __arm__
 #include <cpuid.h>
+#endif
 #endif	/* _WIN32 */
 
 #include <sent/stddefs.h>
@@ -626,8 +628,9 @@ void dnn_calc_outprob(HMMWork *wrk)
 
   /* do softmax */
   /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
-  float logprob = addlog_array(wrk->last_cache, wrk->statenum);
+  //float logprob = addlog_array(wrk->last_cache, wrk->statenum);
   for (i = 0; i < wrk->statenum; i++) {
-    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
+    wrk->last_cache[i] = INV_LOG_TEN * wrk->last_cache[i]  - dnn->state_prior[i];
+    //    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
   }
 }
