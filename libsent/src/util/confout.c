@@ -169,6 +169,9 @@ confout_simd(FILE *strm)
   case USE_SIMD_FMA:
     fprintf(strm, "    FMA is available maximum on this cpu, use it\n");
     break;
+  case USE_SIMD_NEONV2:
+    fprintf(strm, "    NEONv2 will be used\n");
+    break;
   case USE_SIMD_NEON:
     fprintf(strm, "    NEON will be used\n");
     break;

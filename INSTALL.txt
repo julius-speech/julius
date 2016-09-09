@@ -4,6 +4,16 @@ How to build Julius
 This document describes how to build Julius on several platform.
 See each section for details.
 
+Performance-optimized compiler flags will be set for several platforms
+by default. If the build fails or the compiled binaries would not run,
+or you want to set your own compile flags, give the configure script
+your own compiler flags via "CFLAGS" environment value like this
+(change "-O3" below as you like)
+
+    % make distclean
+    % CFLAGS='-O3' ./configure --host=arm-linux-gnueabihf
+    % make
+
 After build, compiled binaries of Julius and tools will be placed in
 their respective directories.  You can run "make install" will install
 binaries into system directries:
@@ -65,6 +75,7 @@ Mingw on cygwin
   If "adintool-gui.exe" fails or not run, try without "--disable-sdlmain".
 
 (tested on cygwin-x86 setup-v2.5.2, 08/31/2016)
+
 -----------------------------------------------
 Visual Studio:
 
@@ -77,3 +88,22 @@ The compiled binaries will be placed in "msvc/Release" folder.
 SIMD instruction is fixed for AVX by default.
 You can change it at "libsent"'s project property:
   C/C++ -> Code Generation -> Enable Enhanced Instruction Set
+
+(tested on VisualStudio 2013)
+
+-----------------------------------------------
+Cross-compiling for ARM:
+
+    % ./configure --host=arm-linux-gnueabihf
+    % make
+
+Note that "-mfpu=neon -mfloat-abi=softfp" is enabled by default for
+better performance.  You can replace it with your flags by specifying
+your own compiler flags via "CFLAGS" environment value, like this:
+
+    % CFLAGS='-O3' ./configure --host=arm-linux-gnueabihf
+    % make
+
+(tested on cross-compilation on Ubuntu)
+  
+-----------------------------------------------

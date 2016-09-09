@@ -172,3 +172,6 @@
 
 /* Define if include SIMD NEON instruction set */
 #undef HAS_SIMD_NEON
+
+/* Define if include SIMDv2 NEON instruction set */
+#undef HAS_SIMD_NEONV2

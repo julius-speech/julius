@@ -19,11 +19,7 @@
 #include <sent/hmm.h>
 #include <sent/hmm_calc.h>
 
-#ifdef HAS_SIMD_NEON
-#include <arm_neon.h>
-#endif
-
-#if defined(HAS_SIMD_FMA) || defined(HAS_SIMD_AVX) || defined(HAS_SIMD_SSE) || defined(HAS_SIMD_NEON)
+#if defined(HAS_SIMD_FMA) || defined(HAS_SIMD_AVX) || defined(HAS_SIMD_SSE) || defined(HAS_SIMD_NEON) || defined(HAS_SIMD_NEONV2)
 #define SIMD_ENABLED
 #endif
 
@@ -44,7 +40,9 @@ static void cpu_id_check()
 #ifdef __arm__
   /* on ARM NEON */
 
-#ifdef HAS_SIMD_NEON
+#if defined(HAS_SIMD_NEONV2)
+  use_simd = USE_SIMD_NEONV2;
+#elif defined(HAS_SIMD_NEON)
   use_simd = USE_SIMD_NEON;
 #else
   use_simd = USE_SIMD_NONE;
@@ -115,6 +113,7 @@ static void *mymalloc_simd_aligned(size_t size)
     break;
   case USE_SIMD_SSE:
   case USE_SIMD_NEON:
+  case USE_SIMD_NEONV2:
     ptr = mymalloc_aligned(size, 16);
     break;
   default:
@@ -132,6 +131,7 @@ static void myfree_simd_aligned(void *ptr)
   case USE_SIMD_AVX:
   case USE_SIMD_SSE:
   case USE_SIMD_NEON:
+  case USE_SIMD_NEONV2:
     if (ptr != NULL) myfree_aligned(ptr);
     break;
   default:
@@ -148,6 +148,9 @@ void get_builtin_simd_string(char *buf)
 
 #ifdef HAS_SIMD_NEON
   strcat(buf, " NEON");
+#endif
+#ifdef HAS_SIMD_NEONV2
+  strcat(buf, " NEONv2");
 #endif
 #ifdef HAS_SIMD_SSE
   strcat(buf, " SSE");
@@ -174,6 +177,9 @@ static void output_use_simd()
 #ifdef HAS_SIMD_NEON
   jlog("Stat: calc_dnn: ARM NEON instructions built-in\n");
 #endif
+#ifdef HAS_SIMD_NEONV2
+  jlog("Stat: calc_dnn: ARM NEONv2 instructions built-in\n");
+#endif
 #ifdef HAS_SIMD_FMA
   jlog("Stat: calc_dnn: FMA instructions built-in\n");
 #endif
@@ -197,6 +203,8 @@ static void output_use_simd()
     jlog("Stat: clac_dnn: use FMA SIMD instruction (256bit)\n");
   } else if (use_simd == USE_SIMD_NEON) {
     jlog("Stat: use ARM NEON instruction\n");
+  } else if (use_simd == USE_SIMD_NEONV2) {
+    jlog("Stat: use ARM NEONv2 instruction\n");
   } else {
     jlog("Warning: clac_dnn: no SIMD support, DNN computation may be too slow!\n");
   }
@@ -577,6 +585,9 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
     break;
   case USE_SIMD_NEON:
     dnn->subfunc = calc_dnn_neon;
+    break;
+  case USE_SIMD_NEONV2:
+    dnn->subfunc = calc_dnn_neonv2;
     break;
   default:
     dnn->subfunc = sub1;

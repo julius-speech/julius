@@ -13,11 +13,12 @@
 #include <sent/htk_param.h>
 #include <sent/hmm_calc.h>
 
-#define USE_SIMD_NONE 0
-#define USE_SIMD_SSE  1
-#define USE_SIMD_AVX  2
-#define USE_SIMD_FMA  3
-#define USE_SIMD_NEON 4
+#define USE_SIMD_NONE   0
+#define USE_SIMD_SSE    1
+#define USE_SIMD_AVX    2
+#define USE_SIMD_FMA    3
+#define USE_SIMD_NEON   4
+#define USE_SIMD_NEONV2 5
 
 typedef void (*DNN_FUNC_VOID)();
 

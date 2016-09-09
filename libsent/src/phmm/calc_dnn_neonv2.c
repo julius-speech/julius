@@ -11,14 +11,14 @@
 #include <sent/hmm.h>
 #include <sent/hmm_calc.h>
 
-#ifdef HAS_SIMD_NEON
+#ifdef HAS_SIMD_NEONV2
 #include <arm_neon.h>
 #endif
 
 void
-calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
+calc_dnn_neonv2(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
 {
-#ifdef HAS_SIMD_NEON
+#ifdef HAS_SIMD_NEONV2
 
   float *s;
   int i, j;
@@ -30,8 +30,7 @@ calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, float
     for (j = 0; j < n; j++) {
       float32x4_t v1 = vld1q_f32(w);
       float32x4_t v2 = vld1q_f32(s);
-      v1 = vmulq_f32(v1, v2);
-      x = vaddq_f32(x, v1);
+      x = vmlaq_f32(x, v1, v2);
       w += 4;
       s += 4;
     }
@@ -39,5 +38,5 @@ calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, float
     *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + *(b++);
   }
 
-#endif	/* HAS_SIMD_NEON */
+#endif	/* HAS_SIMD_NEONV2 */
 }
