@@ -1,3 +1,10 @@
+4.4.2 (2016.09.12)
+===================
+- Improved handling of file paths in dnnconf, now correctly handled as relative to the dnnconf file.
+- Improved DNN decoding that sometimes goes too slow and stack on 2nd pass.
+- Fix segfault on old non-AVX Intel CPU with DNN.
+- Fix errors in build process on ARM and VisualStudio.
+
 4.4.1 (2016.09.07)
 ===================
 - more stable and fast SIMD code: SSE, FMA and ARM_NEON
