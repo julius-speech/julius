@@ -5,6 +5,10 @@
  * All rights reserved
  */
 
+
+/* define this to test disabling expsum computation at softmax */
+#undef NO_SUM_COMPUTATION
+
 #ifdef _WIN32
 #include <intrin.h>
 #else
@@ -639,9 +643,16 @@ void dnn_calc_outprob(HMMWork *wrk)
 
   /* do softmax */
   /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
-  //float logprob = addlog_array(wrk->last_cache, wrk->statenum);
+#ifdef NO_SUM_COMPUTATION
+  /* not compute sum */
   for (i = 0; i < wrk->statenum; i++) {
-    wrk->last_cache[i] = INV_LOG_TEN * wrk->last_cache[i]  - dnn->state_prior[i];
-    //    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
+    wrk->last_cache[i] = INV_LOG_TEN * wrk->last_cache[i] - dnn->state_prior[i];
+  }
+#else
+  /* compute sum */
+  float logprob = addlog_array(wrk->last_cache, wrk->statenum);
+  for (i = 0; i < wrk->statenum; i++) {
+    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
   }
 }
+#endif
