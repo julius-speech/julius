@@ -654,5 +654,5 @@ void dnn_calc_outprob(HMMWork *wrk)
   for (i = 0; i < wrk->statenum; i++) {
     wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
   }
-}
 #endif
+}
