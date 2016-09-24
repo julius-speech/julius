@@ -939,10 +939,12 @@ result_pass2(Recog *recog, void *dummy)
 	case PER_STATE:
 	  printf("-- state alignment --\n"); break;
 	}
-	printf(" id: from  to    n_score    unit\n");
+	printf(" id: base      from      to        n_score    unit\n");
 	printf(" ----------------------------------------\n");
 	for(i=0;i<align->num;i++) {
-	  printf("[%4d %4d]  %f  ", align->begin_frame[i], align->end_frame[i], align->avgscore[i]);
+        int startInt = recog->curr_base + align->begin_frame[i];
+        int endInt = recog->curr_base + align->begin_frame[i];
+        printf("%8d [%8d %8d]  %5.6f %f  ", recog->curr_base, startInt, endInt, s->confidence[i], align->avgscore[i]);
 	  switch(align->unittype) {
 	  case PER_WORD:
 	    myprintf("%s\t[%s]\n", winfo->wname[align->w[i]], winfo->woutput[align->w[i]]);
@@ -978,7 +980,9 @@ result_pass2(Recog *recog, void *dummy)
 	    break;
 	  }
 	}
-	
+
+    recog->curr_base = recog->curr_base + recog->current_segment_end;
+    printf("current base = %d", recog->curr_base);
 	printf("re-computed AM score: %f\n", align->allscore);
 
 	printf("=== end forced alignment ===\n");

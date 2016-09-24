@@ -1098,6 +1098,12 @@ j_recognize_stream_core(Recog *recog)
 	  /* output recorded length */
 	  seclen = (float)recog->speechlen / (float)jconf->input.sfreq;
 	  jlog("STAT: %d samples (%.2f sec.)\n", recog->speechlen, seclen);
+
+      double totalSecondsProcessed = (double)(recog->total_samples_processed /
+          (float)jconf->input.sfreq);
+      recog->curr_base = (int)floor((totalSecondsProcessed - seclen) * 100.0);
+      jlog("STAT: %d samples (%.2f sec.), seconds elapsed from begining of segment = %.2f, current segment base = %d\n",
+          recog->speechlen, seclen, totalSecondsProcessed - seclen, recog->curr_base);
 	  
 	  /* -rejectshort 指定時, 入力が指定時間以下であれば
 	     ここで入力を棄却する */
@@ -1449,6 +1455,7 @@ j_recognize_stream_core(Recog *recog)
 
     if (jconf->decodeopt.segment) { /* sp-segment mode */
       if (recog->process_segment == TRUE) {
+        recog->current_segment_end = 0;
 	if (verbose_flag) jlog("STAT: <<<restart the rest>>>\n\n");
       } else {
 	/* input has reached end of stream, terminate program */

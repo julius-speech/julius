@@ -1248,6 +1248,19 @@ typedef struct __Recog__ {
    */
   void *hook;
 
+  /**
+   * Current base where first pass started from in samples
+   */
+  int curr_base;
+  /**
+   * Current end of a decoding segment in samples
+  */
+  int current_segment_end;
+  /**
+   * Number of samples processed in total
+   */
+  int total_samples_processed;
+
 } Recog;
 
 #endif /* __J_RECOG_H__ */
