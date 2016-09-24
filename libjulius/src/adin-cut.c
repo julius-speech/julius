@@ -539,10 +539,11 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     /* wstep: unit length for the loop below */
     if (wstep > a->current_len) wstep = a->current_len;
 
-#ifdef THREAD_DEBUG
-    jlog("DEBUG: process %d samples by %d step\n", imax, wstep);
-#endif
     recog->total_samples_processed += imax;
+
+#ifdef THREAD_DEBUG
+    jlog("DEBUG: process %d samples by %d step, total_samples_processed = %d\n", imax, wstep, recog->total_samples_processed);
+#endif
 
 #ifdef HAVE_PTHREAD
     if (a->enable_thread) {
@@ -559,7 +560,6 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     i = 0;
     while (i + wstep <= imax) {
 
-      recog->total_samples_processed += wstep;
       if (a->adin_cut_on) {
 
 	/********************/
