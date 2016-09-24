@@ -673,6 +673,8 @@ finalize_segment(Recog *recog)
     /* the input was segmented in an instance */
     /* shrink all param the len and store restart parameters in rest_param */
     /* for each mfcc */
+    recog->current_segment_end = spstart;
+    jlog("STAT: current segment end=%d\n", recog->current_segment_end);
     if (verbose_flag) jlog("STAT: segmented: next decoding will restart from %d\n", spstart);
 
     for (mfcc = recog->mfcclist; mfcc; mfcc = mfcc->next) {

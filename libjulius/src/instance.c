@@ -828,6 +828,10 @@ j_recog_new()
   recog->adin = (ADIn *)mymalloc(sizeof(ADIn));
   memset(recog->adin, 0, sizeof(ADIn));
 
+  recog->curr_base = 0;
+  recog->current_segment_end = 0;
+  recog->total_samples_processed = 0;
+
   return(recog);
 }
 

@@ -448,7 +448,10 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	if (a->strip_flag) {
 	  /* strip off successive zero samples */
 	  len = strip_zero(&(a->buffer[a->bp]), cnt);
-	  if (len != cnt) cnt = len;
+      if (len != cnt) {
+          recog->total_samples_processed += cnt - len;
+          cnt = len;
+      }
 	}
 	if (a->need_zmean) {
 	  /* remove DC offset */
@@ -536,8 +539,10 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     /* wstep: unit length for the loop below */
     if (wstep > a->current_len) wstep = a->current_len;
 
+    recog->total_samples_processed += imax;
+
 #ifdef THREAD_DEBUG
-    jlog("DEBUG: process %d samples by %d step\n", imax, wstep);
+    jlog("DEBUG: process %d samples by %d step, total_samples_processed = %d\n", imax, wstep, recog->total_samples_processed);
 #endif
 
 #ifdef HAVE_PTHREAD

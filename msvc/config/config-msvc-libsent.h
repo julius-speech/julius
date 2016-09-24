@@ -38,7 +38,7 @@
 #undef USE_SPLIB
 
 /* Define if you use integer word WORD_ID (for vocaburary of over 60k)  */
-#undef WORDS_INT
+#define WORDS_INT
 
 /* Define if you prefer addlog array function */
 #define USE_ADDLOG_ARRAY
