@@ -593,7 +593,11 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
   A_CELL *ac;
   WORD_ID word;
   LOGPROB tmpmax, tmptmp, score1;
-  int startt = 0, endt = NAN;
+#ifdef _WIN32
+  int startt = 0, endt = -NAN;
+#else
+  int startt = 0, endt;
+#endif
   int wordhmmnum;
   LOGPROB tmpmax_store, store_point_maxarc; /* multipath */
   LOGPROB tmpmax2 = LOG_ZERO;
