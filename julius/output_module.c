@@ -254,9 +254,9 @@ result_pass1_current(Recog *recog, void *dummy)
       module_send("<RECOGOUT>\n");
     }
     if (out1_score) {
-      module_send("  <PHYPO PASS=\"1\" SCORE=\"%f\" FRAME=\"%d\" TIME=\"%ld\"/>\n", r->result.pass1.score, r->result.num_frame, time(NULL));
+      module_send("  <PHYPO PASS=\"1\" SCORE=\"%f\" FRAME=\"%d\" TIME=\"%ld\">\n", r->result.pass1.score, r->result.num_frame, time(NULL));
     } else {
-      module_send("  <PHYPO PASS=\"1\" FRAME=\"%d\" TIME=\"%ld\"/>\n", r->result.num_frame, time(NULL));
+      module_send("  <PHYPO PASS=\"1\" FRAME=\"%d\" TIME=\"%ld\">\n", r->result.num_frame, time(NULL));
     }
     for (i=0;i<num;i++) {
       module_send("    <WHYPO");
