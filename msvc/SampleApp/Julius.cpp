@@ -121,6 +121,11 @@ unsigned __stdcall recogThreadMain( void *param )
 {
 	int ret;
 	Recog *recog = (Recog *)param;
+
+    recog->total_samples_processed = 0;
+    recog->curr_base = 0;
+    recog->current_segment_end = 0;
+
 	ret = j_recognize_stream(recog);
 	_endthreadex(ret);
 	return(ret);
@@ -339,6 +344,9 @@ bool cJulius::startProcess( HWND hWnd )
 {
 
 	if ( ! m_recog ) return false;
+
+    m_recog->curr_base = 0;
+    m_recog->current_segment_end = 0;
 
 	// store window hanlder to send event message
 	m_hWnd = hWnd;
