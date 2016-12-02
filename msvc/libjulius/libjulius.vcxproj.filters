@@ -17,9 +17,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\config\version.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\libjulius\src\adin-cut.c">
       <Filter>ソース ファイル\src</Filter>
     </ClCompile>
@@ -131,11 +128,14 @@
     <ClCompile Include="..\..\libjulius\src\word_align.c">
       <Filter>ソース ファイル\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\version.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libjulius\src\mbr.c">
+      <Filter>ソース ファイル\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\config\config-msvc-libjulius.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\libjulius\include\julius\beam.h">
       <Filter>ヘッダー ファイル\julius</Filter>
     </ClInclude>
@@ -188,6 +188,9 @@
       <Filter>ヘッダー ファイル\julius</Filter>
     </ClInclude>
     <ClInclude Include="..\..\libjulius\include\julius\wchmm.h">
+      <Filter>ヘッダー ファイル\julius</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libjulius\include\julius\config-msvc-libjulius.h">
       <Filter>ヘッダー ファイル\julius</Filter>
     </ClInclude>
   </ItemGroup>

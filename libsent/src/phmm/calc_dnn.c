@@ -12,7 +12,8 @@
 #ifdef _WIN32
 #include <intrin.h>
 #else
-#ifndef __arm__
+#if defined(__arm__) || TARGET_OS_IPHONE
+#else
 #include <cpuid.h>
 #endif
 #endif	/* _WIN32 */
@@ -41,7 +42,7 @@ static void cpu_id_check()
 
   use_simd = USE_SIMD_NONE;
 
-#ifdef __arm__
+#if defined(__arm__) || TARGET_OS_IPHONE
   /* on ARM NEON */
 
 #if defined(HAS_SIMD_NEONV2)
@@ -305,15 +306,17 @@ static boolean load_npy(float *array, char *filename, int x, int y)
     fortran_order = FALSE;
   }
 
-  char buf[100];
-  sprintf(buf, "'shape': (%d, %d)", x, y);
-  if (strstr(header, buf) == NULL) {
-    sprintf(buf, "'shape': (%d, %d)", y, x);
+  {
+    char buf[100];
+    sprintf(buf, "'shape': (%d, %d)", x, y);
     if (strstr(header, buf) == NULL) {
-      jlog("Error: load_npy: not a (%d, %d) array? %s\n", x, y, filename);
-      free(header);
-      fclose_readfile(fp);
-      return FALSE;
+      sprintf(buf, "'shape': (%d, %d)", y, x);
+      if (strstr(header, buf) == NULL) {
+	jlog("Error: load_npy: not a (%d, %d) array? %s\n", x, y, filename);
+	free(header);
+	fclose_readfile(fp);
+	return FALSE;
+      }
     }
   }
   free(header);
@@ -506,17 +509,19 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn->prior_factor = prior_factor;
 
   /* check for input length */
-  int inputlen = veclen * contextlen;
-  if (inputnodes != inputlen) {
-    jlog("Error: dnn_init: veclen(%d) * contextlen(%d) != inputnodes(%d)\n", veclen, contextlen, inputnodes);
-    return FALSE;
+  {
+    int inputlen = veclen * contextlen;
+    if (inputnodes != inputlen) {
+      jlog("Error: dnn_init: veclen(%d) * contextlen(%d) != inputnodes(%d)\n", veclen, contextlen, inputnodes);
+      return FALSE;
+    }
+    
+    jlog("Stat: dnn_init: input: vec %d * context %d = %d dim\n", veclen, contextlen, inputlen);
+    jlog("Stat: dnn_init: input layer: %d dim\n", inputnodes);
+    jlog("Stat: dnn_init: %d hidden layer(s): %d dim\n", hiddenlayernum, hiddennodes);
+    jlog("Stat: dnn_init: output layer: %d dim\n", outputnodes);
   }
 
-  jlog("Stat: dnn_init: input: vec %d * context %d = %d dim\n", veclen, contextlen, inputlen);
-  jlog("Stat: dnn_init: input layer: %d dim\n", inputnodes);
-  jlog("Stat: dnn_init: %d hidden layer(s): %d dim\n", hiddenlayernum, hiddennodes);
-  jlog("Stat: dnn_init: output layer: %d dim\n", outputnodes);
-  
   /* initialize layers */
   dnn->hnum = hiddenlayernum;
   dnn->h = (DNNLayer *)mymalloc(sizeof(DNNLayer) * dnn->hnum);
@@ -650,9 +655,11 @@ void dnn_calc_outprob(HMMWork *wrk)
   }
 #else
   /* compute sum */
-  float logprob = addlog_array(wrk->last_cache, wrk->statenum);
-  for (i = 0; i < wrk->statenum; i++) {
-    wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
+  {
+    float logprob = addlog_array(wrk->last_cache, wrk->statenum);
+    for (i = 0; i < wrk->statenum; i++) {
+      wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
+    }
   }
-#endif
 }
+#endif

@@ -27,8 +27,14 @@
 
 /* read configurable definitions */
 #if defined(_WIN32) && !defined(__CYGWIN32__) && !defined(__MINGW32__)
-# include <config-msvc-libjulius.h>
-# include <config-msvc-libsent.h>
+# include <julius/config-msvc-libjulius.h>
+# include <sent/config-msvc-libsent.h>
+#elif defined(__ANDROID__)
+# include <julius/config-android-libjulius.h>
+# include <sent/config-android-libsent.h>
+#elif TARGET_OS_IPHONE
+# include <julius/config-ios-libjulius.h>
+# include <sent/config-ios-libsent.h>
 #else
 #include <julius/config.h>
 #include <sent/config.h>

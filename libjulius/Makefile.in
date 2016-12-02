@@ -120,7 +120,6 @@ distclean:
 	$(RM) include/julius/*~
 	$(RM) config.log config.cache
 	$(RM) $(TARGET)
-	$(RM) src/version.c
 	$(RM) libjulius-config libjulius-config-dist
 	$(RM) doxygen.conf.ver
 	$(RM) $(PKGCONF_FILE)

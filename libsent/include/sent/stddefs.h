@@ -44,7 +44,11 @@
 
 /* load site-dependent configuration by configure script */
 #if defined(_WIN32) && !defined(__CYGWIN32__) && !defined(__MINGW32__)
-#include <config-msvc-libsent.h>
+#include <sent/config-msvc-libsent.h>
+#elif defined(__ANDROID__)
+#include <sent/config-android-libsent.h>
+#elif TARGET_OS_IPHONE
+#include <sent/config-ios-libsent.h>
 #else
 #include <sent/config.h>
 #endif
@@ -63,6 +67,13 @@
 #else
 /* win32 */
 #include <io.h>
+#endif
+
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+#if defined(__ANDROID__)
+#define pthread_cancel(A) pthread_kill(A, SIGTERM)
+#endif
 #endif
 
 /* get around sleep() */
@@ -150,9 +161,9 @@ typedef unsigned char boolean;
 #define	min(A,B)	((A)<(B)?(A):(B))
 #define	abs(X)		((X)>0?(X):-(X))
 /// String match function, 0 if the given strings did not match
-#define strmatch	!strcmp
+#define strmatch(A,B)	(!strcmp(A,B))
 /// String match function with length limit, 0 if the given strings did not match
-#define strnmatch	!strncmp
+#define strnmatch(A,B,C)	(!strncmp(A,B,C))
 /// Common text delimiter
 #define DELM " \t\n"
 

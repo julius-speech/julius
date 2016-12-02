@@ -8,7 +8,7 @@
 #include <julius/juliuslib.h>
 
 #if defined(_WIN32) && !defined(__CYGWIN32__) && !defined(__MINGW32__)
-#include <config-msvc-julius.h>
+#include "config-msvc-julius.h"
 #else
 #include "config.h"
 #endif

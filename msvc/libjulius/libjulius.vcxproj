@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../libjulius/include;../../libsent/include;../config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libjulius/include;../../libsent/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -67,7 +67,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../libjulius/include;../../libsent/include;../config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libjulius/include;../../libsent/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -113,15 +113,16 @@
     <ClCompile Include="..\..\libjulius\src\search_bestfirst_v2.c" />
     <ClCompile Include="..\..\libjulius\src\spsegment.c" />
     <ClCompile Include="..\..\libjulius\src\useropt.c" />
+    <ClCompile Include="..\..\libjulius\src\version.c" />
     <ClCompile Include="..\..\libjulius\src\wav2mfcc.c" />
     <ClCompile Include="..\..\libjulius\src\wchmm.c" />
     <ClCompile Include="..\..\libjulius\src\wchmm_check.c" />
     <ClCompile Include="..\..\libjulius\src\word_align.c" />
-    <ClCompile Include="..\config\version.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libjulius\include\julius\beam.h" />
     <ClInclude Include="..\..\libjulius\include\julius\callback.h" />
+    <ClInclude Include="..\..\libjulius\include\julius\config-msvc-libjulius.h" />
     <ClInclude Include="..\..\libjulius\include\julius\define.h" />
     <ClInclude Include="..\..\libjulius\include\julius\extern.h" />
     <ClInclude Include="..\..\libjulius\include\julius\global.h" />
@@ -138,7 +139,6 @@
     <ClInclude Include="..\..\libjulius\include\julius\trellis.h" />
     <ClInclude Include="..\..\libjulius\include\julius\useropt.h" />
     <ClInclude Include="..\..\libjulius\include\julius\wchmm.h" />
-    <ClInclude Include="..\config\config-msvc-libjulius.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libsent\libsent.vcxproj">

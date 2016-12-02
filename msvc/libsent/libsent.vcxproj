@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../libsent/include;../config;../Library_PortAudio/include;../Library_zlib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libsent/include;../Library_PortAudio/include;../Library_zlib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -72,7 +72,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../libsent/include;../config;../Library_PortAudio/include;../Library_zlib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libsent/include;../Library_PortAudio/include;../Library_zlib/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -195,6 +195,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libsent\include\sent\adin.h" />
+    <ClInclude Include="..\..\libsent\include\sent\config-msvc-libsent.h" />
     <ClInclude Include="..\..\libsent\include\sent\dfa.h" />
     <ClInclude Include="..\..\libsent\include\sent\hmm.h" />
     <ClInclude Include="..\..\libsent\include\sent\hmm_calc.h" />
@@ -212,7 +213,6 @@
     <ClInclude Include="..\..\libsent\include\sent\vocabulary.h" />
     <ClInclude Include="..\..\libsent\src\adin\lpfcoef_2to1.h" />
     <ClInclude Include="..\..\libsent\src\adin\lpfcoef_3to4.h" />
-    <ClInclude Include="..\config\config-msvc-libsent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

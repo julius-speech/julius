@@ -361,9 +361,6 @@
     <ClInclude Include="..\..\libsent\src\adin\lpfcoef_3to4.h">
       <Filter>ソース ファイル\adin-win</Filter>
     </ClInclude>
-    <ClInclude Include="..\config\config-msvc-libsent.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\libsent\include\sent\adin.h">
       <Filter>ヘッダー ファイル\sent</Filter>
     </ClInclude>
@@ -410,6 +407,9 @@
       <Filter>ヘッダー ファイル\sent</Filter>
     </ClInclude>
     <ClInclude Include="..\..\libsent\include\sent\vocabulary.h">
+      <Filter>ヘッダー ファイル\sent</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\libsent\include\sent\config-msvc-libsent.h">
       <Filter>ヘッダー ファイル\sent</Filter>
     </ClInclude>
   </ItemGroup>
