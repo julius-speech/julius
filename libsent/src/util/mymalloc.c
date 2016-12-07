@@ -142,7 +142,7 @@ void *mymalloc_aligned(size_t size, size_t align)
 #elif __APPLE__
    if (posix_memalign(&ptr, align, size) != 0)
       ptr = NULL;
-#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !defined(__ANDROID__)
    ptr = aligned_alloc(align, size);
 #elif defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
    if (posix_memalign(&ptr, align, size) != 0)
