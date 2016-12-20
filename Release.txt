@@ -1,3 +1,8 @@
+4.4.2.1 (2016.12.20)
+====================
+- Small fixes for Android and iOS.
+- Clean up msvc dir.
+
 4.4.2 (2016.09.12)
 ===================
 - Improved handling of file paths in dnnconf, now correctly handled as relative to the dnnconf file.

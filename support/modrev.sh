@@ -22,7 +22,7 @@ for i in ./libjulius/configure.in ; do
 	diff $i tmp
 	mv tmp ${i}
 done
-for i in ./msvc/config/config-msvc-libjulius.h; do
+for i in ./libjulius/include/julius/config-msvc-libjulius.h ./libjulius/include/julius/config-ios-libjulius.h ./libjulius/include/julius/config-android-libjulius.h; do
 	echo $i
 	sed -e "s/^#define JULIUS_VERSION \"[^ ]*\"/#define JULIUS_VERSION \"$newver\"/" < $i > tmp
 	diff $i tmp
@@ -34,7 +34,7 @@ for i in ./libsent/configure.in; do
 	diff $i tmp
 	mv tmp ${i}
 done
-for i in ./msvc/config/config-msvc-libsent.h; do
+for i in ./libsent/include/sent/config-msvc-libsent.h ./libsent/include/sent/config-ios-libsent.h ./libsent/include/sent/config-android-libsent.h; do
 	echo $i
 	sed -e "s/^#define LIBSENT_VERSION \"[^ ]*\"/#define LIBSENT_VERSION \"$newver\"/" < $i > tmp
 	diff $i tmp
