@@ -22,6 +22,5 @@
 #define HAS_SIMD_SSE
 #endif
 #ifdef __ARM_NEON__
-//#define HAS_SIMD_NEON
 #define HAS_SIMD_NEONV2
 #endif
