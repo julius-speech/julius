@@ -44,6 +44,8 @@
 /// Compilation host information 
 #undef JULIUS_HOSTINFO
 
+/// Build information
+#undef JULIUS_BUILD_INFO
 
 /* Define to empty if the keyword does not work.  */
 #undef const

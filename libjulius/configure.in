@@ -386,6 +386,8 @@ AC_DEFINE_UNQUOTED(JULIUS_PRODUCTNAME, "$JULIUS_PRODUCTNAME")
 AC_DEFINE_UNQUOTED(JULIUS_VERSION, "$JULIUS_VERSION")
 AC_DEFINE_UNQUOTED(JULIUS_SETUP, "$easy_setup")
 AC_DEFINE_UNQUOTED(JULIUS_HOSTINFO, "$host")
+AC_DEFINE_UNQUOTED(JULIUS_BUILD_INFO, "$CC $CFLAGS")
+
 AC_SUBST(JULIUS_PRODUCTNAME)
 AC_SUBST(JULIUS_MAJOR_VERSION)
 AC_SUBST(JULIUS_MINOR_VERSION)
@@ -395,4 +397,4 @@ AC_SUBST(easy_setup)
 AC_OUTPUT_COMMANDS(
 [chmod +x libjulius-config libjulius-config-dist
 ])
-AC_OUTPUT(Makefile libjulius-config libjulius-config-dist julius-$JULIUS_MAJOR_VERSION.pc:julius.pc.in src/version.c doxygen.conf.ver)
+AC_OUTPUT(Makefile libjulius-config libjulius-config-dist julius-$JULIUS_MAJOR_VERSION.pc:julius.pc.in doxygen.conf.ver)

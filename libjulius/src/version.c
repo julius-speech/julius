@@ -18,18 +18,13 @@
  * 
  */
 /*
- * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
+ * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
  * Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- * Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
+ * Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
  * All rights reserved
  */
 
-/* src/version.c.  Generated from version.c.in by configure. */
-
 #include <julius/julius.h>
-
-#define CC "gcc" ///< Used compiler
-#define CFLAGS "-O6 -fomit-frame-pointer" ///< Used flags for compilation
 
 /** 
  * <JA>
@@ -236,7 +231,7 @@ j_put_compile_defs(FILE *strm){
 #endif
 
   fprintf(strm, "\n");
-  fprintf(strm," -  Compiled by  : %s %s\n", CC, CFLAGS);
+  fprintf(strm," -  Compiled by  : %s\n", JULIUS_BUILD_INFO);
 }
 
 /** 

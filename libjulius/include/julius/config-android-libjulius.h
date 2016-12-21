@@ -2,6 +2,7 @@
 #define JULIUS_VERSION "4.4.2.1"
 #define JULIUS_SETUP "fast"
 #define JULIUS_HOSTINFO ""
+#define JULIUS_BUILD_INFO ""
 #define RETSIGTYPE void
 #define STDC_HEADERS 1
 #define UNIGRAM_FACTORING 1
