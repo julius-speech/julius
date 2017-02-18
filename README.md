@@ -56,7 +56,7 @@ Version 4.4 supports stand-alone DNN-HMM support, and several new
 tools and bug fixes are included.  See the "Release.txt" file for the
 full list of updates.  Run with "-help" to see full list of options.
 
-# Toolkit and Assets
+# Tools and Assets
 
 There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can get them fron the following Github pages:
 
@@ -71,6 +71,10 @@ Documents, sample files and conversion tools to use and build a recognition gram
 ## [Speech Segmentation Toolkit](https://github.com/julius-speech/segmentation-kit)
 
 This is a handy toolkit to do phoneme segmentation (aka phoneme alignments) for speech audio file using Julius. Given pairs of speech audio file and its transcription, this toolkit perform Viterbi alignment to get the beginning and ending time of each phoneme.  This toolkit is available at [its GitHub page](https://github.com/julius-speech/segmentation-kit).
+
+## [Prompter](https://github.com/julius-speech/prompter)
+
+Prompter is a perl/Tkx based tiny program that displays recognition results of Julius in a scrolling caption style.
 
 # About Models
 
