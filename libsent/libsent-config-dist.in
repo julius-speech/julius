@@ -19,7 +19,7 @@
 # @configure_input@
 #
 
-sound_inc="@SOUNDINC@"
+sound_inc="@SOUNDINC@ @OPENMP_CFLAGS@"
 sound_libs="@SOUNDLIB@ @EXTRALIB@"
 version="\
 Julius/Julian libsent library rev.@LIBSENT_VERSION@"

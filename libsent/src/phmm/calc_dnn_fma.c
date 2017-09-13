@@ -13,22 +13,51 @@
 
 #ifdef HAS_SIMD_FMA
 #include <immintrin.h>
+#ifdef _OPENMP
+#include <omp.h>
+#endif /* _OPENMP */
 #endif
 
 void
-calc_dnn_fma(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
+calc_dnn_fma(float *dst, float *src, float *ww, float *b, int out, int in, float *fstore)
 {
 #ifdef HAS_SIMD_FMA
 
-  float *s;
-  int i, j;
-
   int n = in / 8;
 
-  if (out % 4 == 0) {
-    /* batch 4 */
-    float *w2, *w3, *w4;
-    for (i = 0; i < out; i += 4) {
+#ifdef _OPENMP
+  int thread_num = omp_get_max_threads();
+  int num = out / thread_num;
+  num = ((num + 3) / 4) * 4;
+#endif
+  
+#ifdef _OPENMP
+#pragma omp parallel
+  {
+#endif /* _OPENMP */
+    float *s;
+    int i, j;
+
+#ifdef _OPENMP
+    int thread_id = omp_get_thread_num();
+    int begin = num * thread_id;
+    int end = begin + num;
+    if (end > out) end = out;
+    float *w = ww + begin * in;
+    float *thread_dst = dst + begin;
+    float *thread_b = b + begin;
+    float *thread_fstore = fstore + 8 * thread_id;
+#else /* ~_OPENMP */
+    int begin = 0;
+    int end = out;
+    float *w = ww;
+    float *thread_dst = dst;
+    float *thread_b = b;
+    float *thread_fstore = fstore;
+#endif /* _OPENMP */
+    
+    for (i = begin; i + 3 < end; i += 4) {
+      float *w2, *w3, *w4;
       __m256 x1 = _mm256_setzero_ps();
       __m256 x2 = _mm256_setzero_ps();
       __m256 x3 = _mm256_setzero_ps();
@@ -53,44 +82,19 @@ calc_dnn_fma(float *dst, float *src, float *w, float *b, int out, int in, float 
 	w3 += 8;
 	w4 += 8;
       }
-      _mm256_store_ps(fstore, x1);
-      *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
-      _mm256_store_ps(fstore, x2);
-      *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
-      _mm256_store_ps(fstore, x3);
-      *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
-      _mm256_store_ps(fstore, x4);
-      *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
+      _mm256_store_ps(thread_fstore, x1);
+      *(thread_dst++) = thread_fstore[0] + thread_fstore[1] + thread_fstore[2] + thread_fstore[3] + thread_fstore[4] + thread_fstore[5] + thread_fstore[6] + thread_fstore[7] + *(thread_b++);
+      _mm256_store_ps(thread_fstore, x2);
+      *(thread_dst++) = thread_fstore[0] + thread_fstore[1] + thread_fstore[2] + thread_fstore[3] + thread_fstore[4] + thread_fstore[5] + thread_fstore[6] + thread_fstore[7] + *(thread_b++);
+      _mm256_store_ps(thread_fstore, x3);
+      *(thread_dst++) = thread_fstore[0] + thread_fstore[1] + thread_fstore[2] + thread_fstore[3] + thread_fstore[4] + thread_fstore[5] + thread_fstore[6] + thread_fstore[7] + *(thread_b++);
+      _mm256_store_ps(thread_fstore, x4);
+      *(thread_dst++) = thread_fstore[0] + thread_fstore[1] + thread_fstore[2] + thread_fstore[3] + thread_fstore[4] + thread_fstore[5] + thread_fstore[6] + thread_fstore[7] + *(thread_b++);
       w = w4;
     }
-  } else if (out % 2 == 0) {
-    /* batch 2 */
-    float *w2;
-    for (i = 0; i < out; i += 2) {
-      __m256 x1 = _mm256_setzero_ps();
-      __m256 x2 = _mm256_setzero_ps();
-      s = src;
-      w2 = w + in;
-      for (j = 0; j < n; j++) {
-	__m256 vs = _mm256_load_ps(s);
-	__m256 v1 = _mm256_load_ps(w);
-	__m256 v2 = _mm256_load_ps(w2);
-	x1 = _mm256_fmadd_ps(vs, v1, x1);
-	x2 = _mm256_fmadd_ps(vs, v2, x2);
-	s  += 8;
-	w  += 8;
-	w2 += 8;
-      }
-      _mm256_store_ps(fstore, x1);
-      *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
-      _mm256_store_ps(fstore, x2);
-      *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
-      w = w2;
-    }
 
-  } else {
-    /* no batch */
-    for (i = 0; i < out; i++) {
+    /* process last <4 nodes */
+    for (; i < end; i++) {
       __m256 x = _mm256_setzero_ps();
       s = src;
       for (j = 0; j < n; j++) {
@@ -100,10 +104,13 @@ calc_dnn_fma(float *dst, float *src, float *w, float *b, int out, int in, float 
 	s  += 8;
 	w  += 8;
       }
-      _mm256_store_ps(fstore, x);
-      *(dst++) = fstore[0] + fstore[1] + fstore[2] + fstore[3] + fstore[4] + fstore[5] + fstore[6] + fstore[7] + *(b++);
+      _mm256_store_ps(thread_fstore, x);
+      *(thread_dst++) = thread_fstore[0] + thread_fstore[1] + thread_fstore[2] + thread_fstore[3] + thread_fstore[4] + thread_fstore[5] + thread_fstore[6] + thread_fstore[7] + *(thread_b++);
     }
+
+#ifdef _OPENMP
   }
+#endif /* _OPENMP */
   
 #endif	/* HAS_SIMD_FMA */
 }

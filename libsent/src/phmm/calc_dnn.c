@@ -26,6 +26,9 @@
 
 #if defined(HAS_SIMD_FMA) || defined(HAS_SIMD_AVX) || defined(HAS_SIMD_SSE) || defined(HAS_SIMD_NEON) || defined(HAS_SIMD_NEONV2)
 #define SIMD_ENABLED
+#ifdef _OPENMP
+#include <omp.h>
+#endif /* _OPENMP */
 #endif
 
 static int use_simd = USE_SIMD_NONE;
@@ -213,6 +216,9 @@ static void output_use_simd()
   } else {
     jlog("Warning: clac_dnn: no SIMD support, DNN computation may be too slow!\n");
   }
+#ifdef _OPENMP
+  jlog("Stat: and OPENMP parallelization (%d cores)\n", omp_get_max_threads());
+#endif
 #endif	/* SIMD_ENABLED */
 }
 
@@ -577,7 +583,11 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   }
 #ifdef SIMD_ENABLED
   dnn->invec = (float *)mymalloc_simd_aligned(sizeof(float) * inputnodes);
+#ifdef _OPENMP
+  dnn->accum = (float *)mymalloc_simd_aligned(32 * omp_get_max_threads());
+#else
   dnn->accum = (float *)mymalloc_simd_aligned(32);
+#endif /* OPENMP */
 #endif
 
   /* choose sub function */
