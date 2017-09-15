@@ -27,6 +27,10 @@ typedef struct {
   float *b;			/* b [out] */
   int in;
   int out;
+#ifdef _OPENMP
+  int *begin;
+  int *end;
+#endif /* _OPENMP */
 } DNNLayer;
 
 typedef struct {
