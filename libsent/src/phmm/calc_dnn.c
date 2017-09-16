@@ -697,7 +697,12 @@ void dnn_calc_outprob(HMMWork *wrk)
     h = &(dnn->h[hidx]);
     (*dnn->subfunc)(dst + h->begin[id] , lsrc, h->w + h->begin[id] * h->in, h->b + h->begin[id], h->end[id] - h->begin[id], h->in, dnn->accum + id * 8);
     for (j = h->begin[id] ; j < h->end[id]; j++) {
-      dst[j] = logistic_func(dst[j]);
+      if (dst[j] <= -8.0f)
+	dst[j] = LOGISTIC_MIN;
+      else if (dst[j] >=  8.0f)
+	dst[j] = LOGISTIC_MAX;
+      else
+	dst[j] = logistic_table[(int)((dst[j] + 8.0f) * LOGISTIC_TABLE_FACTOR + 0.5)];
     }
 #pragma omp barrier
     lsrc = dst;

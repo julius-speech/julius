@@ -13,9 +13,6 @@
 
 #ifdef HAS_SIMD_FMA
 #include <immintrin.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif /* _OPENMP */
 #endif
 
 void
