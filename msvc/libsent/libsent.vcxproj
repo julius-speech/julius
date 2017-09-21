@@ -151,7 +151,10 @@
     <ClCompile Include="..\..\libsent\src\ngram\ngram_write_bin.c" />
     <ClCompile Include="..\..\libsent\src\phmm\addlog.c" />
     <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_avx.c" />
-    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_fma.c" />
+    <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_fma.c">
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+    </ClCompile>
     <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_neon.c" />
     <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_neonv2.c" />
     <ClCompile Include="..\..\libsent\src\phmm\calc_dnn_sse.c" />
