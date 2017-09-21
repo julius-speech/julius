@@ -408,6 +408,7 @@ print_engine_info(Recog *recog)
       jlog("       hidden layer dim. = %d\n", am->dnn->hiddennodenum);
       jlog("      state prior factor = %f\n", am->dnn->prior_factor);
       jlog("              batch size = %d\n", am->dnn->batch_size);
+      jlog("       number of threads = %d\n", am->dnn->num_threads);
     }
     jlog("\n");
   }

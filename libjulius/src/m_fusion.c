@@ -570,7 +570,8 @@ j_load_am(Recog *recog, JCONF_AM *amconf)
 		  amconf->dnn.output_bfile,
 		  amconf->dnn.priorfile,
 		  amconf->dnn.prior_factor,
-		  amconf->dnn.batchsize) == FALSE) {
+		  amconf->dnn.batchsize,
+		  amconf->dnn.num_threads) == FALSE) {
       jlog("ERROR: m_fusion: failed to initialize DNN\n");
       dnn_free(am->dnn);
       am->dnn = NULL;

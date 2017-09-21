@@ -32,9 +32,6 @@
 #endif
 
 static int use_simd = USE_SIMD_NONE;
-#ifdef _OPENMP
-static int thread_num;
-#endif
 
 /************************************************************************/
 /* determine which SIMD code to run */
@@ -219,9 +216,6 @@ static void output_use_simd()
   } else {
     jlog("Warning: clac_dnn: no SIMD support, DNN computation may be too slow!\n");
   }
-#ifdef _OPENMP
-  jlog("Stat: and OPENMP parallelization (%d/%d cores)\n", thread_num, omp_get_max_threads());
-#endif
 #endif	/* SIMD_ENABLED */
 }
 
@@ -388,7 +382,7 @@ static void dnn_layer_init(DNNLayer *l)
 }
 
 /* load dnn layer parameter from files */
-static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *bfile)
+static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *bfile, int thread_num)
 {
   l->in = in;
   l->out = out;
@@ -517,7 +511,7 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
 /************************************************************************/
 
 /* initialize dnn */
-boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize)
+boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize, int num_threads)
 {
   int i;
 
@@ -531,11 +525,6 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   /* clear old data if exist */
   dnn_clear(dnn);
 
-#ifdef _OPENMP  
-  /* set number of threads */
-  thread_num = omp_get_max_threads();
-#endif /* OPENMP */
-
   /* build logistic table */
   logistic_table_build();
 
@@ -547,6 +536,17 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn->hiddennodenum = hiddennodes;
   dnn->outputnodenum = outputnodes;
   dnn->prior_factor = prior_factor;
+  dnn->num_threads = num_threads;
+
+#ifdef _OPENMP
+  /* set number of threads */
+  int max_num_threads = omp_get_max_threads();
+  if (dnn->num_threads > max_num_threads) {
+    jlog("Warning: dnn_init: %d threads requested but available max is %d\n", dnn->num_threads, max_num_threads);
+    dnn->num_threads = max_num_threads;
+  }
+  jlog("Stat: dnn_init: use %d threads for DNN computation (max %d cores)\n", dnn->num_threads, max_num_threads);
+#endif /* OPENMP */
 
   /* check for input length */
   {
@@ -571,11 +571,11 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn_layer_init(&(dnn->o));
 
   /* load layer parameters */
-  if (dnn_layer_load(&(dnn->h[0]), inputnodes, hiddennodes, wfile[0], bfile[0]) == FALSE) return FALSE;
+  if (dnn_layer_load(&(dnn->h[0]), inputnodes, hiddennodes, wfile[0], bfile[0], dnn->num_threads) == FALSE) return FALSE;
   for (i = 1; i < dnn->hnum; i++) {
-    if (dnn_layer_load(&(dnn->h[i]), hiddennodes, hiddennodes, wfile[i], bfile[i]) == FALSE) return FALSE;
+    if (dnn_layer_load(&(dnn->h[i]), hiddennodes, hiddennodes, wfile[i], bfile[i], dnn->num_threads) == FALSE) return FALSE;
   }
-  if (dnn_layer_load(&(dnn->o), hiddennodes, outputnodes, output_wfile, output_bfile) == FALSE) return FALSE;
+  if (dnn_layer_load(&(dnn->o), hiddennodes, outputnodes, output_wfile, output_bfile, dnn->num_threads) == FALSE) return FALSE;
 
   /* load state prior */
   {
@@ -618,7 +618,7 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 #ifdef SIMD_ENABLED
   dnn->invec = (float *)mymalloc_simd_aligned(sizeof(float) * inputnodes);
 #ifdef _OPENMP
-  dnn->accum = (float *)mymalloc_simd_aligned(32 * thread_num);
+  dnn->accum = (float *)mymalloc_simd_aligned(32 * dnn->num_threads);
 #else
   dnn->accum = (float *)mymalloc_simd_aligned(32);
 #endif /* OPENMP */
@@ -682,7 +682,7 @@ void dnn_calc_outprob(HMMWork *wrk)
 #endif	/* SIMD_ENABLED */
 
 #ifdef _OPENMP
-#pragma omp parallel
+#pragma omp parallel num_threads(dnn->num_threads)
 {
   int n = 0;
   int hidx, i;

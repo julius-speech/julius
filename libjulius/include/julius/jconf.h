@@ -238,6 +238,7 @@ typedef struct __jconf_am__ {
     char *priorfile;		/* state prior file */
     float prior_factor;		/* state prior factor */
     int batchsize;		/* batch size */
+    int num_threads;		/* number of threads */
   } dnn;
 
   /* pointer to next instance */
