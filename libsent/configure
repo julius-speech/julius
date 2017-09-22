@@ -5114,10 +5114,10 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dsound_main" >&5
 $as_echo "$ac_cv_lib_dsound_main" >&6; }
 if test "x$ac_cv_lib_dsound_main" = xyes; then :
-  for ac_header in DSound.h
+  for ac_header in dsound.h
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "DSound.h" "ac_cv_header_DSound_h" "$ac_includes_default"
-if test "x$ac_cv_header_DSound_h" = xyes; then :
+  ac_fn_c_check_header_mongrel "$LINENO" "dsound.h" "ac_cv_header_dsound_h" "$ac_includes_default"
+if test "x$ac_cv_header_dsound_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_DSOUND_H 1
 _ACEOF

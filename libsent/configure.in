@@ -456,7 +456,7 @@ case $altype in
 	  ;;
         cygwin*|mingw*)
 	  AC_CHECK_LIB(dsound,main,
-	      AC_CHECK_HEADERS(DSound.h,
+	      AC_CHECK_HEADERS(dsound.h,
 	          altype="pa-dsound",
 		altype="pa-winmm"),
 	    altype="pa-winmm")
