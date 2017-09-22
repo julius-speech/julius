@@ -38,6 +38,16 @@ Linux  (tested on Ubuntu-14.04)
   % (optional) make install
 
 -----------------------------------------------
+Mingw on Ubuntu (tested on 16.04)
+
+"mingw-sdl2" does not supported on Ubuntu, so adintool-gui will not be built.
+
+  % sudo apt-get install mingw-w64 mingw-w64-tools
+  % sudo apt-get install libz-mingw-w64-dev
+  % ./configure --host=x86_64-w64-mingw32 --disable-sdl
+  % make
+      
+-----------------------------------------------
 Cygwin
 
   Required packages:
