@@ -417,7 +417,8 @@ static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *b
   int num = l->out / thread_num;
   /* padding base chunk size to factor of 4 for better SIMD processing */
   num = ((num + 3) / 4) * 4;
-  for (int i = 0; i < thread_num; i++) {
+  int i;
+  for (i = 0; i < thread_num; i++) {
     l->begin[i] = num * i;
     l->end[i] = num * i + num;
     if (l->end[i] > l->out) l->end[i] = l->out;
@@ -739,8 +740,9 @@ void dnn_calc_outprob(HMMWork *wrk)
 #else
   /* compute sum */
   {
+    int i;
     float logprob = addlog_array(wrk->last_cache, wrk->statenum);
-    for (int i = 0; i < wrk->statenum; i++) {
+    for (i = 0; i < wrk->statenum; i++) {
       wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
     }
   }
