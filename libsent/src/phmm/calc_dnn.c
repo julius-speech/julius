@@ -12,7 +12,7 @@
 #ifdef _WIN32
 #include <intrin.h>
 #else
-#if defined(__arm__) || TARGET_OS_IPHONE
+#if defined(__arm__) || TARGET_OS_IPHONE || defined(__aarch64__)
 #else
 #include <cpuid.h>
 #endif
