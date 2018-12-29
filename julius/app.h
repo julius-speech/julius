@@ -37,6 +37,7 @@ void module_disconnect();
 void decode_output_selection(char *str);
 void send_gram_info(RecogProcess *r);
 void setup_output_msock(Recog *recog, void *data);
+void escape_xml(char *originstr,char *outbuf);
 
 /* output_stdout.c */
 void print_all_gram(Recog *recog);

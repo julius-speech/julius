@@ -122,22 +122,26 @@ msock_word_out1(WORD_ID w, RecogProcess *r)
 {
   int j;
   static char buf[MAX_HMMNAME_LEN];
+  static char exbuf[MAX_HMMNAME_LEN];
   WORD_INFO *winfo;
 
   winfo = r->lm->winfo;
 
   if (out1_word) {
-    module_send(" WORD=\"%s\"", winfo->woutput[w]);
+    escape_xml(winfo->woutput[w], exbuf);
+    module_send(" WORD=\"%s\"", exbuf);
   }
   if (out1_lm) {
-    module_send(" CLASSID=\"%s\"", winfo->wname[w]);
+    escape_xml(winfo->wname[w], exbuf);
+    module_send(" CLASSID=\"%s\"", exbuf);
   }
   if (out1_phone) {
     module_send(" PHONE=\"");
     for(j=0;j<winfo->wlen[w];j++) {
       center_name(winfo->wseq[w][j]->name, buf);
-      if (j == 0) module_send("%s", buf);
-      else module_send(" %s", buf);
+      escape_xml(buf,exbuf);
+      if (j == 0) module_send("%s", exbuf);
+      else module_send(" %s", exbuf);
     }
     module_send("\"");
   }
@@ -162,22 +166,26 @@ msock_word_out2(WORD_ID w, RecogProcess *r)
 {
   int j;
   static char buf[MAX_HMMNAME_LEN];
+  static char exbuf[MAX_HMMNAME_LEN];
   WORD_INFO *winfo;
 
   winfo = r->lm->winfo;
 
   if (out2_word) {
-    module_send(" WORD=\"%s\"", winfo->woutput[w]);
+    escape_xml(winfo->woutput[w], exbuf);
+    module_send(" WORD=\"%s\"", exbuf);
   }
   if (out2_lm) {
-    module_send(" CLASSID=\"%s\"", winfo->wname[w]);
+    escape_xml(winfo->wname[w], exbuf);
+    module_send(" CLASSID=\"%s\"", exbuf);
   }
   if (out2_phone) {
     module_send(" PHONE=\"");
     for(j=0;j<winfo->wlen[w];j++) {
       center_name(winfo->wseq[w][j]->name, buf);
-      if (j == 0) module_send("%s", buf);
-      else module_send(" %s", buf);
+      escape_xml(buf, exbuf);
+      if (j == 0) module_send("%s", exbuf);
+      else module_send(" %s", exbuf);
     }
     module_send("\"");
   }
@@ -234,6 +242,7 @@ result_pass1_current(Recog *recog, void *dummy)
   int num;
   RecogProcess *r;
   boolean multi;
+  static char exbuf[MAX_HMMNAME_LEN];
 
   if (out1_never) return;	/* no output specified */
 
@@ -249,7 +258,8 @@ result_pass1_current(Recog *recog, void *dummy)
     num = r->result.pass1.word_num;
 
     if (multi) {
-      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
+      escape_xml(r->config->name, exbuf);
+      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, exbuf);
     } else {
       module_send("<RECOGOUT>\n");
     }
@@ -296,6 +306,7 @@ result_pass1_final(Recog *recog, void *dummy)
   int i;
   RecogProcess *r;
   boolean multi;
+  static char exbuf[MAX_HMMNAME_LEN];
 
   if (out1_never) return;	/* no output specified */
 
@@ -307,7 +318,8 @@ result_pass1_final(Recog *recog, void *dummy)
     if (r->result.status < 0) continue;	/* search already failed  */
 
     if (multi) {
-      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
+      escape_xml(r->config->name, exbuf);
+      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, exbuf);
     } else {
       module_send("<RECOGOUT>\n");
     }
@@ -371,6 +383,7 @@ result_pass2(Recog *recog, void *dummy)
   RecogProcess *r;
   boolean multi;
   SentenceAlign *align;
+  static char exbuf[MAX_HMMNAME_LEN];
 
   if (recog->process_list->next != NULL) multi = TRUE;
   else multi = FALSE;
@@ -403,7 +416,8 @@ result_pass2(Recog *recog, void *dummy)
 	break;
       }
       if (multi) {
-	module_send(" ID=\"SR%02d\" NAME=\"%s\"", r->config->id, r->config->name);
+	escape_xml(r->config->name, exbuf);
+	module_send(" ID=\"SR%02d\" NAME=\"%s\"", r->config->id, exbuf);
       }
       module_send("/>\n.\n");
       continue;
@@ -415,7 +429,8 @@ result_pass2(Recog *recog, void *dummy)
     num = r->result.sentnum;
 
     if (multi) {
-      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, r->config->name);
+      escape_xml(r->config->name, exbuf);
+      module_send("<RECOGOUT ID=\"SR%02d\" NAME=\"%s\">\n", r->config->id, exbuf);
     } else {
       module_send("<RECOGOUT>\n");
     }
@@ -508,6 +523,7 @@ result_graph(Recog *recog, void *dummy)
   WordGraph *root;
   RecogProcess *r;
   boolean multi;
+  static char exbuf[MAX_HMMNAME_LEN];
 
   if (recog->process_list->next != NULL) multi = TRUE;
   else multi = FALSE;
@@ -525,7 +541,10 @@ result_graph(Recog *recog, void *dummy)
     }
 
     module_send("<GRAPHOUT");
-    if (multi) module_send(" ID=\"SR%02d\" NAME=\"%s\"", r->config->id, r->config->name);
+    if (multi) {
+      escape_xml(r->config->name, exbuf);
+      module_send(" ID=\"SR%02d\" NAME=\"%s\"", r->config->id, exbuf);
+    }
     module_send(" NODENUM=\"%d\" ARCNUM=\"%d\">\n", nodenum, arcnum);
     for(wg=root;wg;wg=wg->next) {
       module_send("    <NODE GID=\"%d\"", wg->id);
@@ -636,7 +655,9 @@ status_param(Recog *recog, void *dummy)
 static void
 result_gmm(Recog *recog, void *dummy)
 {
-  module_send("<GMM RESULT=\"%s\"", recog->gc->max_d->name);
+  static char exbuf[MAX_HMMNAME_LEN];
+  escape_xml(recog->gc->max_d->name, exbuf);
+  module_send("<GMM RESULT=\"%s\"", exbuf);
 #ifdef CONFIDENCE_MEASURE
   module_send(" CMSCORE=\"%f\"", recog->gc->gmm_max_cm);
 #endif
@@ -737,4 +758,53 @@ setup_output_msock(Recog *recog, void *data)
   //callback_add(recog, CALLBACK_EVENT_PAUSE, status_pause, data);
   //callback_add(recog, CALLBACK_EVENT_RESUME, status_resume, data);
 
+}
+static int
+set_escape_string(char* outstr, char* afterescape, int startindex)
+{
+  int endindex = strlen(afterescape);
+  for(int i=0;i<endindex;i++) {
+    outstr[i+startindex] = afterescape[i];
+  }
+  return endindex;
+}
+
+/**
+ * <JA>
+ * XMLの属性の値に使う文字をエスケープし、それを返す。
+ * </JA>
+ * <EN>
+ * Escaped character for xml attribute. And return it.
+ * </EN>
+ */
+void
+escape_xml(char* originstr, char* outbuf)
+{
+  char nowchar[8];
+  int outi=0;
+  int origin_len=strlen(originstr);
+  for(int i=0;i<origin_len;i++) {
+    switch(originstr[i]) {
+      case '<':
+        outi+=set_escape_string(outbuf, "&lt;", outi);
+      break;
+      case '>':
+        outi+=set_escape_string(outbuf, "&gt;", outi);
+      break;
+      case '"':
+        outi+=set_escape_string(outbuf, "&quot;", outi);
+      break;
+      case '&':
+        outi+=set_escape_string(outbuf, "&amp;", outi);
+      break;
+      case '\'':
+        outi+=set_escape_string(outbuf, "&apos;", outi);
+      break;
+      default:
+        outbuf[outi]=originstr[i];
+        outi++;
+      break;
+    }
+  }
+  outbuf[outi]=0;
 }
