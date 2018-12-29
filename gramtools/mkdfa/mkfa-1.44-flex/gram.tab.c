@@ -1,6 +1,36 @@
 /* A Bison parser, made from gram.y
    by GNU bison 1.35.  */
 
+/* added to avoid implicit declaration warning of yyerror */
+int yyerror( char *mes );
+
+/* added from lex.yy.c to avoid implicit declaration warning of yylex */
+#ifdef c_plusplus
+#ifndef __cplusplus
+#define __cplusplus
+#endif
+#endif
+#ifdef __cplusplus
+#define YY_USE_PROTOS
+#else	/* ! __cplusplus */
+#if __STDC__
+#define YY_USE_PROTOS
+#endif	/* __STDC__ */
+#endif	/* ! __cplusplus */
+#ifdef __TURBOC__
+#define YY_USE_PROTOS
+#endif
+#ifdef YY_USE_PROTOS
+#define YY_PROTO(proto) proto
+#else
+#define YY_PROTO(proto) ()
+#endif
+#ifndef YY_DECL
+#define YY_DECL int yylex YY_PROTO(( void ))
+#endif
+YY_DECL;
+
+
 #define YYBISON 1  /* Identify Bison output.  */
 
 # define	CTRL_ASSIGN	257

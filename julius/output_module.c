@@ -792,7 +792,7 @@ escape_xml(char* originstr, char* outbuf)
   int i;
   
   if (noxmlescape_enabled == TRUE) {
-    strncpy(outbuf, MAXSTRLEN, originstr);
+    strncpy(outbuf, originstr, MAXSTRLEN);
     outbuf[MAXSTRLEN-1] = '\0';
     return;
   }
