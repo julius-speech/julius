@@ -95,6 +95,7 @@ install: install.lib install.include install.bin
 install.lib: $(TARGET)
 	${INSTALL} -d ${libdir}
 	${INSTALL_DATA} $(TARGET) ${libdir}
+	${INSTALL} -d ${pkgconfigdir}
 	${INSTALL_DATA} $(PKGCONF_FILE) ${pkgconfigdir}
 
 install.include:
