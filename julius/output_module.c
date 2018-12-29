@@ -10,6 +10,9 @@
 #include <time.h>
 
 extern boolean separate_score_flag;
+extern boolean noxmlescape_enabled;
+
+#define MAXSTRLEN 2048
 
 /**********************************************************************/
 /* process online/offline status  */
@@ -122,7 +125,7 @@ msock_word_out1(WORD_ID w, RecogProcess *r)
 {
   int j;
   static char buf[MAX_HMMNAME_LEN];
-  static char exbuf[MAX_HMMNAME_LEN];
+  static char exbuf[MAXSTRLEN];
   WORD_INFO *winfo;
 
   winfo = r->lm->winfo;
@@ -139,7 +142,7 @@ msock_word_out1(WORD_ID w, RecogProcess *r)
     module_send(" PHONE=\"");
     for(j=0;j<winfo->wlen[w];j++) {
       center_name(winfo->wseq[w][j]->name, buf);
-      escape_xml(buf,exbuf);
+      escape_xml(buf, exbuf);
       if (j == 0) module_send("%s", exbuf);
       else module_send(" %s", exbuf);
     }
@@ -166,7 +169,7 @@ msock_word_out2(WORD_ID w, RecogProcess *r)
 {
   int j;
   static char buf[MAX_HMMNAME_LEN];
-  static char exbuf[MAX_HMMNAME_LEN];
+  static char exbuf[MAXSTRLEN];
   WORD_INFO *winfo;
 
   winfo = r->lm->winfo;
@@ -242,7 +245,7 @@ result_pass1_current(Recog *recog, void *dummy)
   int num;
   RecogProcess *r;
   boolean multi;
-  static char exbuf[MAX_HMMNAME_LEN];
+  static char exbuf[MAXSTRLEN];
 
   if (out1_never) return;	/* no output specified */
 
@@ -306,7 +309,7 @@ result_pass1_final(Recog *recog, void *dummy)
   int i;
   RecogProcess *r;
   boolean multi;
-  static char exbuf[MAX_HMMNAME_LEN];
+  static char exbuf[MAXSTRLEN];
 
   if (out1_never) return;	/* no output specified */
 
@@ -383,7 +386,7 @@ result_pass2(Recog *recog, void *dummy)
   RecogProcess *r;
   boolean multi;
   SentenceAlign *align;
-  static char exbuf[MAX_HMMNAME_LEN];
+  static char exbuf[MAXSTRLEN];
 
   if (recog->process_list->next != NULL) multi = TRUE;
   else multi = FALSE;
@@ -523,7 +526,7 @@ result_graph(Recog *recog, void *dummy)
   WordGraph *root;
   RecogProcess *r;
   boolean multi;
-  static char exbuf[MAX_HMMNAME_LEN];
+  static char exbuf[MAXSTRLEN];
 
   if (recog->process_list->next != NULL) multi = TRUE;
   else multi = FALSE;
@@ -655,7 +658,7 @@ status_param(Recog *recog, void *dummy)
 static void
 result_gmm(Recog *recog, void *dummy)
 {
-  static char exbuf[MAX_HMMNAME_LEN];
+  static char exbuf[MAXSTRLEN];
   escape_xml(recog->gc->max_d->name, exbuf);
   module_send("<GMM RESULT=\"%s\"", exbuf);
 #ifdef CONFIDENCE_MEASURE
@@ -759,12 +762,16 @@ setup_output_msock(Recog *recog, void *data)
   //callback_add(recog, CALLBACK_EVENT_RESUME, status_resume, data);
 
 }
+
 static int
 set_escape_string(char* outstr, char* afterescape, int startindex)
 {
   int endindex = strlen(afterescape);
-  for(int i=0;i<endindex;i++) {
-    outstr[i+startindex] = afterescape[i];
+  int i;
+  
+  for(i = 0; i < endindex; i++) {
+    if (i + startindex < MAXSTRLEN)
+      outstr[i + startindex] = afterescape[i];
   }
   return endindex;
 }
@@ -780,31 +787,40 @@ set_escape_string(char* outstr, char* afterescape, int startindex)
 void
 escape_xml(char* originstr, char* outbuf)
 {
-  char nowchar[8];
-  int outi=0;
-  int origin_len=strlen(originstr);
-  for(int i=0;i<origin_len;i++) {
+  int outi = 0;
+  int origin_len =strlen(originstr);
+  int i;
+  
+  if (noxmlescape_enabled == TRUE) {
+    strncpy(outbuf, MAXSTRLEN, originstr);
+    outbuf[MAXSTRLEN-1] = '\0';
+    return;
+  }
+  
+  for(i = 0; i < origin_len; i++) {
     switch(originstr[i]) {
       case '<':
-        outi+=set_escape_string(outbuf, "&lt;", outi);
-      break;
+        outi += set_escape_string(outbuf, "&lt;", outi);
+	break;
       case '>':
-        outi+=set_escape_string(outbuf, "&gt;", outi);
-      break;
+        outi += set_escape_string(outbuf, "&gt;", outi);
+	break;
       case '"':
-        outi+=set_escape_string(outbuf, "&quot;", outi);
-      break;
+        outi += set_escape_string(outbuf, "&quot;", outi);
+	break;
       case '&':
-        outi+=set_escape_string(outbuf, "&amp;", outi);
-      break;
+        outi += set_escape_string(outbuf, "&amp;", outi);
+	break;
       case '\'':
-        outi+=set_escape_string(outbuf, "&apos;", outi);
-      break;
+        outi += set_escape_string(outbuf, "&apos;", outi);
+	break;
       default:
-        outbuf[outi]=originstr[i];
-        outi++;
-      break;
+	if (outi < MAXSTRLEN - 1) {
+	  outbuf[outi] = originstr[i];
+	  outi++;
+	}
+	break;
     }
   }
-  outbuf[outi]=0;
+  outbuf[outi] = '\0';
 }

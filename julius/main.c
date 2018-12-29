@@ -27,6 +27,7 @@
 
 boolean separate_score_flag = FALSE;
 boolean outfile_enabled = FALSE;
+boolean noxmlescape_enabled = FALSE;
 
 static char *logfile = NULL;
 static boolean nolog = FALSE;
@@ -69,6 +70,12 @@ opt_outfile(Jconf *jconf, char *arg[], int argnum)
   outfile_enabled = TRUE;
   return TRUE;
 }
+static boolean
+opt_noxmlescape(Jconf *jconf, char *arg[], int argnum)
+{
+  noxmlescape_enabled = TRUE;
+  return TRUE;
+}
    
 /**********************************************************************/
 int
@@ -97,6 +104,7 @@ main(int argc, char *argv[])
   module_add_option();
   charconv_add_option();
   j_add_option("-separatescore", 0, 0, "output AM and LM scores separately", opt_separatescore);
+  j_add_option("-noxmlescale", 0, 0, "disable XML escape", opt_noxmlescape);
   j_add_option("-logfile", 1, 1, "output log to file", opt_logfile);
   j_add_option("-nolog", 0, 0, "not output any log", opt_nolog);
   j_add_option("-outfile", 0, 0, "save result in separate .out file", opt_outfile);

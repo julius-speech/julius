@@ -37,7 +37,7 @@ void module_disconnect();
 void decode_output_selection(char *str);
 void send_gram_info(RecogProcess *r);
 void setup_output_msock(Recog *recog, void *data);
-void escape_xml(char *originstr,char *outbuf);
+void escape_xml(char *originstr, char *outbuf);
 
 /* output_stdout.c */
 void print_all_gram(Recog *recog);
@@ -50,4 +50,7 @@ void outfile_set_fname(char *input_filename);
 /* record.c */
 void record_add_option();
 void record_setup(Recog *recog, void *data);
+
+
+
 
