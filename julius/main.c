@@ -24,6 +24,7 @@
  */
 
 #include "app.h"
+#include "config.h"
 
 boolean separate_score_flag = FALSE;
 boolean outfile_enabled = FALSE;
@@ -33,6 +34,75 @@ static char *logfile = NULL;
 static boolean nolog = FALSE;
 
 /************************************************************************/
+
+#ifdef VISUALIZE
+
+/**
+ * Callbacks for the graphical interface.
+ *
+ */
+
+static boolean show_gui = FALSE;
+
+static void
+show_visual(Recog *recog, void *dummy)
+{
+  RecogProcess *process = recog->process_list;
+
+  if (show_gui)
+    visual_show(process->backtrellis);
+}
+
+static void
+init_visual2(Recog *recog, void *dummy)
+{
+  JCONF_SEARCH *conf = recog->process_list->config;
+
+  if (show_gui)
+    visual2_init(conf->pass2.hypo_overflow);
+}
+
+static void
+pop_visual2(Recog *recog, void *dummy)
+{
+  StackDecode *pass2 = &(recog->process_list->pass2);
+
+  if (show_gui)
+    visual2_popped(pass2->current, pass2->popctr);
+}
+
+static void
+next_word_visual2(Recog *recog, void *dummy)
+{
+  RecogProcess *process;
+  StackDecode *pass2;
+  NODE *prev, *next;
+  int popctr;
+
+  if (!show_gui)
+    return;
+
+  process = recog->process_list;
+  pass2 = &(process->pass2);
+  prev = pass2->current;
+  popctr = pass2->popctr;
+
+  process = process->next;
+  pass2 = &(process->pass2);
+  next = pass2->current;
+
+  visual2_next_word(prev, next, popctr);
+}
+
+static boolean
+opt_visualize(Jconf *jconf, char *arg[], int argnum)
+{
+  show_gui = TRUE;
+  return TRUE;
+}
+
+#endif
+
 /**
  * Callbacks for application option handling.
  * 
@@ -110,6 +180,9 @@ main(int argc, char *argv[])
   j_add_option("-outfile", 0, 0, "save result in separate .out file", opt_outfile);
   j_add_option("-help", 0, 0, "display this help", opt_help);
   j_add_option("--help", 0, 0, "display this help", opt_help);
+#ifdef VISUALIZE
+  j_add_option("-visualize", 0, 0, "show a visual interface for the parsed input", opt_visualize);
+#endif /*VISUALIZE*/
 
   /* create a configuration variables container */
   jconf = j_jconf_new();
@@ -210,15 +283,10 @@ main(int argc, char *argv[])
 #ifdef VISUALIZE
   /* Visualize: initialize GTK */
   visual_init(recog);
-  callback_add(recog, CALLBACK_EVENT_RECOGNITION_END, visual_show, NULL);
-  callback_add(recog, CALLBACK_EVENT_PASS2_BEGIN, visual2_init, NULL);
-  callback_add(recog, CALLBACK_DEBUG_PASS2_POP, visual2_popped, NULL);
-  callback_add(recog, CALLBACK_DEBUG_PASS2_PUSH, visual2_next_word, NULL);
-  /* below should be called at result */
-  visual2_best(now, winfo);
-  /* 音声取り込みはコールバックで新規作成 */
-  /* 第2パスで認識結果出力時に以下を実行 */
-  visual2_best(now, recog->model->winfo);
+  callback_add(recog, CALLBACK_RESULT, show_visual, NULL);
+  callback_add(recog, CALLBACK_EVENT_PASS2_BEGIN, init_visual2, jconf);
+  callback_add(recog, CALLBACK_DEBUG_PASS2_POP, pop_visual2, NULL);
+  callback_add(recog, CALLBACK_DEBUG_PASS2_PUSH, next_word_visual2, NULL);
 #endif
   
   /* if no grammar specified on startup, start with pause status */

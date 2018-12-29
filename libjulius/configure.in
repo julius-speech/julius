@@ -211,6 +211,12 @@ if test "$enableval" = yes; then
 fi
 ,AC_DEFINE(ENABLE_PLUGIN))
 
+# enable gtk+ ui
+AC_ARG_ENABLE(visualize,
+[  --enable-visualize    enable search space visualization on Gtk+],
+use_gtk=$enableval
+,use_gtk=no)
+
 dnl CM options check
 if test "$use_cm" = yes; then
   AC_DEFINE(CONFIDENCE_MEASURE)
@@ -247,6 +253,10 @@ dnl graphout option
 if test "$use_graphout_nbest" = no; then
     AC_DEFINE(GRAPHOUT_DYNAMIC)
     AC_DEFINE(GRAPHOUT_SEARCH)
+fi
+
+if test "$use_gtk" = yes; then
+    AC_DEFINE(VISUALIZE)
 fi
 
 dnl final definition based on easy setup and separate option

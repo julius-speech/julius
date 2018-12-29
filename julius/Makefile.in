@@ -11,7 +11,7 @@ SHELL=/bin/sh
 .SUFFIXES:
 .SUFFIXES: .c .o
 .c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GTK_CFLAGS) -o $@ -c $<
 
 LIBSENT=../libsent
 LIBJULIUS=../libjulius
@@ -47,14 +47,15 @@ output_module.o \
 output_stdout.o \
 output_file.o \
 record.o \
-@CCOBJ@
+@CCOBJ@ \
+@GTKOBJ@
 
 ############################################################
 
 all: $(TARGET)
 
 $(TARGET): $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a $(OBJ)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(GTK_LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(GTK_CFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(GTK_LIBS)
 
 ############################################################
 
