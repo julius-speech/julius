@@ -68,6 +68,7 @@ void setVoca( void )
 	    bodynum++;
 	}
     }
+    fclose(fp);
 }
 
 char *gettoken( char *line, char *dst )
