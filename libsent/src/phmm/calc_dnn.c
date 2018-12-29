@@ -461,6 +461,7 @@ void dnn_clear(DNNData *dnn)
   int i;
 
   if (dnn->h) {
+    dnn_layer_clear(&(dnn->o));
     for (i = 0; i < dnn->hnum; i++) {
       dnn_layer_clear(&(dnn->h[i]));
     }
