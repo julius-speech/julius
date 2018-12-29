@@ -104,7 +104,7 @@ static boolean need_swap;	///< Whether samples need byte swap
 static int frag_size;		///< Actual data fragment size
 static boolean stereo_rec;	///< TRUE if stereo recording (use left only)
 static char *defaultdev = DEFAULT_DEVICE; ///< Default device name
-static char devname[MAXPATHLEN];		///< Current device name
+static char adevname[MAXPATHLEN];		///< Current device name
 
 /** 
  * Device initialization: check device capability and open for recording.
@@ -363,18 +363,18 @@ adin_oss_begin(char *pathname)
 
   /* set device name */
   if (pathname != NULL) {
-    strncpy(devname, pathname, MAXPATHLEN);
-    jlog("Stat: adin_oss: device name = %s (from argument)\n", devname);
+    strncpy(adevname, pathname, MAXPATHLEN);
+    jlog("Stat: adin_oss: device name = %s (from argument)\n", adevname);
   } else if ((p = getenv("AUDIODEV")) != NULL) {
-    strncpy(devname, p, MAXPATHLEN);
-    jlog("Stat: adin_oss: device name = %s (from AUDIODEV)\n", devname);
+    strncpy(adevname, p, MAXPATHLEN);
+    jlog("Stat: adin_oss: device name = %s (from AUDIODEV)\n", adevname);
   } else {
-    strncpy(devname, defaultdev, MAXPATHLEN);
-    jlog("Stat: adin_oss: device name = %s (application default)\n", devname);
+    strncpy(adevname, defaultdev, MAXPATHLEN);
+    jlog("Stat: adin_oss: device name = %s (application default)\n", adevname);
   }
 
   /* open the device */
-  if (adin_oss_open(devname) == FALSE) return FALSE;
+  if (adin_oss_open(adevname) == FALSE) return FALSE;
 
   /* Read 1 sample (and ignore it) to tell the audio device start recording.
      (If you knows better way, teach me...) */
@@ -488,6 +488,6 @@ adin_oss_input_name()
 #ifndef HAS_OSS
   return NULL;
 #else
-  return(devname);
+  return(adevname);
 #endif
 }
