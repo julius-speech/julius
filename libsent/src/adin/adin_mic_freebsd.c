@@ -80,7 +80,7 @@ struct pollfd fds[1];		///< Workarea for polling device
 #define POLLINTERVAL 200	///< Polling interval in miliseconds
 
 static char *defaultdev = DEFAULT_DEVICE; ///< Default device name
-static char devname[MAXPATHLEN];		///< Current device name
+static char adevname[MAXPATHLEN];		///< Current device name
 
 /** 
  * Device initialization: check machine capability
@@ -213,18 +213,18 @@ adin_mic_begin(char *pathname)
 {
   /* set device name */
   if (pathname != NULL) {
-    strncpy(devname, pathname, MAXPATHLEN);
-    jlog("Stat: adin_freebsd: device name = %s (from argument)\n", devname);
-  } else if ((p = getenv("AUDIODEV")) != NULL) {
-    strncpy(devname, p, MAXPATHLEN);
-    jlog("Stat: adin_freebsd: device name = %s (from AUDIODEV)\n", devname);
+    strncpy(adevname, pathname, MAXPATHLEN);
+    jlog("Stat: adin_freebsd: device name = %s (from argument)\n", adevname);
+  } else if ((pathname = getenv("AUDIODEV")) != NULL) {
+    strncpy(adevname, pathname, MAXPATHLEN);
+    jlog("Stat: adin_freebsd: device name = %s (from AUDIODEV)\n", adevname);
   } else {
-    strncpy(devname, defaultdev, MAXPATHLEN);
-    jlog("Stat: adin_freebsd: device name = %s (application default)\n", devname);
+    strncpy(adevname, defaultdev, MAXPATHLEN);
+    jlog("Stat: adin_freebsd: device name = %s (application default)\n", adevname);
   }
 
   /* open the device */
-  return(adin_mic_open(devname));
+  return(adin_mic_open(adevname));
 }
 
 /** 
@@ -320,5 +320,5 @@ adin_mic_resume()
 char *
 adin_mic_input_name()
 {
-  return(devname);
+  return(adevname);
 }
