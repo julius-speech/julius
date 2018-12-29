@@ -344,7 +344,6 @@ AC_TYPE_SIGNAL
 dnl AC_CHECK_FUNCS(strdup strstr)
 dnl AC_CHECK_FUNC(gethostbyname,,AC_CHECK_LIB(nsl,gethostbyname))
 dnl AC_CHECK_FUNC(connect,,AC_CHECK_LIB(socket, connect))
-AC_CHECK_FUNC(dlopen,,AC_CHECK_LIB(dl, dlopen))
 
 dnl check for POSIX thread support
 if test "$want_pthread" = yes; then
@@ -380,6 +379,9 @@ if test "$want_pthread" = yes; then
 else
   use_pthread=no
 fi
+
+AC_CHECK_FUNC(dlopen,,AC_CHECK_LIB(dl, dlopen))
+
 
 dnl write names
 AC_DEFINE_UNQUOTED(JULIUS_PRODUCTNAME, "$JULIUS_PRODUCTNAME")
