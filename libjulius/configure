@@ -585,6 +585,7 @@ PACKAGE_URL=
 ac_unique_file="src/search_bestfirst_main.c"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+EXTRAOBJ
 easy_setup
 JULIUS_VERSION
 JULIUS_MINOR_VERSION
@@ -679,6 +680,7 @@ enable_gmm_vad
 enable_decoder_vad
 enable_power_reject
 enable_plugin
+enable_libfvad
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1337,6 +1339,7 @@ Optional Features:
   --enable-decoder-vad       enable a new decoder-based VAD by NAIST team
   --enable-power-reject      enable post rejection by power
   --disable-plugin           disable plugin support
+  --disable-libfvad         disable libfvad library
 
 Some influential environment variables:
   CC          C compiler command
@@ -2046,6 +2049,8 @@ JULIUS_MAJOR_VERSION=4
 JULIUS_MINOR_VERSION=4.2.1
 JULIUS_VERSION=${JULIUS_MAJOR_VERSION}.${JULIUS_MINOR_VERSION}
 
+EXTRAOBJ=""
+
 
 # Check whether --enable-pthread was given.
 if test "${enable_pthread+set}" = set; then :
@@ -2273,6 +2278,15 @@ fi
 else
   $as_echo "#define ENABLE_PLUGIN 1" >>confdefs.h
 
+fi
+
+
+# Check whether --enable-libfvad was given.
+if test "${enable_libfvad+set}" = set; then :
+  enableval=$enable_libfvad; use_libfvad=$enableval
+
+else
+  use_libfvad=yes
 fi
 
 
@@ -4137,6 +4151,29 @@ fi
 fi
 
 
+if test "$use_libfvad" = yes; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libfvad/libfvad/include/fvad.h" >&5
+$as_echo_n "checking for libfvad/libfvad/include/fvad.h... " >&6; }
+if ${ac_cv_file_libfvad_libfvad_include_fvad_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "libfvad/libfvad/include/fvad.h"; then
+  ac_cv_file_libfvad_libfvad_include_fvad_h=yes
+else
+  ac_cv_file_libfvad_libfvad_include_fvad_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file_libfvad_libfvad_include_fvad_h" >&5
+$as_echo "$ac_cv_file_libfvad_libfvad_include_fvad_h" >&6; }
+if test "x$ac_cv_file_libfvad_libfvad_include_fvad_h" = xyes; then :
+  EXTRAOBJ="$EXTRAOBJ libfvad/libfvad/src/fvad.o libfvad/libfvad/src/signal_processing/division_operations.o libfvad/libfvad/src/signal_processing/energy.o libfvad/libfvad/src/signal_processing/get_scaling_square.o libfvad/libfvad/src/signal_processing/resample_48khz.o libfvad/libfvad/src/signal_processing/resample_by_2_internal.o libfvad/libfvad/src/signal_processing/resample_fractional.o libfvad/libfvad/src/signal_processing/spl_inl.o libfvad/libfvad/src/vad/vad_core.o libfvad/libfvad/src/vad/vad_filterbank.o libfvad/libfvad/src/vad/vad_gmm.o libfvad/libfvad/src/vad/vad_sp.o"
+    $as_echo "#define HAVE_LIBFVAD 1" >>confdefs.h
+
+fi
+
+fi
 
 cat >>confdefs.h <<_ACEOF
 #define JULIUS_PRODUCTNAME "$JULIUS_PRODUCTNAME"
@@ -4157,6 +4194,8 @@ _ACEOF
 cat >>confdefs.h <<_ACEOF
 #define JULIUS_BUILD_INFO "$CC $CFLAGS"
 _ACEOF
+
+
 
 
 

@@ -16,6 +16,8 @@ JULIUS_MAJOR_VERSION=4
 JULIUS_MINOR_VERSION=4.2.1
 JULIUS_VERSION=${JULIUS_MAJOR_VERSION}.${JULIUS_MINOR_VERSION}
 
+EXTRAOBJ=""
+
 dnl Checks for options
 
 dnl pthread support
@@ -211,6 +213,12 @@ if test "$enableval" = yes; then
 fi
 ,AC_DEFINE(ENABLE_PLUGIN))
 
+dnl libfvad
+AC_ARG_ENABLE(libfvad,
+[  --disable-libfvad         disable libfvad library],
+use_libfvad=$enableval
+,use_libfvad=yes)
+
 dnl CM options check
 if test "$use_cm" = yes; then
   AC_DEFINE(CONFIDENCE_MEASURE)
@@ -382,6 +390,12 @@ fi
 
 AC_CHECK_FUNC(dlopen,,AC_CHECK_LIB(dl, dlopen))
 
+dnl check for libfvad
+if test "$use_libfvad" = yes; then
+  AC_CHECK_FILE(libfvad/libfvad/include/fvad.h,
+    EXTRAOBJ="$EXTRAOBJ libfvad/libfvad/src/fvad.o libfvad/libfvad/src/signal_processing/division_operations.o libfvad/libfvad/src/signal_processing/energy.o libfvad/libfvad/src/signal_processing/get_scaling_square.o libfvad/libfvad/src/signal_processing/resample_48khz.o libfvad/libfvad/src/signal_processing/resample_by_2_internal.o libfvad/libfvad/src/signal_processing/resample_fractional.o libfvad/libfvad/src/signal_processing/spl_inl.o libfvad/libfvad/src/vad/vad_core.o libfvad/libfvad/src/vad/vad_filterbank.o libfvad/libfvad/src/vad/vad_gmm.o libfvad/libfvad/src/vad/vad_sp.o"
+    AC_DEFINE(HAVE_LIBFVAD))
+fi
 
 dnl write names
 AC_DEFINE_UNQUOTED(JULIUS_PRODUCTNAME, "$JULIUS_PRODUCTNAME")
@@ -395,6 +409,8 @@ AC_SUBST(JULIUS_MAJOR_VERSION)
 AC_SUBST(JULIUS_MINOR_VERSION)
 AC_SUBST(JULIUS_VERSION)
 AC_SUBST(easy_setup)
+
+AC_SUBST(EXTRAOBJ)
 
 AC_OUTPUT_COMMANDS(
 [chmod +x libjulius-config libjulius-config-dist

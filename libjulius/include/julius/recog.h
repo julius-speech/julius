@@ -444,6 +444,16 @@ typedef struct __adin__ {
 
   char current_input_name[MAXPATHLEN]; ///< File or device name of current input
 
+#ifdef HAVE_LIBFVAD
+  void *fvad;                     ///< libfvad instance
+  int fvad_frameshiftinms;        ///< parameter: frame shift in ms
+  int fvad_framesize;             ///< parameter: frame size
+  SP16 fvad_speech[MAXSPEECHLEN]; ///< temporal buffer to hold audio input for libfvad
+  int fvad_speechlen;             ///< current length of saved samples
+  int fvad_lastresult[5];         ///< working buffer to hold last 5 results
+  int fvad_lastp;                 ///< current pointer fot lastresult buffer
+#endif /* HAVE_LIBFVAD */
+
 } ADIn;
 
 /**

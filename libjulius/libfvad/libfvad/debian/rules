@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+DATE=$(shell date +%Y%m%d)
+DISTRIBUTION=$(shell lsb_release -sc)
+PACKAGEVERSION=$(DATE)~$(DISTRIBUTION)
+
+%:
+	dh $@ --with autoreconf
+
+override_dh_auto_configure:
+	./configure --prefix=/usr
+
+override_dh_auto_test:
+override_dh_gencontrol:
+	dh_gencontrol -- -v$(PACKAGEVERSION)

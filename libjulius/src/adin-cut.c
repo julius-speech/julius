@@ -110,6 +110,10 @@
 #include <pthread.h>
 #endif
 
+#ifdef HAVE_LIBFVAD
+#include "../libfvad/libfvad/include/fvad.h"
+#endif /* HAVE_LIBFVAD */
+
 /// Define this if you want to output a debug message for threading
 #undef THREAD_DEBUG
 /// Enable some fixes relating adinnet+module
@@ -139,6 +143,9 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
 {
   float samples_in_msec;
   int freq;
+#ifdef HAVE_LIBFVAD
+  int i;
+#endif /* HAVE_LIBFVAD */
 
   if (jconf->input.sfreq <= 0) {
     jlog("ERROR: adin_setup_param: going to set smpfreq to %d\n", jconf->input.sfreq);
@@ -205,6 +212,20 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
 
   adin->rehash = FALSE;
 
+#ifdef HAVE_LIBFVAD
+  /* initialize libfvad */
+  adin->fvad = fvad_new();
+  /* set up parameters */
+  fvad_set_sample_rate(adin->fvad, jconf->input.sfreq);
+  fvad_set_mode(adin->fvad, 2);
+  adin->fvad_frameshiftinms = 10;
+  /* clea up working area */
+  adin->fvad_speechlen = 0;
+  adin->fvad_framesize = jconf->input.sfreq * adin->fvad_frameshiftinms / 1000;
+  for (i = 0; i < 5; i++) adin->fvad_lastresult[i] = 0;
+  adin->fvad_lastp = 0;
+#endif /* HAVE_LIBFVAD */
+
   return TRUE;
 
 }
@@ -229,6 +250,57 @@ adin_purge(ADIn *a, int from)
   }
   a->bp = a->current_len - from;
 }
+
+#ifdef HAVE_LIBFVAD
+/* proceed libfvad detection: return 1 for speech part, 0 for non-speech part */
+static int
+fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
+{
+  int i, j, k;
+  int ret, result;
+  float sum;
+
+  if (a->fvad_speechlen + samplenum > MAXSPEECHLEN) {
+    /* buffer overflow */
+    samplenum = MAXSPEECHLEN - a->fvad_speechlen;
+  }
+  /* append incoming samples to libfvad buffer */
+  for (i = 0; i < samplenum; i++) {
+    a->fvad_speech[a->fvad_speechlen + i] = speech[i];
+  }
+  a->fvad_speechlen += samplenum;
+  /* process per 10ms block till buffered end */
+  for (i = 0; i + a->fvad_framesize < a->fvad_speechlen; i += a->fvad_framesize) {
+    ret = fvad_process(a->fvad, &(a->fvad_speech[i]), a->fvad_framesize);
+    if (ret < 0) {
+      /* error */
+      jlog("ERROR: fvad_proceed: internal error occured at fvad_process()\n");
+      break;
+    }
+    a->fvad_lastresult[a->fvad_lastp] = ret;
+    if (++a->fvad_lastp >= 5) a->fvad_lastp -= 5;
+  }
+  /* get smoothed result from last 5 ticks */
+  sum = 0.0f;
+  for (j = 0; j < 5; j++) sum += (float)a->fvad_lastresult[j];
+  sum /= 5.0f;
+  /* judge */
+  if (sum >= 0.5f)
+    result = 1;
+  else
+    result = 0;
+  
+  /* flush processed samples */
+  k = 0;
+  for (j = i; j < a->fvad_speechlen; j++) {
+    a->fvad_speech[k] = a->fvad_speech[j];
+    k++;
+  }
+  a->fvad_speechlen = k;
+  
+  return result;
+}
+#endif /* HAVE_LIBFVAD */
 
 /** 
  * <EN>
@@ -340,6 +412,11 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     a->nc = 0;
     a->sblen = 0;
     a->need_init = FALSE;		/* for next call */
+#ifdef HAVE_LIBFVAD
+    a->fvad_speechlen = 0;
+    for (i = 0; i < 5; i++) a->fvad_lastresult[i] = 0;
+    a->fvad_lastp = 0;
+#endif /* HAVE_LIBFVAD */
   }
 
   /****************/
@@ -568,7 +645,13 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	/* return zero-cross num in the cycle buffer */
 	zc = count_zc_e(&(a->zc), &(a->buffer[i]), wstep);
 	
-	if (zc > a->noise_zerocross) { /* now triggering */
+	if (
+#ifdef HAVE_LIBFVAD
+	    /* trigger when both libfvad and julius VAD are triggered */
+	    /* process input in libfvad and get VAD result */
+	    fvad_proceed(a, &(a->buffer[i]), wstep) == 1 &&
+#endif /* HAVE_LIBFVAD */
+	    zc > a->noise_zerocross) { /* now triggering */
 	  
 	  if (a->is_valid_data == FALSE) {
 	    /*****************************************************/
@@ -1411,6 +1494,9 @@ adin_free_param(Recog *recog)
 #ifdef HAVE_PTHREAD
   if (a->speech) free(a->speech);
 #endif
+#ifdef HAVE_LIBFVAD
+  fvad_free(a->fvad);
+#endif /* HAVE_LIBFVAD */
 }
 
 /* end of file */

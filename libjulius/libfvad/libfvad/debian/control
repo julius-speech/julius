@@ -1,0 +1,14 @@
+Source: libfvad
+Section: libdevel
+Priority: optional
+Maintainer: s3rj1k <evasive.gyron@gmail.com>
+Build-Depends: debhelper (>= 9), autotools-dev, libtool
+Standards-Version: 3.9.6
+
+Package: libfvad-dev
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: provides voice activity detection (VAD) library.
+ This package contains fork of the VAD engine that is part 
+ of the WebRTC Native Code package, for use as a standalone 
+ library independent from the rest of the WebRTC code.

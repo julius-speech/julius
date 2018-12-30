@@ -254,3 +254,6 @@
  * 
  */
 #define ENABLE_PLUGIN 1
+
+/* Define if you have libfvad under this dir and enable it */
+#define HAVE_LIBFVAD 1

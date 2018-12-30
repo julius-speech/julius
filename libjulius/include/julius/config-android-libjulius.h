@@ -15,3 +15,5 @@
 #define GRAPHOUT_DYNAMIC 1
 #define GRAPHOUT_SEARCH 1
 #define HAVE_STRCASECMP 1
+/* Define if you have libfvad under this dir and enable it */
+#define HAVE_LIBFVAD

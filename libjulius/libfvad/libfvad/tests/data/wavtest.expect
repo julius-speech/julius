@@ -1,0 +1,240 @@
+=== audio_tiny8.wav; mode 0; 10 ms ===
+voice detected in 515 of 540 frames (95.37%)
+4 voice segments, average length 128.75 frames
+5 non-voice segments, average length 5.00 frames
+
+=== audio_tiny8.wav; mode 0; 20 ms ===
+voice detected in 265 of 270 frames (98.15%)
+2 voice segments, average length 132.50 frames
+2 non-voice segments, average length 2.50 frames
+
+=== audio_tiny8.wav; mode 0; 30 ms ===
+voice detected in 177 of 180 frames (98.33%)
+2 voice segments, average length 88.50 frames
+2 non-voice segments, average length 1.50 frames
+
+=== audio_tiny8.wav; mode 1; 10 ms ===
+voice detected in 511 of 540 frames (94.63%)
+4 voice segments, average length 127.75 frames
+5 non-voice segments, average length 5.80 frames
+
+=== audio_tiny8.wav; mode 1; 20 ms ===
+voice detected in 265 of 270 frames (98.15%)
+2 voice segments, average length 132.50 frames
+2 non-voice segments, average length 2.50 frames
+
+=== audio_tiny8.wav; mode 1; 30 ms ===
+voice detected in 177 of 180 frames (98.33%)
+2 voice segments, average length 88.50 frames
+2 non-voice segments, average length 1.50 frames
+
+=== audio_tiny8.wav; mode 2; 10 ms ===
+voice detected in 493 of 540 frames (91.30%)
+4 voice segments, average length 123.25 frames
+5 non-voice segments, average length 9.40 frames
+
+=== audio_tiny8.wav; mode 2; 20 ms ===
+voice detected in 257 of 270 frames (95.19%)
+4 voice segments, average length 64.25 frames
+4 non-voice segments, average length 3.25 frames
+
+=== audio_tiny8.wav; mode 2; 30 ms ===
+voice detected in 170 of 180 frames (94.44%)
+4 voice segments, average length 42.50 frames
+4 non-voice segments, average length 2.50 frames
+
+=== audio_tiny8.wav; mode 3; 10 ms ===
+voice detected in 481 of 540 frames (89.07%)
+4 voice segments, average length 120.25 frames
+5 non-voice segments, average length 11.80 frames
+
+=== audio_tiny8.wav; mode 3; 20 ms ===
+voice detected in 239 of 270 frames (88.52%)
+7 voice segments, average length 34.14 frames
+8 non-voice segments, average length 3.88 frames
+
+=== audio_tiny8.wav; mode 3; 30 ms ===
+voice detected in 162 of 180 frames (90.00%)
+5 voice segments, average length 32.40 frames
+6 non-voice segments, average length 3.00 frames
+
+=== audio_tiny16.wav; mode 0; 10 ms ===
+voice detected in 520 of 540 frames (96.30%)
+4 voice segments, average length 130.00 frames
+5 non-voice segments, average length 4.00 frames
+
+=== audio_tiny16.wav; mode 0; 20 ms ===
+voice detected in 265 of 270 frames (98.15%)
+2 voice segments, average length 132.50 frames
+2 non-voice segments, average length 2.50 frames
+
+=== audio_tiny16.wav; mode 0; 30 ms ===
+voice detected in 177 of 180 frames (98.33%)
+2 voice segments, average length 88.50 frames
+2 non-voice segments, average length 1.50 frames
+
+=== audio_tiny16.wav; mode 1; 10 ms ===
+voice detected in 517 of 540 frames (95.74%)
+4 voice segments, average length 129.25 frames
+5 non-voice segments, average length 4.60 frames
+
+=== audio_tiny16.wav; mode 1; 20 ms ===
+voice detected in 265 of 270 frames (98.15%)
+2 voice segments, average length 132.50 frames
+2 non-voice segments, average length 2.50 frames
+
+=== audio_tiny16.wav; mode 1; 30 ms ===
+voice detected in 177 of 180 frames (98.33%)
+2 voice segments, average length 88.50 frames
+2 non-voice segments, average length 1.50 frames
+
+=== audio_tiny16.wav; mode 2; 10 ms ===
+voice detected in 497 of 540 frames (92.04%)
+4 voice segments, average length 124.25 frames
+5 non-voice segments, average length 8.60 frames
+
+=== audio_tiny16.wav; mode 2; 20 ms ===
+voice detected in 256 of 270 frames (94.81%)
+4 voice segments, average length 64.00 frames
+5 non-voice segments, average length 2.80 frames
+
+=== audio_tiny16.wav; mode 2; 30 ms ===
+voice detected in 170 of 180 frames (94.44%)
+4 voice segments, average length 42.50 frames
+4 non-voice segments, average length 2.50 frames
+
+=== audio_tiny16.wav; mode 3; 10 ms ===
+voice detected in 470 of 540 frames (87.04%)
+7 voice segments, average length 67.14 frames
+8 non-voice segments, average length 8.75 frames
+
+=== audio_tiny16.wav; mode 3; 20 ms ===
+voice detected in 241 of 270 frames (89.26%)
+7 voice segments, average length 34.43 frames
+8 non-voice segments, average length 3.62 frames
+
+=== audio_tiny16.wav; mode 3; 30 ms ===
+voice detected in 162 of 180 frames (90.00%)
+5 voice segments, average length 32.40 frames
+6 non-voice segments, average length 3.00 frames
+
+=== audio_tiny32.wav; mode 0; 10 ms ===
+voice detected in 518 of 540 frames (95.93%)
+4 voice segments, average length 129.50 frames
+5 non-voice segments, average length 4.40 frames
+
+=== audio_tiny32.wav; mode 0; 20 ms ===
+voice detected in 265 of 270 frames (98.15%)
+2 voice segments, average length 132.50 frames
+2 non-voice segments, average length 2.50 frames
+
+=== audio_tiny32.wav; mode 0; 30 ms ===
+voice detected in 177 of 180 frames (98.33%)
+2 voice segments, average length 88.50 frames
+2 non-voice segments, average length 1.50 frames
+
+=== audio_tiny32.wav; mode 1; 10 ms ===
+voice detected in 515 of 540 frames (95.37%)
+4 voice segments, average length 128.75 frames
+5 non-voice segments, average length 5.00 frames
+
+=== audio_tiny32.wav; mode 1; 20 ms ===
+voice detected in 265 of 270 frames (98.15%)
+2 voice segments, average length 132.50 frames
+2 non-voice segments, average length 2.50 frames
+
+=== audio_tiny32.wav; mode 1; 30 ms ===
+voice detected in 177 of 180 frames (98.33%)
+2 voice segments, average length 88.50 frames
+2 non-voice segments, average length 1.50 frames
+
+=== audio_tiny32.wav; mode 2; 10 ms ===
+voice detected in 497 of 540 frames (92.04%)
+4 voice segments, average length 124.25 frames
+5 non-voice segments, average length 8.60 frames
+
+=== audio_tiny32.wav; mode 2; 20 ms ===
+voice detected in 257 of 270 frames (95.19%)
+4 voice segments, average length 64.25 frames
+4 non-voice segments, average length 3.25 frames
+
+=== audio_tiny32.wav; mode 2; 30 ms ===
+voice detected in 170 of 180 frames (94.44%)
+4 voice segments, average length 42.50 frames
+4 non-voice segments, average length 2.50 frames
+
+=== audio_tiny32.wav; mode 3; 10 ms ===
+voice detected in 470 of 540 frames (87.04%)
+7 voice segments, average length 67.14 frames
+8 non-voice segments, average length 8.75 frames
+
+=== audio_tiny32.wav; mode 3; 20 ms ===
+voice detected in 241 of 270 frames (89.26%)
+7 voice segments, average length 34.43 frames
+8 non-voice segments, average length 3.62 frames
+
+=== audio_tiny32.wav; mode 3; 30 ms ===
+voice detected in 162 of 180 frames (90.00%)
+5 voice segments, average length 32.40 frames
+6 non-voice segments, average length 3.00 frames
+
+=== audio_tiny48.wav; mode 0; 10 ms ===
+voice detected in 521 of 540 frames (96.48%)
+3 voice segments, average length 173.67 frames
+4 non-voice segments, average length 4.75 frames
+
+=== audio_tiny48.wav; mode 0; 20 ms ===
+voice detected in 264 of 270 frames (97.78%)
+2 voice segments, average length 132.00 frames
+2 non-voice segments, average length 3.00 frames
+
+=== audio_tiny48.wav; mode 0; 30 ms ===
+voice detected in 178 of 180 frames (98.89%)
+1 voice segments, average length 178.00 frames
+1 non-voice segments, average length 2.00 frames
+
+=== audio_tiny48.wav; mode 1; 10 ms ===
+voice detected in 511 of 540 frames (94.63%)
+3 voice segments, average length 170.33 frames
+4 non-voice segments, average length 7.25 frames
+
+=== audio_tiny48.wav; mode 1; 20 ms ===
+voice detected in 263 of 270 frames (97.41%)
+3 voice segments, average length 87.67 frames
+3 non-voice segments, average length 2.33 frames
+
+=== audio_tiny48.wav; mode 1; 30 ms ===
+voice detected in 178 of 180 frames (98.89%)
+1 voice segments, average length 178.00 frames
+1 non-voice segments, average length 2.00 frames
+
+=== audio_tiny48.wav; mode 2; 10 ms ===
+voice detected in 495 of 540 frames (91.67%)
+4 voice segments, average length 123.75 frames
+5 non-voice segments, average length 9.00 frames
+
+=== audio_tiny48.wav; mode 2; 20 ms ===
+voice detected in 257 of 270 frames (95.19%)
+4 voice segments, average length 64.25 frames
+4 non-voice segments, average length 3.25 frames
+
+=== audio_tiny48.wav; mode 2; 30 ms ===
+voice detected in 169 of 180 frames (93.89%)
+4 voice segments, average length 42.25 frames
+4 non-voice segments, average length 2.75 frames
+
+=== audio_tiny48.wav; mode 3; 10 ms ===
+voice detected in 467 of 540 frames (86.48%)
+7 voice segments, average length 66.71 frames
+8 non-voice segments, average length 9.12 frames
+
+=== audio_tiny48.wav; mode 3; 20 ms ===
+voice detected in 246 of 270 frames (91.11%)
+5 voice segments, average length 49.20 frames
+6 non-voice segments, average length 4.00 frames
+
+=== audio_tiny48.wav; mode 3; 30 ms ===
+voice detected in 160 of 180 frames (88.89%)
+6 voice segments, average length 26.67 frames
+7 non-voice segments, average length 2.86 frames
+

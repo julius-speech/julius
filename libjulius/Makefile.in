@@ -78,7 +78,7 @@ src/mbr.o \
 src/gmm.o \
 src/word_align.o \
 src/plugin.o \
-src/version.o
+src/version.o @EXTRAOBJ@
 
 ############################################################
 
@@ -112,6 +112,7 @@ depend:
 clean:
 	$(RM) *.bak *~ core TAGS
 	$(RM) src/*.o src/*.bak src/*~ src/core src/TAGS
+	$(RM) libfvad/libfvad/src/*.o libfvad/libfvad/src/signal_processing/*.o libfvad/libfvad/src/vad/*.o 
 	$(RM) include/julius/*~
 	$(RM) config.log config.cache
 
