@@ -947,6 +947,15 @@ print_engine_info(Recog *recog)
       jlog("\t             head margin = %d msec.\n", jconf->detect.head_margin_msec);
       jlog("\t             tail margin = %d msec.\n", jconf->detect.tail_margin_msec);
       jlog("\t              chunk size = %d samples\n", jconf->detect.chunk_size);
+#ifdef HAVE_LIBFVAD
+      if (jconf->detect.fvad_mode < 0) {
+	jlog("\t       FVAD switch value = %d (disabled)\n", jconf->detect.fvad_mode);
+      } else {
+	jlog("\t       FVAD switch value = %d (0: moderate - 3: very aggressive to regist to noise\n", jconf->detect.fvad_mode);
+	jlog("\t    FVAD param smoothlen = %d (%dms)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_smoothnum * 10);
+	jlog("\t    FVAD param threshold = %.2f\n", jconf->detect.fvad_thres);
+      }
+#endif /* HAVE_LIBFVAD */
     } else {
       jlog("\t         silence cutting = off\n");
     }

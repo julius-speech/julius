@@ -982,6 +982,33 @@ typedef struct __Jconf__ {
      */
     float gmm_downtrigger_thres;
 #endif
+
+#ifdef HAVE_LIBFVAD
+    /**
+     * (LIBFVAD) mode value for libfvad.  -1 means disabled.  >0
+     * values will be passed to fvad_set_mode().  values values are
+     * from 0 to 3.  Smaller value indicates moderate detection: less
+     * aggressive, put focus on picking up all possible speech, likely
+     * to accepting speech-like noise part.  Larger value indicates
+     * very aggressive detection, putting focus on accepting truly
+     * speech only part, aggressively dropping amiguous part.
+     */
+    int fvad_mode;
+
+    /**
+     * (LIBFVAD) number of frames for smoothing.  Last N frames (where 1
+     * frame is fixed to 10ms) value are averaged to get stational VAD.
+     */
+    int fvad_smoothnum;
+
+    /**
+     * (LIBFVAD) speech likelihood threshold value to finaly detect
+     * speech trigger.  Value should be between 0.0 and 1.0.  Typical
+     * value is 0.5. 
+     */
+    float fvad_thres;
+#endif /* HAVE_LIBFVAD */
+    
   } detect;
 
   /**

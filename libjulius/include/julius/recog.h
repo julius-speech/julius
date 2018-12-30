@@ -450,8 +450,10 @@ typedef struct __adin__ {
   int fvad_framesize;             ///< parameter: frame size
   SP16 fvad_speech[MAXSPEECHLEN]; ///< temporal buffer to hold audio input for libfvad
   int fvad_speechlen;             ///< current length of saved samples
-  int fvad_lastresult[5];         ///< working buffer to hold last 5 results
+  int fvad_lastresultnum;         ///< last N
+  int *fvad_lastresult;           ///< working buffer to hold last N results
   int fvad_lastp;                 ///< current pointer fot lastresult buffer
+  float fvad_thres;               ///< threshold to detect speech
 #endif /* HAVE_LIBFVAD */
 
 } ADIn;

@@ -52,6 +52,10 @@ opt_help(Jconf *jconf, char *arg[], int argnum)
   fprintf(stderr, "    [-headmargin msec]    head margin length          (%d)\n", jconf->detect.head_margin_msec);
   fprintf(stderr, "    [-tailmargin msec]    tail margin length          (%d)\n", jconf->detect.tail_margin_msec);
   fprintf(stderr, "    [-chunksize sample]   chunk size for processing   (%d)\n", jconf->detect.chunk_size);
+#ifdef HAVE_LIBFVAD
+  fprintf(stderr, "    [-fvad]               FVAD sw (-1=off, 0 - 3)     (%d)\n", jconf->detect.fvad_mode);
+  fprintf(stderr, "    [-fvad_param i f]     FVAD parameter (dur/thres)  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+#endif /* HAVE_LIBFVAD */
   fprintf(stderr, "    [-nostrip]            not strip off zero samples\n");
   fprintf(stderr, "    [-zmean]              remove DC by zero mean\n");
   fprintf(stderr, "    [-nocutsilence]       disable VAD, record all stream\n");

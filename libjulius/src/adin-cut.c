@@ -213,17 +213,24 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
   adin->rehash = FALSE;
 
 #ifdef HAVE_LIBFVAD
-  /* initialize libfvad */
-  adin->fvad = fvad_new();
-  /* set up parameters */
-  fvad_set_sample_rate(adin->fvad, jconf->input.sfreq);
-  fvad_set_mode(adin->fvad, 2);
-  adin->fvad_frameshiftinms = 10;
-  /* clea up working area */
-  adin->fvad_speechlen = 0;
-  adin->fvad_framesize = jconf->input.sfreq * adin->fvad_frameshiftinms / 1000;
-  for (i = 0; i < 5; i++) adin->fvad_lastresult[i] = 0;
-  adin->fvad_lastp = 0;
+  if (jconf->detect.fvad_mode < 0) {
+    adin->fvad = NULL;
+  } else {
+    /* initialize libfvad */
+    adin->fvad = fvad_new();
+    adin->fvad_lastresultnum = jconf->detect.fvad_smoothnum;
+    adin->fvad_thres = jconf->detect.fvad_thres;
+    /* set up parameters */
+    fvad_set_sample_rate(adin->fvad, jconf->input.sfreq);
+    fvad_set_mode(adin->fvad, jconf->detect.fvad_mode);
+    adin->fvad_frameshiftinms = 10;
+    /* clean up working area */
+    adin->fvad_speechlen = 0;
+    adin->fvad_framesize = jconf->input.sfreq * adin->fvad_frameshiftinms / 1000;
+    adin->fvad_lastresult = (int *)mymalloc(sizeof(int) * adin->fvad_lastresultnum);
+    for (i = 0; i < adin->fvad_lastresultnum; i++) adin->fvad_lastresult[i] = 0;
+    adin->fvad_lastp = 0;
+  }
 #endif /* HAVE_LIBFVAD */
 
   return TRUE;
@@ -278,14 +285,14 @@ fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
       break;
     }
     a->fvad_lastresult[a->fvad_lastp] = ret;
-    if (++a->fvad_lastp >= 5) a->fvad_lastp -= 5;
+    if (++a->fvad_lastp >= a->fvad_lastresultnum) a->fvad_lastp -= a->fvad_lastresultnum;
   }
   /* get smoothed result from last 5 ticks */
   sum = 0.0f;
-  for (j = 0; j < 5; j++) sum += (float)a->fvad_lastresult[j];
-  sum /= 5.0f;
+  for (j = 0; j < a->fvad_lastresultnum; j++) sum += (float)a->fvad_lastresult[j];
+  sum /= (float)a->fvad_lastresultnum;
   /* judge */
-  if (sum >= 0.5f)
+  if (sum >= a->fvad_thres)
     result = 1;
   else
     result = 0;
@@ -414,7 +421,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     a->need_init = FALSE;		/* for next call */
 #ifdef HAVE_LIBFVAD
     a->fvad_speechlen = 0;
-    for (i = 0; i < 5; i++) a->fvad_lastresult[i] = 0;
+    for (i = 0; i < a->fvad_lastresultnum; i++) a->fvad_lastresult[i] = 0;
     a->fvad_lastp = 0;
 #endif /* HAVE_LIBFVAD */
   }
@@ -1495,7 +1502,10 @@ adin_free_param(Recog *recog)
   if (a->speech) free(a->speech);
 #endif
 #ifdef HAVE_LIBFVAD
-  fvad_free(a->fvad);
+  if (a->fvad) {
+    free(a->fvad_lastresult);
+    fvad_free(a->fvad);
+  }
 #endif /* HAVE_LIBFVAD */
 }
 

@@ -140,6 +140,10 @@ j_output_argument_help(FILE *fp)
   fprintf(fp, "    [-headmargin msec]  header margin length in msec.         (%d)\n", jconf->detect.head_margin_msec);
   fprintf(fp, "    [-tailmargin msec]  tail margin length in msec.           (%d)\n", jconf->detect.tail_margin_msec);
   fprintf(fp, "    [-chunksize sample] unit length for processing            (%d)\n", jconf->detect.chunk_size);
+#ifdef HAVE_LIBFVAD
+  fprintf(fp, "    [-fvad]             FVAD sw (-1=off, 0-3=on / degree      (%d)\n", jconf->detect.fvad_mode);
+  fprintf(fp, "    [-fvad_param i f]   FVAD parameter (dur/thres)            (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+#endif /* HAVE_LIBFVAD */
 
   fprintf(fp, "\n GMM utterance verification:\n");
   fprintf(fp, "    -gmm filename       GMM definition file\n");

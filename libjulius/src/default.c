@@ -83,6 +83,11 @@ jconf_set_default_values(Jconf *j)
   j->detect.gmm_uptrigger_thres		= 0.7;
   j->detect.gmm_downtrigger_thres	= -0.2;
 #endif
+#ifdef HAVE_LIBFVAD
+  j->detect.fvad_mode                   = -1;
+  j->detect.fvad_smoothnum              = 5;
+  j->detect.fvad_thres                  = 0.5;
+#endif /* HAVE_LIBFVAD */
 
   j->preprocess.strip_zero_sample	= TRUE;
   j->preprocess.use_zmean		= FALSE;

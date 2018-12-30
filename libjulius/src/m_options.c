@@ -1345,6 +1345,20 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
       }
       free(tmparg);
       continue;
+#ifdef HAVE_LIBFVAD
+    } else if (strmatch(argv[i],"-fvad")) { /* fvad switch */
+      if (!check_section(jconf, argv[i], JCONF_OPT_GLOBAL)) return FALSE;
+      GET_TMPARG;
+      jconf->detect.fvad_mode = atoi(tmparg);
+      continue;
+    } else if (strmatch(argv[i],"-fvad_param")) { /* set fvad parameter */
+      if (!check_section(jconf, argv[i], JCONF_OPT_GLOBAL)) return FALSE;
+      GET_TMPARG;
+      jconf->detect.fvad_smoothnum = atoi(tmparg);
+      GET_TMPARG;
+      jconf->detect.fvad_thres = (float)atof(tmparg);
+      continue;
+#endif /* HAVE_LIBFVAD */
     }
     if (argv[i][0] == '-' && strlen(argv[i]) == 2) {
       /* 1-letter options */
