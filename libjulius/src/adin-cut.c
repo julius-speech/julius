@@ -267,6 +267,8 @@ fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
   int ret, result;
   float sum;
 
+  if (a->fvad == NULL) return 1;
+
   if (a->fvad_speechlen + samplenum > MAXSPEECHLEN) {
     /* buffer overflow */
     samplenum = MAXSPEECHLEN - a->fvad_speechlen;
@@ -420,9 +422,11 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     a->sblen = 0;
     a->need_init = FALSE;		/* for next call */
 #ifdef HAVE_LIBFVAD
-    a->fvad_speechlen = 0;
-    for (i = 0; i < a->fvad_lastresultnum; i++) a->fvad_lastresult[i] = 0;
-    a->fvad_lastp = 0;
+    if (a->fvad) {
+      a->fvad_speechlen = 0;
+      for (i = 0; i < a->fvad_lastresultnum; i++) a->fvad_lastresult[i] = 0;
+      a->fvad_lastp = 0;
+    }
 #endif /* HAVE_LIBFVAD */
   }
 
