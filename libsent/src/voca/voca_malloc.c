@@ -43,6 +43,7 @@ word_info_new()
   new->wname = NULL;
   new->woutput = NULL;
   new->wlen = NULL;
+  new->wseq = NULL;
   new->wton = NULL;
 #ifdef CLASS_NGRAM
   new->cprob = NULL;

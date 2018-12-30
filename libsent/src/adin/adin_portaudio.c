@@ -109,7 +109,7 @@
 #endif
 
 /* temporal buffer */
-static SP16 *speech;		///< cycle buffer for incoming speech data
+static SP16 *speech = NULL;	///< cycle buffer for incoming speech data
 static int current;		///< writing point
 static int processed;		///< reading point
 static boolean buffer_overflowed = FALSE; ///< TRUE if buffer overflowed
@@ -397,6 +397,7 @@ adin_mic_open(char *arg)
 
   /* allocate and init */
   current = processed = 0;
+  if (speech) free(speech);
   speech = (SP16 *)mymalloc(sizeof(SP16) * cycle_buffer_len);
   buffer_overflowed = FALSE;
 
