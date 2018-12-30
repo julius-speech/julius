@@ -326,15 +326,15 @@ main(int argc, char *argv[])
   /* register adintool-specific options to julius library */
   register_options_to_julius();
 
-  if (argc <= 1) {
 #ifdef USE_SDL
-    /* when no argument, start output nothing, capturing mic */
-    j_config_load_string(a->jconf, "-in mic -out none");
+  /* default: captguring mic input, output nothing */
+  j_config_load_string(a->jconf, "-in mic -out none");
 #else
+  if (argc <= 1) {
     /* when no argument, output help and exit */
     show_help_and_exit(a->jconf, NULL, 0);
-#endif
   }
+#endif
 
   /* read arguments and set parameters */
   if (j_config_load_args(a->jconf, argc, argv) == -1) {
