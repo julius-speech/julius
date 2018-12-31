@@ -104,7 +104,7 @@ main(int argc, char *argv[])
   module_add_option();
   charconv_add_option();
   j_add_option("-separatescore", 0, 0, "output AM and LM scores separately", opt_separatescore);
-  j_add_option("-noxmlescale", 0, 0, "disable XML escape", opt_noxmlescape);
+  j_add_option("-noxmlescape", 0, 0, "disable XML escape", opt_noxmlescape);
   j_add_option("-logfile", 1, 1, "output log to file", opt_logfile);
   j_add_option("-nolog", 0, 0, "not output any log", opt_nolog);
   j_add_option("-outfile", 0, 0, "save result in separate .out file", opt_outfile);
