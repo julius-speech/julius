@@ -1,3 +1,59 @@
+4.5 (2019.01.02)
+=================
+New features:
+- Improve voice detection by integrating "libfvad", a voice activity
+  detection library based on WebRTC's VAD engine  [https://github.com/dpirch/libfvad]
+  - Now Julius has dual-mode VAD:
+     - old module (input level and zero-cross based)
+     - new module (libfvad = model based)
+  - both runs in parallel: both modules runs for an audio input stream
+    concurrently
+  - detect speech only when **both module triggers**!
+  - new module is disabled by default
+     - apply "-fvad arg" option to enable
+     - arg is a switch, "-fvad 0" for moderate mode and "-fvad 3" for aggressive mode.
+  - new module is available on all audio modules
+     - julius
+     - adinrec
+     - adintool
+     - adintool-gui
+  - typical usage:
+      - "-fvad -1" to use old VAD only (same as older versions)
+      - "-fvad 3 -lv 1" to use new VAD only.  "-lv 1" forces the old VAD
+      	to "always triggering", thus the final VAD result fully depends on
+	the new module.
+- New multi-threaded DNN computation
+   - added "num_threads" option to dnnconf to specify number of CPU
+   threads to be used on DNN computation.
+   - default number of thread to be used is 2.
+
+Modified:
+- module output now performs XML Escape
+  - characters <, >, ", & and ' in output string are now escaped to
+    &lt;, &gt;, &quot;, &amp; and &apos;.  This escaping is enabled by
+    default from this version, however you can switch off this
+    escaping and keep old behavior by applying "-noxmlescape" option.
+
+Bug fixes:
+- fix Makefile for parallel build (make -j N)
+- fix adintool-gui sometimes segfault with arguments
+- fix several build warnings
+- fix several memory leaks
+- fix mis-compilation on some OS
+
+[New run-time options]  
+  [-fvad mode]  set libfvad mode. "mode" is an integer value from -1 to 3, -1 to disable,
+  0 for moderate detection, 3 for aggressive detection (more likely to
+  drop speech-like noises).  Default value is -1 (disabled)
+
+  [-fvad_param nFrame thres]  set libfvad detailed parameter.  "nFrame"
+  is the number of smoothing frame. "thres" is the threshold to
+  detect speech trigger [0.0-1.0].  Default values are 5 and 0.5
+  respectively.
+
+[New configure options]
+- "--disable-libfvad": disable libfvad integration
+
 4.4.2.1 (2016.12.20)
 ====================
 - Small fixes for Android and iOS.

@@ -4,6 +4,7 @@
 
                                 Julius
 
+						(Rev 4.5   2019/01/02)
 						(Rev 4.4.2 2016/09/12)
 						(Rev 4.4   2016/08/30)
                                                 (Rev 4.3.1 2014/01/15)
@@ -21,10 +22,10 @@
                                                 (Rev 2.0   1999/02/20)
                                                 (Rev 1.0   1998/02/20)
 
- Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
+ Copyright (c) 1991-2019 Kawahara Lab., Kyoto University
  Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
  Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- Copyright (c) 2005-2016 Julius project team, Nagoya Institute of Technology
+ Copyright (c) 2005-2019 Julius project team, Nagoya Institute of Technology
  All rights reserved
 ======================================================================
 
@@ -49,35 +50,56 @@ version supports plug-in capability so that the engine can be extended
 by user.
 
 The main platform is Linux and other Unix workstations, and also works
-on Windows (SAPI/console). Julius is distributed with open license
-together with source codes.
+on Windows, MacOS, iOS, Android and other OS. Julius is distributed
+with open license together with source codes.
 
 
-What's new in Julius-4.4/4.4.1/4.4.2
-=====================================
+What's new in Julius-4.5
+==========================
 
-Julius is now hosted on GitHub:
-https://github.com/julius-speech/julius
+A WebRTC-based voice activity detection (VAD) was newly added into
+Julius for robust voice detection.
 
-Version 4.4 now supports stand-alone DNN-HMM support. (see 00readme-DNN.txt)
-Other features include:
-- New tools:
-  - adintool-gui: GUI version of adintool
-  - binlm2arpa: reverse convert binary N-gram to ARPA format
-- "mkbingram" now support direct charset conversion of binary LM
-- Now does not exit at connection lost in module mode
-- update support for VS2013
-- Bug fixes
+  https://github.com/dpirch/libfvad
 
-4.4.1 and 4.4.2 are bug fix releases.  Please use the latest version.
+Now Julius has two VAD modules: old module (input level and zero-cross
+based) and new module (libfvad = model based), and both of them runs
+concurrently in parallel for an audio input.  When enabled, Julius
+will detect speech trigger only if *both of them are signaled as
+speech*.
 
-See "Release.txt" for full list of updates.
-Run "configure --help=recursive" to see all configure options.
-Run compiled Julius with "-help" to see the full list of available options.
+DNN-HMM computation now supports CPU multi-threading.  Multi-threading
+may speed up DNN-HMM computation to some extent.  The number of
+threads can be specified by "num_threads" in dnnconf.  This feature is
+enabled by default, and the default number of threads is 2.
+
+Notice for module-mode users: in order to make module output
+XML-compiliant, the XML special characters are now escaped their
+escaped form, ex. '>' to '&gt;'.  A backward option "-noxmlescape" is
+still available to inhibit escaping and output as the same as previous
+versions.
+
+See Release.txt for full changes and usage example.
 
 
-Contents of Julius-4.4.2
-=========================
+Moving to UTF-8
+================
+
+We are going to move to UTF-8.
+
+The master branch after the release of 4.5 (2019/1/2) has codes
+converted to UTF-8.  All files were converted to UTF-8, and future
+update will be commited also in UTF-8.
+
+For backward compatibility and log visibility, we are keeping the old
+encoding codes at branch "master-4.5-legacy".  The branch keeps legacy
+encoding version of version 4.5.  If you want to inspect the code
+progress before the release of 4.5 (2019/1/2), please checkout the
+branch.
+
+
+Contents of Julius-4.5
+=======================
 
 	(Documents with suffix "ja" are written in Japanese)
 
@@ -120,6 +142,7 @@ included in this archive.
 
 Also see the copyrights in the files:
 
+  libjulius/libfvad/
   gramtools/gram2sapixml/gram2sapixml.pl.in
   libsent/src/wav2mfcc/wav2mfcc-*.c
   libsent/src/adin/pa/

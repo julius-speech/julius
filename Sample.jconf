@@ -96,6 +96,16 @@
 #-rejectlong -1			# reject longer input (msec) -1 to disable
 
 ####
+#### Speech detection by libfvad
+####
+#-fvad -1           # disable libfvad
+#-fvad 0            # enable on mode 0 (least aggressive to filtering out non-speech)
+#-fvad 1            # enable on mode 1 (moderately aggressive to filtering out non-speech)
+#-fvad 2            # enable on mode 2 (aggressive to filtering out non-speech)
+#-fvad 3            # enable on mode 3 (very aggressive to filtering out non-speech)
+#-fvad_param 5 0.5  # optinal parameter: smoothing frames, trigger threshold
+
+####
 #### Input rejection by average power (EXPERIMENTAL)
 ####
 ####  This will be enabled by "--enable-power-reject" on compilation.

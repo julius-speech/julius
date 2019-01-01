@@ -37,7 +37,7 @@
 #define JULIUS_PRODUCTNAME "JuliusLib"
 
 /// Version string
-#define JULIUS_VERSION "4.4.2.1"
+#define JULIUS_VERSION "4.5"
 
 /// Engine setting (value of "--enable-setup=...").
 #define JULIUS_SETUP "fast"

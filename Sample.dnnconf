@@ -72,3 +72,6 @@ state_prior_factor 1.0
 
 # batch size (not used)
 batch_size 64
+
+# number of threads (>=4.5)
+num_threads 2

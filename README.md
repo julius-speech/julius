@@ -3,8 +3,8 @@
 
 # Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 
-Copyright (c) 1991-2016 [Kawahara Lab., Kyoto University](http://www.ar.media.kyoto-u.ac.jp/)  
-Copyright (c) 2005-2016 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
+Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://www.ar.media.kyoto-u.ac.jp/)  
+Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
 Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan  
 Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology  
 
@@ -49,7 +49,7 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 
 # Download Julius
 
-The latest release version is [4.4.2](https://github.com/julius-speech/julius/releases), released on September 12, 2016.
+The latest release version is [4.5](https://github.com/julius-speech/julius/releases), released on Janualy 2, 2019.
 You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
 
 Version 4.4 supports stand-alone DNN-HMM support, and several new
