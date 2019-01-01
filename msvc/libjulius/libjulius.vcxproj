@@ -118,6 +118,18 @@
     <ClCompile Include="..\..\libjulius\src\wchmm.c" />
     <ClCompile Include="..\..\libjulius\src\wchmm_check.c" />
     <ClCompile Include="..\..\libjulius\src\word_align.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\fvad.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\division_operations.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\energy.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\get_scaling_square.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\resample_48khz.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\resample_by_2_internal.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\resample_fractional.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\spl_inl.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_core.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_filterbank.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_gmm.c" />
+    <ClCompile Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_sp.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libjulius\include\julius\beam.h" />
@@ -139,6 +151,15 @@
     <ClInclude Include="..\..\libjulius\include\julius\trellis.h" />
     <ClInclude Include="..\..\libjulius\include\julius\useropt.h" />
     <ClInclude Include="..\..\libjulius\include\julius\wchmm.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\include\fvad.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\common.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\resample_by_2_internal.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\signal_processing_library.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\signal_processing\spl_inl.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_core.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_filterbank.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_gmm.h" />
+    <ClInclude Include="..\..\libjulius\libfvad\libfvad\src\vad\vad_sp.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libsent\libsent.vcxproj">
