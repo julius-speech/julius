@@ -20,7 +20,7 @@ CFLAGS=@CFLAGS@
 CPPFLAGS=-Iinclude -I$(LIBSENT)/include @CPPFLAGS@ `$(LIBSENT)/libsent-config --cflags`
 LDFLAGS=@LDFLAGS@ @LIBS@ -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs` 
 RM=@RM@ -f
-AR=@AR@ r
+AR=@AR@ @ARFLAGS@
 RANLIB=@RANLIB@
 
 ## install
@@ -119,6 +119,7 @@ clean:
 distclean:
 	$(RM) *.bak *~ core TAGS
 	$(RM) src/*.o src/*.bak src/*~ src/core src/TAGS
+	$(RM) libfvad/libfvad/src/*.o libfvad/libfvad/src/signal_processing/*.o libfvad/libfvad/src/vad/*.o 
 	$(RM) include/julius/*~
 	$(RM) config.log config.cache
 	$(RM) $(TARGET)

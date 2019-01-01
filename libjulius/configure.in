@@ -330,9 +330,11 @@ AC_PROG_CPP
 dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PATH_PROG(RM, rm)
-AC_PATH_PROG(AR, ar)
 AC_PROG_RANLIB
 AC_EXEEXT
+AM_PROG_AR
+AM_PROG_AR
+test -n "$ARFLAGS" || ARFLAGS="cr"
 
 dnl Checks for libraries.
 dnl add '-lLIBRARY' to LIBS and define 'HAVE_LIBLIBRARY'
@@ -392,9 +394,12 @@ AC_CHECK_FUNC(dlopen,,AC_CHECK_LIB(dl, dlopen))
 
 dnl check for libfvad
 if test "$use_libfvad" = yes; then
-  AC_CHECK_FILE(libfvad/libfvad/include/fvad.h,
+  TMPCPPFLAGS="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS -I."
+  AC_CHECK_HEADER(libfvad/libfvad/include/fvad.h,
     EXTRAOBJ="$EXTRAOBJ libfvad/libfvad/src/fvad.o libfvad/libfvad/src/signal_processing/division_operations.o libfvad/libfvad/src/signal_processing/energy.o libfvad/libfvad/src/signal_processing/get_scaling_square.o libfvad/libfvad/src/signal_processing/resample_48khz.o libfvad/libfvad/src/signal_processing/resample_by_2_internal.o libfvad/libfvad/src/signal_processing/resample_fractional.o libfvad/libfvad/src/signal_processing/spl_inl.o libfvad/libfvad/src/vad/vad_core.o libfvad/libfvad/src/vad/vad_filterbank.o libfvad/libfvad/src/vad/vad_gmm.o libfvad/libfvad/src/vad/vad_sp.o"
     AC_DEFINE(HAVE_LIBFVAD))
+  CPPFLAGS="$TMPCPPFLAGS"
 fi
 
 dnl write names
@@ -411,6 +416,7 @@ AC_SUBST(JULIUS_VERSION)
 AC_SUBST(easy_setup)
 
 AC_SUBST(EXTRAOBJ)
+AC_SUBST(ARFLAGS)
 
 AC_OUTPUT_COMMANDS(
 [chmod +x libjulius-config libjulius-config-dist

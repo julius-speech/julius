@@ -296,9 +296,10 @@ AC_OPENMP()
 dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PATH_PROG(RM, rm)
-AC_PATH_PROG(AR, ar)
 AC_PROG_RANLIB
 AC_EXEEXT
+AM_PROG_AR
+test -n "$ARFLAGS" || ARFLAGS="cr"
 
 dnl Check for static link for cygwin / mingw libraries
 case "$host_os" in
@@ -811,6 +812,7 @@ AC_SUBST(EXTRAOBJ)
 AC_SUBST(EXTRALIB)
 AC_SUBST(SOUNDINC)
 AC_SUBST(SOUNDLIB)
+AC_SUBST(ARFLAGS)
 
 AC_OUTPUT_COMMANDS(
 [chmod +x libsent-config libsent-config-dist

@@ -16,7 +16,7 @@ defconf="--without-sndfile"
 
 # make julius and other tools with default setting
 ./configure --prefix=${dir}/build ${defconf} $*
-make
+make -j 4
 make install
 
 # make julius with another setting
@@ -28,7 +28,7 @@ make install.bin INSTALLTARGET=julius-${JULIUS_VERSION}
 cd ../libjulius
 make distclean
 ./configure --prefix=${dir}/build ${defconf} --enable-setup=standard $*
-make
+make -j 4
 cd ../julius
 make clean
 make install.bin INSTALLTARGET=julius-${JULIUS_VERSION}-std
@@ -37,7 +37,7 @@ make install.bin INSTALLTARGET=julius-${JULIUS_VERSION}-std
 cd ../libjulius
 make distclean
 ./configure --prefix=${dir}/build ${defconf} --enable-gmm-vad $*
-make
+make -j 4
 cd ../julius
 make clean
 make install.bin INSTALLTARGET=julius-${JULIUS_VERSION}-gmm-vad
@@ -46,7 +46,7 @@ make install.bin INSTALLTARGET=julius-${JULIUS_VERSION}-gmm-vad
 cd ../libjulius
 make distclean
 ./configure --prefix=${dir}/build ${defconf} --enable-decoder-vad --enable-power-reject $*
-make
+make -j 4
 cd ../julius
 make clean
 make install.bin INSTALLTARGET=julius-${JULIUS_VERSION}-decoder-vad
