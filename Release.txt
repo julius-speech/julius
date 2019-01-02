@@ -54,6 +54,10 @@ Bug fixes:
 [New configure options]
 - "--disable-libfvad": disable libfvad integration
 
+[Document update in progress]
+- adinrec,adintool README.md README.ja.md
+- julius README.md, Options.md
+
 4.4.2.1 (2016.12.20)
 ====================
 - Small fixes for Android and iOS.
