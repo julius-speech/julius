@@ -9,7 +9,7 @@ SHELL=/bin/sh
 
 PRIMARY_LIBS=libsent libjulius
 APPS=julius mkbingram mkbinhmm adinrec adintool mkgshmm mkss jcontrol gramtools generate-ngram jclient-perl binlm2arpa
-SUBDIRS=$(PRIMARY_LIBS) $(APPS) man
+SUBDIRS=$(PRIMARY_LIBS) $(APPS) 
 
 CONFIG_SUBDIRS=mkgshmm gramtools jcontrol mkbingram julius libjulius libsent
 
@@ -18,7 +18,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 INSTALL=@INSTALL@
 
-.PHONY: all install install.bin install.man clean distclean configure doxygen
+.PHONY: all install install.bin clean distclean configure doxygen
 
 all install install.bin clean distclean: $(SUBDIRS)
 
@@ -29,9 +29,6 @@ all: TARGET=all
 install: TARGET=install
 
 install.bin: TARGET=install.bin
-
-install.man:
-	(cd man; $(MAKE) install)
 
 clean: TARGET=clean
 clean:
