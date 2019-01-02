@@ -1,7 +1,11 @@
 (Moved from julius.osdn.jp since 2015/09, this is official)  
-(Forum has been closed.  Please [make an issues](https://github.com/julius-speech/julius/issues) for questions and discussions about Julius)
+(Please [make an issues](https://github.com/julius-speech/julius/issues) for questions and discussions about Julius)
 
-# Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
+(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping
+the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)
+
+Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
+==========================================================================
 
 Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://www.ar.media.kyoto-u.ac.jp/)  
 Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
@@ -105,6 +109,7 @@ If you have any language or acoustic model that can be distributed as a freeware
 
 Recent documents:
 
+- Current version's Julius command reference is kept up-to-date at [README.md in Julius folder](https://github.com/julius-speech/julius/blob/master/julius/)
 - All options are listed in [Sample.jconf](https://github.com/julius-speech/julius/blob/master/Sample.jconf) and also be output when invoked "julius --help".
 - Full history and short descriptions are in [Release Notes](https://github.com/julius-speech/julius/blob/master/Release.txt) ([JP version](https://github.com/julius-speech/julius/blob/master/Release-ja.txt))
 - For DNN-HMM, take a look at [00readme-DNN.txt](https://github.com/julius-speech/julius/blob/master/00readme-HNN.txt) for how-to and [Sample.dnnconf](https://github.com/julius-speech/julius/blob/master/Sample.dnnconf) as example.
@@ -124,3 +129,18 @@ Other, very old documents:
   - A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
   - A. Lee, T. Kawahara and K. Shikano. "Julius --- an open source real-time large vocabulary recognition engine." In Proc. European Conference on Speech Communication and Technology (EUROSPEECH), pp. 1691--1694, 2001.
   - T. Kawahara, A. Lee, T. Kobayashi, K. Takeda, N. Minematsu, S. Sagayama, K. Itou, A. Ito, M. Yamamoto, A. Yamada, T. Utsuro and K. Shikano. "Free software toolkit for Japanese large vocabulary continuous speech recognition." In Proc. Int'l Conf. on Spoken Language Processing (ICSLP) , Vol. 4, pp. 476--479, 2000.
+
+
+# Moving to UTF-8
+
+We are going to move to UTF-8.
+
+The master branch after the release of 4.5 (2019/1/2) has codes
+converted to UTF-8.  All files were converted to UTF-8, and future
+update will be commited also in UTF-8.
+
+For backward compatibility and log visibility, we are keeping the old
+encoding codes at branch "master-4.5-legacy".  The branch keeps legacy
+encoding version of version 4.5.  If you want to inspect the code
+progress before the release of 4.5 (2019/1/2), please checkout the
+branch.
