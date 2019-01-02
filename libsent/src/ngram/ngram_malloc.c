@@ -2,7 +2,7 @@
  * @file   ngram_malloc.c
  * 
  * <JA>
- * @brief  N-gram��¤�Τν��������ݤȲ���
+ * @brief  N-gram構造体の初期メモリ確保と解放
  * </JA>
  * 
  * <EN>

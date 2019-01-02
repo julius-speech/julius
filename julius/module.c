@@ -169,16 +169,16 @@ send_current_process(RecogProcess *r)
 
 /** 
  * <JA>
- * @brief  �⥸�塼�륳�ޥ�ɤ��������. 
+ * @brief  モジュールコマンドを処理する. 
  *
- * ���饤����Ȥ��Ϳ����줿���ޥ�ɤ��������. ���δؿ��ϥ��饤����Ȥ���
- * ���ޥ�ɤ������Ƥ��뤿�Ӥ˲���ǧ�������˳�����ǸƤФ��. 
- * ���ơ��������ˤĤ��ƤϤ����Ǥ����˱�����å����������뤬��
- * ʸˡ���ɲä����ʤɤϡ������Ǥϼ����Τ߹Ԥ����ºݤ��ѹ�����
- * �ʳ�ʸˡ����Υ������Х�ʸˡ�κƹ��ۤʤɡˤ�ǧ�������ι�֤˼¹Ԥ����. 
- * ����ʸˡ�ƹ��۽�����ºݤ˹Ԥ��Τ� multigram_update() �Ǥ���. 
+ * クライアントより与えられたコマンドを処理する. この関数はクライアントから
+ * コマンドが送られてくるたびに音声認識処理に割り込んで呼ばれる. 
+ * ステータス等についてはここですぐに応答メッセージを送るが，
+ * 文法の追加や削除などは，ここでは受信のみ行い，実際の変更処理
+ * （各文法からのグローバル文法の再構築など）は認識処理の合間に実行される. 
+ * この文法再構築処理を実際に行うのは multigram_update() である. 
  * 
- * @param command [in] ���ޥ��ʸ����
+ * @param command [in] コマンド文字列
  * </JA>
  * <EN>
  * @brief  Process a module command.
@@ -675,8 +675,8 @@ msock_exec_command(char *command, Recog *recog)
 
 /** 
  * <JA>
- * ���ߥ��饤����ȥ⥸�塼�뤫���̿�᤬�Хåե��ˤ��뤫Ĵ�١�
- * �⤷����н�������. �ʤ���Ф��Τޤ޽�λ����. 
+ * 現在クライアントモジュールからの命令がバッファにあるか調べ，
+ * もしあれば処理する. なければそのまま終了する. 
  * 
  * </JA>
  * <EN>
@@ -723,11 +723,11 @@ msock_check_and_process_command(Recog *recog, void *dummy)
 
 /** 
  * <JA>
- * ���饤����ȥ⥸�塼�뤫���̿����ɤ߹���ǽ�������. 
- * ̿�᤬̵����硤���Υ��ޥ�ɤ����ޤ��Ԥ�. 
- * msock_exec_command() ��� j_request_resume() ���ƤФ��
- * recog->process_active �� TRUE �ˤʤ�ޤǷ����֤�. 
- * ���δؿ�������ä��Ȥ��ץ������� resume |!����. |
+ * クライアントモジュールからの命令を読み込んで処理する. 
+ * 命令が無い場合，次のコマンドが来るまで待つ. 
+ * msock_exec_command() 内で j_request_resume() が呼ばれて
+ * recog->process_active が TRUE になるまで繰り返す. 
+ * この関数が終わったときプロセスは resume |!する. |
  * 
  * </JA>
  * <EN>

@@ -5,7 +5,7 @@
  * @brief  Definitions relating TCP/IP Networking
  * </EN>
  * <JA>
- * @brief  TCP/IP е═е├е╚еяб╝еп┤╪╧вд╬─ъ╡┴
+ * @brief  TCP/IP уГНуГГуГИуГпуГ╝уВпщЦвщАгуБохоЪч╛й
  * </JA>
  * 
  * @author Akinobu LEE

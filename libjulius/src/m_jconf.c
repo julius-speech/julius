@@ -2,19 +2,19 @@
  * @file   m_jconf.c
  * 
  * <JA>
- * @brief  ����ե�������ɤ߹���. 
+ * @brief  設定ファイルの読み込み. 
  *
- * ���ץ�������򵭽Ҥ��� jconf ����ե�������ɤ߹��ߤޤ�. 
- * jconf ����ե�������Ǥϡ����֥륯�����ơ������ˤ��ʸ�����
- * ���ꡤ�Хå�����å���ˤ��ʸ���Υ��������פ��Ǥ��ޤ�. 
- * �ޤ����ƹԤˤ����� '#' �ʹߤϥ����åפ���ޤ�. 
+ * オプション指定を記述した jconf 設定ファイルを読み込みます. 
+ * jconf 設定ファイル内では，ダブルクォーテーションによる文字列の
+ * 指定，バックスラッシュによる文字のエスケープができます. 
+ * また，各行において '#' 以降はスキップされます. 
  *
- * jconf ����ե�������Ǥϡ����Ƥ����Хѥ��ϡ����ץꥱ��������
- * �����ȥǥ��쥯�ȥ�ǤϤʤ������� jconf ��¸�ߤ���ǥ��쥯�ȥ꤫���
- * ���Хѥ��Ȥ��Ʋ�ᤵ��ޤ�. 
+ * jconf 設定ファイル内では，全ての相対パスは，アプリケーションの
+ * カレントディレクトリではなく，その jconf の存在するディレクトリからの
+ * 相対パスとして解釈されます. 
  *
- * �ޤ���$HOME, ${HOME}, $(HOME), �η��ǻ��ꤵ�줿��ʬ�ˤĤ���
- * �Ķ��ѿ���Ÿ���Ǥ��ޤ�. 
+ * また，$HOME, ${HOME}, $(HOME), の形で指定された部分について
+ * 環境変数を展開できます. 
  * 
  * </JA>
  * 
@@ -58,16 +58,16 @@
 
 /** 
  * <JA>
- * @brief  jconf �Ѥι��ɤ߹��ߥ롼����
+ * @brief  jconf 用の行読み込みルーチン
  *
- * �Хå�����å���ˤ�륨�������׽���������� Mac/Win �β��ԥ����ɤ�
- * �б�����. ���Ԥϥ����åפ��졤���ԥ����ɤϾä����. 
+ * バックスラッシュによるエスケープ処理，および Mac/Win の改行コードに
+ * 対応する. 空行はスキップされ，改行コードは消される. 
  * 
- * @param buf [out] �ɤ߹����1��ʬ�Υƥ����Ȥ��Ǽ����Хåե�
- * @param size [in] @a buf ���礭���ʥХ��ȿ���
- * @param fp [in] �ե�����ݥ���
+ * @param buf [out] 読み込んだ1行分のテキストを格納するバッファ
+ * @param size [in] @a buf の大きさ（バイト数）
+ * @param fp [in] ファイルポインタ
  * 
- * @return @a buf ���֤�. EOF �Ǥ���ʾ����Ϥ��ʤ���� NULL ���֤�. 
+ * @return @a buf を返す. EOF でこれ以上入力がなければ NULL を返す. 
  * </JA>
  * <EN>
  * @brief  line reading function for jconf file.
@@ -137,11 +137,11 @@ fgets_jconf(char *buf, int size, FILE *fp)
 
 /** 
  * <JA>
- * @brief  �ե�����Υѥ�̾����ǥ��쥯�ȥ�̾��ȴ���Ф�. 
+ * @brief  ファイルのパス名からディレクトリ名を抜き出す. 
  *
- * �Ǹ�� '/' �ϻĤ����. 
+ * 最後の '/' は残される. 
  * 
- * @param path [i/o] �ե�����Υѥ�̾�ʴؿ�����ѹ�������
+ * @param path [i/o] ファイルのパス名（関数内で変更される）
  * </JA>
  * <EN>
  * @brief  Get directory name from a path name of a file.
@@ -172,19 +172,19 @@ get_dirname(char *path)
 
 /** 
  * <JA>
- * @brief  �Ķ��ѿ���Ÿ��
+ * @brief  環境変数の展開
  * 
- * �Ķ��ѿ���Ÿ������. $HOME �η���ʸ�����Ķ��ѿ��Ȥߤʤ��������ͤ�
- * �ִ�����. �ִ��������ä��ݤˤϡ�Ϳ����줿ʸ����Хåե���������
- * �����������餿�˳���դ���줿�Хåե����֤�. 
+ * 環境変数を展開する. $HOME の形の文字列を環境変数とみなし，その値で
+ * 置換する. 置換が起こった際には，与えられた文字列バッファを内部で
+ * 解放し，あらたに割り付けられたバッファを返す. 
  *
- * �ѿ��λ���� $HOME, ${HOME}, $(HOME), �η��ǻ���Ǥ���. 
- * $ ��Ÿ���������ʤ����ϥХå�����å��� "\" �ǥ��������פǤ���. 
- * �ޤ����󥰥륯������ "'" �ǳ��줿�ϰϤ�Ÿ����Ԥ�ʤ�. 
+ * 変数の指定は $HOME, ${HOME}, $(HOME), の形で指定できる. 
+ * $ を展開したくない場合はバックスラッシュ "\" でエスケープできる. 
+ * またシングルクォート "'" で括られた範囲は展開を行わない. 
  * 
- * @param str [in] �о�ʸ�����Ÿ��ȯ������������ free �����Τ����ա�
+ * @param str [in] 対象文字列（展開発生時は内部で free されるので注意）
  * 
- * @return Ÿ�����٤��оݤ��ʤ��ä���硤str �����Τޤ��֤����. Ÿ�����Ԥ�줿��硤���餿�˳���դ���줿Ÿ�����ʸ�����ޤ�Хåե����֤����. 
+ * @return 展開すべき対象がなかった場合，str がそのまま返される. 展開が行われた場合，あらたに割り付けられた展開後の文字列を含むバッファが返される. 
  * </JA>
  * <EN>
  * @brief  Envronment valuable expansion for a string
@@ -360,12 +360,12 @@ expand_env(char *str)
 /* read-in and parse jconf file and process those using m_options */
 /** 
  * <JA>
- * @brief  ���ץ����ʸ�����ʬ�򤷤��ɲó�Ǽ����.
+ * @brief  オプション文字列を分解して追加格納する.
  *
- * @param buf [in] ʸ����
- * @param argv [i/o] ���ץ������ؤΥݥ���
- * @param argc [i/o] ���ץ������ο��ؤΥݥ���
- * @param maxnum [i/o] ���ץ������γ��պ����
+ * @param buf [in] 文字列
+ * @param argv [i/o] オプション列へのポインタ
+ * @param argc [i/o] オプション列の数へのポインタ
+ * @param maxnum [i/o] オプション列の割付最大数
  * </JA>
  * <EN>
  * @brief  Divide option string into option arguments and append to array.
@@ -436,11 +436,11 @@ add_to_arglist(char *buf, char ***argv_ret, int *argc_ret, int *maxnum_ret)
 
 /** 
  * <JA>
- * ���ץ��������ޤ�ʸ�������Ϥ����ͤ򥻥åȤ���.
- * ���Хѥ�̾�ϥ����Ȥ�������ФȤ��ư�����.
+ * オプション指定を含む文字列を解析して値をセットする.
+ * 相対パス名はカレントからの相対として扱われる.
  * 
- * @param str [in] ���ץ��������ޤ�ʸ����
- * @param jconf [out] �ͤ򥻥åȤ��� jconf ����ǡ���
+ * @param str [in] オプション指定を含む文字列
+ * @param jconf [out] 値をセットする jconf 設定データ
  * </JA>
  * <EN>
  * Parse a string and set the specified option values.
@@ -495,11 +495,11 @@ config_string_parse_basedir(char *str, Jconf *jconf, char *dir)
 
 /** 
  * <JA>
- * jconf ����ե�������ɤ߹���ǲ��Ϥ����б����륪�ץ��������ꤹ��.
- * ���ץ����������Хѥ��ϡ����� jconf ����ե����뤫������ФȤʤ�.
+ * jconf 設定ファイルを読み込んで解析し，対応するオプションを設定する.
+ * オプション内の相対パスは、その jconf 設定ファイルからの相対となる.
  * 
- * @param conffile [in] jconf �ե�����Υѥ�̾
- * @param jconf [out] �ͤ򥻥åȤ��� jconf ����ǡ���
+ * @param conffile [in] jconf ファイルのパス名
+ * @param jconf [out] 値をセットする jconf 設定データ
  * </JA>
  * <EN>
  * Read and parse a jconf file, and set the specified option values.

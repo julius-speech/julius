@@ -2,7 +2,7 @@
  * @file   m_info.c
  * 
  * <JA>
- * @brief  ╔╥╔╧╔ф╔Ю╬ПйС╓н╫пно
+ * @brief  Ц┌╥Ц┌╧Ц┐├Ц┐═Ф┐┘Е═╠Ц│╝Е┤╨Е┼⌡
  * </JA>
  * 
  * <EN>
@@ -29,7 +29,7 @@
  * Output module overview in a global configuration variables to log.
  * </EN>
  * <JA>
- * а╢бнюъдЙ╔я╔И╔А║╪╔©фБ╓н╔Б╔╦╔Е║╪╔К╧╫ю╝╓нЁ╣мв╓Р╔М╔╟╓к╫пно╓╧╓К. 
+ * Е┘╗Д╫⌠Х╗╜Е╝ Ц┐▒Ц┐╘Ц┐║Ц┐╪Ц┌©Е├┘Ц│╝Ц┐╒Ц┌╦Ц┐╔Ц┐╪Ц┐╚Ф╖▀Ф┬░Ц│╝Ф╕┌Х╕│Ц┌▓Ц┐╜Ц┌╟Ц│╚Е┤╨Е┼⌡Ц│≥Ц┌▀. 
  * </JA>
  * 
  * @param jconf [in] global configuration variables
@@ -245,7 +245,7 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
 
 /** 
  * <JA>
- * ╔╗╔С╔╦╔С╔╓╔С╔╧╔©╔С╔╧╓на╢╬ПйС╓Р╔М╔╟╓к╫пно╓╧╓К. 
+ * Ц┌╗Ц┐ЁЦ┌╦Ц┐ЁЦ┌╓Ц┐ЁЦ┌╧Ц┌©Ц┐ЁЦ┌╧Ц│╝Е┘╗Ф┐┘Е═╠Ц┌▓Ц┐╜Ц┌╟Ц│╚Е┤╨Е┼⌡Ц│≥Ц┌▀. 
  * </JA>
  * <EN>
  * Output all informations of an engine instance to log.

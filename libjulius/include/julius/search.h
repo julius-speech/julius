@@ -2,15 +2,15 @@
  * @file   search.h
  * 
  * <JA>
- * @brief  ��2�ѥ��ǻ��Ѥ��벾�����򰷤���¤��
+ * @brief  第2パスで使用する仮説候補を扱う構造体
  *
- * �����Ǥϡ���2�ѥ��Υ����å��ǥ����ǥ��󥰤��Ѥ����벾�����ι�¤��
- * ���������Ƥ��ޤ�. NODE ����ʬʸ������ݻ�������ץ������丽�ߤ�Viterbi
- * �����������쥹�����������٥����������ꤵ�줿��ü�ե졼��ʤɤ��͡��ʲ���
- * ������ݻ����ޤ�. WordGraph ��ñ�쥰����������˥�������ñ��򤢤�魯
- * �Τ��Ѥ����ޤ�. NEXTWORD ��ñ��Ÿ�����˼�ñ������ɽ�����ޤ�. POPNODE
- * ��õ�����ֲĻ벽��ǽ (--enable-visualize) ������ˡ�õ���β�����Ĥ��Ƥ���
- * �Τ˻Ȥ��ޤ�. 
+ * ここでは，第2パスのスタックデコーディングで用いられる仮説候補の構造体
+ * が定義されています. NODE は部分文候補を保持し，合計スコアや現在のViterbi
+ * スコア，言語スコア，信頼度スコア，推定された終端フレームなどの様々な仮説
+ * 情報を保持します. WordGraph は単語グラフ生成時にグラフ中の単語をあらわす
+ * のに用いられます. NEXTWORD は単語展開時に次単語候補を表現します. POPNODE
+ * は探索空間可視化機能 (--enable-visualize) 指定時に，探索の過程を残しておく
+ * のに使われます. 
  * </JA>
  * 
  * <EN>
@@ -44,8 +44,8 @@
 
 /**
  * <JA>
- * ��2�ѥ��μ�ñ�����. ���벾�⤫�鼡����³������ñ��ν���򤢤�魯�Τ�
- * �Ѥ�����. 
+ * 第2パスの次単語候補. ある仮説から次に接続しうる単語の集合をあらわすのに
+ * 用いられる. 
  * </JA>
  * <EN>
  * Next word candidate in the 2nd pass.  This will be used to hold word
@@ -63,7 +63,7 @@ typedef struct __nextword__ {
 #ifdef VISUALIZE
 /**
  * <JA>
- * �Ļ벽��ǽ�Ѥˡ���2�ѥ���pop���줿�ȥ�ꥹñ��ξ�����ݻ�����. 
+ * 可視化機能用に，第2パスでpopされたトレリス単語の情報を保持する. 
  * </JA>
  * <EN>
  * Store popped trellis words on the 2nd pass for visualization.
@@ -79,7 +79,7 @@ typedef struct __popnode__ {
 
 /**
  * <JA>
- * ��2�ѥ���ʸ����
+ * 第2パスの文仮説
  * </JA>
  * <EN>
  * Sentence hypothesis at 2nd pass
@@ -170,7 +170,7 @@ seq[seqnum-3] |                      \______             |<--g_prev[0..T-1]
 #ifdef USE_MBR
 /**
  * <JA>
- * DP�ޥå��󥰤ǻȤ��Ρ���
+ * DPマッチングで使うノード
  * </JA>
  * <EN>
  * Nodes for DP matching
@@ -178,9 +178,9 @@ seq[seqnum-3] |                      \______             |<--g_prev[0..T-1]
  */
 typedef struct {
 
-  int d; // ��û��Υ
-  int r; // ���ܸ� 1=Ins. 2=Del. 3=Sub. or Cor.
-  int c; // r=3�Ȥ����������ܥ����� 1=Sub. 0=Cor.
+  int d; // 最短距離
+  int r; // 遷移元 1=Ins. 2=Del. 3=Sub. or Cor.
+  int c; // r=3とした場合の遷移コスト 1=Sub. 0=Cor.
 } DP;
 #endif
 

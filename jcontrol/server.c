@@ -2,7 +2,7 @@
  * @file   server.c
  * 
  * <JA>
- * @brief  Julius ¥µ¡¼¥Ğ¤ÈÄÌ¿®¤ò¹Ô¤¦¤¿¤á¤ÎÄã¥ì¥Ù¥ë´Ø¿ô·²
+ * @brief  Julius ã‚µãƒ¼ãƒã¨é€šä¿¡ã‚’è¡Œã†ãŸã‚ã®ä½ãƒ¬ãƒ™ãƒ«é–¢æ•°ç¾¤
  * </JA>
  * 
  * <EN>
@@ -30,12 +30,12 @@ int winsock_initialized = 0;   ///< 1 of winsock has been initialized
 
 /** 
  * <JA>
- * Julius¥µ¡¼¥Ğ¤Ø¤ÎÀÜÂ³¤ò¹Ô¤¦¡¥
+ * Juliusã‚µãƒ¼ãƒã¸ã®æ¥ç¶šã‚’è¡Œã†ï¼
  * 
- * @param hostname [in] ÀÜÂ³Àè¤Î¥Û¥¹¥ÈÌ¾
- * @param portnum [in] ÀÜÂ³¤¹¤ë¥İ¡¼¥ÈÈÖ¹æ
+ * @param hostname [in] æ¥ç¶šå…ˆã®ãƒ›ã‚¹ãƒˆå
+ * @param portnum [in] æ¥ç¶šã™ã‚‹ãƒãƒ¼ãƒˆç•ªå·
  * 
- * @return ¥½¥±¥Ã¥È¥Ç¥¹¥¯¥ê¥×¥¿
+ * @return ã‚½ã‚±ãƒƒãƒˆãƒ‡ã‚¹ã‚¯ãƒªãƒ—ã‚¿
  * </JA>
  * <EN>
  * Establish a connection to Julius server.
@@ -109,9 +109,9 @@ do_connect(char *hostname, int portnum)
 
 /** 
  * <JA>
- * ÀÜÂ³¤òÀÚÃÇ¤¹¤ë¡¥
+ * æ¥ç¶šã‚’åˆ‡æ–­ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Disconnect the server.
@@ -133,11 +133,11 @@ do_disconnect(int sd)
 
 /** 
  * <JA>
- * ¥µ¡¼¥Ğ¡¼¤ËÊ¸»úÎó¤òÁ÷¿®¤¹¤ëÈÆÍÑ´Ø¿ô(printf ·Á¼°)
+ * ã‚µãƒ¼ãƒãƒ¼ã«æ–‡å­—åˆ—ã‚’é€ä¿¡ã™ã‚‹æ±ç”¨é–¢æ•°(printf å½¢å¼)
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param fmt [in] ¥Õ¥©¡¼¥Ş¥Ã¥È
- * @param  ... [in] ¥Õ¥©¡¼¥Ş¥Ã¥È¤ËÂĞ¤¹¤ë°ú¿ô
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param fmt [in] ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+ * @param  ... [in] ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«å¯¾ã™ã‚‹å¼•æ•°
  * </JA>
  * <EN>
  * General function to send string to server (printf style).
@@ -169,10 +169,10 @@ do_sendf(int sd, char *fmt, ...)
 
 /** 
  * <JA>
- * ¥µ¡¼¥Ğ¤Ë¥Ğ¥Ã¥Õ¥¡¤ÎÆâÍÆ¤òÁ÷¿®¤¹¤ë¡¥
+ * ã‚µãƒ¼ãƒã«ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’é€ä¿¡ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param buf [in] Á÷¿®ÆâÍÆ¤ÎÊ¸»úÎó
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param buf [in] é€ä¿¡å†…å®¹ã®æ–‡å­—åˆ—
  * </JA>
  * <EN>
  * Send content of the buffer to server.
@@ -198,14 +198,14 @@ do_send(int sd, char *buf)
 
 /** 
  * <JA>
- * ¥µ¡¼¥Ğ¡¼¤«¤é¥á¥Ã¥»¡¼¥¸¤ò°ì¹ÔÆÉ¤ß¹ş¤ß¥Ğ¥Ã¥Õ¥¡¤Ë³ÊÇ¼¤¹¤ë¡¥
- * ËöÈø¤Î²ş¹Ô¥³¡¼¥É¤Ïºï½ü¤µ¤ì¤ë¡¥
+ * ã‚µãƒ¼ãƒãƒ¼ã‹ã‚‰ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ä¸€è¡Œèª­ã¿è¾¼ã¿ãƒãƒƒãƒ•ã‚¡ã«æ ¼ç´ã™ã‚‹ï¼
+ * æœ«å°¾ã®æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã¯å‰Šé™¤ã•ã‚Œã‚‹ï¼
  * 
- * @param sd [in] ¼õ¿®¥½¥±¥Ã¥È
- * @param buf [out] ¼õ¿®¤·¤¿¥á¥Ã¥»¡¼¥¸¤ò³ÊÇ¼¤¹¤ë¥Ğ¥Ã¥Õ¥¡
- * @param maxlen [in] @a buf ¤ÎºÇÂçÄ¹
+ * @param sd [in] å—ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param buf [out] å—ä¿¡ã—ãŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ ¼ç´ã™ã‚‹ãƒãƒƒãƒ•ã‚¡
+ * @param maxlen [in] @a buf ã®æœ€å¤§é•·
  * 
- * @return @a buf ¤Ø¤Î¥İ¥¤¥ó¥¿, ¤¢¤ë¤¤¤Ï¥¨¥é¡¼»ş¤ÏNULL¤òÊÖ¤¹¡¥
+ * @return @a buf ã¸ã®ãƒã‚¤ãƒ³ã‚¿, ã‚ã‚‹ã„ã¯ã‚¨ãƒ©ãƒ¼æ™‚ã¯NULLã‚’è¿”ã™ï¼
  * </JA>
  * <EN>
  * Receive message from server for one line, and store it to buffer.

@@ -2,7 +2,7 @@
  * @file   addlog.c
  * 
  * <JA>
- * @brief  �п��ͤι�®�»��ؿ�
+ * @brief  対数値の高速和算関数
  * </JA>
  * 
  * <EN>

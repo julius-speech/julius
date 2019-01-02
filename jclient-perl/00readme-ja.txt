@@ -4,41 +4,41 @@ JCLIENT.PL(1)                                                    JCLIENT.PL(1)
 
 
 
-���O
+名前
            jclient.pl
-          - perl �ŃT���v���N���C�A���g
+          - perl 版サンプルクライアント
 
-�T�v
+概要
        jclient.pl
 
 DESCRIPTION
-       Julius �ɕt���̃T���v���N���C�A���g "jcontrol" �� Perl �łł��D ��
-       �W���[���i�T�[�o�j���[�h�œ��� Julius ����F�����ʂ��󂯎������C
-       Julius �𐧌䂵����ł��܂��D
+       Julius に付属のサンプルクライアント "jcontrol" の Perl 版です． モ
+       ジュール（サーバ）モードで動く Julius から認識結果を受け取ったり，
+       Julius を制御したりできます．
 
-       �킸�� 57 �s�̊ȒP�ȃv���O�����ł��D�A�v���P�[�V������ Julius ��g�ݍ�
-       �ލۂ̎Q�l�ɂȂ�΍K���ł��D�����R�ɂ����p���������B
+       わずか 57 行の簡単なプログラムです．アプリケーションへ Julius を組み込
+       む際の参考になれば幸いです．ご自由にご利用ください。
 
 EXAMPLES
-       ��L�̂悤�ɂ��� Julius �����W���[�����[�h�ŋN��������Cjclient.pl ��
-       �N�����܂��D�ڑ�����z�X�g�̃f�t�H���g�� localhost, �|�[�g�ԍ��� 10500
-       �ł��D�ς������ꍇ�̓X�N���v�g�̖`�������������Ă��������D
-       �������͂��s���΁C�C�x���g���e�⌋�ʂ� jclient.pl ���ɑ��M����C �W���o
-       �͂ɏo�͂���܂��D�܂��Cjclient.pl �ɑ΂��ăR�}���h����͂��� �i�Ō��
-       Enter �������j�ƁCJulius �ɃR�}���h�����M����CJulius �����䂳��܂��D
-       �R�}���h�́C�d�l���ɂ��郂�W���[���R�}���h�𐶂̂܂܋L�q���܂��D
+       上記のようにして Julius をモジュールモードで起動した後，jclient.pl を
+       起動します．接続するホストのデフォルトは localhost, ポート番号は 10500
+       です．変えたい場合はスクリプトの冒頭を書き換えてください．
+       音声入力を行えば，イベント内容や結果が jclient.pl 側に送信され， 標準出
+       力に出力されます．また，jclient.pl に対してコマンドを入力する （最後に
+       Enter を押す）と，Julius にコマンドが送信され，Julius が制御されます．
+       コマンドは，仕様書にあるモジュールコマンドを生のまま記述します．
 
 SEE ALSO
         julius ( 1 ) ,
         jcontrol ( 1 )
 
 COPYRIGHT
-       jclient.pl �� �������� ���� (nisimura@sys.wakayama-u.ac.jp) �ɂ���č�
-       ������܂����D�{�v���O�����̂����p�Ɋւ��ẮC��҂͈�؂̕ۏ؂����܂�
-       ��D�e���̐ӔC�̂��Ƃł����p���������D
+       jclient.pl は 西村竜一 さん (nisimura@sys.wakayama-u.ac.jp) によって作
+       成されました．本プログラムのご利用に関しては，作者は一切の保証をしませ
+       ん．各自の責任のもとでご利用ください．
 
-       ���z�A��ӌ��A��v�]�Ȃǂ̃t�B�[�h�o�b�N�͊��}�������܂��̂ŁC ��L���[
-       ���A�h���X�C�܂��͉��L�z�[���y�[�W�֌�A�����������D
+       感想、御意見、御要望などのフィードバックは歓迎いたしますので， 上記メー
+       ルアドレス，または下記ホームページへ御連絡ください．
 
        http://w3voice.jp/
 

@@ -2,10 +2,10 @@
  * @file   strcasecmp.c
  * 
  * <JA>
- * @brief  strcasecmp �����
+ * @brief  strcasecmp の定義
  *
- * strcasecmp() �θߴ��ؿ��Ǥ���strcasecmp() ����������Ƥ��ʤ��Ķ���
- * ����˻��Ѥ���ޤ���
+ * strcasecmp() の互換関数です．strcasecmp() が実装されていない環境で
+ * 代わりに使用されます．
  * </JA>
  * 
  * <EN>

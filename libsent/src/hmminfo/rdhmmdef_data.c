@@ -2,7 +2,7 @@
  * @file   rdhmmdef_data.c
  * 
  * <JA>
- * @brief  HTK %HMM ─ъ╡┴е╒ебедеыд╬╞╔д▀╣■д▀бз%HMM ете╟еы
+ * @brief  HTK %HMM хоЪч╛йуГХуВбуВдуГлуБошкнуБ┐ш╛╝уБ┐я╝Ъ%HMM уГвуГЗуГл
  * </JA>
  * 
  * <EN>

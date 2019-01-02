@@ -2,9 +2,9 @@
  * @file   charconv_libjcode.c
  * 
  * <JA>
- * @brief  Ê¸»ú¥³¡¼¥ÉÊÑ´¹ (libjcode »ÈÍÑ)
+ * @brief  æ–‡å­—ã‚³ãƒ¼ãƒ‰å¤‰æ› (libjcode ä½¿ç”¨)
  *
- * ÆüËÜ¸ì¤ÎÊ¸»ú¥³¡¼¥É(JIS,EUC,SJIS)¤ÎÁê¸ßÊÑ´¹¤Î¤ß²ÄÇ½¤Ç¤¢¤ë. 
+ * æ—¥æœ¬èªžã®æ–‡å­—ã‚³ãƒ¼ãƒ‰(JIS,EUC,SJIS)ã®ç›¸äº’å¤‰æ›ã®ã¿å¯èƒ½ã§ã‚ã‚‹. 
  *
  * </JA>
  * 

@@ -2,12 +2,12 @@
  * @file   visual.c
  * 
  * <JA>
- * @brief  Ãµº÷¶õ´Ö¤Î²Ä»ë²½ (GTK/X11 ¤ò»ÈÍÑ)
+ * @brief  æ¢ç´¢ç©ºé–“ã®å¯è¦–åŒ– (GTK/X11 ã‚’ä½¿ç”¨)
  *
- * Ãµº÷¶õ´Ö²Ä»ë²½µ¡Ç½¤Ï Linux ¤Ç¥µ¥İ¡¼¥È¤µ¤ì¤Æ¤¤¤Ş¤¹. 
- * "--enable-visualize" ¤Ç ON ¤Ë¤·¤Æ¥³¥ó¥Ñ¥¤¥ë¤Ç¤­¤Ş¤¹. 
- * ¤Ê¤ª¡¤»ÈÍÑ¤Ë¤Ï gtk ¤Î¥Ğ¡¼¥¸¥ç¥ó 1.x ¤¬É¬Í×¤Ç¤¹. 
- * Æ°ºî³ÎÇ§¤Ï gtk-1.2 ¤Ç¹Ô¤¤¤Ş¤·¤¿. 
+ * æ¢ç´¢ç©ºé–“å¯è¦–åŒ–æ©Ÿèƒ½ã¯ Linux ã§ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã¾ã™. 
+ * "--enable-visualize" ã§ ON ã«ã—ã¦ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã§ãã¾ã™. 
+ * ãªãŠï¼Œä½¿ç”¨ã«ã¯ gtk ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ 1.x ãŒå¿…è¦ã§ã™. 
+ * å‹•ä½œç¢ºèªã¯ gtk-1.2 ã§è¡Œã„ã¾ã—ãŸ. 
  * </JA>
  * 
  * <EN>
@@ -104,7 +104,7 @@ static GdkGC *dgc = NULL;		///< gc for drawing
 
 /** 
  * <JA>
- * ¿§¤Î³äÉÕ
+ * è‰²ã®å‰²ä»˜
  * </JA>
  * <EN>
  * Assign color.
@@ -136,9 +136,9 @@ static LOGPROB maxrange2;	///< Maximum distance from normalization line
 
 /** 
  * <JA>
- * ¥¹¥±¡¼¥ê¥ó¥°ÍÑ¤ËºÇÂç¥¹¥³¥¢¤ÈºÇ¾®¥¹¥³¥¢¤òÆÀ¤ë. 
+ * ã‚¹ã‚±ãƒ¼ãƒªãƒ³ã‚°ç”¨ã«æœ€å¤§ã‚¹ã‚³ã‚¢ã¨æœ€å°ã‚¹ã‚³ã‚¢ã‚’å¾—ã‚‹. 
  * 
- * @param bt [in] Ã±¸ì¥È¥ì¥ê¥¹
+ * @param bt [in] å˜èªãƒˆãƒ¬ãƒªã‚¹
  * </JA>
  * <EN>
  * Get the top and bottom scores for scaling.
@@ -190,11 +190,11 @@ get_max_frame_score(BACKTRELLIS *bt)
 
 /** 
  * <JA>
- * »ş´Ö¥Õ¥ì¡¼¥à¤ò X ºÂÉ¸ÃÍ¤ËÊÑ´¹¤¹¤ë. 
+ * æ™‚é–“ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’ X åº§æ¨™å€¤ã«å¤‰æ›ã™ã‚‹. 
  * 
- * @param t [in] »ş´Ö¥Õ¥ì¡¼¥à
+ * @param t [in] æ™‚é–“ãƒ•ãƒ¬ãƒ¼ãƒ 
  * 
- * @return ÂĞ±ş¤¹¤ë X ºÂÉ¸ÃÍ¤òÊÖ¤¹. 
+ * @return å¯¾å¿œã™ã‚‹ X åº§æ¨™å€¤ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Scale X axis by time to fullfill in the canvas width.
@@ -212,12 +212,12 @@ scale_x(int t)
 
 /** 
  * <JA>
- * ¥¹¥³¥¢¤ò Y ºÂÉ¸ÃÍ¤ËÊÑ´¹¤¹¤ë. 
+ * ã‚¹ã‚³ã‚¢ã‚’ Y åº§æ¨™å€¤ã«å¤‰æ›ã™ã‚‹. 
  * 
- * @param s [in] ¥¹¥³¥¢
- * @param t [in] ÂĞ±ş¤¹¤ë»ş´Ö¥Õ¥ì¡¼¥à
+ * @param s [in] ã‚¹ã‚³ã‚¢
+ * @param t [in] å¯¾å¿œã™ã‚‹æ™‚é–“ãƒ•ãƒ¬ãƒ¼ãƒ 
  * 
- * @return Y ºÂÉ¸ÃÍ¤òÊÖ¤¹. 
+ * @return Y åº§æ¨™å€¤ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Scale Y axis from score to fulfill in the canvas height.
@@ -261,11 +261,11 @@ scale_y(LOGPROB s, int t)
 
 /** 
  * <JA>
- * Ã±¸ìID¤ò Y ºÂÉ¸ÃÍ¤ËÊÑ´¹¤¹¤ë. 
+ * å˜èªIDã‚’ Y åº§æ¨™å€¤ã«å¤‰æ›ã™ã‚‹. 
  * 
- * @param wid [in] Ã±¸ìID
+ * @param wid [in] å˜èªID
  * 
- * @return Y ºÂÉ¸ÃÍ¤òÊÖ¤¹. 
+ * @return Y åº§æ¨™å€¤ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Scale Y axis from word id.
@@ -299,11 +299,11 @@ static SP16 max_level;		///< Maximum level of input waveform
 
 /** 
  * <JA>
- * ÇÈ·ÁÉ½¼¨ÍÑ¤Ë»ş´Ö¤òXºÂÉ¸¤ËÊÑ´¹¤¹¤ë. 
+ * æ³¢å½¢è¡¨ç¤ºç”¨ã«æ™‚é–“ã‚’Xåº§æ¨™ã«å¤‰æ›ã™ã‚‹. 
  * 
- * @param t [in] »ş´Ö¥Õ¥ì¡¼¥à
+ * @param t [in] æ™‚é–“ãƒ•ãƒ¬ãƒ¼ãƒ 
  * 
- * @return ÊÑ´¹¸å¤Î X ºÂÉ¸¤òÊÖ¤¹. 
+ * @return å¤‰æ›å¾Œã® X åº§æ¨™ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Scale time to X position.
@@ -321,11 +321,11 @@ scale_x_wave(int t)
 
 /** 
  * <JA>
- * ÇÈ·ÁÉ½¼¨ÍÑ¤Ë¿¶Éı¤òYºÂÉ¸¤ËÊÑ´¹¤¹¤ë. 
+ * æ³¢å½¢è¡¨ç¤ºç”¨ã«æŒ¯å¹…ã‚’Yåº§æ¨™ã«å¤‰æ›ã™ã‚‹. 
  * 
- * @param x [in] ÇÈ·Á¤Î¿¶Éı
+ * @param x [in] æ³¢å½¢ã®æŒ¯å¹…
  * 
- * @return ÊÑ´¹¸å¤Î X ºÂÉ¸¤òÊÖ¤¹. 
+ * @return å¤‰æ›å¾Œã® X åº§æ¨™ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Scale wave level to Y position
@@ -343,7 +343,7 @@ scale_y_wave(SP16 x)
 
 /** 
  * <JA>
- * ¿¶Éı¤ÎºÇÂçÃÍ¤ò speech[] ¤è¤êµá¤á¤ë. 
+ * æŒ¯å¹…ã®æœ€å¤§å€¤ã‚’ speech[] ã‚ˆã‚Šæ±‚ã‚ã‚‹. 
  * 
  * </JA>
  * <EN>
@@ -372,9 +372,9 @@ get_max_waveform_level()
 
 /** 
  * <JA>
- * ÆşÎÏÇÈ·Á speech[] ¤òÉÁ²è¤¹¤ë. 
+ * å…¥åŠ›æ³¢å½¢ speech[] ã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Draw input waveform in speech[].
@@ -447,14 +447,14 @@ draw_waveform(GtkWidget *widget)
 
 /** 
  * <JA>
- * ¥¢¡¼¥¯¤òÉÁ²è¤¹¤ë. 
+ * ã‚¢ãƒ¼ã‚¯ã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param x1 [in] Âè1ÅÀ¤ÎXºÂÉ¸
- * @param y1 [in] Âè1ÅÀ¤ÎYºÂÉ¸
- * @param x2 [in] Âè2ÅÀ¤ÎXºÂÉ¸
- * @param y2 [in] Âè2ÅÀ¤ÎYºÂÉ¸
- * @param sw [in] ÉÁ²è¥ì¥Ù¥ë¤Î»ØÄê
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param x1 [in] ç¬¬1ç‚¹ã®Xåº§æ¨™
+ * @param y1 [in] ç¬¬1ç‚¹ã®Yåº§æ¨™
+ * @param x2 [in] ç¬¬2ç‚¹ã®Xåº§æ¨™
+ * @param y2 [in] ç¬¬2ç‚¹ã®Yåº§æ¨™
+ * @param sw [in] æç”»ãƒ¬ãƒ™ãƒ«ã®æŒ‡å®š
  * </JA>
  * <EN>
  * Draw an arc.
@@ -539,12 +539,12 @@ mygdk_draw_arc(GtkWidget *widget, int x1, int y1, int x2, int y2, int sw)
 
 /** 
  * <JA>
- * ¥È¥ì¥ê¥¹Ã±¸ì¤òÉÁ²è¤¹¤ë¥µ¥Ö´Ø¿ô. 
+ * ãƒˆãƒ¬ãƒªã‚¹å˜èªã‚’æç”»ã™ã‚‹ã‚µãƒ–é–¢æ•°. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param tre [in] ÉÁ²è¤¹¤ë¥È¥ì¥ê¥¹Ã±¸ì
- * @param last_tre [in] @a tre ¤ÎÄ¾Á°¤Î¥È¥ì¥ê¥¹Ã±¸ì
- * @param sw [in] ÉÁ²è¤Î¶¯¤µ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param tre [in] æç”»ã™ã‚‹ãƒˆãƒ¬ãƒªã‚¹å˜èª
+ * @param last_tre [in] @a tre ã®ç›´å‰ã®ãƒˆãƒ¬ãƒªã‚¹å˜èª
+ * @param sw [in] æç”»ã®å¼·ã•
  * </JA>
  * <EN>
  * Sub-function to draw a trellis word.
@@ -596,11 +596,11 @@ draw_atom_sub(GtkWidget *widget, TRELLIS_ATOM *tre, TRELLIS_ATOM *last_tre, int 
 
 /** 
  * <JA>
- * Âè1¥Ñ¥¹¤Î¤¢¤ë¥È¥ì¥ê¥¹Ã±¸ì¤òÉÁ²è¤¹¤ë
+ * ç¬¬1ãƒ‘ã‚¹ã®ã‚ã‚‹ãƒˆãƒ¬ãƒªã‚¹å˜èªã‚’æç”»ã™ã‚‹
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param tre [in] ¥È¥ì¥ê¥¹Ã±¸ì
- * @param sw [in] ÉÁ²è¤Î¶¯¤µ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param tre [in] ãƒˆãƒ¬ãƒªã‚¹å˜èª
+ * @param sw [in] æç”»ã®å¼·ã•
  * </JA>
  * <EN>
  * Draw a trellis word at the 1st pass.
@@ -619,11 +619,11 @@ draw_atom(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
 /* draw word output text */
 /** 
  * <JA>
- * ¥È¥ì¥ê¥¹Ã±¸ì¤ÎÃ±¸ìÆÉ¤ß¤òÉÁ²è¤¹¤ë. 
+ * ãƒˆãƒ¬ãƒªã‚¹å˜èªã®å˜èªèª­ã¿ã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param tre [in] ¥È¥ì¥ê¥¹Ã±¸ì
- * @param sw [in] ÉÁ²è¤Î¶¯¤µ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param tre [in] ãƒˆãƒ¬ãƒªã‚¹å˜èª
+ * @param sw [in] æç”»ã®å¼·ã•
  * </JA>
  * <EN>
  * Draw a word output string of a trellis word.
@@ -690,11 +690,11 @@ static WORD_ID wordlistnum = 0;	///< Length of @a wordlist
 
 /** 
  * <JA>
- * ÉÁ²èÃ±¸ì¥ê¥¹¥È¤ÎÃæ¤ËÃ±¸ì¤¬¤¢¤ë¤«¤É¤¦¤«¸¡º÷¤¹¤ë. 
+ * æç”»å˜èªãƒªã‚¹ãƒˆã®ä¸­ã«å˜èªãŒã‚ã‚‹ã‹ã©ã†ã‹æ¤œç´¢ã™ã‚‹. 
  * 
- * @param wid [in] Ã±¸ìID
+ * @param wid [in] å˜èªID
  * 
- * @return ¥ê¥¹¥È¤Ë¸«¤Ä¤«¤ì¤Ğ TRUE¡¤¸«¤Ä¤«¤é¤Ê¤±¤ì¤Ğ FALSE ¤òÊÖ¤¹. 
+ * @return ãƒªã‚¹ãƒˆã«è¦‹ã¤ã‹ã‚Œã° TRUEï¼Œè¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã° FALSE ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Check if the given word exists in the drawn word list.
@@ -733,11 +733,11 @@ wordlist_find(WORD_ID wid)
 
 /** 
  * <JA>
- * Ã±¸ì¤òÉÁ²è¤¹¤ë¡ÊÉÁ²èÃ±¸ì¥ê¥¹¥È¤Ë¤¢¤ë¤â¤Î¤Î¤ß¡Ë. 
+ * å˜èªã‚’æç”»ã™ã‚‹ï¼ˆæç”»å˜èªãƒªã‚¹ãƒˆã«ã‚ã‚‹ã‚‚ã®ã®ã¿ï¼‰. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param tre [in] ÉÁ²è¤¹¤ë¥È¥ì¥ê¥¹Ã±¸ì
- * @param sw [in] ÉÁ²è¤Î¶¯¤µ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param tre [in] æç”»ã™ã‚‹ãƒˆãƒ¬ãƒªã‚¹å˜èª
+ * @param sw [in] æç”»ã®å¼·ã•
  * </JA>
  * <EN>
  * Draw a word on canvas (only words in wordlist).
@@ -757,15 +757,15 @@ draw_atom_top(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
 
 /** 
  * <JA>
- * Ã±¸ì¤òÉÁ²è¤¹¤ë¡ÊÉÁ²èÃ±¸ì¥ê¥¹¥È¤Ë¤¢¤ë¤â¤Î¤Î¤ß¡Ë. 
- * Ã±¸ì¤Î¥Æ¥­¥¹¥È¤òÉÁ²è¤¹¤ë¡Ê¥ê¥¹¥È¤Ë¤Ê¤±¤ì¤ĞÉÁ²è¤·¤Ê¤¤¡Ë. 
+ * å˜èªã‚’æç”»ã™ã‚‹ï¼ˆæç”»å˜èªãƒªã‚¹ãƒˆã«ã‚ã‚‹ã‚‚ã®ã®ã¿ï¼‰. 
+ * å˜èªã®ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»ã™ã‚‹ï¼ˆãƒªã‚¹ãƒˆã«ãªã‘ã‚Œã°æç”»ã—ãªã„ï¼‰. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param tre [in] ÉÁ²è¤¹¤ë¥È¥ì¥ê¥¹Ã±¸ì
- * @param sw [in] ÉÁ²è¤Î¶¯¤µ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param tre [in] æç”»ã™ã‚‹ãƒˆãƒ¬ãƒªã‚¹å˜èª
+ * @param sw [in] æç”»ã®å¼·ã•
  * </JA>
  * <EN>
- * Ã±¸ì¤Î¥Æ¥­¥¹¥È¤òÉÁ²è¤¹¤ë¡ÊÉÁ²èÃ±¸ì¥ê¥¹¥È¤Ë¤¢¤ë¤â¤Î¤Î¤ß¡Ë. 
+ * å˜èªã®ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»ã™ã‚‹ï¼ˆæç”»å˜èªãƒªã‚¹ãƒˆã«ã‚ã‚‹ã‚‚ã®ã®ã¿ï¼‰. 
  * Draw text of a word on canvas (only words in wordlist).
  * 
  * @param widget [in] drawing widget
@@ -788,9 +788,9 @@ draw_atom_text_top(GtkWidget *widget, TRELLIS_ATOM *tre, int sw)
 
 /** 
  * <JA>
- * Á´¤Æ¤Î¥È¥ì¥ê¥¹Ã±¸ì¤òÉÁ²è¤¹¤ë. 
+ * å…¨ã¦ã®ãƒˆãƒ¬ãƒªã‚¹å˜èªã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Draw all survived words in trellis.
@@ -822,9 +822,9 @@ draw_all_atom(GtkWidget *widget)
 
 /** 
  * <JA>
- * Âè1¥Ñ¥¹¤Ë¤ª¤¤¤Æ¤½¤Î¼¡Ã±¸ì¤¬À¸¤­»Ä¤Ã¤¿¥È¥ì¥ê¥¹Ã±¸ì¤Î¤ßÉÁ²è¤¹¤ë. 
+ * ç¬¬1ãƒ‘ã‚¹ã«ãŠã„ã¦ãã®æ¬¡å˜èªãŒç”Ÿãæ®‹ã£ãŸãƒˆãƒ¬ãƒªã‚¹å˜èªã®ã¿æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Draw words whose next word was survived on the 1st pass.
@@ -861,9 +861,9 @@ draw_context_valid_atom(GtkWidget *widget)
 #ifdef WORD_GRAPH
 /** 
  * <JA>
- * Ã±¸ì¥°¥é¥Õ¤È¤·¤ÆÉÁ²è¤¹¤ë
+ * å˜èªã‚°ãƒ©ãƒ•ã¨ã—ã¦æç”»ã™ã‚‹
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Draw words as word graph.
@@ -903,9 +903,9 @@ draw_word_graph(GtkWidget *widget)
 
 /** 
  * <JA>
- * Âè1¥Ñ¥¹¤Î°ì°ÌÊ¸²¾Àâ¤òÉÁ²è¤¹¤ë. 
+ * ç¬¬1ãƒ‘ã‚¹ã®ä¸€ä½æ–‡ä»®èª¬ã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Draw the best path at the 1st pass.
@@ -970,9 +970,9 @@ draw_best_path(GtkWidget *widget)
 
 /** 
  * <JA>
- * Âè2¥Ñ¥¹²Ä»ë²½¤Î¤¿¤á¤Î½é´ü²½¤ò¹Ô¤¦. 
+ * ç¬¬2ãƒ‘ã‚¹å¯è¦–åŒ–ã®ãŸã‚ã®åˆæœŸåŒ–ã‚’è¡Œã†. 
  * 
- * @param maxhypo [in] Âè2¥Ñ¥¹¤Ë¤ª¤¤¤Æ¥İ¥Ã¥×¤µ¤ì¤¿²¾Àâ¤ÎºÇÂç¿ô
+ * @param maxhypo [in] ç¬¬2ãƒ‘ã‚¹ã«ãŠã„ã¦ãƒãƒƒãƒ—ã•ã‚ŒãŸä»®èª¬ã®æœ€å¤§æ•°
  * </JA>
  * <EN>
  * Initialize for visualization of the 2nd pass.
@@ -1017,10 +1017,10 @@ visual2_init(int maxhypo)
 
 /** 
  * <JA>
- * ¥¹¥¿¥Ã¥¯¤«¤é¼è¤ê½Ğ¤·¤¿²¾Àâ¤ò¥í¡¼¥«¥ë¤ËÊİÂ¸¤¹¤ë. 
+ * ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰å–ã‚Šå‡ºã—ãŸä»®èª¬ã‚’ãƒ­ãƒ¼ã‚«ãƒ«ã«ä¿å­˜ã™ã‚‹. 
  * 
- * @param n [in] ²¾Àâ
- * @param popctr [in] ¸½ºß¤Î¥İ¥Ã¥×¿ô¥«¥¦¥ó¥È
+ * @param n [in] ä»®èª¬
+ * @param popctr [in] ç¾åœ¨ã®ãƒãƒƒãƒ—æ•°ã‚«ã‚¦ãƒ³ãƒˆ
  * </JA>
  * <EN>
  * Store popped nodes to local buffer.
@@ -1044,11 +1044,11 @@ visual2_popped(NODE *n, int popctr)
   
 /** 
  * <JA>
- * À¸À®¤µ¤ì¤¿²¾Àâ¤Î¥Î¡¼¥É¤òÊİÂ¸¤¹¤ë. 
+ * ç”Ÿæˆã•ã‚ŒãŸä»®èª¬ã®ãƒãƒ¼ãƒ‰ã‚’ä¿å­˜ã™ã‚‹. 
  * 
- * @param next [in] À¸À®¤µ¤ì¤¿¼¡Ã±¸ì²¾Àâ
- * @param prev [in] Å¸³«¸µ¤Î²¾Àâ
- * @param popctr [in] ¸½ºß¤ÎÀ¸À®²¾Àâ¿ô¥«¥¦¥ó¥¿
+ * @param next [in] ç”Ÿæˆã•ã‚ŒãŸæ¬¡å˜èªä»®èª¬
+ * @param prev [in] å±•é–‹å…ƒã®ä»®èª¬
+ * @param popctr [in] ç¾åœ¨ã®ç”Ÿæˆä»®èª¬æ•°ã‚«ã‚¦ãƒ³ã‚¿
  * </JA>
  * <EN>
  * Store generated nodes.
@@ -1077,16 +1077,16 @@ visual2_next_word(NODE *next, NODE *prev, int popctr)
 
 /** 
  * <JA>
- * ¥İ¥Ã¥×¤µ¤ì¤¿²¾Àâ¸õÊä¤òÊİÂ¸¤¹¤ë. 
+ * ãƒãƒƒãƒ—ã•ã‚ŒãŸä»®èª¬å€™è£œã‚’ä¿å­˜ã™ã‚‹. 
  * 
- * @param now [in] Ê¸²¾Àâ
- * @param winfo [in] Ã±¸ì¼­½ñ
+ * @param now [in] æ–‡ä»®èª¬
+ * @param winfo [in] å˜èªè¾æ›¸
  * </JA>
  * <EN>
  * Store last popped hypothesis of best hypothesis.
  * 
- * @param now [in] Ê¸²¾Àâ
- * @param winfo [in] Ã±¸ì¼­½ñ
+ * @param now [in] æ–‡ä»®èª¬
+ * @param winfo [in] å˜èªè¾æ›¸
  * </EN>
  */
 void
@@ -1109,14 +1109,14 @@ visual2_best(NODE *now, WORD_INFO *winfo)
 /* draw 2nd pass results */
 /** 
  * <JA>
- * Âè2¥Ñ¥¹Ãµº÷Ãæ¤Ë¡¤¥¹¥¿¥Ã¥¯¤«¤é¼è¤ê½Ğ¤µ¤ì¤¿²¾Àâ¤È¤½¤Î¼¡Ã±¸ì½¸¹ç¤òÉÁ²è¤¹¤ë. 
+ * ç¬¬2ãƒ‘ã‚¹æ¢ç´¢ä¸­ã«ï¼Œã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰å–ã‚Šå‡ºã•ã‚ŒãŸä»®èª¬ã¨ãã®æ¬¡å˜èªé›†åˆã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Draw popped hypotheses and their next candidates appeared while search.
  * 
- * @param widget ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </EN>
  */
 static void
@@ -1143,7 +1143,7 @@ static LOGPROB maxscore;	///< Maximum score of popped hypotheses while search
 static LOGPROB minscore;	///< Minimum score of popped hypotheses while search
 /** 
  * <JA>
- * Âè2¥Ñ¥¹¤Ç½Ğ¸½¤·¤¿Å¸³«¸µ²¾Àâ¤Î¥¹¥³¥¢¤ÎºÇÂçÃÍ¤ÈºÇ¾®ÃÍ¤òµá¤á¤ë. 
+ * ç¬¬2ãƒ‘ã‚¹ã§å‡ºç¾ã—ãŸå±•é–‹å…ƒä»®èª¬ã®ã‚¹ã‚³ã‚¢ã®æœ€å¤§å€¤ã¨æœ€å°å€¤ã‚’æ±‚ã‚ã‚‹. 
  * 
  * </JA>
  * <EN>
@@ -1167,11 +1167,11 @@ get_max_hypo_score()
 
 /** 
  * <JA>
- * ²¾ÀâÉ½¼¨»ş¡¤²¾Àâ¥¹¥³¥¢¤ò Y ºÂÉ¸ÃÍ¤ËÊÑ´¹¤¹¤ë. 
+ * ä»®èª¬è¡¨ç¤ºæ™‚ï¼Œä»®èª¬ã‚¹ã‚³ã‚¢ã‚’ Y åº§æ¨™å€¤ã«å¤‰æ›ã™ã‚‹. 
  * 
- * @param s [in] ²¾Àâ¥¹¥³¥¢
+ * @param s [in] ä»®èª¬ã‚¹ã‚³ã‚¢
  * 
- * @return ÂĞ±ş¤¹¤ëYºÂÉ¸¤òÊÖ¤¹
+ * @return å¯¾å¿œã™ã‚‹Yåº§æ¨™ã‚’è¿”ã™
  * </JA>
  * <EN>
  * Scale hypothesis score to Y position.
@@ -1196,13 +1196,13 @@ scale_hypo_y(LOGPROB s)
 /* draw popped words */
 /** 
  * <JA>
- * ¥¹¥¿¥Ã¥¯¤«¤é¼è¤ê½Ğ¤µ¤ì¤¿²¾Àâ¤òÉÁ²è¤¹¤ë. 
+ * ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰å–ã‚Šå‡ºã•ã‚ŒãŸä»®èª¬ã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param p [in] ¥¹¥¿¥Ã¥¯¤«¤é¼è¤ê½Ğ¤µ¤ì¤¿²¾Àâ¤Î¾ğÊó
- * @param c [in] Àş¤Î¿§
- * @param width [in] Àş¤ÎÉı
- * @param style [in] Àş¤Î¥¹¥¿¥¤¥ë
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param p [in] ã‚¹ã‚¿ãƒƒã‚¯ã‹ã‚‰å–ã‚Šå‡ºã•ã‚ŒãŸä»®èª¬ã®æƒ…å ±
+ * @param c [in] ç·šã®è‰²
+ * @param width [in] ç·šã®å¹…
+ * @param style [in] ç·šã®ã‚¹ã‚¿ã‚¤ãƒ«
  * </JA>
  * <EN>
  * Draw a popped hypothesis.
@@ -1276,10 +1276,10 @@ static int old_popctr;		///< popctr of previously popped hypo.
 
 /** 
  * <JA>
- * Âè2¥Ñ¥¹¤ÎÃ±¸ìÅ¸³«¤ÎÍÍ»Ò¤òÉÁ²è¤¹¤ë. 
+ * ç¬¬2ãƒ‘ã‚¹ã®å˜èªå±•é–‹ã®æ§˜å­ã‚’æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param popctr [in] Å¸³«²¾Àâ¤ÎÈÖ¹æ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param popctr [in] å±•é–‹ä»®èª¬ã®ç•ªå·
  * </JA>
  * <EN>
  * Draw a popped word and their expanded candidates for 2nd pass replay.
@@ -1315,9 +1315,9 @@ draw_popnodes(GtkWidget *widget, int popctr)
 }
 /** 
  * <JA>
- * Ä¾Á°¤Ë draw_popnodes() ¤ÇÉÁ²è¤·¤¿¤Î¤ò¾å½ñ¤­¤·¤Æ¾Ã¤¹. 
+ * ç›´å‰ã« draw_popnodes() ã§æç”»ã—ãŸã®ã‚’ä¸Šæ›¸ãã—ã¦æ¶ˆã™. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Erase previous one drawn at draw_popnodes(), by overwriting.
@@ -1348,13 +1348,13 @@ draw_popnodes_old(GtkWidget *widget)
 /* GTK TopLevel draw/redraw functions */
 /* will be called for each exposure/configure event */
 /**********************************************************************/
-static boolean fitscreen = TRUE; ///< ¥Õ¥£¥Ã¥È¥¹¥¯¥ê¡¼¥ó»ØÄê»ş TRUE
+static boolean fitscreen = TRUE; ///< ãƒ•ã‚£ãƒƒãƒˆã‚¹ã‚¯ãƒªãƒ¼ãƒ³æŒ‡å®šæ™‚ TRUE
 
 /** 
  * <JA>
- * ¥­¥ã¥ó¥Ğ¥¹¤ÎÇØ·Ê¤ò pixmap ¤ËºîÀ®¤¹¤ë
+ * ã‚­ãƒ£ãƒ³ãƒã‚¹ã®èƒŒæ™¯ã‚’ pixmap ã«ä½œæˆã™ã‚‹
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Make the white background to the pixmap of the given canvas widget.
@@ -1392,7 +1392,7 @@ draw_background(GtkWidget *widget)
 
 /** 
  * <JA>
- * ÉÁ²è¥­¥ã¥ó¥Ñ¥¹Æâ¤ËÉ½¼¨¤¹¤Ù¤­Á´¤Æ¤ÎÃ±¸ì¾ğÊó¤ò pixmap ¤ËÉÁ²è¤¹¤ë. 
+ * æç”»ã‚­ãƒ£ãƒ³ãƒ‘ã‚¹å†…ã«è¡¨ç¤ºã™ã¹ãå…¨ã¦ã®å˜èªæƒ…å ±ã‚’ pixmap ã«æç”»ã™ã‚‹. 
  * 
  * @param widget 
  * </JA>
@@ -1438,9 +1438,9 @@ drawarea_draw(GtkWidget *widget)
 
 /** 
  * <JA>
- * Expose ¥¤¥Ù¥ó¥È¤òÈ¯¹Ô¤¹¤ë. 
+ * Expose ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºè¡Œã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Tell X to issue expose event on this window.
@@ -1462,13 +1462,13 @@ drawarea_expose(GtkWidget *widget)
 
 /** 
  * <JA>
- * Expose ¥¤¥Ù¥ó¥È½èÍı¡§¤¢¤é¤«¤¸¤áÉÁ²è¤µ¤ì¤¿ pixmap ¤ò²èÌÌ¤ËÉ½¼¨¤¹¤ë. 
+ * Expose ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†ï¼šã‚ã‚‰ã‹ã˜ã‚æç”»ã•ã‚ŒãŸ pixmap ã‚’ç”»é¢ã«è¡¨ç¤ºã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param event [in] ¥¤¥Ù¥ó¥È¾ğÊó
- * @param user_data [in] ¥æ¡¼¥¶¥Ç¡¼¥¿¡ÊÌ¤»ÈÍÑ¡Ë
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param event [in] ã‚¤ãƒ™ãƒ³ãƒˆæƒ…å ±
+ * @param user_data [in] ãƒ¦ãƒ¼ã‚¶ãƒ‡ãƒ¼ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰
  * 
- * @return gboolean ¤òÊÖ¤¹. 
+ * @return gboolean ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Expose event handler: show the already drawn pixmap to the screen.
@@ -1495,13 +1495,13 @@ event_drawarea_expose(GtkWidget *widget, GdkEventExpose *event, gpointer user_da
 
 /** 
  * <JA>
- * Configure ¥¤¥Ù¥ó¥È½èÍı¡§resize ¤Ş¤¿¤Ï map »ş¤ËºÆÉÁ²è¤¹¤ë. 
+ * Configure ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç†ï¼šresize ã¾ãŸã¯ map æ™‚ã«å†æç”»ã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
- * @param event [in] ¥¤¥Ù¥ó¥È¾ğÊó
- * @param user_data [in] ¥æ¡¼¥¶¥Ç¡¼¥¿¡ÊÌ¤»ÈÍÑ¡Ë
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param event [in] ã‚¤ãƒ™ãƒ³ãƒˆæƒ…å ±
+ * @param user_data [in] ãƒ¦ãƒ¼ã‚¶ãƒ‡ãƒ¼ã‚¿ï¼ˆæœªä½¿ç”¨ï¼‰
  * 
- * @return gboolean ¤òÊÖ¤¹. 
+ * @return gboolean ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Configure event handler: redraw objects when resized or mapped.
@@ -1533,10 +1533,10 @@ event_drawarea_configure(GtkWidget *widget, GdkEventExpose *event, gpointer user
 
 /** 
  * <JA>
- * [show threshold] ¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Î callback: ¥È¥ê¥¬¤·¤­¤¤ÃÍÀş¤ÎÉÁ²è
- * ¤Î ON/ OFF. 
+ * [show threshold] ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã® callback: ãƒˆãƒªã‚¬ã—ãã„å€¤ç·šã®æç”»
+ * ã® ON/ OFF. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [show threshold] button is clicked: toggle trigger
@@ -1564,9 +1564,9 @@ action_toggle_thres(GtkWidget *widget)
 #ifdef PLAYCOMMAND
 /** 
  * <JA>
- * [play] ¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Î callback: ²»À¼¤òºÆÀ¸¤¹¤ë. 
+ * [play] ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã® callback: éŸ³å£°ã‚’å†ç”Ÿã™ã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [play] button is clicked: play waveform.
@@ -1605,10 +1605,10 @@ action_play_waveform(GtkWidget *widget)
 
 /** 
  * <JA>
- * [Word view] ¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Î callback: Y¼´¤òÃ±¸ìID¤Ë¤¹¤ë. 
+ * [Word view] ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã® callback: Yè»¸ã‚’å˜èªIDã«ã™ã‚‹. 
  * 
- * @param button [in] ¥Ü¥¿¥ó¥¦¥£¥¸¥§¥Ã¥È
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param button [in] ãƒœã‚¿ãƒ³ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [Word view] button is clicked: set Y axis to word ID.
@@ -1635,10 +1635,10 @@ action_view_wid(GtkWidget *button, GtkWidget *widget)
 
 /** 
  * <JA>
- * [Score view] ¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Î callback: Y¼´¤ò¥¹¥³¥¢¤Ë¤¹¤ë. 
+ * [Score view] ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã® callback: Yè»¸ã‚’ã‚¹ã‚³ã‚¢ã«ã™ã‚‹. 
  * 
- * @param button [in] ¥Ü¥¿¥ó¥¦¥£¥¸¥§¥Ã¥È
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param button [in] ãƒœã‚¿ãƒ³ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [Score view] button is clicked: set Y axis to score.
@@ -1663,11 +1663,11 @@ action_view_score(GtkWidget *button, GtkWidget *widget)
 
 /** 
  * <JA>
- * [Beam view] ¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Î callback: Y¼´¤ò¥Õ¥ì¡¼¥à¤´¤È¤ÎºÇÂç¥¹¥³¥¢
- * ¤«¤é¤Îº¹Ê¬¤Ë¤¹¤ë. 
+ * [Beam view] ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã® callback: Yè»¸ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨ã®æœ€å¤§ã‚¹ã‚³ã‚¢
+ * ã‹ã‚‰ã®å·®åˆ†ã«ã™ã‚‹. 
  * 
- * @param button [in] ¥Ü¥¿¥ó¥¦¥£¥¸¥§¥Ã¥È
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param button [in] ãƒœã‚¿ãƒ³ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [Beam view] button is clicked: set Y axis to offsets
@@ -1693,11 +1693,11 @@ action_view_beam(GtkWidget *button, GtkWidget *widget)
 
 /** 
  * <JA>
- * [Arc on/off] ¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Î callback: Ã±¸ìÀèÆ¬¤ÈÃ±¸ì½ªÃ¼¤Î´Ö¤ÎÀş¤Î
- * ÉÁ²è¤ò on/off ¤¹¤ë. 
+ * [Arc on/off] ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã® callback: å˜èªå…ˆé ­ã¨å˜èªçµ‚ç«¯ã®é–“ã®ç·šã®
+ * æç”»ã‚’ on/off ã™ã‚‹. 
  * 
- * @param button [in] ¥Ü¥¿¥ó¥¦¥£¥¸¥§¥Ã¥È
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param button [in] ãƒœã‚¿ãƒ³ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [Arc on/off] button is clicked: toggle lines between
@@ -1725,11 +1725,11 @@ action_toggle_arc(GtkWidget *button, GtkWidget *widget)
 
 /** 
  * <JA>
- * ¥Æ¥­¥¹¥È¥¦¥£¥¸¥§¥Ã¥È¤ËÃ±¸ìÌ¾¤¬ÆşÎÏ¤µ¤ì¤¿¤È¤­¤Îcallback: ÉÁ²èÃ±¸ì¥ê¥¹¥È¤ò
- * ¹¹¿·¤¹¤ë. 
+ * ãƒ†ã‚­ã‚¹ãƒˆã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆã«å˜èªåãŒå…¥åŠ›ã•ã‚ŒãŸã¨ãã®callback: æç”»å˜èªãƒªã‚¹ãƒˆã‚’
+ * æ›´æ–°ã™ã‚‹. 
  * 
- * @param widget [in] ¥Æ¥­¥¹¥È¥¦¥£¥¸¥§¥Ã¥È
- * @param draw [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] ãƒ†ã‚­ã‚¹ãƒˆã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param draw [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when a word string is entered on the text widget: update the
@@ -1778,10 +1778,10 @@ action_set_wid(GtkWidget *widget, GtkWidget *draw)
 
 /** 
  * <JA>
- * [x2] ¥º¡¼¥à¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Îcallback: X¼´¤ò2ÇÜ¤Ë¿­Ä¥¤¹¤ë. ¤Ê¤ªFITSCREEN¤Ï
- * OFF¤Ë¤Ê¤ë. 
+ * [x2] ã‚ºãƒ¼ãƒ ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã®callback: Xè»¸ã‚’2å€ã«ä¼¸å¼µã™ã‚‹. ãªãŠFITSCREENã¯
+ * OFFã«ãªã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [x2] zoom button is clicked: expand X axis to "x2".
@@ -1805,10 +1805,10 @@ action_zoom(GtkWidget *widget)
 
 /** 
  * <JA>
- * [x4] ¥º¡¼¥à¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Îcallback: X¼´¤ò4ÇÜ¤Ë¿­Ä¥¤¹¤ë. ¤Ê¤ªFITSCREEN¤Ï
- * OFF¤Ë¤Ê¤ë. 
+ * [x4] ã‚ºãƒ¼ãƒ ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã®callback: Xè»¸ã‚’4å€ã«ä¼¸å¼µã™ã‚‹. ãªãŠFITSCREENã¯
+ * OFFã«ãªã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [x4] zoom button is clicked: expand X axis to "x4".
@@ -1832,10 +1832,10 @@ action_zoom_4(GtkWidget *widget)
 
 /** 
  * <JA>
- * [x8] ¥º¡¼¥à¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Îcallback: X¼´¤ò8ÇÜ¤Ë¿­Ä¥¤¹¤ë. ¤Ê¤ªFITSCREEN¤Ï
- * OFF¤Ë¤Ê¤ë. 
+ * [x8] ã‚ºãƒ¼ãƒ ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã®callback: Xè»¸ã‚’8å€ã«ä¼¸å¼µã™ã‚‹. ãªãŠFITSCREENã¯
+ * OFFã«ãªã‚‹. 
  * 
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback when [x8] zoom button is clicked: expand X axis to "x8".
@@ -1859,8 +1859,8 @@ action_zoom_8(GtkWidget *widget)
 
 /** 
  * <JA>
- * [Fit] ¥Ü¥¿¥ó¥¯¥ê¥Ã¥¯»ş¤Î¥³¡¼¥ë¥Ğ¥Ã¥¯¡§¥­¥ã¥ó¥Ñ¥¹¥µ¥¤¥º¤ò¥¦¥£¥ó¥É¥¦¥µ¥¤¥º¤Ë
- * ¼«Æ°Åª¤Ë¹ç¤ï¤»¤ë¤è¤¦¤Ë¤¹¤ë. Â¾¤Î zoom »ØÄê»ş¡¤¤½¤ì¤é¤ò off ¤Ë¤¹¤ë. 
+ * [Fit] ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ï¼šã‚­ãƒ£ãƒ³ãƒ‘ã‚¹ã‚µã‚¤ã‚ºã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã«
+ * è‡ªå‹•çš„ã«åˆã‚ã›ã‚‹ã‚ˆã†ã«ã™ã‚‹. ä»–ã® zoom æŒ‡å®šæ™‚ï¼Œãã‚Œã‚‰ã‚’ off ã«ã™ã‚‹. 
  * 
  * @param widget 
  * </JA>
@@ -1884,10 +1884,10 @@ action_fit_screen(GtkWidget *widget)
 
 /** 
  * <JA>
- * Âè2¥Ñ¥¹ºÆ¸½ÍÑ¤Î [start] ¥Ü¥¿¥ó¤Îcallback: Âè2¥Ñ¥¹ºÆ¸½ÍÑ¤Ë½àÈ÷¤¹¤ë. 
+ * ç¬¬2ãƒ‘ã‚¹å†ç¾ç”¨ã® [start] ãƒœã‚¿ãƒ³ã®callback: ç¬¬2ãƒ‘ã‚¹å†ç¾ç”¨ã«æº–å‚™ã™ã‚‹. 
  * 
- * @param button [in] ¥Ü¥¿¥ó¥¦¥£¥¸¥§¥Ã¥È
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param button [in] ãƒœã‚¿ãƒ³ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback for [start] button for pass2 replay: prepare flag and canvas
@@ -1911,11 +1911,11 @@ action_toggle_popctr(GtkWidget *button, GtkWidget *widget)
 
 /** 
  * <JA>
- * Âè2¥Ñ¥¹ºÆ¸½ÍÑ¤Î¥¹¥±¡¼¥ë¤Îcallback: ÃÍ¤¬ N ¤ËÊÑ¹¹¤µ¤ì¤¿¤È¤­¤Ë¡¤
- * N ÈÖÌÜ¤ÎÃ±¸ìÅ¸³«¤ÎÍÍ»Ò¤òÉÁ²è¤¹¤ë. 
+ * ç¬¬2ãƒ‘ã‚¹å†ç¾ç”¨ã®ã‚¹ã‚±ãƒ¼ãƒ«ã®callback: å€¤ãŒ N ã«å¤‰æ›´ã•ã‚ŒãŸã¨ãã«ï¼Œ
+ * N ç•ªç›®ã®å˜èªå±•é–‹ã®æ§˜å­ã‚’æç”»ã™ã‚‹. 
  * 
- * @param adj [in] ¥¢¥¸¥ã¥¹¥¿
- * @param widget [in] ÉÁ²è¥¦¥£¥¸¥§¥Ã¥È
+ * @param adj [in] ã‚¢ã‚¸ãƒ£ã‚¹ã‚¿
+ * @param widget [in] æç”»ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Callback for pop counter scale for pass2 replay: when the scale value
@@ -1945,13 +1945,13 @@ action_change_popctr(GtkAdjustment *adj, GtkWidget *widget)
 
 /** 
  * <JA>
- * GTK¤Îºï½ü¥¤¥Ù¥ó¥È¥Ï¥ó¥É¥é
+ * GTKã®å‰Šé™¤ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©
  * 
- * @param widget [in] ¥¦¥£¥¸¥§¥Ã¥È
- * @param event [in] ¥¤¥Ù¥ó¥È
- * @param data [in] ¥æ¡¼¥¶¥Ç¡¼¥¿
+ * @param widget [in] ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param event [in] ã‚¤ãƒ™ãƒ³ãƒˆ
+ * @param data [in] ãƒ¦ãƒ¼ã‚¶ãƒ‡ãƒ¼ã‚¿
  * 
- * @return FALSE¤ò¾ï¤ËÊÖ¤¹¡Êdestroy signal¤òÈ¯¹Ô¤¹¤ë¤¿¤á¡Ë. 
+ * @return FALSEã‚’å¸¸ã«è¿”ã™ï¼ˆdestroy signalã‚’ç™ºè¡Œã™ã‚‹ãŸã‚ï¼‰. 
  * </JA>
  * <EN>
  * GTK delete event handler.
@@ -1971,10 +1971,10 @@ delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
 
 /** 
  * <JA>
- * GTK¤Î½ªÎ»¥¤¥Ù¥ó¥È¥Ï¥ó¥É¥é. ¥¢¥×¥ê¥±¡¼¥·¥ç¥ó¤ò½ªÎ»¤¹¤ë. 
+ * GTKã®çµ‚äº†ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©. ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†ã™ã‚‹. 
  * 
- * @param widget [in] ¥¦¥£¥¸¥§¥Ã¥È
- * @param data [in] ¥æ¡¼¥¶¥Ç¡¼¥¿
+ * @param widget [in] ã‚¦ã‚£ã‚¸ã‚§ãƒƒãƒˆ
+ * @param data [in] ãƒ¦ãƒ¼ã‚¶ãƒ‡ãƒ¼ã‚¿
  * </JA>
  * <EN>
  * GTK destroy event handler.  Quit application here.
@@ -1995,7 +1995,7 @@ destroy(GtkWidget *widget, gpointer data)
 
 /** 
  * <JA>
- * µ¯Æ°»ş¡¤²Ä»ë²½µ¡Ç½¤ò½é´ü²½¤¹¤ë. 
+ * èµ·å‹•æ™‚ï¼Œå¯è¦–åŒ–æ©Ÿèƒ½ã‚’åˆæœŸåŒ–ã™ã‚‹. 
  * </JA>
  * <EN>
  * Initialize visualization functions at startup.
@@ -2035,9 +2035,9 @@ visual_init(Recog *recog)
 
 /** 
  * <JA>
- * Ç§¼±·ë²Ì¤ò¸µ¤Ë¡¤Ãµº÷¶õ´Ö¤Î²Ä»ë²½¤ò¼Â¹Ô¤¹¤ë. 
+ * èªè­˜çµæœã‚’å…ƒã«ï¼Œæ¢ç´¢ç©ºé–“ã®å¯è¦–åŒ–ã‚’å®Ÿè¡Œã™ã‚‹. 
  * 
- * @param bt [in] Ã±¸ì¥È¥ì¥ê¥¹
+ * @param bt [in] å˜èªãƒˆãƒ¬ãƒªã‚¹
  * </JA>
  * <EN>
  * Start visualization of recognition result.

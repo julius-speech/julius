@@ -2,7 +2,7 @@
  * @file   ptree.c
  * 
  * <JA>
- * @brief  �ѥȥꥷ�������ڤ��Ѥ���̾���������ǡ������� int �ξ��
+ * @brief  パトリシア検索木を用いた名前検索：データ型が int の場合
  * </JA>
  * 
  * <EN>

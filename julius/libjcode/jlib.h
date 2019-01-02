@@ -1,7 +1,7 @@
 /*
- *  jlib.h -- jlib.c �ѤΥإå��ե�����  by. �Ҹ� ��Ϻ
+ *  jlib.h -- jlib.c 用のヘッダファイル  by. 倉光 君郎
  *
- *  jlib.c �����Ѥ�����ϡ�include ���Ƥ���������
+ *  jlib.c を利用する場合は、include してください。
  *
  */
 

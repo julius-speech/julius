@@ -11,13 +11,13 @@
  * extraction, htk_param.h for storing the parameter vectors.
  * </EN>
  * <JA>
- * @brief  ���������Ͻ����˴ؤ������
+ * @brief  音声入出力処理に関する定義
  *
- * ���Υե�����ˤϡ������������Ϥ˴ؤ��뻨¿�������������Ƥ��ޤ���
- * ��ȯ�ä����������Ĺ�˴ؤ������¤ʤɤ��������Ƥ��ޤ���
+ * このファイルには，音声の入出力に関する雑多な定義が収められています．
+ * 一発話あたりの入力長に関する制限などが定義されています．
  * 
- * ���ϥ������˴ؤ�������� adin.h��MFCC ��ħ����Ф˴ؤ�������� mfcc.h,
- * ��ħ�̥ѥ�᡼���ˤĤ��Ƥ� htk_param.h �򻲾Ȥ��Ʋ�������
+ * 入力ソースに関する定義は adin.h，MFCC 特徴量抽出に関する定義は mfcc.h,
+ * 特徴量パラメータについては htk_param.h を参照して下さい．
  * </JA>
  *
  * @author Akinobu LEE

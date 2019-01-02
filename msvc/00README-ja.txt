@@ -1,78 +1,78 @@
-Julius�̃R���p�C�����@
+Juliusのコンパイル方法
 =======================
 
-���̃t�@�C���ł� Microsoft Visual Studio 2013 �ȍ~�ɂ����� Julius �̃R��
-�p�C�����@�ɂ��ĉ�����܂��D�܂��CGUI�ŃT���v���A�v���P�[�V�����ł�
-��"SampleApp" �� Julius �̃��b�p�[�N���X�̒�`�ɂ��Ă�������܂��D�R
-���p�C���ƃe�X�g�̕��@��m�肽�����͈ȉ����������������D
+このファイルでは Microsoft Visual Studio 2013 以降における Julius のコン
+パイル方法について解説します．また，GUI版サンプルアプリケーションであ
+る"SampleApp" と Julius のラッパークラスの定義についても解説します．コ
+ンパイルとテストの方法を知りたい方は以下をご覧ください．
 
-�{�o�[�W������ Microsoft Visual Studio 2013 �� Windows10 �ɂē���m�F
-���Ă��܂��D
+本バージョンは Microsoft Visual Studio 2013 で Windows10 にて動作確認
+しています．
 
-Julius ��V���Ɏg�p����ꍇ�C�������f���C���ꃂ�f���C����� Julius �̐�
-����L�q���� jconf �t�@�C�����K�v�ƂȂ�܂��D�ڍׂ͈ȉ����������������D
+Julius を新たに使用する場合，音響モデル，言語モデル，および Julius の設
+定を記述した jconf ファイルが必要となります．詳細は以下をご覧ください．
 
 
-1. ����
+1. 準備
 ========
 
-Julius�𓮂������߂ɂ͉������f���C���ꃂ�f����2�̃��f���ƁCJulius ��
-�ݒ���L�q���� jconf �t�@�C�����K�v�ƂȂ�܂��D���f���̎d�l�C�T�|�[�g��
-�́C�g�����̏ڍׁC���萫�Ȃǂɂ��Ă� Julius �̃E�F�u�y�[�W���Q�Ƃ���
-���������D�Ȃ��C�E�F�u�y�[�W�ł͓��{��̕W�����f�����܂Ƃ߂��f�B�N�e�[
-�V�����L�b�g��z�z���Ă��܂��D
+Juliusを動かすためには音響モデル，言語モデルの2つのモデルと，Julius の
+設定を記述した jconf ファイルが必要となります．モデルの仕様，サポート範
+囲，使い方の詳細，入手性などについては Julius のウェブページを参照して
+ください．なお，ウェブページでは日本語の標準モデルをまとめたディクテー
+ションキットを配布しています．
 
-�Ȃ��C�f�B�N�e�[�V�����L�b�g�� "SampleApp" �Ŏg�p����ꍇ�Cjconf �ɋL�q
-����Ă��� -charconv �I�v�V�������폜���Ă���g�p���Ă��������D
+なお，ディクテーションキットを "SampleApp" で使用する場合，jconf に記述
+されている -charconv オプションを削除してから使用してください．
 
 
-2. �r���h
+2. ビルド
 ==============
 
-VisualStudio 2013�ȍ~�� "JuliusLib.sln" ���ŊJ���C�r���h���Ă��������D
-"Debug" ���邢�� "Release" �f�B���N�g���̒��� "julius.exe", "adintool.exe" �����
-"SampleApp.exe" ����������܂��D
+VisualStudio 2013以降で "JuliusLib.sln" をで開き，ビルドしてください．
+"Debug" あるいは "Release" ディレクトリの中に "julius.exe", "adintool.exe" および
+"SampleApp.exe" が生成されます．
 
 
-3. �e�X�g
+3. テスト
 ==========
 
 3.1  julius.exe
 -----------------
 
-"julius.exe" �� Win32 �̃R���\�[���A�v���P�[�V�����ł��D�R�}���h�v����
-�v�g�� jconf �t�@�C�����w�肷�邱�ƂŎ��s���邱�Ƃ��ł��܂��D
+"julius.exe" は Win32 のコンソールアプリケーションです．コマンドプロン
+プトで jconf ファイルを指定することで実行することができます．
 
     % julius.exe -C xxx.jconf
 
 3.2  SampleApp.exe
 -------------------
 
-"SampleApp.exe" �̓V���v���� Julius ���b�p�[�N���X�� JuliusLib ���C�u��
-�����g�p���� Julius ��GUI�ŃT���v���A�v���P�[�V�����ł��D
+"SampleApp.exe" はシンプルな Julius ラッパークラスと JuliusLib ライブラ
+リを使用する Julius のGUI版サンプルアプリケーションです．
 
-�g�p����ɂ́CSampleApp ���N����C���j���[����g�p������ jconf �t�@�C��
-���J���C���������j���[����G���W���̎��s���w�肵�܂��DJulius �͎q�X���b
-�h�Ƃ��ē��삵�C�������͊J�n��F�����ʏo�͂Ȃǂ̊e�C�x���g�����C�����b
-�Z�[�W�ɕ`�悵�܂��D
+使用するには，SampleApp を起動後，メニューから使用したい jconf ファイル
+を開き，同じくメニューからエンジンの実行を指定します．Julius は子スレッ
+ドとして動作し，音声入力開始や認識結果出力などの各イベントをメインメッ
+セージに描画します．
 
-���ʂ̕\���ɖ�肪����ꍇ�CSampleApp.cpp ��98�s�ɂ��郍�P�[���̐ݒ���C
-�g�p���錾�ꃂ�f���ɍ��킹�ĕύX���ăR���p�C�����Ȃ����Ă��������D
+結果の表示に問題がある場合，SampleApp.cpp の98行にあるロケールの設定を，
+使用する言語モデルに合わせて変更してコンパイルしなおしてください．
 
-Julius �̏o�͂� "juliuslog.txt" �ɕۑ�����܂��D���� Julius �ɃG���[��
-�N�����ꍇ�C���̃t�@�C�����`�F�b�N���Ă��������D
+Julius の出力は "juliuslog.txt" に保存されます．もし Julius にエラーが
+起きた場合，このファイルをチェックしてください．
 
-�Ȃ��CSampleApp �Ńf�B�N�e�[�V�����L�b�g���g�p����ꍇ�Cjconf �t�@�C��
-�ɋL�q����Ă��� -charconv �I�v�V�������폜���Ă���g�p���Ă��������D
+なお，SampleApp でディクテーションキットを使用する場合，jconf ファイル
+に記述されている -charconv オプションを削除してから使用してください．
 
 
-4. Julius �N���X
+4. Julius クラス
 =================
 
-SampleApp �ł̓V���v���ȃN���X��`�ł��� "Julius.cpp" �� "Julius.h" ��
-�g�p���Ă��܂��D������ Windows �̃��b�Z�[�W�`���� JuliusLib �̋@�\��
-���p���邽�߂� "cJulius" �Ƃ������b�p�[�N���X���`���Ă��܂��D����͈�
-���̂悤�ɃA�v���P�[�V�����ŗ��p���邱�Ƃ��ł��܂��D
+SampleApp ではシンプルなクラス定義である "Julius.cpp" と "Julius.h" を
+使用しています．これらは Windows のメッセージ形式で JuliusLib の機能を
+利用するための "cJulius" というラッパークラスを定義しています．これは以
+下のようにアプリケーションで利用することができます．
 
 -----------------------------------------------------------------
 #include "Julius.h"
@@ -103,31 +103,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 -----------------------------------------------------------------
 
-�ڍׂ�SampleApp.cpp��Julius.cpp���������������D
+詳細はSampleApp.cppとJulius.cppをご覧ください．
 
 
-5.  �\�[�X���̕����R�[�h�ɂ���
+5.  ソース内の文字コードについて
 =================================
 
-Julius �̃\�[�X�R�[�h�ł͓��{��̕����� EUC-JP �ŋL�q���Ă��܂��D������
-���� MSVC++ �œǂ݂����ꍇ�CUTF-8 �֕ϊ����Ă��������D
+Julius のソースコードでは日本語の文字を EUC-JP で記述しています．もしそ
+れらを MSVC++ で読みたい場合，UTF-8 へ変換してください．
 
 
-6.  �X�V����
+6.  更新履歴
 =============
 
 2016/8/19 (ver.4.4)
 
-	VisualStudio 2013 �ɍ��킹�ĕύX�D
-	PortAudio �� zlib �̃\�[�X�𓯍�
-	adintool ��ǉ�
+	VisualStudio 2013 に合わせて変更．
+	PortAudio と zlib のソースを同梱
+	adintool を追加
 
 2010/12 (ver.4.1.5.1)
 
-	���C�Z���X�֌W�̏C��
-	���[�h�~�[�̏C��
-	�w�b�_�̏C��
+	ライセンス関係の修正
+	リードミーの修正
+	ヘッダの修正
 
 2009/11 (ver.4.1.3)
 
-	����
+	初版

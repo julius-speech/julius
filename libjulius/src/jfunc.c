@@ -2,10 +2,10 @@
  * @file   jfunc.c
  * 
  * <JA>
- * @brief  ���ץꥱ�����������μ��API�ؿ�
+ * @brief  アプリケーション向けの種々のAPI関数
  *
- * ���Υե�����ˤϡ����ץꥱ������󤫤�JuliusLib�γƵ�ǽ��ƤӽФ�
- * API�ؿ�����ӥ饤�֥�경�Τ���˼������줿��δؿ����������Ƥ��ޤ�. 
+ * このファイルには，アプリケーションからJuliusLibの各機能を呼び出す
+ * API関数およびライブラリ化のために実装された種々の関数が定義されています. 
  * 
  * </JA>
  * 
@@ -37,8 +37,8 @@
  * speech input, it will stop after the current recognition ended.
  * </EN>
  * <JA>
- * ���󥸥��ǧ������������ߤ���褦�׵᤹��. ���δؿ���ƽФ�����
- * �������Ϥ�¹���Ǥ��ä���硤�������Ϥ�ǧ������λ�������Ȥ���ߤ���. 
+ * エンジンに認識処理を一時停止するよう要求する. この関数を呼出し時に
+ * 音声入力を実行中であった場合，その入力の認識が終了したあとで停止する. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -77,8 +77,8 @@ j_request_pause(Recog *recog)
  * current input will be lost).
  * </EN>
  * <JA>
- * ���󥸥��ǧ��������¨����ߤ���褦�׵᤹��. ���δؿ���ƽФ�����
- * �������Ϥ�¹���ξ�硤�������Ϥ��˴�����¨�¤���ߤ���. 
+ * エンジンに認識処理を即時停止するよう要求する. この関数を呼出し時に
+ * 音声入力を実行中の場合，その入力を破棄して即座に停止する. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -116,7 +116,7 @@ j_request_terminate(Recog *recog)
  * Resume the engine which has already paused or terminated.
  * </EN>
  * <JA>
- * �����ߤ��Ƥ��륨�󥸥��Ƴ�������. 
+ * 一時停止しているエンジンを再開させる. 
  * </JA>
  * 
  * @param recog 
@@ -153,10 +153,10 @@ j_request_resume(Recog *recog)
  * 
  * </EN>
  * <JA>
- * ��ʸˡ���ѹ�������å�����ɬ�פǤ����ǧ���Ѽ����ƹ��ۤ���褦
- * ���󥸥���׵᤹��. �ºݤν����ϼ���ǧ���ι�֤˹Ԥ���. 
- * ���δؿ���ʸˡ���ɲä������������ʤɡ�
- * ʸˡ�ꥹ�Ȥ��ѹ���ä������Ȥ�ɬ���Ƥ֤٤��Ǥ���. 
+ * 全文法の変更をチェックし，必要であれば認識用辞書を再構築するよう
+ * エンジンに要求する. 実際の処理は次の認識の合間に行われる. 
+ * この関数は文法を追加したり削除したなど，
+ * 文法リストに変更を加えたあとに必ず呼ぶべきである. 
  * 
  * </JA>
  * 
@@ -197,7 +197,7 @@ schedule_grammar_update(Recog *recog)
 
 /** 
  * <JA>
- * �ƹ����׵�ե饰�򥯥ꥢ����. 
+ * 再構築要求フラグをクリアする. 
  * 
  * </JA>
  * <EN>
@@ -222,7 +222,7 @@ j_reset_reload(Recog *recog)
  * Enable debug messages in JuliusLib to log.
  * </EN>
  * <JA>
- * JuliusLib��δؿ��ǥǥХå���å�����������˽��Ϥ���褦�ˤ���
+ * JuliusLib内の関数でデバッグメッセージをログに出力するようにする
  * </JA>
  * @callgraph
  * @callergraph
@@ -239,7 +239,7 @@ j_enable_debug_message()
  * Disable debug messages in JuliusLib to log.
  * </EN>
  * <JA>
- * JuliusLib��δؿ��ǥǥХå���å�������Ф��ʤ��褦�ˤ���. 
+ * JuliusLib内の関数でデバッグメッセージを出さないようにする. 
  * </JA>
  * 
  * @callgraph
@@ -257,7 +257,7 @@ j_disable_debug_message()
  * Enable verbose messages in JuliusLib to log.
  * </EN>
  * <JA>
- * JuliusLib��δؿ��Ǽ��ץ�å�����������˽��Ϥ���褦�ˤ���. 
+ * JuliusLib内の関数で主要メッセージをログに出力するようにする. 
  * </JA>
  * 
  * @callgraph
@@ -275,7 +275,7 @@ j_enable_verbose_message()
  * Disable verbose messages in JuliusLib to log.
  * </EN>
  * <JA>
- * JuliusLib��δؿ��Ǽ��ץ�å������Υ������Ϥ򤷤ʤ��褦�ˤ���. 
+ * JuliusLib内の関数で主要メッセージのログ出力をしないようにする. 
  * </JA>
  * 
  * @callgraph
@@ -317,8 +317,8 @@ j_internal_error(char *fmt, ...)
  * If multiple instances defined from init, remove initial one (id=0)
  * </EN>
  * <JA>
- * ʣ�����󥹥��󥹤��������Ƥ����硢������󥹥���(id=0)��
- * ̵���ʤΤǾä�. 
+ * 複数インスタンスが定義されている場合、初期インスタンス(id=0)は
+ * 無効なので消す. 
  * </JA>
  * 
  * @param jconf [i/o] global configuration instance
@@ -360,8 +360,8 @@ j_config_remove_initial(Jconf *jconf)
  * instances in jconf.
  * </EN>
  * <JA>
- * ���ޥ�ɰ�������ѥ�᡼�����ɤ߹��ߡ�jconf ��γ����ꥤ�󥹥��󥹤�
- * �ͤ��Ǽ����. 
+ * コマンド引数からパラメータを読み込み，jconf 内の各設定インスタンスに
+ * 値を格納する. 
  * </JA>
  * 
  * @param jconf [i/o] global configuration instance
@@ -393,8 +393,8 @@ j_config_load_args(Jconf *jconf, int argc, char *argv[])
  * instances in jconf.
  * </EN>
  * <JA>
- * ���ޥ�ɰ�����ޤ�ʸ���󤫤�ѥ�᡼�����ɤ߹��ߡ�jconf ��γ����ꥤ�󥹥��󥹤�
- * �ͤ��Ǽ����. 
+ * コマンド引数を含む文字列からパラメータを読み込み，jconf 内の各設定インスタンスに
+ * 値を格納する. 
  * </JA>
  * 
  * @param jconf [i/o] global configuration instance
@@ -425,8 +425,8 @@ j_config_load_string(Jconf *jconf, char *string)
  * instances in jconf.
  * </EN>
  * <JA>
- * jconf �ե����뤫��ѥ�᡼�����ɤ߹��ߡ�jconf ��γ����ꥤ�󥹥��󥹤�
- * �ͤ��Ǽ����. 
+ * jconf ファイルからパラメータを読み込み，jconf 内の各設定インスタンスに
+ * 値を格納する. 
  * </JA>
  * 
  * @param jconf [i/o] glbal configuration instance
@@ -457,8 +457,8 @@ j_config_load_file(Jconf *jconf, char *filename)
  * argments.
  * </EN>
  * <JA>
- * ���ޥ�ɰ�������ѥ�᡼�����ɤ߹��ߡ������ͤ��Ǽ����
- * ���������ꥤ�󥹥��󥹤����դ����֤�. 
+ * コマンド引数からパラメータを読み込み，その値を格納した
+ * 新たな設定インスタンスを割り付けて返す. 
  * </JA>
  * 
  * @param argc [in] number of arguments
@@ -488,8 +488,8 @@ j_config_load_args_new(int argc, char *argv[])
  * file.
  * </EN>
  * <JA>
- * ���������ꥤ�󥹥��󥹤����դ���������
- * jconf�ե����뤫������ѥ�᡼�����ɤ߹�����֤�. 
+ * 新たな設定インスタンスを割り付け，そこに
+ * jconfファイルから設定パラメータを読み込んで返す. 
  * </JA>
  * 
  * @param filename [in] jconf filename
@@ -518,8 +518,8 @@ j_config_load_file_new(char *filename)
  * file.
  * </EN>
  * <JA>
- * ���������ꥤ�󥹥��󥹤����դ���������
- * ʸ���󤫤�����ѥ�᡼�����ɤ߹�����֤�. 
+ * 新たな設定インスタンスを割り付け，そこに
+ * 文字列から設定パラメータを読み込んで返す. 
  * </JA>
  * 
  * @param string [in] option string
@@ -549,9 +549,9 @@ j_config_load_string_new(char *string)
  * The file will be read just after the normal dictionary at startup.
  * </EN>
  * <JA>
- * �ɲü���ե�������ɤ߹��ߤ���ꤹ��.
- * ʣ����ƤФ줿��硢���٤��ɤ߹��ޤ�롣
- * ���ꤵ�줿����ϵ�ư�����̾�μ���Τ��Ȥ�³�����ɤ߹��ޤ��.
+ * 追加辞書ファイルの読み込みを指定する.
+ * 複数回呼ばれた場合、すべて読み込まれる。
+ * 指定された辞書は起動時に通常の辞書のあとに続けて読み込まれる.
  * </JA>
  *
  * @param lm [i/o] a LM configuration
@@ -581,9 +581,9 @@ j_add_dict(JCONF_LM *lm, char *dictfile)
  * If called multiple times, all the specified words will be appended.
  * </EN>
  * <JA>
- * �ɲä�ñ�쥨��ȥ����ꤹ��.
- * ���Ƥϼ���ե������Ʊ���ե����ޥå�.
- * ��ư�ޤǤ�ʣ����ƤФ줿��硢���Τ��٤Ƥ���ư�����ɲä����.
+ * 追加の単語エントリを指定する.
+ * 内容は辞書ファイルと同じフォーマット.
+ * 起動までに複数回呼ばれた場合、そのすべてが起動時に追加される.
  * </JA>
  *
  * @param lm [i/o] a LM configuration
@@ -611,9 +611,9 @@ j_add_word(JCONF_LM *lm, char *wordentry)
  * A/D-in thread will start inside this function.
  * </EN>
  * <JA>
- * ��������򤵤줿 A/D-in �ǥХ�����������ǧ���ν�����Ԥ�. 
- * ���ΥǥХ������Ф��� threading �����ꤵ��Ƥ�����ϡ�
- * A/D-in �ѥ���åɤ������ǳ��Ϥ����. 
+ * 設定で選択された A/D-in デバイスを初期化し認識の準備を行う. 
+ * そのデバイスに対して threading が指定されている場合は，
+ * A/D-in 用スレッドがここで開始される. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -654,8 +654,8 @@ j_adin_init(Recog *recog)
  * input device does not support this function.
  * </EN>
  * <JA>
- * ���ߤ����ϥե�����̾���֤�.���ߤ����ϥǥХ��������ε�ǽ�򥵥ݡ���
- * ���Ƥ��ʤ����� NULL ���֤���
+ * 現在の入力ファイル名を返す.現在の入力デバイスがこの機能をサポート
+ * していない場合は NULL を返す．
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -698,7 +698,7 @@ j_get_current_filename(Recog *recog)
  * Output all configurations and system informations into log.
  * </EN>
  * <JA>
- * ���󥸥����������������ƥ���������˽��Ϥ���. 
+ * エンジンの全設定と全システム情報をログに出力する. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -726,12 +726,12 @@ j_recog_info(Recog *recog)
  * </EN>
  *
  * <JA>
- * @brief  Ϳ����줿���ꥤ�󥹥�����ξ���˽��äơ�������
- * ���󥸥󥤥󥹥��󥹤� ��ư����������. 
+ * @brief  与えられた設定インスタンス内の情報に従って，新たな
+ * エンジンインスタンスを 起動・生成する. 
  * 
- * ���ꥤ�󥹥�����Υѥ�᡼���Υ����å��塤��ǥ���ɤ߹��ߡ��ڹ�
- * ¤�������������������ꥢ����ӥ���å���γ��ݤʤɤ�Ԥ�. 
- * A/D-in �ν�����ʳ���ǧ���򳫻Ϥ���Τ�ɬ�פʽ����򤹤٤ƹԤ�. 
+ * 設定インスタンス内のパラメータのチェック後，モデルを読み込み，木構
+ * 造化辞書の生成，ワークエリアおよびキャッシュの確保などを行う. 
+ * A/D-in の初期化以外で認識を開始するのに必要な処理をすべて行う. 
  * </JA>
  * 
  * @param jconf [in] gloabl configuration instance
@@ -783,10 +783,10 @@ j_create_instance_from_jconf(Jconf *jconf)
  * specify "-userlm" option at jconf to use user-define language scoring.
  * </EN>
  * <JA>
- * �����ǥ�������󥹥��󥹤˥桼������θ��쥹������Ϳ�ؿ�����Ͽ����. 
- * ���δؿ��ϥ��󥸥󥤥󥹥��������夫�� j_final_fusion() ���ƤФ��
- * �ޤǤδ֤˸Ƥ�ɬ�פ�����. ���ա��桼������θ��쥹�����ؿ���Ȥ�����
- * �¹Ի����ץ���� "-userlm" ����ꤹ��ɬ�פ����뤳�Ȥ����դ���. 
+ * 言語モデル処理インスタンスにユーザ定義の言語スコア付与関数を登録する. 
+ * この関数はエンジンインスタンス生成後から j_final_fusion() が呼ばれる
+ * までの間に呼ぶ必要がある. 注意：ユーザ定義の言語スコア関数を使う場合は
+ * 実行時オプション "-userlm" も指定する必要があることに注意せよ. 
  * </JA>
  * 
  * @param lm [i/o] LM processing instance
@@ -817,7 +817,7 @@ j_regist_user_lm_func(PROCESS_LM *lm,
  * Assign a user-defined parameter extraction function to engine instance.
  * </EN>
  * <JA>
- * �桼���������ħ�̷׻��ؿ���Ȥ��褦���󥸥����Ͽ����. 
+ * ユーザ定義の特徴量計算関数を使うようエンジンに登録する. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -842,7 +842,7 @@ j_regist_user_param_func(Recog *recog, boolean (*user_calc_vector)(MFCCCalc *, S
  * Get AM configuration structure in jconf by its name.
  * </EN>
  * <JA>
- * jconf��� AM �⥸�塼�����깽¤�Τ�̾���Ǹ�������. 
+ * jconf内の AM モジュール設定構造体を名前で検索する. 
  * </JA>
  * 
  * @param jconf [in] global configuration
@@ -876,7 +876,7 @@ j_get_amconf_by_name(Jconf *jconf, char *name)
  * Get AM configuration structure in jconf by its id.
  * </EN>
  * <JA>
- * jconf��� AM �⥸�塼�����깽¤�Τ� ID �Ǹ�������. 
+ * jconf内の AM モジュール設定構造体を ID で検索する. 
  * </JA>
  * 
  * @param jconf [in] global configuration
@@ -912,9 +912,9 @@ j_get_amconf_by_id(Jconf *jconf, int id)
  * If multiple AM configuration exists, return the latest one.
  * </EN>
  * <JA>
- * �ǥե���Ȥ� AM ������֤�. 
+ * デフォルトの AM 設定を返す. 
  *
- * AM��ʣ�����ꤵ��Ƥ����硤�Ǥ�Ƕ�Τ�Τ��֤�. 
+ * AMが複数設定されている場合，最も最近のものを返す. 
  * </JA>
  * 
  * @param jconf [in] global configuration
@@ -940,7 +940,7 @@ j_get_amconf_default(Jconf *jconf)
  * Get LM configuration structure in jconf by its name.
  * </EN>
  * <JA>
- * jconf��� LM �⥸�塼�����깽¤�Τ�̾���Ǹ�������. 
+ * jconf内の LM モジュール設定構造体を名前で検索する. 
  * </JA>
  * 
  * @param jconf [in] global configuration
@@ -974,7 +974,7 @@ j_get_lmconf_by_name(Jconf *jconf, char *name)
  * Get LM configuration structure in jconf by its id.
  * </EN>
  * <JA>
- * jconf��� LM �⥸�塼�����깽¤�Τ� ID �Ǹ�������. 
+ * jconf内の LM モジュール設定構造体を ID で検索する. 
  * </JA>
  * 
  * @param jconf [in] global configuration
@@ -1008,7 +1008,7 @@ j_get_lmconf_by_id(Jconf *jconf, int id)
  * Get SEARCH configuration structure in jconf by its name.
  * </EN>
  * <JA>
- * jconf��� SESARCH �⥸�塼�����깽¤�Τ�̾���Ǹ�������. 
+ * jconf内の SESARCH モジュール設定構造体を名前で検索する. 
  * </JA>
  * 
  * @param jconf [in] global configuration
@@ -1042,7 +1042,7 @@ j_get_searchconf_by_name(Jconf *jconf, char *name)
  * Get SEARCH configuration structure in jconf by its id.
  * </EN>
  * <JA>
- * jconf��� SEARCH �⥸�塼�����깽¤�Τ� ID �Ǹ�������. 
+ * jconf内の SEARCH モジュール設定構造体を ID で検索する. 
  * </JA>
  * 
  * @param jconf [in] global configuration
@@ -1077,8 +1077,8 @@ j_get_searchconf_by_id(Jconf *jconf, int id)
  * The process will actually pauses at the next recognition interval.
  * </EN>
  * <JA>
- * ���ꤵ�줿̾����ǧ���������󥹥��󥹤�ư�������ߤ�����. 
- * �ºݤ���ߤ���Τϼ��β���ǧ���ι�֤Ǥ���. 
+ * 指定された名前の認識処理インスタンスの動作を一時停止させる. 
+ * 実際に停止するのは次の音声認識の合間である. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -1120,9 +1120,9 @@ j_process_deactivate(Recog *recog, char *name)
  * The process will actually pauses at the next recognition interval.
  * </EN>
  * <JA>
- * ���ꤵ�줿ǧ���������󥹥��󥹤�ư�������ߤ�����. 
- * �оݥ��󥹥��󥹤� ID �ֹ�ǻ��ꤹ����Ϥ������Ȥ�. 
- * �ºݤ���ߤ���Τϼ��β���ǧ���ι�֤Ǥ���. 
+ * 指定された認識処理インスタンスの動作を一時停止させる. 
+ * 対象インスタンスを ID 番号で指定する場合はこちらを使う. 
+ * 実際に停止するのは次の音声認識の合間である. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -1165,8 +1165,8 @@ j_process_deactivate_by_id(Recog *recog, int id)
  * The process will actually starts at the next recognition interval.
  * </EN>
  * <JA>
- * �����ߤ���Ƥ���ǧ���������󥹥��󥹤�ư���Ƴ�������. 
- * �ºݤ˺Ƴ�����Τϼ��β���ǧ���ι�֤Ǥ���. 
+ * 一時停止されていた認識処理インスタンスの動作を再開させる. 
+ * 実際に再開するのは次の音声認識の合間である. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -1209,8 +1209,8 @@ j_process_activate(Recog *recog, char *name)
  * The process will actually starts at the next recognition interval.
  * </EN>
  * <JA>
- * �����ߤ���Ƥ���ǧ���������󥹥��󥹤�ư���Ƴ�������(ID����).
- * �ºݤ˺Ƴ�����Τϼ��β���ǧ���ι�֤Ǥ���. 
+ * 一時停止されていた認識処理インスタンスの動作を再開させる(ID指定).
+ * 実際に再開するのは次の音声認識の合間である. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -1256,13 +1256,13 @@ j_process_activate_by_id(Recog *recog, int id)
  * Both the new LM and SR will be assigned the same instance name.
  * </EN>
  * <JA>
- * @brief  LM ����� SR ����˴�Ť�ǧ�������ץ��������ɲä���. 
+ * @brief  LM および SR 設定に基づき認識処理プロセスを追加する. 
  *
- * ���δؿ���Ϳ����줿LM���ꤪ���SR����ǡ����˴�Ť���������
- * LM���󥹥��󥹤����ǧ���ץ��������󥹥��󥹤򥨥󥸥�������
- * ��������. AM�ˤĤ��Ƥϸ��ߤΥǥե����AM����ưŪ���Ѥ�����. 
- * ̾����LM���󥹥��󥹡�ǧ���ץ��������󥹥��󥹤Ȥ�Ʊ��̾����
- * ����������. 
+ * この関数は与えられたLM設定およびSR設定データに基づき，新たな
+ * LMインスタンスおよび認識プロセスインスタンスをエンジン内部に
+ * 生成する. AMについては現在のデフォルトAMが自動的に用いられる. 
+ * 名前はLMインスタンス，認識プロセスインスタンスとも同じ名前が
+ * あたえられる. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -1325,8 +1325,8 @@ j_process_add_lm(Recog *recog, JCONF_LM *lmconf, JCONF_SEARCH *sconf, char *name
  * inside this function.
  * </EN>
  * <JA>
- * ǧ���������󥹥��󥹤�������. 
- * ���ꤵ�줿SEARCH����⤳�δؿ���ǲ�������������. 
+ * 認識処理インスタンスを削除する. 
+ * 指定されたSEARCH設定もこの関数内で解放・削除される. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -1403,8 +1403,8 @@ j_process_remove(Recog *recog, JCONF_SEARCH *sconf)
  * inside this function.
  * </EN>
  * <JA>
- * �����ǥ륤�󥹥��󥹤�������. 
- * ���ꤵ�줿�����ǥ�����⤳�δؿ���ǲ�������������. 
+ * 言語モデルインスタンスを削除する. 
+ * 指定された言語モデル設定もこの関数内で解放・削除される. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -1491,8 +1491,8 @@ j_process_lm_remove(Recog *recog, JCONF_LM *lmconf)
  * inside this function.
  * </EN>
  * <JA>
- * �����ǥ륤�󥹥��󥹤�������ʼ¸����.
- * ���ꤵ�줿�����ǥ�����⤳�δؿ���ǲ�������������. 
+ * 言語モデルインスタンスを削除する（実験中）.
+ * 指定された言語モデル設定もこの関数内で解放・削除される. 
  * </JA>
  * 
  * @param recog [in] engine instance

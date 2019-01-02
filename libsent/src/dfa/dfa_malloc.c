@@ -2,7 +2,7 @@
  * @file   dfa_malloc.c
  * 
  * <JA>
- * @brief  ʸˡ��¤�ΤΥ������դ��ȳ���
+ * @brief  文法構造体のメモリ割り付けと開放
  * </JA>
  * 
  * <EN>

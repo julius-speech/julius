@@ -2,7 +2,7 @@
  * @file   aptree.c
  * 
  * <JA>
- * @brief  �ѥȥꥷ�������ڤ��Ѥ���̾���������ǡ��������ݥ��󥿤ξ��
+ * @brief  パトリシア検索木を用いた名前検索：データ型がポインタの場合
  * </JA>
  * 
  * <EN>
@@ -337,7 +337,7 @@ aptree_build_index(APATNODE *node, int *num, int *data_id, int *left, int *right
     left[id] = -1;
     right[id] = -1;
     data[id] = *data_id;
-    /* node->value.data ����¸ */
+    /* node->value.data を保存 */
     (*data_id)++;
   } else {
     data[id] = node->value.thres_bit;

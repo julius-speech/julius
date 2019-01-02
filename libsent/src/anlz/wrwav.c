@@ -2,7 +2,7 @@
  * @file   wrwav.c
  *
  * <JA>
- * @brief  ²»À¼ÇÈ·Á¥Ç¡¼¥¿¤ò WAV ¥Õ¥¡¥¤¥ë¤ËÊÝÂ¸¤¹¤ë
+ * @brief  éŸ³å£°æ³¢å½¢ãƒ‡ãƒ¼ã‚¿ã‚’ WAV ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜ã™ã‚‹
  * </JA>
  * <EN>
  * @brief  Write waveform data to WAV file

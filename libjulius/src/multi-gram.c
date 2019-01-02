@@ -2,24 +2,24 @@
  * @file   multi-gram.c
  * 
  * <JA>
- * @brief  ǧ����ʸˡ�δ���
+ * @brief  認識用文法の管理
  *
- * ���Υե�����ˤϡ�ǧ����ʸˡ���ɤ߹��ߤȴ�����Ԥ��ؿ����ޤޤ�Ƥ��ޤ�. 
- * �����δؿ��ϡ�ʸˡ�ե�������ɤ߹��ߡ�����ӳƼ�ǡ�����
- * ���åȥ��åפ�Ԥ��ޤ�. 
+ * このファイルには，認識用文法の読み込みと管理を行う関数が含まれています. 
+ * これらの関数は，文法ファイルの読み込み，および各種データの
+ * セットアップを行います. 
  *
- * ʣ��ʸˡ��Ʊ��ǧ�����б����Ƥ��ޤ�. ʣ����ʸˡ����٤��ɤ߹���ǡ�
- * �����ǧ����Ԥ��ޤ�. �ޤ����⥸�塼��⡼�ɤǤϡ����饤����Ȥ���
- * ǧ���¹����ʸˡ��ưŪ���ɲá���������ꡤ����ʬ��ʸˡ��̵������
- * ͭ����������Ǥ��ޤ�. �ޤ�Ϳ����줿�ġ���ʸˡ���Ȥ�ǧ����̤�
- * �Ф����Ȥ��Ǥ��ޤ�. 
+ * 複数文法の同時認識に対応しています. 複数の文法を一度に読み込んで，
+ * 並列に認識を行えます. また，モジュールモードでは，クライアントから
+ * 認識実行中に文法を動的に追加・削除したり，一部分の文法を無効化・
+ * 有効化したりできます. また与えられた個々の文法ごとに認識結果を
+ * 出すことができます. 
  *
- * Ϳ����줿��ʣ���Ρ�ʸˡ�ϰ�ĤΥ������Х�ʸˡ�Ȥ��Ʒ�礵��,
- * ʸˡ���ɤ߹��ߤ����ʤɤξ����ѹ���Ԥä��Ȥ�����������ޤ�. 
- * ��礵�줿��ʸ��§ (DFA) �� global_dfa �ˡ����ü��� global_winfo ��
- * ���줾���������˳�Ǽ����ޤ�. ������Ŭ�ڤʥ����ߥ󥰤�
- * multigram_build() ���ƤӽФ��줿�Ȥ��ˡ�global.h �������ѿ� dfa
- * ����� winfo �˥��ԡ����졤ǧ�������ˤ����ƻ��Ѥ����褦�ˤʤ�ޤ�. 
+ * 与えられた（複数の）文法は一つのグローバル文法として結合され,
+ * 文法の読み込みや削除などの状態変更を行ったとき，更新されます. 
+ * 結合された構文規則 (DFA) が global_dfa に，語彙辞書が global_winfo に
+ * それぞれローカルに格納されます. これらは適切なタイミングで
+ * multigram_build() が呼び出されたときに，global.h 内の大域変数 dfa
+ * および winfo にコピーされ，認識処理において使用されるようになります. 
  * </JA>
  * 
  * <EN>
@@ -65,14 +65,14 @@
 
 /** 
  * <JA>
- * @brief  �������Х�ʸˡ�����ڹ�¤��������ۤ���. 
+ * @brief  グローバル文法から木構造化辞書を構築する. 
  *
- * Ϳ����줿ʸˡ��ǧ����Ԥ�����ˡ�ǧ���������󥹥��󥹤����߻���
- * �������Х�ʸˡ�����ڹ�¤�������ʺơ˹��ۤ��ޤ�. �ޤ��� 
- * ��ư���˥ӡ�����������Ū�˻ؼ�����Ƥ��ʤ�����ե륵�����ξ�硤
- * �ӡ������κ������Ԥ��ޤ�.
+ * 与えられた文法で認識を行うために，認識処理インスタンスが現在持つ
+ * グローバル文法から木構造化辞書を（再）構築します. また， 
+ * 起動時にビーム幅が明示的に指示されていない場合やフルサーチの場合，
+ * ビーム幅の再設定も行います.
  * 
- * @param r [i/o] ǧ���������󥹥���
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Build tree lexicon from global grammar.
@@ -114,7 +114,7 @@ multigram_rebuild_wchmm(RecogProcess *r)
     ret = build_wchmm2(r->wchmm, r->lm->config);
   }
 
-  /* ��ư�� -check �ǥ����å��⡼�ɤ� */
+  /* 起動時 -check でチェックモードへ */
   if (r->config->sw.wchmm_check_flag) {
     wchmm_check_interactive(r->wchmm);
   }
@@ -153,10 +153,10 @@ multigram_rebuild_wchmm(RecogProcess *r)
  * from the updated global grammar.
  * </EN>
  * <JA>
- * @brief  �������Х�ʸˡ��Ĵ�١�ɬ�פ�������ڹ�¤�������ʺơ˹��ۤ���. 
+ * @brief  グローバル文法を調べ，必要があれば木構造化辞書を（再）構築する. 
  * 
- * �������Х뼭����ѹ�������С����ι������줿�������Х�
- * ���񤫤��ڹ�¤������ʤɤβ���ǧ���ѥǡ�����¤��ƹ��ۤ���. 
+ * グローバル辞書に変更があれば，その更新されたグローバル
+ * 辞書から木構造化辞書などの音声認識用データ構造を再構築する. 
  * 
  * </JA>
  * 
@@ -187,14 +187,14 @@ multigram_build(RecogProcess *r)
 
 /** 
  * <JA>
- * @brief  �������Х�ʸˡ��������ʸˡ���ɲä���. 
+ * @brief  グローバル文法の末尾に文法を追加する. 
  *
- * ��Ȥ�ʸˡ��¤�Τˤϡ��������Х�ʸˡ�Τɤΰ��֤ˤ���ʸˡ���ɲ�
- * ���줿�������Υ��ƥ����ֹ�ȼ����ֹ���ϰϤ���Ͽ�����. 
+ * もとの文法構造体には，グローバル文法のどの位置にその文法が追加
+ * されたか，そのカテゴリ番号と辞書番号の範囲が記録される. 
  * 
- * @param gdfa [i/o] ������ʸˡ��DFA����
- * @param gwinfo [i/o] ������ʸˡ�μ������
- * @param m [i/o] ��礹��ʸˡ����. 
+ * @param gdfa [i/o] 結合先の文法のDFA情報
+ * @param gwinfo [i/o] 結合先の文法の辞書情報
+ * @param m [i/o] 結合する文法情報. 
  * </JA>
  * <EN>
  * @brief  Append a grammar to the tail of global grammar.
@@ -242,17 +242,17 @@ multigram_append_to_global(DFA_INFO *gdfa, WORD_INFO *gwinfo, MULTIGRAM *m)
 
 /** 
  * <JA>
- * ������ʸˡ��ʸˡ�ꥹ�Ȥ��ɲä���.
- * ���ߥ��󥹥��󥹤��ݻ����Ƥ���ʸˡ�Υꥹ�Ȥ� lm->grammars ����¸�����. 
- * �ɲä���ʸˡ�ˤϡ�newbie �� inactive �Υե饰�����åȤ��졤�����
- * ʸˡ���������å����˹����оݤȤʤ�. 
+ * 新たな文法を，文法リストに追加する.
+ * 現在インスタンスが保持している文法のリストは lm->grammars に保存される. 
+ * 追加した文法には，newbie と inactive のフラグがセットされ，次回の
+ * 文法更新チェック時に更新対象となる. 
  * 
- * @param dfa [in] �ɲ���Ͽ����ʸˡ��DFA����
- * @param winfo [in] �ɲ���Ͽ����ʸˡ�μ������
- * @param name [in] �ɲ���Ͽ����ʸˡ��̾��
- * @param lm [i/o] ����������󥹥���
+ * @param dfa [in] 追加登録する文法のDFA情報
+ * @param winfo [in] 追加登録する文法の辞書情報
+ * @param name [in] 追加登録する文法の名称
+ * @param lm [i/o] 言語処理インスタンス
  *
- * @return ʸˡID���֤�. 
+ * @return 文法IDを返す. 
  * </JA>
  * <EN>
  * Add a new grammar to the current list of grammars.
@@ -306,15 +306,15 @@ multigram_add(DFA_INFO *dfa, WORD_INFO *winfo, char *name, PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ʸˡ��������. 
+ * 文法を削除する. 
  *
- * ʸˡ�ꥹ����Τ���ʸˡ�ˤĤ��ơ�����ޡ������դ���. 
- * �ºݤκ���� multigram_exec_delete() �ǹԤ���. 
+ * 文法リスト中のある文法について，削除マークを付ける. 
+ * 実際の削除は multigram_exec_delete() で行われる. 
  * 
- * @param delid [in] �������ʸˡ��ʸˡID
- * @param lm [i/o] ����������󥹥���
+ * @param delid [in] 削除する文法の文法ID
+ * @param lm [i/o] 言語処理インスタンス
  * 
- * @return �̾�� TRUE ���֤�. ���ꤵ�줿ID��ʸˡ��̵������ FALSE ���֤�. 
+ * @return 通常時 TRUE を返す. 指定されたIDの文法が無い場合は FALSE を返す. 
  * </JA>
  * <EN>
  * Mark a grammar in the grammar list to be deleted at the next grammar update.
@@ -349,9 +349,9 @@ multigram_delete(int delid, PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ���٤Ƥ�ʸˡ�򼡲󹹿����˺������褦�ޡ�������.
+ * すべての文法を次回更新時に削除するようマークする.
  * 
- * @param lm [i/o] ����������󥹥���
+ * @param lm [i/o] 言語処理インスタンス
  * </JA>
  * <EN>
  * Mark all grammars to be deleted at next grammar update.
@@ -373,11 +373,11 @@ multigram_delete_all(PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ����ޡ����ΤĤ���ʸˡ��ꥹ�Ȥ���������. 
+ * 削除マークのついた文法をリストから削除する. 
  * 
- * @param lm [i/o] ����������󥹥���
+ * @param lm [i/o] 言語処理インスタンス
  * 
- * @return �������Х�ʸˡ�κƹ��ۤ�ɬ�פʤȤ��� TRUE ����ɬ�פʤȤ��� FALSE ���֤�. 
+ * @return グローバル文法の再構築が必要なときは TRUE を，不必要なときは FALSE を返す. 
  * </JA>
  * <EN>
  * Purge grammars marked as delete.
@@ -422,11 +422,11 @@ multigram_exec_delete(PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ʸˡ��ͭ��������. �����Ǥϼ��󹹿�����
- * ȿ�Ǥ����褦�˥ޡ�����Ĥ���ΤߤǤ���. 
+ * 文法を有効化する. ここでは次回更新時に
+ * 反映されるようにマークをつけるのみである. 
  * 
- * @param gid [in] ͭ����������ʸˡ�� ID
- * @param lm [i/o] ����������󥹥���
+ * @param gid [in] 有効化したい文法の ID
+ * @param lm [i/o] 言語処理インスタンス
  * </JA>
  * <EN>
  * Activate a grammar in the grammar list.  The specified grammar
@@ -478,14 +478,14 @@ multigram_activate(int gid, PROCESS_LM *lm)	/* only mark */
 
 /** 
  * <JA>
- * ʸˡ��̵��������. ̵�������줿ʸˡ��
- * ǧ���ˤ����Ʋ���Ÿ������ʤ�. ����ˤ�äơ��������Х뼭���
- * �ƹ��ۤ��뤳�Ȥʤ������Ū�˸ġ���ʸˡ��ON/OFF�Ǥ���. ̵��������
- * ʸˡ�� multigram_activate() �ǺƤ�ͭ�����Ǥ���. �ʤ������Ǥ�
- * �����ʸˡ���������ߥ󥰤�ȿ�Ǥ����褦�˥ޡ�����Ĥ���ΤߤǤ���. 
+ * 文法を無効化する. 無効化された文法は
+ * 認識において仮説展開されない. これによって，グローバル辞書を
+ * 再構築することなく，一時的に個々の文法をON/OFFできる. 無効化した
+ * 文法は multigram_activate() で再び有効化できる. なおここでは
+ * 次回の文法更新タイミングで反映されるようにマークをつけるのみである. 
  * 
- * @param gid [in] ̵����������ʸˡ��ID
- * @param lm [i/o] ����������󥹥���
+ * @param gid [in] 無効化したい文法のID
+ * @param lm [i/o] 言語処理インスタンス
  * </JA>
  * <EN>
  * Deactivate a grammar in the grammar list.  The words of the de-activated
@@ -540,12 +540,12 @@ multigram_deactivate(int gid, PROCESS_LM *lm)	/* only mark */
 
 /** 
  * <JA>
- * ʸˡ��ͭ������̵������¹Ԥ���. 
+ * 文法の有効化・無効化を実行する. 
  * 
- * @param lm [i/o] ����������󥹥���
+ * @param lm [i/o] 言語処理インスタンス
  * 
- * @return ̵������ͭ���ء����뤤��ͭ������̵���ؾ��֤��Ѳ�����ʸˡ����ĤǤ�
- * �����TRUE, ���֤������Ѳ����ʤ��ä����� FALSE ���֤�. 
+ * @return 無効から有効へ，あるいは有効から無効へ状態が変化した文法が一つでも
+ * あればTRUE, 状態が全く変化しなかった場合は FALSE を返す. 
  * </JA>
  * <EN>
  * Execute (de)activation of grammars.
@@ -585,16 +585,16 @@ multigram_exec_activate(PROCESS_LM *lm)
  
 /** 
  * <JA>
- * @brief  �������Х�ʸˡ�ι���
+ * @brief  グローバル文法の更新
  * 
- * ����ƽФ������ʸˡ�ꥹ�Ȥ��ѹ�������å�����. 
- * �ꥹ����˺���ޡ������Ĥ���줿ʸˡ��������ϡ�����ʸˡ��������
- * �������Х뼭���ƹ��ۤ���. �������ɲä��줿ʸˡ��������ϡ�
- * ����ʸˡ�򸽺ߤΥ������Х뼭����������ɲä���. 
+ * 前回呼出しからの文法リストの変更をチェックする. 
+ * リスト中に削除マークがつけられた文法がある場合は，その文法を削除し，
+ * グローバル辞書を再構築する. 新たに追加された文法がある場合は，
+ * その文法を現在のグローバル辞書の末尾に追加する. 
  *
- * @param lm [i/o] ����������󥹥���
+ * @param lm [i/o] 言語処理インスタンス
  * 
- * @return ��� TRUE ���֤�. 
+ * @return 常に TRUE を返す. 
  * </JA>
  * <EN>
  * @brief  Update  global grammar if needed.
@@ -774,11 +774,11 @@ multigram_update(PROCESS_LM *lm)
 
 /** 
  * <JA>
- * dfa�ե������dict�ե�������ɤ߹����ʸˡ�ꥹ�Ȥ��ɲä���. 
+ * dfaファイルとdictファイルを読み込んで文法リストに追加する. 
  * 
- * @param dfa_file [in] dfa �ե�����̾
- * @param dict_file [in] dict �ե�����̾
- * @param lm [i/o] ����������󥹥���
+ * @param dfa_file [in] dfa ファイル名
+ * @param dict_file [in] dict ファイル名
+ * @param lm [i/o] 言語処理インスタンス
  * </JA>
  * <EN>
  * Add grammar to the grammar list specified by dfa file and dict file.
@@ -869,9 +869,9 @@ multigram_read_file_and_add(char *dfa_file, char *dict_file, PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ��ư���˻��ꤵ�줿���٤Ƥ�ʸˡ������ɤ���. 
+ * 起動時に指定されたすべての文法をロードする. 
  * 
- * @param lm [i/o] ����������󥹥���
+ * @param lm [i/o] 言語処理インスタンス
  * 
  * </JA>
  * <EN>
@@ -906,11 +906,11 @@ multigram_load_all_gramlist(PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ���ߤ���ʸˡ�ο�������(active/inactive�Ȥ�). 
+ * 現在ある文法の数を得る(active/inactiveとも). 
  * 
- * @param lm [i/o] ����������󥹥���
+ * @param lm [i/o] 言語処理インスタンス
  * 
- * @return ʸˡ�ο����֤�. 
+ * @return 文法の数を返す. 
  * </JA>
  * <EN>
  * Get the number of current grammars (both active and inactive).
@@ -936,12 +936,12 @@ multigram_get_all_num(PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ñ�쥫�ƥ����°����ʸˡ������. 
+ * 単語カテゴリの属する文法を得る. 
  * 
- * @param category ñ�쥫�ƥ���ID
- * @param lm [i/o] ����������󥹥���
+ * @param category 単語カテゴリID
+ * @param lm [i/o] 言語処理インスタンス
  * 
- * @return ñ�쥫�ƥ����°����ʸˡ��ID���֤�. 
+ * @return 単語カテゴリの属する文法のIDを返す. 
  * </JA>
  * <EN>
  * Get which grammar the given category belongs to.
@@ -973,12 +973,12 @@ multigram_get_gram_from_category(int category, PROCESS_LM *lm)
 
 /** 
  * <JA>
- * ñ��ID����°����ʸˡ������. 
+ * 単語IDから属する文法を得る. 
  * 
- * @param wid ñ��ID
- * @param lm [i/o] ����������󥹥���
+ * @param wid 単語ID
+ * @param lm [i/o] 言語処理インスタンス
  * 
- * @return ñ���°����ʸˡ��ID���֤�. 
+ * @return 単語の属する文法のIDを返す. 
  * </JA>
  * <EN>
  * Get which grammar the given word belongs to.
@@ -1012,7 +1012,7 @@ multigram_get_gram_from_wid(WORD_ID wid, PROCESS_LM *lm)
 
 /** 
  * <JA>
- * �ݻ����Ƥ���ʸˡ�򤹤٤Ʋ������롣
+ * 保持している文法をすべて解放する。
  * 
  * @param root [in] root pointer of grammar list
  * </JA>
@@ -1044,7 +1044,7 @@ multigram_free_all(MULTIGRAM *root)
  * Return a grammar ID of the given grammar name.
  * </EN>
  * <JA>
- * LM���ʸˡ��̾���Ǹ�����������ʸˡID���֤���
+ * LM中の文法を名前で検索し，その文法IDを返す．
  * </JA>
  * 
  * @param lm [in] LM process instance
@@ -1077,7 +1077,7 @@ multigram_get_id_by_name(PROCESS_LM *lm, char *gramname)
  * Find a grammar in LM by its name.
  * </EN>
  * <JA>
- * LM���ʸˡ��̾���Ǹ�������. 
+ * LM中の文法を名前で検索する. 
  * </JA>
  * 
  * @param lm [in] LM process instance
@@ -1110,7 +1110,7 @@ multigram_get_grammar_by_name(PROCESS_LM *lm, char *gramname)
  * Find a grammar in LM by its ID number.
  * </EN>
  * <JA>
- * LM���ʸˡ�� ID �ֹ�Ǹ�������. 
+ * LM中の文法を ID 番号で検索する. 
  * </JA>
  * 
  * @param lm [in] LM process instance
@@ -1150,14 +1150,14 @@ multigram_get_grammar_by_id(PROCESS_LM *lm, unsigned short id)
  * 
  * </EN>
  * <JA>
- * @brief  ñ�콸���ʸˡ���ɲä��롥
+ * @brief  単語集合を文法に追加する．
  *
- * �ɲä���ñ���ʸˡ���ƥ���ID�ˤĤ��Ƥϡ����Ǥ˥������󤵤�Ƥ����Τ�
- * ���Τޤޥ��ԡ�����롥��äơ������Ϥ��δؿ���ƤӽФ����ˡ�
- * �ɲ��оݤ�ʸˡ��������������褦���������ꤵ��Ƥ���ɬ�פ����롥
- * �ڹ�¤���������Τ�����˺ƹ��ۤ���롥
+ * 追加する単語の文法カテゴリIDについては，すでにアサインされているものが
+ * そのままコピーされる．よって，それらはこの関数を呼び出す前に，
+ * 追加対象の文法で整合性が取れるよう正しく設定されている必要がある．
+ * 木構造化辞書全体が，後に再構築される．
  *
- * ñ��N-gram�����ǥ�ؤμ����ɲäϸ��ߥ��ݡ��Ȥ���Ƥ��ʤ���
+ * 単語N-gram言語モデルへの辞書追加は現在サポートされていない．
  * 
  * </JA>
  * 
@@ -1208,9 +1208,9 @@ multigram_add_words_to_grammar(PROCESS_LM *lm, MULTIGRAM *m, WORD_INFO *winfo)
  * specified by its name.
  * </EN>
  * <JA>
- * @brief  ̾���ǻ��ꤵ�줿ʸˡ��ñ�콸����ɲä��롥
+ * @brief  名前で指定された文法に単語集合を追加する．
  *
- * multigram_add_words_to_grammar() ��ʸˡ̾�ǻ��ꤷ�Ƽ¹Ԥ��롥
+ * multigram_add_words_to_grammar() を文法名で指定して実行する．
  * 
  * </JA>
  * 
@@ -1239,9 +1239,9 @@ multigram_add_words_to_grammar_by_name(PROCESS_LM *lm, char *gramname, WORD_INFO
  * specified by its number.
  * </EN>
  * <JA>
- * @brief  �ֹ�ǻ��ꤵ�줿ʸˡ��ñ�콸����ɲä��롥
+ * @brief  番号で指定された文法に単語集合を追加する．
  *
- * multigram_add_words_to_grammar() ���ֹ�ǻ��ꤷ�Ƽ¹Ԥ��롥
+ * multigram_add_words_to_grammar() を番号で指定して実行する．
  * 
  * </JA>
  * 

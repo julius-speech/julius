@@ -19,23 +19,23 @@
 #define TRUE          1
 #define FALSE         0
 
-/* Ⱦ�ѥ���(SJIS) ����Ū�����ѥ��ʤ��ѹ����� */
+/* 半角カナ(SJIS) を強制的に全角カナに変更する */
 #undef NO_HANKAKU_SJIS
 
-/* �Ҥ餬�ʡ��������ʤ��¤Ӥ��� EUC , SJIS ����ꤹ�� */
+/* ひらがな、カタカナの並びから EUC , SJIS を推定する */
 #define KANA_NARABI
 
-/* EUC , SJIS ������Ϥ�ΰ��٤����Ԥʤ�ʤ� */
-/* (�ե�������Ĥ����Ҥ餫�ʤ��ʤ�ͭ���Ǥ���) */
+/* EUC , SJIS を推定を始めの一度しか行なわない */
+/* (ファイルを一つしかひらかないなら有効でいい) */
 #undef USE_CACHE_KANA_NARABI
 
-/* strdup�ؿ��������ƥ�ˤ����define */
+/* strdup関数がシステムにあればdefine */
 #define HAVE_STRDUP     1
 
-/* �ǥХå��Ѥδؿ���ͭ���ˤ��� */
+/* デバック用の関数を有効にする */
 #undef DEBUG
 
-/* ��������̾(��ʸ������ʸ���϶��̤���ʤ�) */
+/* ロケール名(大文字、小文字は区別されない) */
 #define SJIS_LOCALE_NAME  "ja_JP.SJIS", "ja_JP.PCK"
 #define JIS_LOCALE_NAME   "ja_JP.JIS", "ja_JP.jis7"
 #define EUC_LOCALE_NAME   "ja_JP.ujis", "ja_JP.EUC",\

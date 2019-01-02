@@ -2,9 +2,9 @@
  * @file   confnet.c
  * 
  * <JA>
- * @brief  Confusion network ������
+ * @brief  Confusion network の生成
  *
- * ǧ���η������줿ñ�쥰��դ��顤confusion network ����������. 
+ * 認識の結果得られた単語グラフから，confusion network を生成する. 
  * </JA>
  * 
  * <EN>

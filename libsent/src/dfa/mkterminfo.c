@@ -2,7 +2,7 @@
  * @file   mkterminfo.c
  * 
  * <JA>
- * @brief  ���ƥ��ꤴ�Ȥ�ñ��Υꥹ�Ȥ��������
+ * @brief  カテゴリごとの単語のリストを作成する
  * </JA>
  * 
  * <EN>

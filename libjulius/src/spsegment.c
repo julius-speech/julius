@@ -29,30 +29,30 @@
  * </EN>
  * 
  * <JA>
- * @brief  ���硼�ȥݡ����������ơ�����󤪤�ӥǥ������١���VAD
+ * @brief  ショートポーズセグメンテーションおよびデコーダベースVAD
  *
- * ���硼�ȥݡ����������ơ������Ǥϡ���1�ѥ��ˤ����ơ�̵��ñ��פ�
- * ��������ե졼�ऴ�Ȥ�Ĵ�١����줬��̤Ǥ���ե졼����̵���ե졼���
- * �Ȥ��ޤ�. �����ơ�̵���ե졼�ब����ʾ�Υե졼����ˤ錄�ä��Ȥ��ˡ�
- * ���Ϥ򤽤��Ƕ��ڤ�ޤ�. 
+ * ショートポーズセグメンテーションでは，第1パスにおいて「無音単語」の
+ * スコアをフレームごとに調べ，それが一位であるフレームを「無音フレーム」
+ * とします. そして，無音フレームが一定以上のフレーム数にわたったときに，
+ * 入力をそこで区切ります. 
  *
- * ��̵��ñ��פϡ�ñ�켭��ˤ����ơ��ɤߤ�̵�����б����룱��ǥ�Τߤ���
- * �ʤ�ñ���ؤ��ޤ�. ̵����ǥ�� -spmodel �ǻ��ꤵ����ǥ롤�����
- * N-gram ��ǥ���ѻ�����Ƭ��������̵����ǥ�Ȥ���ޤ�������Ū�˻���
- * ����ˤ� -pausemodels ���ץ�������Ѥ��ޤ���
+ * 「無音単語」は，単語辞書において，読みが無音に対応する１モデルのみから
+ * なる単語を指します. 無音モデルは -spmodel で指定されるモデル，および
+ * N-gram モデル使用時は先頭・末尾の無音モデルとされます（明示的に指定
+ * するには -pausemodels オプションを使用します）
  *
- * �̾�Υ��硼�ȥݡ����������ơ������(Ver.3.x ������Ʊ��)�Ǥϡ�̵
- * ����֤ν���ϹԤ��ޤ���. ���Ϥϡ�̵���ե졼���֤���λ���Ƥդ�
- * ���Ӳ������ȥꥬ���������Ƕ��ڤ�졤���������Ȥ�ǧ���Ϥ���̵����
- * �졼���֤γ���������Ƴ�����ޤ�. ���ʤ�������Ф��줿̵����֤ϡ�
- * ���������Ȥ�������̵����֤��ļ��������Ȥγ��Ϥ�̵����֤Ȥ��ơ�
- * �������ȴ֤ǥ����С���åפ��ƽ�������ޤ�. 
+ * 通常のショートポーズセグメンテーション(Ver.3.x 以前と同等)では，無
+ * 音区間の除去は行われません. 入力は，無音フレーム区間が終了してふた
+ * たび音声がトリガした時点で区切られ，次セグメントの認識はその無音フ
+ * レーム区間の開始点から再開されます. すなわち，検出された無音区間は，
+ * 前セグメントの末尾の無音区間かつ次セグメントの開始の無音区間として，
+ * セグメント間でオーバーラップして処理されます. 
  *
- * SPSEGMENT_NAIST ������ϡ�̵���ե졼���֤�Ĺ�����Ϥ����Ǥ��ä���
- * ���Ϥ���ڤꡤ�������ϺƳ��ޤǤδ֤�̵����֤򥹥��åפ���褦�ˤʤ�ޤ�. 
- * ̵�������⡤������������ʤ����̤�ǧ�����֤����뤳�Ȥǡ�
- * ǧ�����֤��ݤ��ޤ�. ����ˤ�äơ����̵�����֤�Ĺ���������ꤷ����
- * �ǥ������١����� VAD ��Ԥ����Ȥ�����ޤ�. 
+ * SPSEGMENT_NAIST 定義時は，無音フレーム区間が長い場合はそこでいったん
+ * 入力を区切り，次の入力再開までの間の無音区間をスキップするようになります. 
+ * 無音区間中も，仮説を生成しない特別な認識状態に入ることで，
+ * 認識状態を保ちます. これによって，より無音時間が長い場合を想定した，
+ * デコーダベースの VAD を行うことが出来ます. 
  * </JA>
  * 
  * @author Akinobu Lee
@@ -73,14 +73,14 @@
 
 /** 
  * <JA>
- * @brief  ���硼�ȥݡ���ñ�줫�ɤ���Ƚ��
+ * @brief  ショートポーズ単語かどうか判定
  *
- * Ϳ����줿ñ�줬���硼�ȥݡ���ñ��Ǥ��뤫�ɤ���Ĵ�٤�. 
+ * 与えられた単語がショートポーズ単語であるかどうか調べる. 
  *
- * @param w [in] ñ��ID
- * @param r [in] ����ǧ���������󥹥���
+ * @param w [in] 単語ID
+ * @param r [in] 音声認識処理インスタンス
  * 
- * @return ���硼�ȥݡ���ñ��Ǥ���� TRUE�������Ǥʤ���� FALSE. 
+ * @return ショートポーズ単語であれば TRUE，そうでなければ FALSE. 
  * </JA>
  * <EN>
  * Check if the fiven word is a short-pause word.
@@ -136,11 +136,11 @@ is_sil(WORD_ID w, RecogProcess *r)
  * rest_param, and [0...end] will be left in param.
  * </EN>
  * <JA>
- * @brief  �������ơ������������ϥѥ�᡼����ʬ�䤹��. 
+ * @brief  セグメンテーション時に入力パラメータを分割する. 
  * 
- * �Ĥ�Υ���ץ�ʸ��ߤΥե졼�फ�齪���ޤǡˤ� rest_param ��
- * ���ԡ��������� param ��û������. [start...param->samplenum] ��
- * rest_param �˥��ԡ����졤���� param �ˤ� [0...end] ���Ĥ�. 
+ * 残りのサンプル（現在のフレームから終わりまで）を rest_param に
+ * コピーし，元の param を短くする. [start...param->samplenum] が
+ * rest_param にコピーされ，元の param には [0...end] が残る. 
  * </JA>
  * 
  * @param mfcc [i/o] MFCC calculation instance
@@ -182,8 +182,8 @@ mfcc_copy_to_rest_and_shrink(MFCCCalc *mfcc, int start, int end)
  * move [p..samplenum] to 0.
  * </EN>
  * <JA>
- * �ѥ�᡼����û������. �ǽ�� (p-1) �ե졼���ä��ơ�[p..samplenum]
- * �Υ���ץ��ǽ�˵ͤ��. 
+ * パラメータを短くする. 最初の (p-1) フレームを消して，[p..samplenum]
+ * のサンプルを最初に詰める. 
  * </JA>
  * 
  * @param mfcc [i/o] MFCC Calculation instance
@@ -213,25 +213,25 @@ mfcc_shrink(MFCCCalc *mfcc, int p)
 
 /** 
  * <JA>
- * @brief  ȯ�ö�ֽ�λ�θ���
+ * @brief  発話区間終了の検知
  * 
- * ���硼�ȥݡ����������ơ������������
- * ȯ�ö�֤ν�λ�򸡽Ф���. ̵��ñ�줬Ϣ³���ƺ������Ȥʤ�ե졼�����
- * ������Ȥ���������ֻ�³��ˤդ����Ӳ������ȥꥬ�������������Ϥ�
- * ���ڤ�. 
+ * ショートポーズセグメンテーション指定時，
+ * 発話区間の終了を検出する. 無音単語が連続して最尤候補となるフレーム数を
+ * カウントし，一定時間持続後にふたたび音声がトリガした時点で入力を
+ * 区切る. 
  *
- * SPSEGMENT_NAIST ������ϡ���ꥻ���������塦�֤�̵�����֤�Ĺ������
- * ���ꤷ���ǥ������١����� VAD ���ڤ��ؤ��. ���ξ�硤�����ȥꥬ������
- * (r->pass1.after_triger == FALSE)�Ǥϡ�������������ʤ����֤�ǧ��������
- * ³����. �������Ϥ򸡽Ф�������ħ�̤����Ĺ (r->config->successive.sp_margin)
- * ʬ���������ᤷ�ơ��̾��ǧ���򳫻Ϥ���(r->pass1.after_trigger == TRUE). 
- * �̾��ǧ�����̵����֤�Ĺ�� (r->config->successive.sp_frame_duration �ʾ�)
- * ³�����顤���������Ϥ���ڤ�. 
+ * SPSEGMENT_NAIST 定義時は，よりセグメント前後・間の無音時間が長い場合を
+ * 想定したデコーダベースの VAD に切り替わる. この場合，音声トリガ検出前
+ * (r->pass1.after_triger == FALSE)では，仮説を生成しない状態で認識処理を
+ * 続ける. 音声開始を検出したら特徴量を一定長 (r->config->successive.sp_margin)
+ * 分だけ巻き戻して，通常の認識を開始する(r->pass1.after_trigger == TRUE). 
+ * 通常の認識中に無音区間が長く (r->config->successive.sp_frame_duration 以上)
+ * 続いたら，そこで入力を区切る. 
  * 
- * @param r [i/o] ����ǧ���������󥹥���
- * @param time [in] ���ߤ����ϥե졼��
+ * @param r [i/o] 音声認識処理インスタンス
+ * @param time [in] 現在の入力フレーム
  * 
- * @return TRUE (���Υե졼��Ǥν�λ�򸡽Ф�����), FALSE (��λ�Ǥʤ����)
+ * @return TRUE (このフレームでの終了を検出したら), FALSE (終了でない場合)
  * </JA>
  * <EN>
  * @brief  Speech end point detection.
@@ -397,7 +397,7 @@ detect_end_of_segment(RecogProcess *r, int time)
 
   /* detected = TRUE if noise frame, or FALSE if speech frame */
 
-  /* sp��ֻ�³�����å� */
+  /* sp区間持続チェック */
   /* check sp segment duration */
   if (d->first_sparea) {
     /* we are in the first sp segment */
@@ -429,12 +429,12 @@ detect_end_of_segment(RecogProcess *r, int time)
       /* we are in speech segment */
       if (detected) {
         /* detected end of speech segment (begin of sp segment) */
-        /* ���Ū�˳��ϥե졼��Ȥ��ƥޡ��� */
+        /* 一時的に開始フレームとしてマーク */
         /* mark this frame as "temporal" begging of short-pause segment */
         d->tmp_sparea_start = time;
 #ifdef SP_BREAK_RESUME_WORD_BEGIN
         if (r->lmtype == LM_PROB) {
-          /* sp ��ֳ��ϻ����κ���ñ�����¸ */
+          /* sp 区間開始時点の最尤単語を保存 */
           /* store the best word in this frame as resuming word */
           d->tmp_sp_break_last_word = tremax ? tremax->wid : WORD_INVALID;
         }
@@ -508,7 +508,7 @@ detect_end_of_segment(RecogProcess *r, int time)
   /************************************************************************/
   /************************************************************************/
 
-  /* sp��ֻ�³�����å� */
+  /* sp区間持続チェック */
   /* check sp segment duration */
   if (d->in_sparea && detected) {       /* we are already in sp segment and sp continues */
     d->sp_duration++;           /* increment count */
@@ -527,14 +527,14 @@ detect_end_of_segment(RecogProcess *r, int time)
 #endif
   }
 
-  /* sp��ֳ��ϥ����å� */
+  /* sp区間開始チェック */
   /* check if sp segment begins at this frame */
   else if (!d->in_sparea && detected) {
-    /* ���Ū�˳��ϥե졼��Ȥ��ƥޡ��� */
+    /* 一時的に開始フレームとしてマーク */
     /* mark this frame as "temporal" begging of short-pause segment */
     d->tmp_sparea_start = time;
 #ifdef SP_BREAK_RESUME_WORD_BEGIN
-    /* sp ��ֳ��ϻ����κ���ñ�����¸ */
+    /* sp 区間開始時点の最尤単語を保存 */
     /* store the best word in this frame as resuming word */
     d->tmp_sp_break_last_word = tremax ? tremax->wid : WORD_INVALID;
 #endif
@@ -545,7 +545,7 @@ detect_end_of_segment(RecogProcess *r, int time)
 #endif /* SP_BREAK_DEBUG */
   }
   
-  /* sp ��ֽ�λ�����å� */
+  /* sp 区間終了チェック */
   /* check if sp segment ends at this frame */
   else if (d->in_sparea && !detected) {
     /* (time-1) is end frame of pause segment */
@@ -553,23 +553,23 @@ detect_end_of_segment(RecogProcess *r, int time)
 #ifdef SP_BREAK_DEBUG
     jlog("DEBUG: sp end %d\n", time);
 #endif /* SP_BREAK_DEBUG */
-    /* sp ���Ĺ�����å� */
+    /* sp 区間長チェック */
     /* check length of the duration*/
     if (d->sp_duration < r->config->successive.sp_frame_duration) {
-      /* û������: �裱�ѥ������Ǥ���³�� */
+      /* 短すぎる: 第１パスを中断せず続行 */
       /* too short segment: not break, continue 1st pass */
 #ifdef SP_BREAK_DEBUG
       jlog("DEBUG: too short (%d<%d), ignored\n", d->sp_duration, r->config->successive.sp_frame_duration);
 #endif /* SP_BREAK_DEBUG */
     } else if (d->first_sparea) {
-      /* �ǽ��sp��֤� silB �ˤ�����Τ�,�裱�ѥ������Ǥ���³�� */
+      /* 最初のsp区間は silB にあたるので,第１パスを中断せず続行 */
       /* do not break at first sp segment: they are silB */
       d->first_sparea = FALSE;
 #ifdef SP_BREAK_DEBUG
       jlog("DEBUG: first silence, ignored\n");
 #endif /* SP_BREAK_DEBUG */
     } else {
-      /* ��ֽ�λ����, �裱�ѥ������Ǥ�����2�ѥ��� */
+      /* 区間終了確定, 第１パスを中断して第2パスへ */
       /* break 1st pass */
 #ifdef SP_BREAK_DEBUG
       jlog("DEBUG: >> segment [%d..%d]\n", r->am->mfcc->sparea_start, time-1);
@@ -600,20 +600,20 @@ detect_end_of_segment(RecogProcess *r, int time)
 }
 
 /*******************************************************************/
-/* �裱�ѥ��������Ƚ�λ���� (���硼�ȥݡ����������ơ��������) */
+/* 第１パスセグメント終了処理 (ショートポーズセグメンテーション用) */
 /* end of 1st pass for a segment (for short pause segmentation)    */
 /*******************************************************************/
 /** 
  * <JA>
- * @brief  �༡�ǥ����ǥ��󥰤Τ�����裱�ѥ���λ���ν���
+ * @brief  逐次デコーディングのための第１パス終了時の処理
  *
- * �༡�ǥ����ǥ��󥰻��ѻ������δؿ��� finalize_1st_pass() ��˸ƤФ졤
- * ���Υ������Ȥ��裱�ѥ��ν�λ������Ԥ�. ����Ū�ˤϡ�
- * ³���裲�ѥ��Τ���λϽ�üñ��Υ��åȡ������
- * ����ǥ����ǥ��󥰤�Ƴ�����Ȥ��Τ���ˡ����ϥ٥��ȥ����̤������ʬ��
- * ���ԡ��� rest_param �˻Ĥ�. 
+ * 逐次デコーディング使用時，この関数は finalize_1st_pass() 後に呼ばれ，
+ * そのセグメントの第１パスの終了処理を行う. 具体的には，
+ * 続く第２パスのための始終端単語のセット，および
+ * 次回デコーディングを再開するときのために，入力ベクトル列の未処理部分の
+ * コピーを rest_param に残す. 
  * 
- * @param recog [in] ���󥸥󥤥󥹥���
+ * @param recog [in] エンジンインスタンス
  * </JA>
  * <EN>
  * @brief  Finalize the first pass for successive decoding
@@ -638,7 +638,7 @@ finalize_segment(Recog *recog)
   MFCCCalc *mfcc;
   boolean ok_p;
 
-  /* �ȥ�ꥹ�Ͻ�ü�ˤ��������ñ�����2�ѥ��λϽ�üñ��Ȥ��Ƴ�Ǽ */
+  /* トレリス始終端における最尤単語を第2パスの始終端単語として格納 */
   /* fix initial/last word hypothesis of the next 2nd pass to the best
      word hypothesis at the first/last frame in backtrellis*/
   for(r=recog->process_list;r;r=r->next) {
@@ -648,9 +648,9 @@ finalize_segment(Recog *recog)
     }
   }
 
-  /* �ѥ�᡼����, ���裱�ѥ�����λ�����������ȶ�֤ȻĤ�ζ�֤�ʬ�䤹��. 
-     ��������³����sp�����ʬ(sparea_start..len-1)�ϡ֤Τꤷ���פȤ���ξ����
-     ���ԡ����� */
+  /* パラメータを, 今第１パスが終了したセグメント区間と残りの区間に分割する. 
+     ただし接続部のsp区間部分(sparea_start..len-1)は「のりしろ」として両方に
+     コピーする */
   /* Divide input parameter into two: the last segment and the rest.
      The short-pause area (sparea_start..len-1) is considered as "tab",
      copied in both parameters
@@ -713,8 +713,8 @@ finalize_segment(Recog *recog)
  * This will be called before recognition start for each segment.
  * </EN>
  * <JA>
- * Decode/GMM-based VAD �Τ���˥ѥ�᡼������������. 
- * �����ϥ������Ȥ�ǧ��������Ϥ�����˸ƤФ��. 
+ * Decode/GMM-based VAD のためにパラメータを初期化する. 
+ * 各入力セグメントの認識処理を始める前に呼ばれる. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -752,11 +752,11 @@ spsegment_init(Recog *recog)
  * set trigger-up status for all the instances.
  * </EN>
  * <JA>
- * @brief  ������ֳ��Ϥθ��Ф���ӥ��󥹥��󥹴�Ʊ��. 
+ * @brief  音声区間開始の検出およびインスタンス間同期. 
  * 
- * ���Ƥ�ǧ���������󥹥��󥹤�GMM�������ˤĤ��ơ�ľ����ǧ��������
- * �ȥꥬ���åסʲ�����ֳ��ϡˤ�Ƚ�ꤵ�줿���ɤ�����Ĵ�٤�. 
- * ���Ϥ��줿���ϡ����Ƥ�ǧ���������󥹥��󥹤ǥ��åץȥꥬ��ޡ�������. 
+ * 全ての認識処理インスタンスとGMM処理部について，直前の認識処理で
+ * トリガアップ（音声区間開始）が判定されたかどうかを調べる. 
+ * 開始された場合は，全ての認識処理インスタンスでアップトリガをマークする. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -820,10 +820,10 @@ spsegment_trigger_sync(Recog *recog)
  * 
  * </EN>
  * <JA>
- * @brief  �����ᤷ��ǧ���Ƴ���ɬ����������å�����. 
+ * @brief  巻き戻しと認識再開の必要性をチェックする. 
  * 
- * ����ǧ�������ˤ����ƴ����ᤷ��ɬ�פ��ɤ���Ĵ�١�ɬ�פʾ���
- * �ե졼����ȡ������ᤷ����˴��ᤷʬ��ǧ��������Ԥ����ɤ������֤�. 
+ * 音声認識処理において巻き戻しが必要がどうか調べ，必要な場合は
+ * フレーム数と，巻き戻した後に巻戻し分の認識処理を行うかどうかを返す. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -893,11 +893,11 @@ spsegment_need_restart(Recog *recog, int *rf_ret, boolean *repro_ret)
  * 
  * </EN>
  * <JA>
- * @brief  �����ᤷ����
+ * @brief  巻き戻し処理
  *
- * ��������Ͻ����γ���������ꤷ�������ᤷʬ�ѥ�᡼����ͤ��. 
- * �Ƴ�����ξ�糫�����ϥѥ�᡼������Ƭ�ˡ�����ʳ��ξ��ϴ��ᤷ��
- * ʬ������ä����֤˥��åȤ����. 
+ * 次回の入力処理の開始点を決定し，巻き戻し分パラメータを詰める. 
+ * 再開指定の場合開始点はパラメータの先頭に，それ以外の場合は巻戻した
+ * 分だけ戻った位置にセットされる. 
  * 
  * </JA>
  * 

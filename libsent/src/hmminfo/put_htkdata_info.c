@@ -2,7 +2,7 @@
  * @file   put_htkdata_info.c
  * 
  * <JA>
- * @brief  %HMM �������ħ�ѥ�᡼���ξ����ƥ����Ƚ��Ϥ���
+ * @brief  %HMM 定義や特徴パラメータの情報をテキスト出力する
  * </JA>
  * 
  * <EN>

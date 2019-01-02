@@ -2,7 +2,7 @@
  * @file   endian.c
  * 
  * <JA>
- * @brief  ¥Ð¥¤¥È¥ª¡¼¥À¡¼ÊÑ´¹
+ * @brief  ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼å¤‰æ›
  * </JA>
  * 
  * <EN>

@@ -2,7 +2,7 @@
  * @file   rdhmmdef_state.c
  * 
  * <JA>
- * @brief  HTK %HMM ─ъ╡┴е╒ебедеыд╬╞╔д▀╣■д▀бз╛ї┬╓
+ * @brief  HTK %HMM хоЪч╛йуГХуВбуВдуГлуБошкнуБ┐ш╛╝уБ┐я╝ЪчК╢цЕЛ
  * </JA>
  * 
  * <EN>

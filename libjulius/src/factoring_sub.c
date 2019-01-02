@@ -2,19 +2,19 @@
  * @file   factoring_sub.c
  * 
  * <JA>
- * @brief  ���쥹������factoring�׻�����1�ѥ���
+ * @brief  言語スコアのfactoring計算（第1パス）
  *
- * ���Υե�����ˤϡ��裱�ѥ��ˤ����Ƹ��쥹������ factoring ��Ԥ������
- * �ؿ����ޤޤ�Ƥ��ޤ�. �ڹ�¤�������ǤΥ��֥ĥ꡼���ñ��ꥹ��
- * (successor list) �ι��ۡ������ǧ����θ��쥹�����׻��롼����
- * �ޤޤ�ޤ�. 
+ * このファイルには，第１パスにおいて言語スコアの factoring を行うための
+ * 関数が含まれています. 木構造化辞書上でのサブツリー内の単語リスト
+ * (successor list) の構築，および認識中の言語スコア計算ルーチンが
+ * 含まれます. 
  *
- * successor list �ϡ��ڹ�¤������γƥΡ��ɤ˳���դ����롤
- * ���ΥΡ��ɤ�ͭ����ñ��Υꥹ�ȤǤ�. �ڹ�¤������ˤ����ơ�
- * ����ʬ�μ��ΥΡ��ɤ����Υꥹ�Ȥ��ݻ����ޤ�. �ºݤˤϥꥹ�Ȥ��Ѳ�����
- * ��ꡤ���ʤ���ڹ�¤������λޤ�ʬ�����˳���դ����ޤ�. 
- * �㤨�С��ʲ��Τ褦���ڹ�¤������ξ�硤�����ν񤤤Ƥ���Ρ��ɤ�
- * successor list ������դ����ޤ�. 
+ * successor list は，木構造化辞書の各ノードに割り付けられる，
+ * そのノードを共有する単語のリストです. 木構造化辞書において，
+ * 枝部分の次のノードがこのリストを保持します. 実際にはリストが変化する
+ * 場所，すなわち木構造化辞書の枝の分岐点に割り付けられます. 
+ * 例えば，以下のような木構造化辞書の場合，数字の書いてあるノードに
+ * successor list が割り付けられます. 
  * <pre>
  *
  *        2-o-o - o-o-o - o-o-o          word "A" 
@@ -28,8 +28,8 @@
  *                6-o-o                  word "E"
  * </pre>
  *
- * �� successor list �Ϥ��Υ��֥ĥ꡼�˴ޤޤ��ñ��Υꥹ�ȤǤ�. 
- * ������Ǥϰʲ��Τ褦�ˤʤ�ޤ�. 
+ * 各 successor list はそのサブツリーに含まれる単語のリストです. 
+ * この例では以下のようになります. 
  *
  * <pre>
  *   node  | successor list (wchmm->state[node].sc)
@@ -44,39 +44,39 @@
  *     8   |       D
  * </pre>
  *
- * ���� successor list �˴ޤޤ��ñ�줬���Ĥˤʤä��Ȥ������λ�����
- * ñ�줬���ꤹ��. �嵭�ξ�硤ñ�� "A" �ϥΡ��� 2 �ΰ��֤Ǥ��Ǥ�
- * ���θ�³ñ��Ȥ��� "A" �ʳ�̵���Τǡ������ǳ��ꤹ��. 
- * ���ʤ����ñ�� A �����Τʸ��쥹�����ϡ�ñ�콪ü���Ԥ����Ρ��� 2 �Ƿ�ޤ�. 
+ * ある successor list に含まれる単語が１つになったとき，その時点で
+ * 単語が確定する. 上記の場合，単語 "A" はノード 2 の位置ですでに
+ * その後続単語として "A" 以外無いので，そこで確定する. 
+ * すなわち，単語 A の正確な言語スコアは，単語終端を待たずノード 2 で決まる. 
  *
- * �裱�ѥ��ˤ����� factoring �η׻��ϡ��ºݤˤ� beam.c �ǹԤʤ���. 
- * 2-gram factoring�ξ�硤���Ρ��ɤ� successor list ��¸�ߤ����,
- * ���� successor list ��ñ��� 2-gram �κ����ͤ���, ���¤��Ƥ��Ƥ���
- * factoring �ͤ򹹿�����. successor list ��ñ�줬1�ĤΥΡ��ɤǤϡ�
- * ������2-gram����ưŪ�˳�����Ƥ���. 
- * 1-gram factoring�ξ�硤���Ρ��ɤ� successor list ��¸�ߤ����硤
- * ���� successor list ��ñ��� 1-gram �κ����ͤ��ᡤ���¤��Ƥ��Ƥ���
- * factoring �ͤ򹹿�����. successor list ��ñ�줬���ĤΥΡ��ɤǡ��Ϥ����
- * 2-gram ��׻�����. 
+ * 第１パスにおける factoring の計算は，実際には beam.c で行なわれる. 
+ * 2-gram factoringの場合，次ノードに successor list が存在すれば,
+ * その successor list の単語の 2-gram の最大値を求め, 伝搬してきている
+ * factoring 値を更新する. successor list に単語が1つのノードでは，
+ * 正しい2-gramが自動的に割り当てられる. 
+ * 1-gram factoringの場合，次ノードに successor list が存在する場合，
+ * その successor list の単語の 1-gram の最大値を求め，伝搬してきている
+ * factoring 値を更新する. successor list に単語が１つのノードで，はじめて
+ * 2-gram を計算する. 
  *
- * �ºݤǤ� 1-gram factoring �Ǥϳ� successor list �ˤ����� factoring ��
- * ��ñ����������¸�ʤΤǡ�successor list ���ۻ������Ƥ��餫����׻�����
- * ����. ���ʤ�������󥸥�ư�����ڹ�¤��������۸塤successor list
- * ���ۤ����顤ñ���2�İʾ�ޤ� successor list �ˤĤ��ƤϤ��� 1-gram ��
- * �����ͤ�׻����ơ�����򤽤ΥΡ��ɤ� fscore ���Ф˳�Ǽ���Ƥ���������
- * successor list �� free ���Ƥ��ޤ��Ф褤. ñ�줬���ĤΤߤ� successor list
- * �ˤĤ��ƤϤ���ñ��ID��Ĥ��Ƥ�����õ�����˥ѥ�����������ã������
- * ���Τ�2-gram��׻�������ɤ�. 
+ * 実際では 1-gram factoring では各 successor list における factoring 値
+ * は単語履歴に非依存なので，successor list 構築時に全てあらかじめ計算して
+ * おく. すなわち，エンジン起動時に木構造化辞書を構築後，successor list
+ * を構築したら，単語を2個以上含む successor list についてはその 1-gram の
+ * 最大値を計算して，それをそのノードの fscore メンバに格納しておき，その
+ * successor list は free してしまえばよい. 単語が１つのみの successor list
+ * についてはその単語IDを残しておき，探索時にパスがそこに到達したら
+ * 正確な2-gramを計算すれば良い. 
  *
- * DFAʸˡ���ѻ��ϡ��ǥե���ȤǤϸ�������(���ƥ���������)��
- * ���ƥ���ñ�̤��ڤ��ۤ��뤳�Ȥ���Ū��ɽ������. ���Τ��ᡤ
- * ������ factoring �������Ѥ����ʤ�. ��������
- * CATEGORY_TREE �� undefined �Ǥ���С�����Ū factoring ���Ѥ�����������
- * Ŭ�Ѥ�Ԥ����Ȥ��ǽ�Ǥ���. 
- * ���ʤ�������Ρ��ɤ� successor list ��¸�ߤ����,
- * ���� successor list ��γ�ñ���ľ��ñ���ñ���������Ĵ��,
- * ���Τ�����ĤǤ���³��ǽ��ñ�줬����С��������ܤ��������Ĥ�
- * �ʤ�������ܤ����ʤ�. ���ε�ǽ�ϵ��ѻ��ͤΤ���˻Ĥ���Ƥ���ΤߤǤ���. 
+ * DFA文法使用時は，デフォルトでは言語制約(カテゴリ対制約)を
+ * カテゴリ単位で木を構築することで静的に表現する. このため，
+ * これらの factoring 機構は用いられない. ただし，
+ * CATEGORY_TREE が undefined であれば，決定的 factoring を用いた言語制約
+ * 適用を行うことも可能である. 
+ * すなわち，次ノードに successor list が存在すれば,
+ * その successor list 内の各単語と直前単語の単語対制約を調べ,
+ * そのうち一つでも接続可能な単語があれば，その遷移を許し，一つも
+ * なければ遷移させない. この機能は技術参考のために残されているのみである. 
  * </JA>
  * 
  * <EN>
@@ -169,9 +169,9 @@
 
 /** 
  * <JA>
- * �ڹ�¤�����������Ρ��ɤ� successor list ���ۤ���ᥤ��ؿ�
+ * 木構造化辞書上の全ノードに successor list を構築するメイン関数
  * 
- * @param wchmm [i/o] �ڹ�¤������
+ * @param wchmm [i/o] 木構造化辞書
  * </JA>
  * <EN>
  * Main function to build whole successor list to lexicon tree.
@@ -327,9 +327,9 @@ make_successor_list(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * �ڹ�¤�����������Ρ��ɤ� successor list ���ۤ���ᥤ��ؿ�(unigram factoring ��
+ * 木構造化辞書上の全ノードに successor list を構築するメイン関数(unigram factoring 用
  * 
- * @param wchmm [i/o] �ڹ�¤������
+ * @param wchmm [i/o] 木構造化辞書
  * </JA>
  * <EN>
  * Main function to build whole successor list to lexicon tree for unigram factoring
@@ -472,11 +472,11 @@ make_successor_list_unigram_factoring(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * ���ۤ��줿 factoring ����� multipath �Ѥ�Ĵ������. factoring �����,
- * ��ǥ����Τ򥹥��åפ������ܤ�������Ϥ�����β��Ǥإ��ԡ�����. 
- * �ޤ���(���Ϥ�����ʤ�)ʸƬʸˡ�Ρ��ɤ�ñ����Ƭ�Ρ��ɤ��饳�ԡ�����. 
+ * 構築された factoring 情報を multipath 用に調整する. factoring 情報を,
+ * モデル全体をスキップする遷移がある場合はその先の音素へコピーする. 
+ * また，(出力を持たない)文頭文法ノードに単語先頭ノードからコピーする. 
  * 
- * @param wchmm [in] �ڹ�¤������
+ * @param wchmm [in] 木構造化辞書
  * </JA>
  * <EN>
  * Adjust factoring data in tree lexicon for multipath transition handling.
@@ -566,10 +566,10 @@ adjust_sc_index(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * �ڹ�¤�������Ѥ� factoring ����å����������դ����ƽ��������. 
- * ���δؿ��ϥץ�����೫�ϻ��˰��٤����ƤФ��. 
+ * 木構造化辞書用の factoring キャッシュをメモリ割り付けして初期化する. 
+ * この関数はプログラム開始時に一度だけ呼ばれる. 
  * 
- * @param wchmm [i/o] �ڹ�¤������
+ * @param wchmm [i/o] 木構造化辞書
  * </JA>
  * <EN>
  * Initialize factoring cache for a tree lexicon, allocating memory for
@@ -623,9 +623,9 @@ max_successor_cache_init(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * ñ��֤� factoring cache �Υ����ΰ���������. 
+ * 単語間の factoring cache のメモリ領域を解放する. 
  * 
- * @param wchmm [i/o] �ڹ�¤������
+ * @param wchmm [i/o] 木構造化辞書
  * </JA>
  * <EN>
  * Free cross-word factoring cache.
@@ -647,9 +647,9 @@ max_successor_prob_iw_free(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * factoring �� cache �Υ����ΰ�����Ʋ�������. 
+ * factoring 用 cache のメモリ領域を全て解放する. 
  * 
- * @param wchmm [i/o] �ڹ�¤������
+ * @param wchmm [i/o] 木構造化辞書
  * </JA>
  * <EN>
  * Free all memory for  factoring cache.
@@ -677,21 +677,21 @@ max_successor_cache_free(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * @brief  ñ����Ƭ�Ρ��ɤΤ���Factoring �ˤ����ƥ���å��夬ɬ�פʥΡ��ɤ�
- * �ꥹ�Ȥ��������. 
+ * @brief  単語先頭ノードのうちFactoring においてキャッシュが必要なノードの
+ * リストを作成する. 
  *
- * 1-gram factoring �ϡ��ޥΡ��ɤˤ�����ľ��ñ��˰�¸���ʤ�������
- * (unigram�κ�����)��Ϳ����. ���Τ��ᡤñ��֤� factoring �׻��ˤ����ơ�
- * �ڹ�¤��������ʣ����ñ��Ƕ�ͭ����Ƥ���ñ����Ƭ�Ρ��ɤˤĤ��Ƥϡ�
- * �����ͤ�ľ��ñ��ˤ�餺�����ͤǤ��ꡤǧ������ñ��֥���å�����ݻ�
- * ����ɬ�פϤʤ�. 
+ * 1-gram factoring は，枝ノードにおいて直前単語に依存しない固定値
+ * (unigramの最大値)を与える. このため，単語間の factoring 計算において，
+ * 木構造化辞書上で複数の単語で共有されている単語先頭ノードについては，
+ * その値は直前単語によらず固定値であり，認識時に単語間キャッシュを保持
+ * する必要はない. 
  * 
- * ���δؿ��Ǥϡ�ñ����Ƭ�Ρ��ɤΥꥹ�Ȥ��餽�Τ褦�� factoring ����å��夬
- * ���פʥΡ��ɤ�������ơ�1-gram factoring ����ñ��֥���å��夬ɬ�פ�
- * ñ����Ƭ�Ρ��ɡʡ�¾��ñ��ȶ�ͭ����Ƥ��ʤ���Ω����ñ����Ƭ�Ρ��ɡˤ�
- * �ꥹ�Ȥ��������wchmm->start2isolate ����� wchmm->isolatenum �˳�Ǽ����. 
+ * この関数では，単語先頭ノードのリストからそのような factoring キャッシュが
+ * 不要なノードを除外して，1-gram factoring 時に単語間キャッシュが必要な
+ * 単語先頭ノード（＝他の単語と共有されていない独立した単語先頭ノード）の
+ * リストを作成し，wchmm->start2isolate および wchmm->isolatenum に格納する. 
  * 
- * @param wchmm [i/o] �ڹ�¤������
+ * @param wchmm [i/o] 木構造化辞書
  * </JA>
  * <EN>
  * @brief  Make a list of word head nodes on which cross-word factoring cache
@@ -738,22 +738,22 @@ make_iwcache_index(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * @brief  �ڹ�¤�������� 1-gram factoring �ͤ�׻����Ƴ�Ǽ����. 
+ * @brief  木構造化辞書上の 1-gram factoring 値を計算して格納する. 
  *
- * 1-gram factoring �Ǥ�ñ��֤Ƕ�ͭ����Ƥ���ޥΡ��ɤǤ� 1-gram �κ�����
- * ��Ϳ����. ñ������ˤ��ʤ����ᡤ�����ͤ�ǧ����������
- * �׻����Ƥ������Ȥ��Ǥ���. ���δؿ����ڹ�¤������
- * ���ΤˤĤ��ơ���ͭ����Ƥ����successor list �ˣ��İʾ��ñ�����ĥΡ��ɡ�
- * �Ρ��ɤ� 1-gram factoring �ͤ�׻����Ƴ�Ǽ����. 1-gram factoring�ͤ�
- * �׻���ϡ����ΥΡ��ɤ� successor list �Ϥ�Ϥ����פǤ��뤿�ᡤ������
- * �������. 
+ * 1-gram factoring では単語間で共有されている枝ノードでは 1-gram の最大値
+ * を与える. 単語履歴によらないため，その値は認識開始前に
+ * 計算しておくことができる. この関数は木構造化辞書
+ * 全体について，共有されている（successor list に２つ以上の単語を持つノード）
+ * ノードの 1-gram factoring 値を計算して格納する. 1-gram factoring値を
+ * 計算後は，そのノードの successor list はもはや不要であるため，ここで
+ * 削除する. 
  *
- * �ºݤˤϡ�factoring �ͤ� wchmm->fscore �˽缡��¸���졤�Ρ��ɤ�
- * scid �ˤ�����¸�ͤؤΥ���ǥå���(1-)������ͤ���Ǽ�����. ���פˤʤä�
- * successor list �ϡ��ºݤˤ� compaction_successor ��ǡ��б�����Ρ��ɤ�
- * scid ����ˤʤäƤ��� successor list �������뤳�ȤǹԤʤ���. 
+ * 実際には，factoring 値は wchmm->fscore に順次保存され，ノードの
+ * scid にその保存値へのインデックス(1-)の負の値が格納される. 不要になった
+ * successor list は，実際には compaction_successor 内で，対応するノードの
+ * scid が負になっている successor list を削除することで行なわれる. 
  * 
- * @param wchmm [i/o] �ڹ�¤������
+ * @param wchmm [i/o] 木構造化辞書
  * </JA>
  * <EN>
  * @brief  Calculate all the 1-gram factoring values on tree lexicon.
@@ -839,14 +839,14 @@ calc_all_unigram_factoring_values(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * �ڹ�¤�������Τ���Ρ��ɤˤĤ��ơ�Ϳ����줿ñ��������Ф���2-gram
- * ��������׻�����. 
+ * 木構造化辞書上のあるノードについて，与えられた単語履歴に対する2-gram
+ * スコアを計算する. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param lastword [in] ľ��ñ��
- * @param node [in] @a wchmm ��ΥΡ����ֹ�
+ * @param wchmm [in] 木構造化辞書
+ * @param lastword [in] 直前単語
+ * @param node [in] @a wchmm 上のノード番号
  * 
- * @return 2-gram ��Ψ. 
+ * @return 2-gram 確率. 
  * </JA>
  * <EN>
  * Compute 2-gram factoring value for the node and return the probability.
@@ -898,21 +898,21 @@ calc_successor_prob(WCHMM_INFO *wchmm, WORD_ID lastword, int node)
 
 /** 
  * <JA>
- * @brief  ñ����Τ���Ρ��ɤˤĤ��� factoring �ͤ�׻�����. 
+ * @brief  単語内のあるノードについて factoring 値を計算する. 
  *
- * 1-gram factoring �Ǹ���factoring�ͤ�������Ϥ����ͤ�¨�¤��֤����. 
- * ¾�ξ��ϡ����ΥΡ��ɤΥ��֥ĥ꡼���ñ��� 2-gram��Ψ�ʤκ����͡ˤ�
- * �׻������. 
+ * 1-gram factoring で固定factoring値がある場合はその値が即座に返される. 
+ * 他の場合は，そのノードのサブツリー内の単語の 2-gram確率（の最大値）が
+ * 計算される. 
  *
- * ñ���� factoring ����å��夬��θ�����. ���ʤ���ƥΡ��ɤˤĤ���
- * ľ��ñ�줬���󥢥��������줿�Ȥ���Ʊ���Ǥ���С�
- * ������ͤ��֤��졤�����Ǥʤ�����ͤ�׻���������å��夬���������. 
+ * 単語内 factoring キャッシュが考慮される. すなわち各ノードについて
+ * 直前単語が前回アクセスされたときと同じであれば，
+ * 前回の値が返され，そうでなければ値を計算し，キャッシュが更新される. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param lastword [in] ľ��ñ���ID
- * @param node [in] �Ρ����ֹ�
+ * @param wchmm [in] 木構造化辞書
+ * @param lastword [in] 直前単語のID
+ * @param node [in] ノード番号
  * 
- * @return �����ǥ륹����
+ * @return 言語モデルスコア
  * </JA>
  * <EN>
  * @brief  compute factoring LM score for the given word-internal node.
@@ -1013,18 +1013,18 @@ max_successor_prob(WCHMM_INFO *wchmm, WORD_ID lastword, int node)
 
 /** 
  * <JA>
- * @brief  ñ��֤� factoring �ͤΥꥹ�Ȥ��֤�. 
+ * @brief  単語間の factoring 値のリストを返す. 
  *
- * Ϳ����줿ľ��ñ����Ф��ơ�factoring�ͤ�׻����٤����Ƥ�ñ����Ƭ�ؤ�
- * factoring �ͤ�׻��������Υꥹ�Ȥ��֤�. ����factoring�ͤ�
- * ľ��ñ�줴�Ȥ˥ꥹ��ñ�̤ǥ���å��夵���. ���ʤ��������ľ��ñ�줬
- * ����ޤǤ˰��٤Ǥ�ľ��ñ��Ȥ��ƽи����Ƥ�����硤���Υꥹ�Ȥ򤽤Τޤ�
- * �֤�. 
+ * 与えられた直前単語に対して，factoring値を計算すべき全ての単語先頭への
+ * factoring 値を計算し，そのリストを返す. このfactoring値は
+ * 直前単語ごとにリスト単位でキャッシュされる. すなわち，その直前単語が
+ * それまでに一度でも直前単語として出現していた場合，そのリストをそのまま
+ * 返す. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param lastword [in] ľ��ñ��
+ * @param wchmm [in] 木構造化辞書
+ * @param lastword [in] 直前単語
  * 
- * @return ��ñ����Ƭ�Ρ��ɤؤ� factoring �������Υꥹ��
+ * @return 全単語先頭ノードへの factoring スコアのリスト
  * </JA>
  * <EN>
  * @brief  Compute cross-word facgtoring values for word head nodes and return
@@ -1144,24 +1144,24 @@ max_successor_prob_iw(WCHMM_INFO *wchmm, WORD_ID lastword)
 
 /** 
  * <JA>
- * @brief  ʸˡ�ˤ��ñ�������Ū factoring
+ * @brief  文法による単語内決定的 factoring
  *
- * Julian �ˤ����� CATEGORY_TREE ���������Ƥ���Ȥ��ʥǥե���ȡˡ�
- * �ڹ�¤������ϥ��ƥ���ñ�̡ʤ��ʤ����ʸ����ε���ñ�̡ˤǹ��ۤ���뤿�ᡤ
- * ��1�ѥ��Ǥθ����ǥ�Ǥ��륫�ƥ����������ñ��λϽ�ü��Ŭ�ѤǤ���. 
+ * Julian において CATEGORY_TREE が定義されているとき（デフォルト），
+ * 木構造化辞書はカテゴリ単位（すなわち構文制約の記述単位）で構築されるため，
+ * 第1パスでの言語モデルであるカテゴリ対制約は単語の始終端で適用できる. 
  * 
- * ���� CATEGORY_TREE ���������Ƥ��ʤ���硤�ڹ�¤�������
- * �������Τ�ñ����ڤ�����뤿�ᡤ���ƥ���������� N-gram (Julius) ��
- * Ʊ�ͤ�ñ����� factoring ��Ʊ�ͤε�����Ŭ�Ѥ����ɬ�פ�����. 
+ * この CATEGORY_TREE が定義されていない場合，木構造化辞書は
+ * 辞書全体で単一の木が作られるため，カテゴリ対制約は N-gram (Julius) と
+ * 同様に単語内で factoring と同様の機構で適用される必要がある. 
  *
- * ���δؿ��� CATEGORY_TREE ���������Ƥ��ʤ��Ȥ��ˡ��嵭�� factoring
- * �ʷ���Ū factoring �ȸƤФ��ˤ�Ԥʤ�������󶡤���Ƥ���. 
+ * この関数は CATEGORY_TREE が定義されていないときに，上記の factoring
+ * （決定的 factoring と呼ばれる）を行なうために提供されている. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param lastword [in] ľ��ñ��
- * @param node [in] �Ρ����ֹ�
+ * @param wchmm [in] 木構造化辞書
+ * @param lastword [in] 直前単語
+ * @param node [in] ノード番号
  *
- * @return ���ƥ�������夽�λޤؤ����ܤ��������� TRUE, �Բ�ǽ�Ǥ���� FALSE
+ * @return カテゴリ制約上その枝への遷移が許されれば TRUE, 不可能であれば FALSE
  * </JA>
  * <EN>
  * @brief  Deterministic factoring for grammar-based recognition (Julian)

@@ -4,180 +4,180 @@ JCONTROL(1)                                                        JCONTROL(1)
 
 
 
-���O
+名前
            jcontrol
-          - Julius���W���[�����[�h�p�̃T���v���N���C�A���g
+          - Juliusモジュールモード用のサンプルクライアント
 
-�T�v
+概要
        jcontrol {hostname} [portnum]
 
 DESCRIPTION
-       jcontrol �́C���W���[�����[�h�œ��삵�Ă��� julius �ɐڑ����CAPI���
-       �ăR���g���[������ȒP�ȃR���\�[���v���O�����ł��DJulius �ւ̈ꎞ��~
-       ��ĊJ�Ȃǂ̃R�}���h�̑��M�C����� Julius ����̔F�����ʂ≹���C�x���g
-       �� ���b�Z�[�W��M���s�����Ƃ��ł��܂��D
+       jcontrol は，モジュールモードで動作している julius に接続し，APIを介し
+       てコントロールする簡単なコンソールプログラムです．Julius への一時停止
+       や再開などのコマンドの送信，および Julius からの認識結果や音声イベント
+       の メッセージ受信を行うことができます．
 
-       �N����Cjcontrol �́C�w��z�X�g��ɂ����āu���W���[�����[�h�v�œ��쒆
-       ��Julius �ɑ΂��C�ڑ������݂܂��D�ڑ��m����Cjcontrol �̓��[�U�[�����
-       �R�}���h���͂���у��b�Z�[�W��M�҂���ԂƂȂ�܂��D
+       起動後，jcontrol は，指定ホスト上において「モジュールモード」で動作中
+       のJulius に対し，接続を試みます．接続確立後，jcontrol はユーザーからの
+       コマンド入力およびメッセージ受信待ち状態となります．
 
-       jcontrol �� ���[�U�[�����͂����R�}���h�����߂��C�Ή�����API�R�}���h��
-       Julius �֑��M���܂��D�܂��CJulius ����F�����ʂ���̓g���K��� �Ȃ� ��
-       ���b�Z�[�W�����M����Ă����Ƃ��́C���̓��e��W���o�͂֏����o���܂��D
+       jcontrol は ユーザーが入力したコマンドを解釈し，対応するAPIコマンドを
+       Julius へ送信します．また，Julius から認識結果や入力トリガ情報 など の
+       メッセージが送信されてきたときは，その内容を標準出力へ書き出します．
 
-       ���W���[�����[�h�̎d�l�ɂ��ẮC�֘A�����������������D
+       モジュールモードの仕様については，関連文書をご覧下さい．
 
 OPTIONS
         hostname
-           �ڑ���̃z�X�g��
+           接続先のホスト名
 
         portnum
-           �|�[�g�ԍ��i�f�t�H���g�F10500�j
+           ポート番号（デフォルト：10500）
 
 COMMANDS
-       jcontrol �͕W�����͂���1�s���R�}���h��������󂯎��D �R�}���h�̈ꗗ
-       �͈ȉ��̒ʂ�D
+       jcontrol は標準入力から1行ずつコマンド文字列を受け取る． コマンドの一覧
+       は以下の通り．
 
-   ���쐧��
+   動作制御
        pause
-           Julius�̔F������𒆒f�����C�ꎞ��~��ԂɈڍs������D�ꎞ��~�� ��
-           �ɂ���Julius�́C���Ƃ��������͂������Ă��F���������s��Ȃ��D �����
-           �Ԃ̉����F�������̓r���ł��̃R�}���h���󂯎�����ꍇ�C Julius �͂�
-           �̔F���������I��������C�ꎞ��~��ԂɈڍs����D
+           Juliusの認識動作を中断させ，一時停止状態に移行させる．一時停止状 態
+           にあるJuliusは，たとえ音声入力があっても認識処理を行わない． ある区
+           間の音声認識処理の途中でこのコマンドを受け取った場合， Julius はそ
+           の認識処理が終了した後，一時停止状態に移行する．
 
        terminate
 
-           pause�Ɠ������CJulius�̔F������𒆒f�����C �ꎞ��~��ԂɈڍs����
-           ��D�����Ԃ̉����F�������̓r���ł��̃R �}���h���󂯎�����ꍇ�C��
-           �̓��͂�j�����đ����Ɉꎞ��~��Ԃ� �ڍs����D
+           pauseと同じく，Juliusの認識動作を中断させ， 一時停止状態に移行させ
+           る．ある区間の音声認識処理の途中でこのコ マンドを受け取った場合，そ
+           の入力を破棄して即座に一時停止状態に 移行する．
 
        resume
-           Julius ���ꎞ��~��Ԃ���ʏ��Ԃֈڍs�����C�F�����ĊJ������D
+           Julius を一時停止状態から通常状態へ移行させ，認識を再開させる．
 
        inputparam arg
-           ���@�؂�ւ����ɉ������͂ł������ꍇ�̓��͒������̈������w��D
-           "TERMINATE", "PAUSE", "WAIT"�̂��������ꂩ���w��D
+           文法切り替え時に音声入力であった場合の入力中音声の扱いを指定．
+           "TERMINATE", "PAUSE", "WAIT"のうちいずれかを指定．
 
        version
-           Julius �Ƀo�[�W�����������Ԃ�����D
+           Julius にバージョン文字列を返させる．
 
        status
-           Julius ����V�X�e���̏�� (active / sleep) ��񍐂�����D
+           Julius からシステムの状態 (active / sleep) を報告させる．
 
-   ���@�E�P��F���֘A
+   文法・単語認識関連
        graminfo
-           �J�����g�v���Z�X���ێ����Ă��镶�@�̈ꗗ���N���C�A���g�֏o�͂���
-           ��D
+           カレントプロセスが保持している文法の一覧をクライアントへ出力させ
+           る．
 
        changegram prefix
-           �J�����g�v���Z�X�̔F�����@�� "prefix.dfa" �� "prefix.dict" �ɓ����
-           ����D�J�����g�v�� �Z�X���̕��@�͑S�ď�������C�w�肳�ꂽ���@�ɒu��
-           �����D
+           カレントプロセスの認識文法を "prefix.dfa" と "prefix.dict" に入れ替
+           える．カレントプロ セス内の文法は全て消去され，指定された文法に置き
+           換わる．
 
-           �J�����g�v���Z�X���Ǘ��P��F���̏ꍇ�C "prefix" �̕ς��Ɏ����t�@
-           �C���݂̂� "filename.dict" �̌`�Ŏw�肷��D
+           カレントプロセスが孤立単語認識の場合， "prefix" の変わりに辞書ファ
+           イルのみを "filename.dict" の形で指定する．
 
        addgram prefix
-           �F�����@�Ƃ��� "prefix.dfa" �� "prefix.dict" ���J�����g�v���Z�X�ɒ�
-           ������D
+           認識文法として "prefix.dfa" と "prefix.dict" をカレントプロセスに追
+           加する．
 
-           �J�����g�v���Z�X���Ǘ��P��F���̏ꍇ�C "prefix" �̕ς��Ɏ����t�@
-           �C���݂̂� "filename.dict" �̌`�Ŏw�肷��D
+           カレントプロセスが孤立単語認識の場合， "prefix" の変わりに辞書ファ
+           イルのみを "filename.dict" の形で指定する．
 
        deletegram gramlist
-           �J�����g�v���Z�X����w�肳�ꂽ���@���폜����D���@�̎w��́C�� �@��
-           �i�ǉ����� prefix�j���C���邢�� Julius ���瑗���� GRAMINFO���ɂ�
-           �镶�@ ID �Ŏw�肷��D�����̕��@���폜�������ꍇ�́C���@��������
-           ��ID���J ���}�ŋ�؂��ĕ����w�肷��iID�ƕ��@�������݂��Ă��悢�j�D
+           カレントプロセスから指定された文法を削除する．文法の指定は，文 法名
+           （追加時の prefix）か，あるいは Julius から送られる GRAMINFO内にあ
+           る文法 ID で指定する．複数の文法を削除したい場合は，文法名もしく
+           はIDをカ ンマで区切って複数指定する（IDと文法名が混在してもよい）．
 
        deactivategram gramlist
-           �J�����g�v���Z�X�̎w�肳�ꂽ���@���ꎞ�I�ɖ����ɂ���D�����ɂ��ꂽ
-           ���@�́C�G���W�����ɕێ����ꂽ�܂܁C�F����������͈ꎞ�I�ɏ��O����
-           ��D ���������ꂽ���@�� activategram �ōĂїL�����ł���D
+           カレントプロセスの指定された文法を一時的に無効にする．無効にされた
+           文法は，エンジン内に保持されたまま，認識処理からは一時的に除外され
+           る． 無効化された文法は activategram で再び有効化できる．
 
-           ���@�̎w��́C���@���i�ǉ����� prefix�j���C���邢��Julius ���瑗��
-           ��� GRAMINFO���ɂ��镶�@ ID �Ŏw�肷��D�� ���̕��@���w�肵������
-           ���́C���@����������ID���J���}�ŋ�؂��� �����w�肷��iID�ƕ��@����
-           ���݂��Ă��悢�j�D
+           文法の指定は，文法名（追加時の prefix）か，あるいはJulius から送ら
+           れる GRAMINFO内にある文法 ID で指定する．複 数の文法を指定したい場
+           合は，文法名もしくはIDをカンマで区切って 複数指定する（IDと文法名が
+           混在してもよい）．
 
        activategram gramlist
-           �J�����g�v���Z�X�Ŗ���������Ă��镶�@��L��������D ���@�̎w��
-           �́C���@���i�ǉ����� prefix�j���C���邢��Julius ���瑗�� ���
-           GRAMINFO���ɂ��镶�@ ID �Ŏw�肷��D�� ���̕��@���w�肵�����ꍇ
-           �́C���@����������ID���J���}�ŋ�؂��� �����w�肷��iID�ƕ��@������
-           �݂��Ă��悢�j�D
+           カレントプロセスで無効化されている文法を有効化する． 文法の指定
+           は，文法名（追加時の prefix）か，あるいはJulius から送ら れる
+           GRAMINFO内にある文法 ID で指定する．複 数の文法を指定したい場合
+           は，文法名もしくはIDをカンマで区切って 複数指定する（IDと文法名が混
+           在してもよい）．
 
        addword grammar_name_or_id dictfile
-           dictfile �̒��g���C�J�����g�v���Z�X�̎w�肳�ꂽ���@�ɒǉ�����D
+           dictfile の中身を，カレントプロセスの指定された文法に追加する．
 
        syncgram
-           addgram �� deletegram �Ȃǂɂ�镶�@�̍X�V�𑦎��ɍs���D �����m�F�p
-           �ł���D
+           addgram や deletegram などによる文法の更新を即時に行う． 同期確認用
+           である．
 
-   �v���Z�X�֘A�̃R�}���h
-       Julius-4 �ł͕������f���̓����F�����s����D���̏ꍇ�C �F���v���Z�X
-       ("-SR" �Ŏw�肳�ꂽ�F�������C���X�^���X) ���ƂɃ��W���[���N���C�A���g��
-       �瑀����s�����Ƃ��ł���D
+   プロセス関連のコマンド
+       Julius-4 では複数モデルの同時認識が行える．この場合， 認識プロセス
+       ("-SR" で指定された認識処理インスタンス) ごとにモジュールクライアントか
+       ら操作を行うことができる．
 
-       �N���C�A���g����͂ǂꂩ��̃v���Z�X���u�J�����g�v���Z�X�v�Ƃ��� ����
-       ���Ă���D���@�֘A�̖��߂̓J�����g�v���Z�X�ɑ΂��čs����D
+       クライアントからはどれか一つのプロセスが「カレントプロセス」として 割り
+       当てられる．文法関連の命令はカレントプロセスに対して行われる．
 
        listprocess
-           Julius �Ɍ��݃G���W���ɂ���F���v���Z�X�̈ꗗ�𑗐M������D
+           Julius に現在エンジンにある認識プロセスの一覧を送信させる．
 
        currentprocess procname
-           �J�����g�v���Z�X���w�肳�ꂽ���O�̃v���Z�X�ɐ؂�ւ���D
+           カレントプロセスを指定された名前のプロセスに切り替える．
 
        shiftprocess
-           �J�����g�v���Z�X���z�؂�ւ�����D�Ă΂�邽�тɂ��̎��̃v���Z�X
-           �� �J�����g�v���Z�X���؂�ւ��D
+           カレントプロセスを循環切り替えする．呼ばれるたびにその次のプロセス
+           に カレントプロセスが切り替わる．
 
        addprocess jconffile
-           �G���W���ɔF���v���Z�X��V���ɒǉ�����D�^���� jconffile �́C�ʏ��
-           ���̂ƈႢ�C �������ނ� LM �ݒ���܂ނ��̂ł���K�v������D��
-           ���C���ۂɑ����� �̂̓p�X���݂̂ł���C�t�@�C���ǂݍ��݂�Julius��
-           �ōs���邽�߁C �t�@�C���p�X�� Julius ���猩����ꏊ���w�肷��K�v
-           ���L��D
+           エンジンに認識プロセスを新たに追加する．与える jconffile は，通常の
+           ものと違い， ただ一種類の LM 設定を含むものである必要がある．ま
+           た，実際に送られる のはパス名のみであり，ファイル読み込みはJulius側
+           で行われるため， ファイルパスは Julius から見える場所を指定する必要
+           が有る．
 
-           �ǉ����ꂽ LM ����єF���v���Z�X�́Cjconffile �̖��O�� �v���Z�X����
-           �Ȃ�D
+           追加された LM および認識プロセスは，jconffile の名前が プロセス名と
+           なる．
 
        delprocess procname
-           �w�肳�ꂽ���O�̔F���v���Z�X���G���W������폜����D
+           指定された名前の認識プロセスをエンジンから削除する．
 
        deactivateprocess procname
-           �w�肳�ꂽ���O�̔F���v���Z�X���C�ꎞ�I�ɖ���������D���������� ���v
-           ���Z�X�͎���ȍ~�̓��͂ɑ΂��ĔF����������X�L�b�v�����D ��������
-           �ꂽ�v���Z�X�� activateprocess �� �ĂїL�����ł���D
+           指定された名前の認識プロセスを，一時的に無効化する．無効化され たプ
+           ロセスは次回以降の入力に対して認識処理からスキップされる． 無効化さ
+           れたプロセスは activateprocess で 再び有効化できる．
 
        activateprocess procname
-           �w�肳�ꂽ���O�̔F���v���Z�X��L��������D
+           指定された名前の認識プロセスを有効化する．
 
 EXAMPLES
-       Julius ����̃��b�Z�[�W�� "> " ���s�̐擪�ɂ��Ă��̂܂ܕW���o�͂ɏo��
-       ����܂��D�ȉ��͎��s��ł��D
-       ��L�̂悤�ɂ��� Julius �����W���[�����[�h�ŋN��������C jcontrol ����
-       �̃z�X�g�����w�肵�ċN�����܂��D
-       �������͂��s���΁C�C�x���g���e�⌋�ʂ� jcontrol ���ɑ��M����܂��D
-       jcontrol �ɑ΂��ăR�}���h����͂���i�Ō�� Enter �������j�ƁC Julius
-       �ɃR�}���h�����M����CJulius �����䂳��܂��D
+       Julius からのメッセージは "> " を行の先頭につけてそのまま標準出力に出力
+       されます．以下は実行例です．
+       上記のようにして Julius をモジュールモードで起動した後， jcontrol をそ
+       のホスト名を指定して起動します．
+       音声入力を行えば，イベント内容や結果が jcontrol 側に送信されます．
+       jcontrol に対してコマンドを入力する（最後に Enter を押す）と， Julius
+       にコマンドが送信され，Julius が制御されます．
 
-       �ڂ����v���g�R���ɂ��ẮC�֘A�������Q�Ƃ��Ă��������D
+       詳しいプロトコルについては，関連文書を参照してください．
 
 SEE ALSO
         julius ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 

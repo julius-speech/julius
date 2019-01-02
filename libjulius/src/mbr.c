@@ -2,9 +2,9 @@
  * @file   mbr.c
  * 
  * <JA>
- * @brief  Ç§¼±¤µ¤ì¤¿Ê¸¤òMBR¤ÎÏÈÁÈ¤ß¤Ç¥ê¥¹¥³¥¢
+ * @brief  èªè­˜ã•ã‚ŒãŸæ–‡ã‚’MBRã®æ çµ„ã¿ã§ãƒªã‚¹ã‚³ã‚¢
  *
- * Ç§¼±¤µ¤ì¤¿Ê¸¤òMBR¤ÎÏÈÁÈ¤ß¤Ç¥ê¥¹¥³¥¢¤¹¤ë¡¥
+ * èªè­˜ã•ã‚ŒãŸæ–‡ã‚’MBRã®æ çµ„ã¿ã§ãƒªã‚¹ã‚³ã‚¢ã™ã‚‹ï¼
  * </JA>
  *
  * <EN>
@@ -28,12 +28,12 @@
 
 /** 
  * <JA>
- * MBR¥¹¥³¥¢¤Ç¥½¡¼¥È¤¹¤ë¤¿¤á¤Î qsort ¥³¡¼¥ë¥Ğ¥Ã¥¯´Ø¿ô. 
+ * MBRã‚¹ã‚³ã‚¢ã§ã‚½ãƒ¼ãƒˆã™ã‚‹ãŸã‚ã® qsort ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°. 
  * 
- * @param a [in] Í×ÁÇ1
- * @param b [in] Í×ÁÇ2
+ * @param a [in] è¦ç´ 1
+ * @param b [in] è¦ç´ 2
  * 
- * @return ±é»»¤Î·ë²Ì¤ÎÉä¹ç¤òÊÖ¤¹. 
+ * @return æ¼”ç®—ã®çµæœã®ç¬¦åˆã‚’è¿”ã™. 
  * </JA>
  */
 
@@ -48,13 +48,13 @@ mbr_cmp(NODE **a, NODE **b)
 
 /** 
  * <JA>
- * DP¥Ş¥Ã¥Á¥ó¥°¤Î·ë²Ì¤ò½ĞÎÏ¤¹¤ë¥Ç¥Ğ¥Ã¥°´Ø¿ô¡¥
+ * DPãƒãƒƒãƒãƒ³ã‚°ã®çµæœã‚’å‡ºåŠ›ã™ã‚‹ãƒ‡ãƒãƒƒã‚°é–¢æ•°ï¼
  * 
- * @param d [in] DP¥Ş¥Ã¥Á¥ó¥°¤Î·ë²Ì
- * @param len1 [in] Í×ÁÇ1¤ÎÍ×ÁÇ¿ô
- * @param len2 [in] Í×ÁÇ2¤ÎÍ×ÁÇ¿ô
+ * @param d [in] DPãƒãƒƒãƒãƒ³ã‚°ã®çµæœ
+ * @param len1 [in] è¦ç´ 1ã®è¦ç´ æ•°
+ * @param len2 [in] è¦ç´ 2ã®è¦ç´ æ•°
  * 
- * @return ºÇÃ»µ÷Î¥
+ * @return æœ€çŸ­è·é›¢
  * </JA>
  */
 
@@ -94,14 +94,14 @@ dp_print(DP *d, int len1, int len2)
 /** 
  * <JA>
  * 
- * ºÇ¤â¥³¥¹¥È¤¬¾®¤µ¤¤¥Ñ¥¹¤òÊÖ¤¹¡¥
+ * æœ€ã‚‚ã‚³ã‚¹ãƒˆãŒå°ã•ã„ãƒ‘ã‚¹ã‚’è¿”ã™ï¼
  * 
- * @param a [in] ÃÍ1
- * @param b [in] ÃÍ2
- * @param c [in] ÃÍ3
- * @param cost [in] Á«°Ü¥³¥¹¥È
+ * @param a [in] å€¤1
+ * @param b [in] å€¤2
+ * @param c [in] å€¤3
+ * @param cost [in] é·ç§»ã‚³ã‚¹ãƒˆ
  * 
- * @return ¥³¥¹¥È¤ÈÁ«°Ü¸µ¡¥
+ * @return ã‚³ã‚¹ãƒˆã¨é·ç§»å…ƒï¼
  * </JA>
  */
 
@@ -133,13 +133,13 @@ dppath(int a, int b, int c, int cost)
 /** 
  * <JA>
  * 
- * DP¥Ş¥Ã¥Á¥ó¥°¤ò¹Ô¤¦¡¥
+ * DPãƒãƒƒãƒãƒ³ã‚°ã‚’è¡Œã†ï¼
  * 
- * @param a [in] Í×ÁÇ1
- * @param b [in] Í×ÁÇ2
- * @param w [in] ¸À¸ì¥â¥Ç¥ë
+ * @param a [in] è¦ç´ 1
+ * @param b [in] è¦ç´ 2
+ * @param w [in] è¨€èªãƒ¢ãƒ‡ãƒ«
  * 
- * @return DP¥Ş¥Ã¥Á¥ó¥°¤Î·ë²Ì¡¥
+ * @return DPãƒãƒƒãƒãƒ³ã‚°ã®çµæœï¼
  * </JA>
  */
 
@@ -225,13 +225,13 @@ get_weight(WORD_INFO *winfo, WORD_ID id)
 
 /** 
  * <JA>
- * Weighed Levenstein distance¤ò·×»»¤¹¤ë¡¥
+ * Weighed Levenstein distanceã‚’è¨ˆç®—ã™ã‚‹ï¼
  * 
- * @param a [in] Í×ÁÇ1
- * @param b [in] Í×ÁÇ2
- * @param w [in] ¸À¸ì¥â¥Ç¥ë
+ * @param a [in] è¦ç´ 1
+ * @param b [in] è¦ç´ 2
+ * @param w [in] è¨€èªãƒ¢ãƒ‡ãƒ«
  * 
- * @return Weighed Levenstein distance¤ÎÃÍ¤òÊÖ¤¹¡¥
+ * @return Weighed Levenstein distanceã®å€¤ã‚’è¿”ã™ï¼
  * </JA>
  */
 
@@ -242,14 +242,14 @@ calc_wld(NODE *a, NODE *b, WORD_INFO *winfo)
   DP *d;
   int i, j, now;
 
-  /* DP¥Ş¥Ã¥Á¥ó¥°¤Î¥Ñ¥¹¤òµá¤á¤ë */
+  /* DPãƒãƒƒãƒãƒ³ã‚°ã®ãƒ‘ã‚¹ã‚’æ±‚ã‚ã‚‹ */
   d = dpmatch(a, b, winfo);
 
   weight = 0.0;
   i = a->seqnum;
   j = b->seqnum;
 
-  /* ¥Ğ¥Ã¥¯¥È¥ì¡¼¥¹¤·¤Ä¤Ä½Å¤ß¤ò³ÎÄê */
+  /* ãƒãƒƒã‚¯ãƒˆãƒ¬ãƒ¼ã‚¹ã—ã¤ã¤é‡ã¿ã‚’ç¢ºå®š */
   if(d[i * j - 1].d > 0){
 
     error1 = 0.0;
@@ -306,13 +306,13 @@ calc_wld(NODE *a, NODE *b, WORD_INFO *winfo)
 
 /** 
  * <JA>
- * Levenstein distance¤ò·×»»¤¹¤ë¡¥
+ * Levenstein distanceã‚’è¨ˆç®—ã™ã‚‹ï¼
  * 
- * @param a [in] Í×ÁÇ1
- * @param b [in] Í×ÁÇ2
- * @param w [in] ¸À¸ì¥â¥Ç¥ë
+ * @param a [in] è¦ç´ 1
+ * @param b [in] è¦ç´ 2
+ * @param w [in] è¨€èªãƒ¢ãƒ‡ãƒ«
  * 
- * @return Levenstein distance¤ÎÃÍ¤òÊÖ¤¹¡¥
+ * @return Levenstein distanceã®å€¤ã‚’è¿”ã™ï¼
  * </JA>
  */
 
@@ -322,7 +322,7 @@ calc_ld(NODE *a, NODE *b, WORD_INFO *winfo)
   int distance;
   DP *d;
 
-  /* DP¥Ş¥Ã¥Á¥ó¥°¤Î¥Ñ¥¹¤òµá¤á¤ë */
+  /* DPãƒãƒƒãƒãƒ³ã‚°ã®ãƒ‘ã‚¹ã‚’æ±‚ã‚ã‚‹ */
   d = dpmatch(a, b, winfo);
 
   distance = d[(a->seqnum + 1) * (b->seqnum + 1) - 1].d;
@@ -335,14 +335,14 @@ calc_ld(NODE *a, NODE *b, WORD_INFO *winfo)
 
 /** 
  * <JA>
- * ²»À¼Ç§¼±¥¹¥³¥¢¤òÀµµ¬²½¤¹¤ë¡¥
- * MBR¥¹¥³¥¢¤Î½é´ü²½¤âÆ±»ş¤Ë¹Ô¤¦¡¥
+ * éŸ³å£°èªè­˜ã‚¹ã‚³ã‚¢ã‚’æ­£è¦åŒ–ã™ã‚‹ï¼
+ * MBRã‚¹ã‚³ã‚¢ã®åˆæœŸåŒ–ã‚‚åŒæ™‚ã«è¡Œã†ï¼
  * 
- * @param table [in] ¥¹¥¿¥Ã¥¯¥Æ¡¼¥Ö¥ë
- * @param r_stacknum [in] ¥¹¥¿¥Ã¥¯¤Î¥Ç¡¼¥¿¿ô
- * @param r [in] Ç§¼±¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param table [in] ã‚¹ã‚¿ãƒƒã‚¯ãƒ†ãƒ¼ãƒ–ãƒ«
+ * @param r_stacknum [in] ã‚¹ã‚¿ãƒƒã‚¯ã®ãƒ‡ãƒ¼ã‚¿æ•°
+ * @param r [in] èªè­˜ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * 
- * @return Àµµ¬²½¤µ¤ì¤¿¥¹¥³¥¢¤ÎÇÛÎó¤òÊÖ¤¹¡¥
+ * @return æ­£è¦åŒ–ã•ã‚ŒãŸã‚¹ã‚³ã‚¢ã®é…åˆ—ã‚’è¿”ã™ï¼
  * </JA>
  */
 
@@ -355,7 +355,7 @@ normalization_score(NODE **table, int r_stacknum, RecogProcess *r)
 
   n_score = (float *)mymalloc(sizeof(float) * r_stacknum);
 
-  /* ºÇ¤â¹â¤¤¥¹¥³¥¢¤ÇÀµµ¬²½¤¹¤ë */
+  /* æœ€ã‚‚é«˜ã„ã‚¹ã‚³ã‚¢ã§æ­£è¦åŒ–ã™ã‚‹ */
   max = table[0]->score;
   n_score[0] = 1.0;
   table[0]->score_mbr = 0.0;
@@ -380,14 +380,14 @@ normalization_score(NODE **table, int r_stacknum, RecogProcess *r)
 
 /** 
  * <JA>
- * @brief  MBR½èÍı¤Î¥á¥¤¥ó´Ø¿ô
+ * @brief  MBRå‡¦ç†ã®ãƒ¡ã‚¤ãƒ³é–¢æ•°
  *
- * Ç§¼±¤·¤¿Ê¸¤òMBR¤ÎÏÈÁÈ¤ß¤Ç¥ê¥¹¥³¥¢¤¹¤ë¡¥
+ * èªè­˜ã—ãŸæ–‡ã‚’MBRã®æ çµ„ã¿ã§ãƒªã‚¹ã‚³ã‚¢ã™ã‚‹ï¼
  * 
- * @param r_start [i/o] ·ë²Ì³ÊÇ¼ÍÑ¥¹¥¿¥Ã¥¯¤ÎÀèÆ¬¥Î¡¼¥É¤Ø¤Î¥İ¥¤¥ó¥¿
- * @param r_bottom [i/o] ·ë²Ì³ÊÇ¼ÍÑ¥¹¥¿¥Ã¥¯¤ÎÄì¥Î¡¼¥É¤Ø¤Î¥İ¥¤¥ó¥¿
- * @param r_stacknum [in] ¥¹¥¿¥Ã¥¯¤Ë³ÊÇ¼¤µ¤ì¤Æ¤¤¤ë¥Î¡¼¥É¿ô¤Ø¤Î¥İ¥¤¥ó¥¿
- * @param r [in] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param r_start [i/o] çµæœæ ¼ç´ç”¨ã‚¹ã‚¿ãƒƒã‚¯ã®å…ˆé ­ãƒãƒ¼ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+ * @param r_bottom [i/o] çµæœæ ¼ç´ç”¨ã‚¹ã‚¿ãƒƒã‚¯ã®åº•ãƒãƒ¼ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+ * @param r_stacknum [in] ã‚¹ã‚¿ãƒƒã‚¯ã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹ãƒãƒ¼ãƒ‰æ•°ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+ * @param r [in] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  *
  * @callgraph
@@ -409,7 +409,7 @@ candidate_mbr(NODE **r_start, NODE **r_bottom, int r_stacknum, RecogProcess *r)
   float *n_score;
   float error;
 
-  /* ¥ê¥¹¥È¤Î¤Ş¤Ş¤Ç¤Ï°·¤¤¤Ë¤¯¤¤¤Î¤ÇÇÛÎó¤ËÊÑ´¹ */
+  /* ãƒªã‚¹ãƒˆã®ã¾ã¾ã§ã¯æ‰±ã„ã«ãã„ã®ã§é…åˆ—ã«å¤‰æ› */
   table = (NODE **)mymalloc(sizeof(NODE *) * r_stacknum);
   i = 0;
   for(now = *r_start; now; now = now->next){
@@ -417,15 +417,15 @@ candidate_mbr(NODE **r_start, NODE **r_bottom, int r_stacknum, RecogProcess *r)
     i++;
   }
 
-  /* Ç§¼±¥¹¥³¥¢¡Ê¤æ¤¦ÅÙ¡Ë¤òÀµµ¬²½ */
+  /* èªè­˜ã‚¹ã‚³ã‚¢ï¼ˆã‚†ã†åº¦ï¼‰ã‚’æ­£è¦åŒ– */
   n_score = normalization_score(table, r_stacknum, r);
 
-  /* MBR¥¹¥³¥¢¤ò·×»» */
+  /* MBRã‚¹ã‚³ã‚¢ã‚’è¨ˆç®— */
   for(i = 0; i < r_stacknum - 1; i++){
     for(j = i + 1; j < r_stacknum; j++){
 
       if(jconf->mbr.use_word_weight){
-	/* Â»¼º´Ø¿ô¤ÏWeighted Levenstein distance */
+	/* æå¤±é–¢æ•°ã¯Weighted Levenstein distance */
 	if((error = calc_wld(table[i], table[j], r->lm->winfo)) < 0.0){
 	  jlog("Error: candidate_mbr: cannot calculation Weighted Levenstein distance\n");
 	  free(n_score);
@@ -436,7 +436,7 @@ candidate_mbr(NODE **r_start, NODE **r_bottom, int r_stacknum, RecogProcess *r)
 	error = pow(error, jconf->mbr.loss_weight);
       }
       else{
-	/* Â»¼º´Ø¿ô¤ÏLevenstein distance */
+	/* æå¤±é–¢æ•°ã¯Levenstein distance */
 	if((dist = calc_ld(table[i], table[j], r->lm->winfo)) < 0){
 	  jlog("Error: candidate_mbr: cannot calculation Levenstein distance\n");
 	  free(n_score);
@@ -461,11 +461,11 @@ candidate_mbr(NODE **r_start, NODE **r_bottom, int r_stacknum, RecogProcess *r)
     }
   }
 
-  /* ·ë²Ì¤ò¥ê¥¹¥³¥¢ */
+  /* çµæœã‚’ãƒªã‚¹ã‚³ã‚¢ */
   qsort(table, r_stacknum, sizeof(NODE *),
 	(int (*)(const void *, const void *))mbr_cmp);
 
-  /* ÇÛÎó¤ò¥ê¥¹¥È¤ËÊÑ´¹ */
+  /* é…åˆ—ã‚’ãƒªã‚¹ãƒˆã«å¤‰æ› */
   *r_start = table[0];
   (*r_start)->prev = NULL;
   for(i = 1; i < r_stacknum; i++){

@@ -2,20 +2,20 @@
  * @file   gprune_heu.c
  * 
  * <JA>
- * @brief  ���祬����ʬ�۷׻�: Gaussian pruning (heuristic algorithm)
+ * @brief  混合ガウス分布計算: Gaussian pruning (heuristic algorithm)
  *
- * gprune_heu()�Ϻ��祬����ʬ�۽���η׻��롼����ΰ�ĤǤ���
- * heuristic pruning ��Ȥäƾ�̤Υ�����ʬ�ۤν��ϳ�Ψ�Τߤ��®�˵��ޤ���
- * Tied-mixture %HMM ���ѻ��� Julius ��GPRUNE_DEFAULT_HEURISTIC ��
- * �������Ƥ��뤫�����뤤��Julius�Υ��ץ���� "-gprune heuristic" ��
- * ���ꤹ�뤳�ȤǤ��δؿ������Ѥ���ޤ���
+ * gprune_heu()は混合ガウス分布集合の計算ルーチンの一つです．
+ * heuristic pruning を使って上位のガウス分布の出力確率のみを高速に求めます．
+ * Tied-mixture %HMM 使用時に Julius でGPRUNE_DEFAULT_HEURISTIC が
+ * 定義されているか，あるいはJuliusのオプション "-gprune heuristic" を
+ * 指定することでこの関数が使用されます．
  *
- * heuristic pruning �Ϥ��ޤ�Ȥ��Ƥ��ʤ���ˡ�ǡ���®���θ��̤�
- * ¾�μ�ˡ����֤Ǥ���
+ * heuristic pruning はあまり使われていない手法で，高速化の効果は
+ * 他の手法の中間です．
  * 
- * gprune_heu() �� outprob_init() �ˤ�äƤ��δؿ��ؤΥݥ��󥿤�
- * compute_gaussset �˥��åȤ���뤳�Ȥǻ��Ѥ���ޤ������Υݥ��󥿤�
- * calc_tied_mix() �ޤ��� calc_mix() ����ƤӽФ���ޤ���
+ * gprune_heu() は outprob_init() によってその関数へのポインタが
+ * compute_gaussset にセットされることで使用されます．このポインタが
+ * calc_tied_mix() または calc_mix() から呼び出されます．
  * </JA>
  * 
  * <EN>

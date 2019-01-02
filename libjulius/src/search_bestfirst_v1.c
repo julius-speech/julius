@@ -2,44 +2,44 @@
  * @file   search_bestfirst_v1.c
  * 
  * <JA>
- * @brief  ��2�ѥ���Viterbi�黻����Ӳ��⥹�����׻� (��®��)
+ * @brief  第2パスのViterbi演算および仮説スコア計算 (高速版)
  *
- * �����Ǥϡ���2�ѥ��ˤ�����õ����β����Viterbi�������ι����黻��
- * ��ñ��ȤΥȥ�ꥹ��³������Ӳ���Υ������׻���Ԥ��ؿ�����������
- * ���ޤ�. 
+ * ここでは，第2パスにおいて探索中の仮説のViterbiスコアの更新演算，
+ * 次単語とのトレリス接続，および仮説のスコア計算を行う関数が定義されて
+ * います. 
  *
- * ñ����³����ñ��ֲ��ǴĶ���¸���ϡ���®�� backscan ���르�ꥺ���
- * ��äƹԤ��ޤ�. ���Υե�������������Ƥ���ؿ��ϡ�config.h �ˤ�����
- * PASS2_STRICT_IWCD �� undef �Ǥ���Ȥ��˻��Ѥ���ޤ�. �դ˾嵭�� define
- * ����Ƥ���Ȥ��ϡ�search_bestfirst_v2.c �δؿ����Ѥ����ޤ�. 
+ * 単語接続部の単語間音素環境依存性は，高速な backscan アルゴリズムに
+ * よって行われます. このファイルで定義されている関数は，config.h において
+ * PASS2_STRICT_IWCD が undef であるときに使用されます. 逆に上記が define
+ * されているときは，search_bestfirst_v2.c の関数が用いられます. 
  *
- * Backscan ���르�ꥺ��Ǥϡ��ǥ����ǥ��󥰤ι�®���Τ��ᡤ
- * ��ñ��Ȥ�������ñ�����³���ˤĤ��ơ���ñ��ֲ��ǥ���ƥ����Ȥ��ٱ������
- * ��Ԥʤ��ޤ���
+ * Backscan アルゴリズムでは，デコーディングの高速化のため，
+ * 次単語とその前の単語の接続点について，「単語間音素コンテキストの遅延処理」
+ * を行ないます：
  * 
- *  -# �����������(next_word())�Ǥϡ���ñ��κǸ�β��Ǥα�����ƥ�����
- *     �Τߤ���θ�����. 
- *  -# ����ñ��֤δ����ʲ��ǴĶ���¸���ϡ����β��⤬���ä��󥹥��å���
- *     ���ä���⤦���� POP ���줿�Ȥ��� scan_word() �ˤƲ���Ʒ׻�����. 
+ *  -# 新仮説の生成(next_word())では，次単語の最後の音素の右コンテキスト
+ *     のみが考慮される. 
+ *  -# その単語間の完全な音素環境依存性は，その仮説がいったんスタックに
+ *     入った後もう一度 POP されたときに scan_word() にて改めて計算する. 
  *
- * �����������ˤϤ��٤Ƥ�����������Ф��ư�¸�׻���Ԥʤ������Ȥǥ�������
- * �⤯ POP ���줿����ˤĤ��ƤΤߺƷ׻���Ԥʤ��ޤ�. ���Τ��������
- * ��®������ޤ��������⥹�����׻�(next_word())�ˤ����Ƽ�ñ����³��ʬ��
- * �Ķ���¸������θ����ʤ��Τ�, õ����Υ������˸������������礬����ޤ�. 
+ * 仮説生成時にはすべての生成仮説に対して依存計算を行なず，あとでスコアが
+ * 高く POP された仮説についてのみ再計算を行ないます. このため処理が
+ * 高速化されますが，仮説スコア計算(next_word())において次単語接続部分の
+ * 環境依存性が考慮されないので, 探索中のスコアに誤差が生じる場合があります. 
  *
- * �����ˤĤ���:
+ * 実装について:
  * 
- *  -# next_word() �Ǥϡ���ñ��κǸ�β��ǤΤߤ򱦥���ƥ�����(=Ÿ����
- *     ñ��κǽ�β���)���θ�����Ѳ��������ȥ�ꥹ��³���ν��ϳ�Ψ�����. 
- *  -# scan_word() �Ǥϡ���ñ����ʬ�Ȥ⤦��������ñ��κǽ�β��Ǥ��Ѳ�
- *     ������scan ����. ���Τ��ῷñ����ʬ�����Ǥʤ������Τ⤦�첻�����ޤ�
- *     scan ���оݤȤʤ�. ���� "1-phoneme backscan" ��Ԥʤ�����,
- *     �Ʋ���Ρ��ɤϺǽ�HMM���֤������������� (NODE�ˤ����� g[]) �����Ǥʤ���
- *     ���� backscan ������(�⤦��������ñ��κǽ�β��Ǥμ���)�Υ�����
- *     ����¸���Ƥ���ɬ�פ����� (NODE �ˤ����� g_prev[]). 
+ *  -# next_word() では，次単語の最後の音素のみを右コンテキスト(=展開元
+ *     単語の最初の音素)を考慮して変化させ，トレリス接続点の出力確率を求める. 
+ *  -# scan_word() では，新単語部分ともう１つ前の単語の最初の音素を変化
+ *     させ，scan する. そのため新単語部分だけでなく，そのもう一音素前まで
+ *     scan の対象となる. この "1-phoneme backscan" を行なうため,
+ *     各仮説ノードは最終HMM状態の前向きスコア (NODEにおける g[]) だけでなく，
+ *     その backscan 開始点(もう１つ前の単語の最初の音素の手前)のスコア
+ *     も保存しておく必要がある (NODE における g_prev[]). 
  *
- * �ʤ��������ǤΤߤ���ʤ�ñ��Ǥ� backscan ��������ñ�춭�����Ťʤ뤳�Ȥ�
- * ��θ����ɬ�פ����뤿�ᡤ�����Ϥ⤦����ʣ���ˤʤ�. 
+ * なお，１音素のみからなる単語では backscan 開始点と単語境界が重なることを
+ * 考慮する必要があるため，実装はもう少し複雑になる. 
  * </JA>
  * 
  * <EN>
@@ -109,7 +109,7 @@
 #undef TCD			///< Define if want triphone debug messages
 
 /**********************************************************************/
-/************ ����Ρ��ɤδ������                         ************/
+/************ 仮説ノードの基本操作                         ************/
 /************ Basic functions for hypothesis node handling ************/
 /**********************************************************************/
 
@@ -124,9 +124,9 @@ static int request_num = 0;
 
 /** 
  * <JA>
- * ����Ρ��ɤ�ºݤ˥���夫���������. 
+ * 仮説ノードを実際にメモリ上から解放する. 
  * 
- * @param node [in] ����Ρ���
+ * @param node [in] 仮説ノード
  * </JA>
  * <EN>
  * Free a hypothesis node actually.
@@ -153,9 +153,9 @@ free_node_exec(NODE *node)
 
 /** 
  * <JA>
- * ����Ρ��ɤ����Ѥ�λ���ƥꥵ�������Ѥ˥��ȥå�����
+ * 仮説ノードの利用を終了してリサイクル用にストックする
  * 
- * @param node [in] ����Ρ���
+ * @param node [in] 仮説ノード
  * </JA>
  * <EN>
  * Stock an unused hypothesis node for recycle.
@@ -188,7 +188,7 @@ free_node(NODE *node)
 
 /** 
  * <JA>
- * �ꥵ�������ѥΡ��ɳ�Ǽ�ˤ���ˤ���.
+ * リサイクル用ノード格納庫を空にする.
  *
  * @param s [in] stack decoding work area
  * 
@@ -225,12 +225,12 @@ clear_stocker(StackDecode *s)
 
 /** 
  * <JA>
- * ����򥳥ԡ�����. 
+ * 仮説をコピーする. 
  * 
- * @param dst [out] ���ԡ���β���
- * @param src [in] ���ԡ����β���
+ * @param dst [out] コピー先の仮説
+ * @param src [in] コピー元の仮説
  * 
- * @return @a dst ���֤�. 
+ * @return @a dst を返す. 
  * </JA>
  * <EN>
  * Copy the content of node to another.
@@ -302,12 +302,12 @@ cpy_node(NODE *dst, NODE *src)
 
 /** 
  * <JA>
- * �����ʲ���Ρ��ɤ����դ���. �⤷��Ǽ�ˤ˰������Ѥ���ʤ��ʤä�
- * �Ρ��ɤ�������Ϥ��������Ѥ���. �ʤ���п����˳���դ���.
+ * 新たな仮説ノードを割り付ける. もし格納庫に以前試用されなくなった
+ * ノードがある場合はそれを再利用する. なければ新たに割り付ける.
  *
- * @param r [in] ǧ���������󥹥���
+ * @param r [in] 認識処理インスタンス
  * 
- * @return �����˳���դ���줿����Ρ��ɤؤΥݥ��󥿤��֤�. 
+ * @return 新たに割り付けられた仮説ノードへのポインタを返す. 
  * </JA>
  * <EN>
  * Allocate a new hypothesis node.  If the node stocker is not empty,
@@ -407,15 +407,15 @@ newnode(RecogProcess *r)
 
 
 /**********************************************************************/
-/************ �������ȥ�ꥹŸ�������ٷ׻�              ***************/
+/************ 前向きトレリス展開と尤度計算              ***************/
 /************ Expand trellis and update forward viterbi ***************/
 /**********************************************************************/
 
 /** 
  * <JA>
- * 1ñ��ʬ�Υȥ�ꥹ�׻��ѤΥ�����ꥢ�����.
+ * 1単語分のトレリス計算用のワークエリアを確保.
  * 
- * @param r [in] ǧ���������󥹥���
+ * @param r [in] 認識処理インスタンス
  * 
  * </JA>
  * <EN>
@@ -466,7 +466,7 @@ malloc_wordtrellis(RecogProcess *r)
 
 /** 
  * <JA>
- * 1ñ��ʬ�Υȥ�ꥹ�׻��ѤΥ�������ꥢ�����
+ * 1単語分のトレリス計算用のワークエアリアを解放
  * 
  * </JA>
  * <EN>
@@ -505,18 +505,18 @@ free_wordtrellis(StackDecode *dwrk)
 
 
 /**********************************************************************/
-/************ ��������������ٷ׻�                  *******************/
+/************ 仮説の前向き尤度計算                  *******************/
 /************ Compute forward score of a hypothesis *******************/
 /**********************************************************************/
 
 /** 
  * <JA>
- * �ǽ����֤ؤ����ܳ�Ψ�κ����ͤ���� (multipath)
+ * 最終状態への遷移確率の最大値を求める (multipath)
  * 
- * @param tr [in] ���ܹ���
- * @param state_num [in] ���ֿ�
+ * @param tr [in] 遷移行列
+ * @param state_num [in] 状態数
  * 
- * @return �ǽ����֤ؤ����ܳ�Ψ�ؤκ����ͤ��֤�. 
+ * @return 最終状態への遷移確率への最大値を返す. 
  * </JA>
  * <EN>
  * Get the maximum transition log probability to final state. (multipath)
@@ -544,11 +544,11 @@ get_max_out_arc(HTK_HMM_Trans *tr, int state_num)
 
 /** 
  * <JA>
- * ���Ǥν��Ͼ��֤ؤ����ܳ�Ψ�κ����ͤ����.  (multipath)
+ * 音素の出力状態への遷移確率の最大値を求める.  (multipath)
  * 
- * @param l [in] ����
+ * @param l [in] 音素
  * 
- * @return ���Ͼ��֤ؤ����ܳ�Ψ�κ����ͤ��֤�. 
+ * @return 出力状態への遷移確率の最大値を返す. 
  * </JA>
  * <EN>
  * Get the maximum transition log probability outside a phone. (multipath)
@@ -566,11 +566,11 @@ max_out_arc(HMM_Logical *l)
 
 /** 
  * <JA>
- * �Ǹ��1ñ����������ȥ�ꥹ��׻����ơ�ʸ��������������٤򹹿�����. 
+ * 最後の1単語の前向きトレリスを計算して，文仮説の前向き尤度を更新する. 
  * 
- * @param now [i/o] ʸ����
- * @param param [in] ���ϥѥ�᡼����
- * @param r [in] ǧ���������󥹥���
+ * @param now [i/o] 文仮説
+ * @param param [in] 入力パラメータ列
+ * @param r [in] 認識処理インスタンス
  * 
  * </JA>
  * <EN>
@@ -638,7 +638,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
   /* ----------------------- prepare HMM ----------------------- */
 
   if (ccd_flag) {
-    /* ľ���β��Ǥ�����С������ޤǤ����Τܤä� scan ���� */
+    /* 直前の音素があれば，そこまでさかのぼって scan する */
     /* if there are any last phone, enable backscan */
     if (now->last_ph == NULL) {
       /* initial score: now->g[] */
@@ -659,7 +659,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
   }
 #endif
 
-  /* scan �ϰ�ʬ��HMM����� */
+  /* scan 範囲分のHMMを準備 */
   /* prepare HMM of the scan range */
   word = now->seq[now->seqnum-1];
 
@@ -678,7 +678,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 	for (i=0;i<phmmlen - 2;i++) dwrk->has_sp[i] = FALSE;
       }
 
-      /* �ǽ�ñ��� last_ph �֤�ñ���triphone���θ */
+      /* 最終単語と last_ph 間の単語間triphoneを考慮 */
       /* consider cross-word context dependency between the last word and now->last_ph */
       wend = winfo->wseq[word][winfo->wlen[word]-1];
       ret = get_right_context_HMM(wend, now->last_ph->name, hmminfo);
@@ -729,14 +729,14 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
       jlog("\n");
 #endif
 
-      /* ñ��HMM���� */
+      /* 単語HMMを作る */
       /* make word HMM */
       whmm = new_make_word_hmm(hmminfo, dwrk->phmmseq, phmmlen, (enable_iwsp && hmminfo->multipath) ? dwrk->has_sp : NULL);
       if (whmm == NULL) {
 	j_internal_error("Error: failed to make word hmm for word #%d \"%s [%s]\"\n", word, winfo->wname[word], winfo->woutput[word]);
       }
       
-      /* backscan �ʤΤǡ��׻����� g[] ����ͤ� now->g_prev[] ����� */
+      /* backscan なので，計算前の g[] 初期値は now->g_prev[] を使用 */
       /* As backscan enabled, the initial forward score g[] is set by
 	 now->g_prev[] */
       for (t=0;t<peseqlen;t++) {
@@ -744,7 +744,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 
       }
       
-      /* �����Ѥ�g_prev���Ǽ����Ρ��ɰ��֤����� */
+      /* 次段用のg_prevを格納するノード位置を設定 */
       /* set where to store scores as new g_prev[] for the next backscan
 	 in the HMM */
       if (hmminfo->multipath) {
@@ -759,7 +759,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
       } else {
 	store_point = hmm_logical_state_num(dwrk->phmmseq[0]) - 2 - 1;
       }
-      /* scan���ľ��ñ��Ȥ���ñ���ޤ����������� */
+      /* scan中に直前単語とこの単語をまたぐ場所を設定 */
       /* set where is the connection point of the last word in the HMM */
       if (hmminfo->multipath) {
 	crossword_point = whmm->len - hmm_logical_state_num(dwrk->phmmseq[phmmlen-1]);
@@ -783,27 +783,27 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 #endif
 
       if (enable_iwsp && hmminfo->multipath) {
-	/* ɬ�פʤ�Х��硼�ȥݡ����򶴤߹�����֤���ꤹ�� */
+	/* 必要ならばショートポーズを挟み込む位置を指定する */
 	for(i=0;i<winfo->wlen[word];i++) {
 	  dwrk->has_sp[i] = FALSE;
 	}
 	dwrk->has_sp[winfo->wlen[word]-1] = TRUE;
       }
       
-      /* ñ��HMM���� */
+      /* 単語HMMを作る */
       /* make word HMM */
       whmm = new_make_word_hmm(hmminfo, winfo->wseq[word], winfo->wlen[word], (enable_iwsp && hmminfo->multipath) ? dwrk->has_sp : NULL);
       if (whmm == NULL) {
 	j_internal_error("Error: failed to make word hmm for word #%d \"%s [%s]\"\n", word, winfo->wname[word], winfo->woutput[word]);
       }
       
-      /* �׻����� g[] ����ͤ� now->g[] ����� */
+      /* 計算前の g[] 初期値は now->g[] を使用 */
       /* the initial forward score g[] is set by now->g[] */
       for (t=0;t<peseqlen;t++) {
 	dwrk->g[t]=now->g[t];
       }
       
-      /* �����Ѥ�g_prev���Ǽ����Ρ��ɰ��֤����� */
+      /* 次段用のg_prevを格納するノード位置を設定 */
       /* set where to store scores as new g_prev[] for the next backscan
 	 in the HMM */
       if (hmminfo->multipath) {
@@ -819,7 +819,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 	store_point = hmm_logical_state_num(winfo->wseq[word][0]) - 2 - 1;
       }
 
-      /* scan���ľ��ñ��Ȥ���ñ���ޤ������ϡ��ʤ� */
+      /* scan中に直前単語とこの単語をまたぐ場所は，なし */
       /* the connection point of the last word is not exist in the HMM */
       crossword_point = -1;
     }
@@ -827,21 +827,21 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
   } else {			/* ccd_flag == FALSE */
 
     if (enable_iwsp && hmminfo->multipath) {
-      /* ɬ�פʤ�Х��硼�ȥݡ����򶴤߹�����֤���ꤹ�� */
+      /* 必要ならばショートポーズを挟み込む位置を指定する */
       for(i=0;i<winfo->wlen[word];i++) {
 	dwrk->has_sp[i] = FALSE;
       }
       dwrk->has_sp[winfo->wlen[word]-1] = TRUE;
     }
 
-    /* ���ǴĶ����¸�ξ���ñ��˺ǽ�ñ��ʬ�� HMM ����� */
+    /* 音素環境非依存の場合は単純に最終単語分の HMM を作成 */
     /* for monophone: simple make HMM for the last word */
     whmm = new_make_word_hmm(hmminfo, winfo->wseq[word], winfo->wlen[word], (enable_iwsp && hmminfo->multipath) ? dwrk->has_sp : NULL);
     if (whmm == NULL) {
       j_internal_error("Error: failed to make word hmm for word #%d \"%s [%s]\"\n", word, winfo->wname[word], winfo->woutput[word]);
     }
 
-    /* �׻����� g[] ����ͤ� now->g[] ����� */
+    /* 計算前の g[] 初期値は now->g[] を使用 */
     /* the initial forward score g[] is set by now->g[] */
     for (t=0;t<peseqlen;t++) {
       dwrk->g[t]=now->g[t];
@@ -870,7 +870,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 
   /* ----------------------- do scan ----------------------- */
   
-  /* scan�������򸡺� -> startt��*/
+  /* scan開始点を検索 -> starttへ*/
   /* search for the start frame -> set to startt */
   for(t = peseqlen-1; t >=0 ; t--) {
     if (
@@ -910,7 +910,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 #endif
   }
 
-  /* �Хåե��ݥ��󥿽���� */
+  /* バッファポインタ初期化 */
   tn = 0; tl = 1;
 
 #ifdef GRAPHOUT_PRECISE_BOUNDARY
@@ -926,7 +926,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
     /* Below initialization is not needed on multipath version, since
        the actual viterbi will begin at frame 0 in multipath mode in main loop */
     
-    /* ���� [startt] ����ͤ����� */
+    /* 時間 [startt] 上の値を初期化 */
     /* initialize scores on frame [startt] */
     for(i=0;i<wordhmmnum-1;i++) dwrk->wordtrellis[tn][i] = LOG_ZERO;
     if (dwrk->g[startt] <= LOG_ZERO)
@@ -965,27 +965,27 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
   
   endt = startt;
 
-  /* �ᥤ��롼��: startt ����Ϥޤ� 0 �˸����ä� Viterbi �׻� */
+  /* メインループ: startt から始まり 0 に向かって Viterbi 計算 */
   /* main loop: start from [startt], and compute Viterbi toward [0] */
   for(t = hmminfo->multipath ? startt : startt - 1; t >= 0; t--) {
     
-    /* wordtrellis�Υ�����ꥢ�򥹥�å� */
+    /* wordtrellisのワークエリアをスワップ */
     i = tn; tn = tl; tl = i;
     
     node_exist_p = FALSE;	/* TRUE if there is at least 1 survived node in this frame */
 
     if (hmminfo->multipath) {
 
-      /* ü�ΥΡ��� [t][wordhmmnum-1]�� g[] �򻲾Ȥ��� */
+      /* 端のノード [t][wordhmmnum-1]は g[] を参照する */
       /* the edge node [t][wordhmmnum-1] is equal to g[] */
 
-      /* �Ρ��� [t][wordhmmnum-2..0] �ˤĤ��ƥȥ�ꥹ��׻� */
+      /* ノード [t][wordhmmnum-2..0] についてトレリスを計算 */
       /* expand trellis for node [t][wordhmmnum-2..0] */
       tmpmax_store = LOG_ZERO;
 
     } else {
     
-      /* ü�ΥΡ��� [t][wordhmmnum-1]�ϡ��������� �� g[]�ι⤤���ˤʤ� */
+      /* 端のノード [t][wordhmmnum-1]は，内部遷移 か g[]の高い方になる */
       /* the edge node [t][wordhmmnum-1] is either internal transitin or g[] */
       tmptmp = LOG_ZERO;
       for (ac=whmm->state[wordhmmnum-1].ac;ac;ac=ac->next) {
@@ -1018,7 +1018,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 #endif
       }
 
-      /* ü�ΥΡ��ɤΥ���������٥����ץ����å�: ���������ʤ���Ȥ� */
+      /* 端のノードのスコアエンベロープチェック: 一定幅外なら落とす */
       /* check if the edge node is within score envelope */
       if (
 #ifdef SCAN_BEAM
@@ -1040,14 +1040,14 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 
     } /* end of ~multipath */
 
-    /* �Ρ��� [t][wordhmmnum-2..0] �ˤĤ��ƥȥ�ꥹ��׻� */
+    /* ノード [t][wordhmmnum-2..0] についてトレリスを計算 */
     /* expand trellis for node [t][wordhmmnum-2..0] */
     for(i=wordhmmnum-2;i>=0;i--) {
 
       if (ccd_flag) {
 
-	/* ����ѥ��Ⱥ��ॹ���� tmpmax �򸫤Ĥ��� */
-	/* tmpmax2 �ϼ����� g_prev[] �Τ���κ�����(�������ܤ������������) */
+	/* 最尤パスと最尤スコア tmpmax を見つける */
+	/* tmpmax2 は次回用 g_prev[] のための最大値(自己遷移を除いた最大値) */
 	/* find most likely path and the max score 'tmpmax' */
 	/* 'tmpmax2' is max score excluding self transition, for next g_prev[] */
 	if (! hmminfo->multipath) {
@@ -1066,7 +1066,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 	    score1 = dwrk->wordtrellis[tl][ac->arc] + ac->a;
 	  }
 	  if (i <= crossword_point && ac->arc > crossword_point) {
-	    /* �����ñ���ۤ������� (backscan �¹Ի�) */
+	    /* これは単語を越える遷移 (backscan 実行時) */
 	    /* this is a transition across word (when backscan is enabled) */
 	    score1 += now->lscore; /* add LM score */
 	  }
@@ -1087,7 +1087,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 	  }
 	}
 
-	/* ����������٥����ץ����å�: ���������ʤ���Ȥ� */
+	/* スコアエンベロープチェック: 一定幅外なら落とす */
 	/* check if score of this node is within the score envelope */
 	if (
 #ifdef SCAN_BEAM
@@ -1143,7 +1143,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 	
       } else {			/* not triphone */
 
-	/* backscan ̵��: store_point, crossword_point ��̵�ط� */
+	/* backscan 無し: store_point, crossword_point は無関係 */
 	/* no backscan: store_point, crossword_point ignored */
 	tmpmax = LOG_ZERO;
 	if (hmminfo->multipath) {
@@ -1167,7 +1167,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 	  }
 	}
 
-	/* ����������٥����ץ����å�: ���������ʤ���Ȥ� */
+	/* スコアエンベロープチェック: 一定幅外なら落とす */
 	/* check if score of this node is within the score envelope */
 	if (
 #ifdef SCAN_BEAM
@@ -1212,7 +1212,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
       }
     } /* end of node loop */
 
-    /* ���� t ��Viterbi�׻���λ. ��������������scan����ñ��λ�ü */
+    /* 時間 t のViterbi計算終了. 前向きスコアはscanした単語の始端 */
     /* Viterbi end for frame [t].  the forward score is the score of word
        beginning scanned */
     now->g[t] = dwrk->wordtrellis[tn][0];
@@ -1224,7 +1224,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 #endif
 
     if (hmminfo->multipath) {
-      /* triphone ��, ���ʤΤ���� store_point �Υǡ�����g_prev����¸ */
+      /* triphone 時, 次段のために store_point のデータをg_prevに保存 */
       /* store the scores crossing the store_point to g_prev, for next scan */
       if (ccd_flag) {
 	/* the max arc crossing the store_point always selected as tmpmax_score */ 
@@ -1237,10 +1237,10 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
     /* store the number of last computed frame */
     if (node_exist_p) endt = t;
     
-    /* scan����ñ����裱�ѥ��Ǥλ�ü��������ޤ� t ���ʤ�Ǥ��ꡤ����
-       ���� t �ˤ����ƥ���������٥����פˤ�ä������Ĥä��Ρ��ɤ���Ĥ�
-       ̵���ä��ʤ��,���Υե졼��Ƿ׻����Ǥ��ڤꤽ��ʾ���([0..t-1])��
-       �׻����ʤ� */
+    /* scanした単語の第１パスでの始端時刻より先まで t が進んでおり，かつ
+       この t においてスコアエンベロープによって生き残ったノードが一つも
+       無かったならば,このフレームで計算を打ち切りそれ以上先([0..t-1])は
+       計算しない */
     /* if frame 't' already reached the beginning frame of scanned word
        in 1st pass and no node was survived in this frame (all nodes pruned
        by score envelope), terminate computation at this frame and
@@ -1268,7 +1268,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
  end_of_scan:
 
   if (hmminfo->multipath) {
-    /* �������������κǽ��ͤ�׻� (���� 0 ������� 0 �ؤ�����) */
+    /* 前向きスコアの最終値を計算 (状態 0 から時間 0 への遷移) */
     /* compute the total forward score (transition from state 0 to frame 0 */
     if (endt == 0) {
       tmpmax = LOG_ZERO;
@@ -1282,13 +1282,13 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
     }
   }
   
-  /* ���� backscan �Τ���ξ����Ǽ */
+  /* 次回 backscan のための情報格納 */
   /* store data for next backscan */
   if (ccd_flag) {
     if (store_point == (hmminfo->multipath ? wordhmmnum - 2 : wordhmmnum - 1)) {
-      /* last_ph̵��������ñ��β���Ĺ=1�ξ�硢����� scan_word() ��
-	 ñ�����Τ��⤦���ٺƷ׻������. ���ξ��,
-	 g_prev �ϡ�����scan_word�򳫻Ϥ������Υ�����������Ƥ���ɬ�פ����� */
+      /* last_ph無し，かつ単語の音素長=1の場合、次回の scan_word() で
+	 単語全体がもう一度再計算される. この場合,
+	 g_prev は，このscan_wordを開始する前のスコアを入れておく必要がある */
       /* if there was no 'last_ph' and the scanned word consists of only
 	 1 phone, the whole word should be re-computed in the future scan_word().
 	 So the next 'g_prev[]' should be the initial forward scores
@@ -1306,7 +1306,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
       }
     }
 #endif
-    /* ����Τ���� now->last_ph �򹹿� */
+    /* 次回のために now->last_ph を更新 */
     /* update 'now->last_ph' for future scan_word() */
     if (back_rescan) {
       now->last_ph = dwrk->phmmseq[0];
@@ -1321,7 +1321,7 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 #ifdef GRAPHOUT_PRECISE_BOUNDARY
   if (! hmminfo->multipath) {
     if (r->graphout) {
-      /* ����� next_word �Ѥ˶��������Ĵ�� */
+      /* 次回の next_word 用に境界情報を調整 */
       /* proceed word boundary for one step for next_word */
       now->wordend_frame[peseqlen-1] = now->wordend_frame[0];
       now->wordend_gscore[peseqlen-1] = now->wordend_gscore[0];
@@ -1350,20 +1350,20 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
 
 
 /**************************************************************************/
-/*** �������Ÿ���ȥҥ塼�ꥹ�ƥ��å���Ҥ������Υ�������׻�           ***/
+/*** 新仮説の展開とヒューリスティックを繋いだ全体スコアを計算           ***/
 /*** Expand new hypothesis and compute the total score (with heuristic) ***/
 /**************************************************************************/
 
 /** 
  * <JA>
- * Ÿ��������˼�ñ�����³���ƿ������������������. ��ñ���ñ��ȥ�ꥹ���
- * ���������������³�����ᡤ���⥹������׻�����. 
+ * 展開元仮説に次単語を接続して新しい仮説を生成する. 次単語の単語トレリス上の
+ * スコアから最尤接続点を求め，仮説スコアを計算する. 
  * 
- * @param now [in] Ÿ��������
- * @param new [out] �������������줿���⤬��Ǽ�����
- * @param nword [in] ��³���뼡ñ��ξ���
- * @param param [in] ���ϥѥ�᡼����
- * @param r [in] ǧ���������󥹥���
+ * @param now [in] 展開元仮説
+ * @param new [out] 新たに生成された仮説が格納される
+ * @param nword [in] 接続する次単語の情報
+ * @param param [in] 入力パラメータ列
+ * @param r [in] 認識処理インスタンス
  *
  * </JA>
  * <EN>
@@ -1412,7 +1412,7 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
   word = nword->id;
   lastword=now->seq[now->seqnum-1];
 
-  /* ñ���¤ӡ�DFA�����ֹ桢���쥹������Ѿ������� */
+  /* 単語並び、DFA状態番号、言語スコアを継承・更新 */
   /* inherit and update word sequence, DFA state and total LM score */
   for (i=0;i< now->seqnum;i++){	
     new->seq[i] = now->seq[i];
@@ -1432,8 +1432,8 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
   
   if (ccd_flag) {
     
-    /* Ÿ��ñ�����³���β���HMM��newphone�˥��åȤ���. 
-       ������ now �Ȥ�ñ��֤β��ǴĶ���¸�����θ���� */
+    /* 展開単語の接続点の音素HMMをnewphoneにセットする. 
+       元仮説 now との単語間の音素環境依存性を考慮する */
     /* set the triphone at the connection point to 'newphone', considering
        cross-word context dependency to 'now' */
     newphone = get_right_context_HMM(winfo->wseq[word][winfo->wlen[word]-1], now->last_ph->name, hmminfo);
@@ -1448,14 +1448,14 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
       newphone = winfo->wseq[word][winfo->wlen[word]-1];
     }
     
-    /* �������scan����������ü����HMM -> �������ľ������HMM */
+    /* 元仮説をscanした時の末端音素HMM -> 新仮説の直前音素HMM */
     /* inherit last_ph */
     new->last_ph = now->last_ph;
     if (hmminfo->multipath) {
       new->last_ph_sp_attached = now->last_ph_sp_attached;
     }
     
-    /* backscan����³�ݥ���ȤΥ����� g_prev[] �򥳥ԡ� */
+    /* backscan用接続ポイントのスコア g_prev[] をコピー */
     /* copy g_prev[] that are scores at backscan connection point */
     for (t=0;t<peseqlen;t++) {
       new->g_prev[t] = now->g_prev[t];
@@ -1463,24 +1463,24 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
     
   } else {			/* not triphone */
     
-    /* Ÿ��ñ�����³(=��ü)�β���HMM��newphone�˥��å� */
+    /* 展開単語の接続(=終端)の音素HMMをnewphoneにセット */
     /* set the phone at the connection point to 'newphone' */
     newphone = winfo->wseq[word][winfo->wlen[word]-1];
   }
 
 
-  /* ��³��Ψ��Ϳ���� */
+  /* 接続確率を与える */
   new->lscore = nword->lscore;
 
   if (! hmminfo->multipath) {
-    /* a_value: ��³�������ܳ�Ψ */
+    /* a_value: 接続点の遷移確率 */
     /* a_value: transition probability of connection point */
     i = hmm_logical_state_num(newphone);
     a_value = (hmm_logical_trans(newphone))->a[i-2][i-1];
   }
 
   /***************************************************************************/
-  /* ������(�裲�ѥ�),�������(�裱�ѥ�)�ȥ�ꥹ����³��������³���򸫤Ĥ��� */
+  /* 前向き(第２パス),後ろ向き(第１パス)トレリスを接続し最尤接続点を見つける */
   /* connect forward/backward trellis to look for the best connection time   */
   /***************************************************************************/
 
@@ -1492,7 +1492,7 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
   }
 
   /*-----------------------------------------------------------------*/
-  /* ñ��ȥ�ꥹ��õ����, ��ñ��κ�����³����ȯ������ */
+  /* 単語トレリスを探して, 次単語の最尤接続点を発見する */
   /* determine the best connection time of the new word, seeking the word
      trellis */
   /*-----------------------------------------------------------------*/
@@ -1511,7 +1511,7 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
   new->tre = NULL;
 
   if (r->lmtype == LM_DFA && !r->config->pass2.looktrellis_flag) {
-    /* ���٤ƤΥե졼��ˤ錄�äƺ����õ�� */
+    /* すべてのフレームにわたって最尤を探す */
     /* search for best trellis word throughout all frame */
     for(t = startt; t >= 0; t--) {
       if (new->g[t] <= LOG_ZERO) continue;
@@ -1538,8 +1538,8 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
 
   }
       
-  /* ����Ÿ��ñ��Υȥ�ꥹ��ν�ü���֤�����Τߥ�����󤹤�
-     �����Ϣ³����¸�ߤ���ե졼��ˤĤ��ƤΤ߷׻� */
+  /* この展開単語のトレリス上の終端時間の前後のみスキャンする
+     前後に連続して存在するフレームについてのみ計算 */
   /* search for best trellis word only around the estimated time */
   /* 1. search forward */
   for(t = (nword->tre)->endtime; t >= 0; t--) {
@@ -1587,18 +1587,18 @@ next_word(NODE *now, NODE *new,	NEXTWORD *nword, HTK_Param *param, RecogProcess 
 }
 
 /**********************************************************************/
-/********** ������������                 ****************************/
+/********** 初期仮説の生成                 ****************************/
 /********** Generate an initial hypothesis ****************************/
 /**********************************************************************/
 
 /** 
  * <JA>
- * Ϳ����줿ñ�줫�����������������. 
+ * 与えられた単語から初期仮説を生成する. 
  * 
- * @param new [out] �������������줿���⤬��Ǽ�����
- * @param nword [in] �������ñ��ξ���
- * @param param [in] ���ϥѥ�᡼����
- * @param r [in] ǧ���������󥹥���
+ * @param new [out] 新たに生成された仮説が格納される
+ * @param nword [in] 初期仮説単語の情報
+ * @param param [in] 入力パラメータ列
+ * @param r [in] 認識処理インスタンス
  * 
  * </JA>
  * <EN>
@@ -1682,12 +1682,12 @@ start_word(NODE *new, NEXTWORD *nword, HTK_Param *param, RecogProcess *r)
 
 /** 
  * <JA>
- * ��ü��������ü�ޤ�ã����ʸ����κǽ�Ū�ʥ������򥻥åȤ���. 
+ * 終端処理：終端まで達した文仮説の最終的なスコアをセットする. 
  * 
- * @param now [in] ��ü�ޤ�ã��������
- * @param new [out] �ǽ�Ū��ʸ����Υ��������Ǽ������ؤΥݥ���
- * @param param [in] ���ϥѥ�᡼����
- * @param r [in] ǧ���������󥹥���
+ * @param now [in] 終端まで達した仮説
+ * @param new [out] 最終的な文仮説のスコアを格納する場所へのポインタ
+ * @param param [in] 入力パラメータ列
+ * @param r [in] 認識処理インスタンス
  * 
  * </JA>
  * <EN>
@@ -1707,7 +1707,7 @@ void
 last_next_word(NODE *now, NODE *new, HTK_Param *param, RecogProcess *r)
 {
   cpy_node(new, now);
-  /* �ǽ������������� */
+  /* 最終スコアを設定 */
   /* update the final score */
   if (r->am->hmminfo->multipath) {
     new->score = now->final_g;

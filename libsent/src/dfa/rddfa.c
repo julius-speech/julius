@@ -2,7 +2,7 @@
  * @file   rddfa.c
  * 
  * <JA>
- * @brief  DFAй╦к║╓нфи╓ъ╧Ч╓ъ
+ * @brief  DFAФ√┤ФЁ∙Ц│╝Х╙╜Ц│©Х╬╪Ц│©
  * </JA>
  * 
  * <EN>

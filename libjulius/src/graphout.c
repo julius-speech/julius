@@ -2,7 +2,7 @@
  * @file   graphout.c
  * 
  * <JA>
- * @brief  ñ���ƥ���������.
+ * @brief  単語ラティスの生成.
  * </JA>
  * 
  * <EN>
@@ -36,9 +36,9 @@ static WCHMM_INFO *wchmm_local;	///< Local copy, just for debug
 
 /** 
  * <JA>
- * ����ս��Ϥ���������. ���ߤϥǥХå��ѽ����Τ�. 
+ * グラフ出力を初期化する. 現在はデバッグ用処理のみ. 
  * 
- * @param wchmm [in] �ڹ�¤������
+ * @param wchmm [in] 木構造化辞書
  * </JA>
  * <EN>
  * Initialize data for graphout.
@@ -64,21 +64,21 @@ wordgraph_init(WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * �����ñ��򿷤��������������Υݥ��󥿤��֤�. 
+ * グラフ単語を新たに生成し，そのポインタを返す. 
  * 
- * @param wid [in] ñ��ID
- * @param headphone [in] ñ����Ƭ�β���
- * @param tailphone [in] ñ����ü�β���
- * @param leftframe [in] ��ü����(�ե졼��)
- * @param rightframe [in] ��ü����(�ե졼��)
- * @param fscore_head [in] ��ü�Ǥ���ʬʸ������ (g + h)
- * @param fscore_tail [in] ��ü�Ǥ���ʬʸ������ (g + h)
- * @param gscore_head [in] ��Ƭ�Ǥ�������ü�����Viterbi������ (g)
- * @param gscore_tail [in] �����Ǥ�������ü�����Viterbi������ (g)
- * @param lscore [in] ñ��θ��쥹���� (Julian �Ǥ��ͤ˰�̣�ʤ�)
- * @param cm [in] ñ��ο����٥����� (õ������ưŪ�˷׻����줿���)
+ * @param wid [in] 単語ID
+ * @param headphone [in] 単語先頭の音素
+ * @param tailphone [in] 単語末端の音素
+ * @param leftframe [in] 始端時刻(フレーム)
+ * @param rightframe [in] 終端時刻(フレーム)
+ * @param fscore_head [in] 始端での部分文スコア (g + h)
+ * @param fscore_tail [in] 終端での部分文スコア (g + h)
+ * @param gscore_head [in] 先頭での入力末端からのViterbiスコア (g)
+ * @param gscore_tail [in] 末尾での入力末端からのViterbiスコア (g)
+ * @param lscore [in] 単語の言語スコア (Julian では値に意味なし)
+ * @param cm [in] 単語の信頼度スコア (探索時に動的に計算されたもの)
  * 
- * @return �������������줿�����ñ��ؤΥݥ���
+ * @return 新たに生成されたグラフ単語へのポインタ
  * </JA>
  * <EN>
  * Allocate a new graph word and return a new pointer to it.
@@ -163,9 +163,9 @@ wordgraph_new(WORD_ID wid, HMM_Logical *headphone, HMM_Logical *tailphone, int l
 
 /** 
  * <JA>
- * ���륰���ñ��Υ����ΰ���������. 
+ * あるグラフ単語のメモリ領域を解放する. 
  * 
- * @param wg [in] �����ñ��
+ * @param wg [in] グラフ単語
  * </JA>
  * <EN>
  * Free a graph word.
@@ -192,11 +192,11 @@ wordgraph_free(WordGraph *wg)
 
 /** 
  * <JA>
- * ���륰���ñ��κ�����ƥ����Ȥ˿����ʥ����ñ����ɲä���. 
+ * あるグラフ単語の左コンテキストに新たなグラフ単語を追加する. 
  * 
- * @param wg [i/o] �ɲ���Υ����ñ��
- * @param left [in] @a wg �κ�����ƥ����ȤȤ����ɲä���륰���ñ��
- * @param lscore [in] ��³���쥹����
+ * @param wg [i/o] 追加先のグラフ単語
+ * @param left [in] @a wg の左コンテキストとして追加されるグラフ単語
+ * @param lscore [in] 接続言語スコア
  * </JA>
  * <EN>
  * Add a graph word as a new left context.
@@ -227,11 +227,11 @@ wordgraph_add_leftword(WordGraph *wg, WordGraph *left, LOGPROB lscore)
 
 /** 
  * <JA>
- * ���륰���ñ��α�����ƥ����Ȥ˿����ʥ����ñ����ɲä���. 
+ * あるグラフ単語の右コンテキストに新たなグラフ単語を追加する. 
  * 
- * @param wg [i/o] �ɲ���Υ����ñ��
- * @param right [in] @a wg �α�����ƥ����ȤȤ����ɲä���륰���ñ��
- * @param lscore [in] ��³���쥹����
+ * @param wg [i/o] 追加先のグラフ単語
+ * @param right [in] @a wg の右コンテキストとして追加されるグラフ単語
+ * @param lscore [in] 接続言語スコア
  * </JA>
  * <EN>
  * Add a graph word as a new right context.
@@ -264,16 +264,16 @@ wordgraph_add_rightword(WordGraph *wg, WordGraph *right, LOGPROB lscore)
 
 /** 
  * <JA>
- * ������ƥ����Ȥ˻��ꤷ�������ñ�줬���ˤ��뤫�ɤ��������å�����
- * �ʤ�����ɲä���. 
+ * 左コンテキストに指定したグラフ単語が既にあるかどうかチェックし，
+ * なければ追加する. 
  * 
- * @param wg [i/o] Ĵ�٤륰���ñ��
- * @param left [in] ���Υ����ñ�줬 @a wg �κ�����ƥ����Ȥˤ��뤫�����å�����
- * @param lscore [in] ��³���쥹����
+ * @param wg [i/o] 調べるグラフ単語
+ * @param left [in] このグラフ単語が @a wg の左コンテキストにあるかチェックする
+ * @param lscore [in] 接続言語スコア
  * 
- * @return Ʊ�������ñ�줬������ƥ����Ȥ�¸�ߤ����������ɲä������� TRUE,
- * ������ƥ����ȤȤ���Ʊ�������ñ�줬���Ǥ�¸�ߤ��Ƥ����ɲä��ʤ��ä�����
- * FALSE���֤�. 
+ * @return 同じグラフ単語が左コンテキストに存在せず新たに追加した場合は TRUE,
+ * 左コンテキストとして同じグラフ単語がすでに存在しており追加しなかった場合は
+ * FALSEを返す. 
  * </JA>
  * <EN>
  * Check for the left context if the specified graph already exists, and
@@ -316,16 +316,16 @@ wordgraph_check_and_add_leftword(WordGraph *wg, WordGraph *left, LOGPROB lscore)
 
 /** 
  * <JA>
- * ������ƥ����Ȥ˻��ꤷ�������ñ�줬���ˤ��뤫�ɤ��������å�����
- * �ʤ�����ɲä���. 
+ * 右コンテキストに指定したグラフ単語が既にあるかどうかチェックし，
+ * なければ追加する. 
  * 
- * @param wg [i/o] Ĵ�٤륰���ñ��
- * @param right [in] ���Υ����ñ�줬 @a wg �α�����ƥ����Ȥˤ��뤫�����å�����
- * @param lscore [in] ��³���쥹����
+ * @param wg [i/o] 調べるグラフ単語
+ * @param right [in] このグラフ単語が @a wg の右コンテキストにあるかチェックする
+ * @param lscore [in] 接続言語スコア
  * 
- * @return Ʊ�������ñ�줬������ƥ����Ȥ�¸�ߤ����������ɲä������� TRUE,
- * ������ƥ����ȤȤ���Ʊ�������ñ�줬���Ǥ�¸�ߤ��Ƥ����ɲä��ʤ��ä�����
- * FALSE���֤�. 
+ * @return 同じグラフ単語が右コンテキストに存在せず新たに追加した場合は TRUE,
+ * 右コンテキストとして同じグラフ単語がすでに存在しており追加しなかった場合は
+ * FALSEを返す. 
  * </JA>
  * <EN>
  * Check for the right context if the specified graph already exists, and
@@ -368,13 +368,13 @@ wordgraph_check_and_add_rightword(WordGraph *wg, WordGraph *right, LOGPROB lscor
 
 /** 
  * <JA>
- * Ʊ�쥰���ñ��Υޡ�������,ñ�쥰��դΥ���ƥ����Ȥ������̤�ñ�쥰��դ�
- * �ɲä���. 
+ * 同一グラフ単語のマージ時に,単語グラフのコンテキストを全て別の単語グラフに
+ * 追加する. 
  * 
- * @param dst [i/o] �ɲ���Υ����ñ��
- * @param src [in] �ɲø��Υ����ñ��
+ * @param dst [i/o] 追加先のグラフ単語
+ * @param src [in] 追加元のグラフ単語
  * 
- * @return 1�ĤǤ⿷�����ɲä����� TRUE, 1�Ĥ��ɲä���ʤ���� FALSE ���֤�. 
+ * @return 1つでも新たに追加されれば TRUE, 1つも追加されなければ FALSE を返す. 
  * </JA>
  * <EN>
  * Add all the context words to other for merging the same two graph words.
@@ -478,12 +478,12 @@ merge_contexts(WordGraph *dst, WordGraph *src)
 
 /** 
  * <JA>
- * ������ƥ����Ⱦ�Τ��륰���ñ����̤Υ����ñ����֤�������. 
+ * 左コンテキスト上のあるグラフ単語を別のグラフ単語に置き換える. 
  * 
- * @param wg [i/o] ����оݤΥ����ñ��
- * @param from [in] �֤��������Ȥʤ뺸����ƥ����Ⱦ�Υ����ñ��
- * @param to [in] �֤�������Υ����ñ��
- * @param lscore [in] ��³���쥹����
+ * @param wg [i/o] 操作対象のグラフ単語
+ * @param from [in] 置き換え元となる左コンテキスト上のグラフ単語
+ * @param to [in] 置き換え先のグラフ単語
+ * @param lscore [in] 接続言語スコア
  * </JA>
  * <EN>
  * Substitute a word at left context of a graph word to another.
@@ -516,12 +516,12 @@ swap_leftword(WordGraph *wg, WordGraph *from, WordGraph *to, LOGPROB lscore)
 
 /** 
  * <JA>
- * ������ƥ����Ⱦ�Τ��륰���ñ����̤Υ����ñ����֤�������. 
+ * 右コンテキスト上のあるグラフ単語を別のグラフ単語に置き換える. 
  * 
- * @param wg [i/o] ����оݤΥ����ñ��
- * @param from [in] �֤��������Ȥʤ뱦����ƥ����Ⱦ�Υ����ñ��
- * @param to [in] �֤�������Υ����ñ��
- * @param lscore [in] ��³���쥹����
+ * @param wg [i/o] 操作対象のグラフ単語
+ * @param from [in] 置き換え元となる右コンテキスト上のグラフ単語
+ * @param to [in] 置き換え先のグラフ単語
+ * @param lscore [in] 接続言語スコア
  * </JA>
  * <EN>
  * Substitute a word at right context of a graph word to another.
@@ -554,9 +554,9 @@ swap_rightword(WordGraph *wg, WordGraph *from, WordGraph *to, LOGPROB lscore)
 
 /** 
  * <JA>
- * ������ƥ����ȥꥹ����ν�ʣ������
+ * 左コンテキストリスト中の重複を除去する
  * 
- * @param wg [i/o] ����оݤΥ����ñ��
+ * @param wg [i/o] 操作対象のグラフ単語
  * </JA>
  * <EN>
  * Delete duplicate entries in left context list of a graph word.
@@ -590,9 +590,9 @@ uniq_leftword(WordGraph *wg)
 
 /** 
  * <JA>
- * ������ƥ����ȥꥹ����ν�ʣ������
+ * 右コンテキストリスト中の重複を除去する
  * 
- * @param wg [i/o] ����оݤΥ����ñ��
+ * @param wg [i/o] 操作対象のグラフ単語
  * </JA>
  * <EN>
  * Delete duplicate entries in right context list of a graph word.
@@ -626,9 +626,9 @@ uniq_rightword(WordGraph *wg)
 
 /** 
  * <JA>
- * �����Υ����ñ��Υ���ƥ����ȥꥹ�Ȥ��餽�Υ����ñ�켫�Ȥ�õ��. 
+ * 左右のグラフ単語のコンテキストリストからそのグラフ単語自身を消去する. 
  * 
- * @param wg [in] ����оݤΥ����ñ��
+ * @param wg [in] 操作対象のグラフ単語
  * </JA>
  * <EN>
  * Remove the specified word graph from contexts of all left and right words.
@@ -684,9 +684,9 @@ wordgraph_remove_context(WordGraph *wg)
 
 /** 
  * <JA>
- * �����ñ��κ����Υ���ƥ����Ȥ��󥯤���. 
+ * グラフ単語の左右のコンテキストをリンクする. 
  * 
- * @param wg [in] ����оݤΥ����ñ��
+ * @param wg [in] 操作対象のグラフ単語
  * </JA>
  * <EN>
  * link all words at the context of the graph word.
@@ -721,11 +721,11 @@ wordgraph_link_context(WordGraph *wg)
 
 /** 
  * <JA>
- * ñ�쥰�����κ���ޡ������դ���ñ���������. 
+ * 単語グラフ中の削除マークの付いた単語を削除する. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
  * 
- * @return ������줿ñ��ο�
+ * @return 削除された単語の数
  * </JA>
  * <EN>
  * Actually erase the marked words in word graph.
@@ -766,12 +766,12 @@ wordgraph_exec_erase(WordGraph **rootp)
 
 /** 
  * <JA>
- * ����ե������� qsort ������Хå�
+ * グラフソート用 qsort コールバック
  * 
- * @param x [in] ���ǣ�
- * @param y [in] ���ǣ�
+ * @param x [in] 要素１
+ * @param y [in] 要素２
  * 
- * @return x > y �ʤ� 1, x < y �ʤ� -1, x = y �ʤ� 0 ���֤�. 
+ * @return x > y なら 1, x < y なら -1, x = y なら 0 を返す. 
  * </JA>
  * <EN>
  * qsort callback for word sorting.
@@ -800,10 +800,10 @@ compare_lefttime(WordGraph **x, WordGraph **y)
 
 /** 
  * <JA>
- * ñ�쥰��������ñ��򳫻ϻ��ֽ�˥����Ȥ����̤��ֹ��Ĥ���. 
+ * 単語グラフ内の全単語を開始時間順にソートし，通し番号をつける. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ��󥿳�Ǽ���
- * @param r [i/o] ǧ���������󥹥���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ格納場所
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * Sort words by left time and annotate sequencial id for them in a word graph.
@@ -853,9 +853,9 @@ wordgraph_sort_and_annotate_id(WordGraph **rootp, RecogProcess *r)
 
 /** 
  * <JA>
- * ñ�쥰��������ñ������Ʋ�������. 
+ * 単語グラフ内の全単語を全て解放する. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
  * </JA>
  * <EN>
  * Free all the words in a word graph.
@@ -887,13 +887,13 @@ wordgraph_clean(WordGraph **rootp)
 
 /** 
  * <JA>
- * ñ�쥰��տ������åȤΤ���� qsort �ѥ�����Хå�. fscore_head ��
- * �߽�˥����Ȥ���. 
+ * 単語グラフ深さカットのための qsort 用コールバック. fscore_head で
+ * 降順にソートする. 
  * 
- * @param x [in] ���ǣ�
- * @param y [in] ���ǣ�
+ * @param x [in] 要素１
+ * @param y [in] 要素２
  * 
- * @return qsort �˽स���֤���
+ * @return qsort に準じた返り値
  * </JA>
  * <EN>
  * Callback function for qsort to do word graph depth cutting. Graph
@@ -915,13 +915,13 @@ compare_beam(WordGraph **x, WordGraph **y)
 
 /** 
  * <JA>
- * @brief  ����ո�������Σ������ñ�쥰��դ����. 
+ * @brief  グラフ後処理その１：初期単語グラフの抽出. 
  * 
- * õ������������줿ñ����佸�礫�顤��ü����Ϥޤ�ѥ����̵��leafñ���
- * ������뤳�Ȥǽ��ñ�쥰��դ���Ф���. 
+ * 探索中に生成された単語候補集合から，末端から始まるパス上に無いleaf単語を
+ * 削除することで初期単語グラフを抽出する. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param r [in] ǧ���������󥹥���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
+ * @param r [in] 認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Post-processing step 1: Extract initial word graph.
@@ -1026,12 +1026,12 @@ wordgraph_purge_leaf_nodes(WordGraph **rootp, RecogProcess *r)
 
 /** 
  * <JA>
- * @brief  ����ո�������Σ�. ��������դο����ˤ��ñ�����Υ��å�
+ * @brief  グラフ後処理その１. ５：グラフの深さによる単語候補のカット
  * 
- * GRAPHOUT_DEPTHCUT �����������դο����ˤ��ñ�����Υ��åȤ�Ԥ�. 
+ * GRAPHOUT_DEPTHCUT 指定時，グラフの深さによる単語候補のカットを行う. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param r [in] ǧ���������󥹥���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
+ * @param r [in] 認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Post-processing step 1.5: word graph depth cutting
@@ -1190,25 +1190,25 @@ wordgraph_depth_cut(WordGraph **rootp, RecogProcess *r)
 
 /** 
  * <JA>
- * ñ��֤ζ�������Τ���������¹Ԥ���. ��������ñ�������å���,
- * ��³ñ��֤Ƕ������־���ˤ��줬����Ȥ��ϡ����Τ����������. 
- * ʣ���Υ���ƥ����ȴ֤ǰۤʤ붭������¸�ߤ������,�����
- * ���ԡ����Ƥ��줾��˹�碌��. �ޤ����饤����Ȥ�������ñ�������. 
+ * 単語間の境界情報のずれ補正を実行する. グラフ中の単語をチェックし,
+ * 接続単語間で境界時間情報にずれがあるときは，そのずれを修正する. 
+ * 複数のコンテキスト間で異なる境界情報が存在する場合は,候補を
+ * コピーしてそれぞれに合わせる. またアラインメントが不正な単語を除去する. 
  * 
- * @param rootp [i/o] �����ñ��ꥹ�ȤΥ롼�ȥݥ���
- * @param mov_num_ret [out] �������֤�ư����ñ������Ǽ�����ѿ��ؤΥݥ���
- * @param dup_num_ret [out] ���ԡ����줿ñ������Ǽ�����ѿ��ؤΥݥ���
- * @param del_num_ret [out] ������줿ñ������Ǽ�����ѿ��ؤΥݥ���
- * @param mod_num_ret [out] �ѹ����줿ñ������Ǽ�����ѿ��ؤΥݥ���
- * @param count [in] ����վ��ñ���
+ * @param rootp [i/o] グラフ単語リストのルートポインタ
+ * @param mov_num_ret [out] 境界時間が動いた単語数を格納する変数へのポインタ
+ * @param dup_num_ret [out] コピーされた単語数を格納する変数へのポインタ
+ * @param del_num_ret [out] 削除された単語数を格納する変数へのポインタ
+ * @param mod_num_ret [out] 変更された単語数を格納する変数へのポインタ
+ * @param count [in] グラフ上の単語数
  * @param maxfnum
  * @param peseqlen
  * @param lmtype
  * @param p_framelist
  * @param p_framescorelist
  * 
- * @return ��������ñ�줬���İʾ��ѹ������� TRUE���ѹ��ʤ��Ǥ���� FALSE
- * ���֤�. 
+ * @return グラフ内の単語が１つ以上変更されれば TRUE，変更なしであれば FALSE
+ * を返す. 
  * </JA>
  * <EN>
  * Execute adjustment of word boundaries.  It looks through the graph to
@@ -1484,11 +1484,11 @@ wordgraph_adjust_boundary_sub(WordGraph **rootp, int *mov_num_ret, int *dup_num_
 
 /** 
  * <JA>
- * �������˶�������䥹����������Ʊ���ñ�줬�����礽����ޡ�������. 
+ * グラフ内に境界情報やスコアが全く同一の単語がある場合それらをマージする. 
  * 
- * @param rootp [i/o] �����ñ��ꥹ�ȤΥ롼�ȥݥ���
- * @param rest_ret [out] �ޡ�����Υ�������ñ������֤��ݥ���
- * @param merged_ret [out] �ޡ������줿ñ������֤��ݥ���
+ * @param rootp [i/o] グラフ単語リストのルートポインタ
+ * @param rest_ret [out] マージ後のグラフ内の単語数を返すポインタ
+ * @param merged_ret [out] マージされた単語数を返すポインタ
  * </JA>
  * <EN>
  * Merge duplicated words with exactly the same scores and alignments.
@@ -1551,21 +1551,21 @@ wordgraph_compaction_thesame_sub(WordGraph **rootp, int *rest_ret, int *merged_r
 
 /** 
  * <JA>
- * @brief  ����ո�������Σ���ñ�춭�������Ĵ��. 
+ * @brief  グラフ後処理その２：単語境界情報の調整. 
  * 
- * GRAPHOUT_PRECISE_BOUNDARY ���������³ñ��˰�¸�������Τ�ñ�춭��
- * �����뤿��ˡ�õ����ˤ����ơ������ñ��������������Ȥ˼���Ÿ������
- * ����Ū��ñ�춭�����ư������. ���Τ��ᡤ�����ñ��Τ�ġʰ�ư���Ρ�
- * ��������Ȥ��б����Ȥ�ʤ��ʤ�Τǡ�õ����λ��˳�ñ��������ñ���
- * ������ñ�춭�������¤����뤳�Ȥ���������Ȥ�. 
+ * GRAPHOUT_PRECISE_BOUNDARY 定義時，後続単語に依存した正確な単語境界
+ * を得るために，探索中において，グラフ単語を生成したあとに次回展開時に
+ * 事後的に単語境界を移動させる. このため，前後の単語のもつ（移動前の）
+ * 境界情報との対応がとれなくなるので，探索終了後に各単語の前後の単語へ
+ * 正しい単語境界を伝搬させることで整合性をとる. 
  *
- * ñ�춭���Τ����ñ��֤����¤��뤿�ᡤ���٤Ƥ�ñ�춭����ư���ʤ��ʤ�ޤ�
- * Ĵ���������֤����. ����ʥ���դǤ�û��ñ���ʨ�������ǽ����������ʤ�
- * ��礬���뤬�����ξ�� GRAPHOUT_LIMIT_BOUNDARY_LOOP ����ꤹ�뤳�Ȥǡ�
- * �����֤����ξ�¤� graphout_limit_boundary_loop_num �����¤Ǥ���. 
+ * 単語境界のずれは単語間で伝搬するため，すべての単語境界が動かなくなるまで
+ * 調整が繰り返される. 巨大なグラフでは短い単語の沸きだしで処理が終わらない
+ * 場合があるが，この場合 GRAPHOUT_LIMIT_BOUNDARY_LOOP を指定することで，
+ * 繰り返す数の上限を graphout_limit_boundary_loop_num に制限できる. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param r [i/o] ǧ���������󥹥���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Post-processing step 2: Adjust word boundaries.
@@ -1648,11 +1648,11 @@ wordgraph_adjust_boundary(WordGraph **rootp, RecogProcess *r)
  
 /** 
  * <JA>
- * @brief  ����ո�������Σ���ñ���«�͡ʴ���Ʊ���
+ * @brief  グラフ後処理その３：単語の束ね（完全同一）
  * 
- * ñ�춭���������ʬʸ���⥹�����������˰��פ���Ʊ��ñ��ɤ������Ĥ�«�ͤ�. 
+ * 単語境界時刻と部分文仮説スコアが完全に一致する同じ単語どうしを一つに束ねる. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
  * </JA>
  * <EN>
  * @brief  Post-processing step 3: Bundle words (exactly the same ones)
@@ -1679,15 +1679,15 @@ wordgraph_compaction_thesame(WordGraph **rootp)
 
 /** 
  * <JA>
- * @brief  ����ո�������Σ���ñ���«�͡ʶ��Ʊ���
+ * @brief  グラフ後処理その４：単語の束ね（区間同一）
  * 
- * ñ�춭�����郎���פ���Ʊ��ñ��ɤ������Ĥ�«�ͤ�. ��������
- * Ʊ��Ǥʤ��Ƥ�«�ͤ���. ���ξ�硤��ʬʸ���������Ǥ�⤤���䤬
- * �Ĥ�. graph_merge_neighbor_range �� �� �ξ��ϼ¹Ԥ���ʤ�. 
+ * 単語境界時刻が一致する同じ単語どうしを一つに束ねる. スコアが
+ * 同一でなくても束ねられる. この場合，部分文スコアが最も高い候補が
+ * 残る. graph_merge_neighbor_range が 負 の場合は実行されない. 
 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param r [i/o] ǧ���������󥹥���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Post-processing step 4: Bundle words (same boundaries)
@@ -1766,13 +1766,13 @@ wordgraph_compaction_exacttime(WordGraph **rootp, RecogProcess *r)
 
 /** 
  * <JA>
- * @brief  ����ո�������Σ���ñ���«�͡ʶ�˵��֡�
+ * @brief  グラフ後処理その５：単語の束ね（近傍区間）
  * 
- * ����ñ�춭����������Ʊ��ñ��ɤ������Ĥ�«�ͤ�. �������������
- * graph_merge_neighbor_range ��Ϳ�������줬 0 ����Ǥ�����ϼ¹Ԥ���ʤ�. 
+ * 似た単語境界時刻を持つ同じ単語どうしを一つに束ねる. 許すずれの幅は
+ * graph_merge_neighbor_range で与え，これが 0 か負である場合は実行されない. 
  * 
- * @param rootp [i/o] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param r [i/o] ǧ���������󥹥���
+ * @param rootp [i/o] 単語グラフのルートノードへのポインタ
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Post-processing step 5: Bundle words (neighbor words)
@@ -1855,23 +1855,23 @@ wordgraph_compaction_neighbor(WordGraph **rootp, RecogProcess *r)
 
 /** 
  * <JA>
- * ������ñ�쥰��ո�������������֤�. ���λ����ǤϤޤ�ñ�쥰�����ˤ�
- * ��Ͽ����Ƥ��ʤ�. 
+ * 新たな単語グラフ候補を生成して返す. この時点ではまだ単語グラフ中には
+ * 登録されていない. 
  * 
- * @param wid [in] ñ��ID
+ * @param wid [in] 単語ID
  * @param wid_left [in] word ID of left context for determining head phone 
  * @param wid_right [in] word ID of right context for determining tail phone 
- * @param leftframe [in] ��ü����(�ե졼��)
- * @param rightframe [in] ��ü����(�ե졼��)
- * @param fscore_head [in] ��ü�Ǥ���ʬʸ������ (g + h)
- * @param fscore_tail [in] ��ü�Ǥ���ʬʸ������ (g + h)
- * @param gscore_head [in] ��Ƭ�Ǥ�������ü�����Viterbi������ (g)
- * @param gscore_tail [in] �����Ǥ�������ü�����Viterbi������ (g)
- * @param lscore [in] ���쥹����
- * @param cm [in] ������
- * @param r [in] ǧ���������󥹥���
+ * @param leftframe [in] 始端時刻(フレーム)
+ * @param rightframe [in] 終端時刻(フレーム)
+ * @param fscore_head [in] 始端での部分文スコア (g + h)
+ * @param fscore_tail [in] 終端での部分文スコア (g + h)
+ * @param gscore_head [in] 先頭での入力末端からのViterbiスコア (g)
+ * @param gscore_tail [in] 末尾での入力末端からのViterbiスコア (g)
+ * @param lscore [in] 言語スコア
+ * @param cm [in] 信頼度
+ * @param r [in] 認識処理インスタンス
  * 
- * @return �������������줿�����ñ�����ؤΥݥ���
+ * @return 新たに生成されたグラフ単語候補へのポインタ
  * </JA>
  * <EN>
  * Return a newly allocated graph word candidates.  The resulting word
@@ -1933,12 +1933,12 @@ wordgraph_assign(WORD_ID wid, WORD_ID wid_left, WORD_ID wid_right, int leftframe
 
 /** 
  * <JA>
- * �����ñ������ñ�쥰��դΰ����Ȥ��Ƴ��ꤹ��. ���ꤵ�줿�����ñ��ˤ�
- * saved �� TRUE �����åȤ����. 
+ * グラフ単語候補を単語グラフの一部として確定する. 確定されたグラフ単語には
+ * saved に TRUE がセットされる. 
  * 
- * @param wg [i/o] ��Ͽ���륰���ñ�����
- * @param right [i/o] @a wg �α�����ƥ����ȤȤʤ�ñ��
- * @param root [i/o] ����Ѥ�ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
+ * @param wg [i/o] 登録するグラフ単語候補
+ * @param right [i/o] @a wg の右コンテキストとなる単語
+ * @param root [i/o] 確定済み単語グラフのルートノードへのポインタ
  * </JA>
  * <EN>
  * Register a graph word candidate to the word graph as a member.
@@ -1969,23 +1969,23 @@ wordgraph_save(WordGraph *wg, WordGraph *right, WordGraph **root)
 
 /** 
  * <JA>
- * ����ñ�쥰��ո���ˤĤ��ơ����˳��ꤷ�������ñ�����Ʊ�����֤�
- * Ʊ��ñ�줬���뤫�ɤ�����Ĵ�٤�. �⤷����С�ñ�쥰��ո����
- * ����ƥ����Ȥ򤽤γ���Ѥߥ����ñ��˥ޡ�������. 
+ * ある単語グラフ候補について，既に確定したグラフ単語中に同じ位置に
+ * 同じ単語があるかどうかを調べる. もしあれば，単語グラフ候補の
+ * コンテキストをその確定済みグラフ単語にマージする. 
  *
- * GRAPHOUT_SEARCH������ϡ�����ˤ�����õ������ߤ��٤����ɤ�����Ƚ�ꤹ��. 
- * ���ʤ������ñ�첾�⤬���Υ����ñ��κ�����ƥ����ȤȤ��ƴ��˳��ꤷ��
- * �����ñ����ˤ���С�����ʾ��Ÿ�������פ�õ������ߤ��٤���Ƚ�ꤹ��. 
+ * GRAPHOUT_SEARCH定義時は，さらにここで探索を中止すべきかどうかも判定する. 
+ * すなわち，次単語仮説がそのグラフ単語の左コンテキストとして既に確定した
+ * グラフ単語中にあれば，それ以上の展開は不要で探索を中止すべきと判定する. 
  * 
- * @param now [i/o] ñ�쥰��ո���
- * @param root [i/o] ����Ѥ�ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param next_wid [in] ��ñ�첾��
- * @param merged_p [out] õ������ߤ��٤��ʤ� TRUE��³�Ԥ��Ƥ褱���
- * FALSE ����Ǽ����� (GRAPHOUT_SEARCH �����)
- * @param jconf [in] õ��������ѥ�᡼��
+ * @param now [i/o] 単語グラフ候補
+ * @param root [i/o] 確定済み単語グラフのルートノードへのポインタ
+ * @param next_wid [in] 次単語仮説
+ * @param merged_p [out] 探索を中止すべきなら TRUE，続行してよければ
+ * FALSE が格納される (GRAPHOUT_SEARCH 定義時)
+ * @param jconf [in] 探索用設定パラメータ
  * 
- * @return Ʊ�����֤�Ʊ��ñ�줬���ä���硤�ޡ����������
- * ����Ѥߥ����ñ��ؤΥݥ��󥿤��֤�. �⤷�ʤ��ä���硤NULL ���֤�. 
+ * @return 同じ位置に同じ単語があった場合，マージした先の
+ * 確定済みグラフ単語へのポインタを返す. もしなかった場合，NULL を返す. 
  * </JA>
  * <EN>
  * Check if a graph word with the same word ID and same position as the
@@ -2142,25 +2142,25 @@ wordgraph_check_merge(WordGraph *now, WordGraph **root, WORD_ID next_wid, boolea
 
 /** 
  * <JA>
- * �����ñ��ξ����ƥ����Ȥǽ��Ϥ���. ���Ƥϰʲ��ΤȤ��ꡧ
+ * グラフ単語の情報をテキストで出力する. 内容は以下のとおり：
  * <pre>
- *   ID: left=������ƥ����Ȥ�ID[,ID,...] right=������ƥ�����ID[,ID,..]
- *   [��ü�ե졼��..��ü�ե졼��]
- *   wid=ñ��ID
- *   name="ñ��̾"
- *   lname="N-gram ñ��̾�����뤤�ϥ��ƥ����ֹ� (Julian)"
- *   f=õ����κ�ü�Ǥ���ʬʸ������(g(n) + h(n+1)) n=����ñ��
- *   f_prev=õ����α�ü�Ǥ���ʬʸ������(g(n-1) + h(n)) n=����ñ��
- *   g_head=��ü�Ǥ�����Viterbi������ g(n)
- *   g_prev=��ü�Ǥ�����Viterbi������ g(n-1) + LM(n)
- *   lscore=���쥹���� LM(n)   (Julius �ξ��Τ�)
- *   AMavg=�ե졼��ʿ�Ѳ�������
- *   cmscore=ñ�쿮����
+ *   ID: left=左コンテキストのID[,ID,...] right=右コンテキストID[,ID,..]
+ *   [左端フレーム..右端フレーム]
+ *   wid=単語ID
+ *   name="単語名"
+ *   lname="N-gram 単語名，あるいはカテゴリ番号 (Julian)"
+ *   f=探索中の左端での部分文スコア(g(n) + h(n+1)) n=この単語
+ *   f_prev=探索中の右端での部分文スコア(g(n-1) + h(n)) n=この単語
+ *   g_head=左端での累積Viterbiスコア g(n)
+ *   g_prev=右端での累積Viterbiスコア g(n-1) + LM(n)
+ *   lscore=言語スコア LM(n)   (Julius の場合のみ)
+ *   AMavg=フレーム平均音響尤度
+ *   cmscore=単語信頼度
  * </pre>
  *
- * @param fp [in] ������Υե�����ݥ���
- * @param wg [in] ���Ϥ��륰���ñ��
- * @param winfo [in] ñ�켭��
+ * @param fp [in] 出力先のファイルポインタ
+ * @param wg [in] 出力するグラフ単語
+ * @param winfo [in] 単語辞書
  * </JA>
  * <EN>
  * Output information of a graph word in text in the format below:
@@ -2230,11 +2230,11 @@ put_wordgraph(FILE *fp, WordGraph *wg, WORD_INFO *winfo)
 
 /** 
  * <JA>
- * �������줿ñ�쥰��������ñ���ƥ����Ƚ��Ϥ���. 
+ * 生成された単語グラフ中の全単語をテキスト出力する. 
  * 
- * @param fp [in] ������Υե�����ݥ���
- * @param root [in] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param winfo [in] ñ�켭��
+ * @param fp [in] 出力先のファイルポインタ
+ * @param root [in] 単語グラフのルートノードへのポインタ
+ * @param winfo [in] 単語辞書
  * </JA>
  * <EN>
  * Output text information of all the words in word graph.
@@ -2261,10 +2261,10 @@ wordgraph_dump(FILE *fp, WordGraph *root, WORD_INFO *winfo)
 
 /** 
  * <JA>
- * �ǥХå��ѡ�ñ�쥰��դ�������������å�����. 
+ * デバッグ用：単語グラフの整合性をチェックする. 
  * 
- * @param rootp [in] ñ�쥰��դΥ롼�ȥΡ��ɤؤΥݥ���
- * @param r [i/o] ǧ���������󥹥���
+ * @param rootp [in] 単語グラフのルートノードへのポインタ
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * For debug: Check the coherence in word graph.
@@ -2339,7 +2339,7 @@ wordgraph_check_coherence(WordGraph *rootp, RecogProcess *r)
  * qsort callback function to order words from right to left.
  * </EN>
  * <JA>
- * ñ��򱦤��麸���¤٤뤿��� qsort ������Хå��ؿ�
+ * 単語を右から左へ並べるための qsort コールバック関数
  * </JA>
  * 
  * @param x [in] 1st element
@@ -2361,7 +2361,7 @@ compare_forward(WordGraph **x, WordGraph **y)
  * qsort callback function to order words from left to right.
  * </EN>
  * <JA>
- * ñ��򺸤��鱦���¤٤뤿��� qsort ������Хå��ؿ�
+ * 単語を左から右へ並べるための qsort コールバック関数
  * </JA>
  * 
  * @param x [in] 1st element
@@ -2380,7 +2380,7 @@ compare_backward(WordGraph **x, WordGraph **y)
 
 /** 
  * <EN>
- * �����п���ɽ������Ƥ����Ψ���¤�׻�����. 
+ * 常用対数で表現されている確率の和を計算する. 
  * </EN>
  * <JA>
  * compute addition of two probabilities in log10 form.
@@ -2405,10 +2405,10 @@ addlog10(LOGPROB x, LOGPROB y)
 
 /**
  * <JA>
- * �������줿��ƥ�����ˤ����ơ�forward-backward ���르�ꥺ��ˤ��
- * �����٤�׻�����. �׻����줿�ͤϳƥ����ñ��� graph_cm �˳�Ǽ�����. 
- * �����Ψ�η׻��Ǥϡ�õ����ο����ٷ׻���Ʊ��
- * ���͡�r->config->annotate.cm_alpha�ˤ��Ѥ�����. 
+ * 生成されたラティス上において，forward-backward アルゴリズムにより
+ * 信頼度を計算する. 計算された値は各グラフ単語の graph_cm に格納される. 
+ * 事後確率の計算では，探索中の信頼度計算と同じ
+ * α値（r->config->annotate.cm_alpha）が用いられる. 
  * </JA>
  * <EN>
  * Compute graph-based confidence scores by forward-backward parsing on

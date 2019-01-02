@@ -1,12 +1,12 @@
 /* 
- *  libjcode.c -- ´Á»úÊÑ´¹¥é¥¤¥Ö¥é¥ê    1.0 ÈÇ
+ *  libjcode.c -- æ¼¢å­—å¤‰æ›ãƒ©ã‚¤ãƒ–ãƒ©ãƒª    1.0 ç‰ˆ
  *                (C) Kuramitsu Kimio, Tokyo Univ. 1996-97
  *
- *  ¤³¤Î¥é¥¤¥Ö¥é¥ê¤Ï¡¢CGI Programming with C and Perl ¤Î¤¿¤á¤Ë
- *  Ken Lunde Ãø ¡ÖÆüËÜ¸ì¾ðÊó½èÍý¡× (O'llery) ¤ò»²¹Í¤Ë¤·¤Æ¡¢
- *  ¥¹¥È¥ê¡¼¥àÍÑ¤À¤Ã¤¿jconv.c ¤ò¡¢¥¹¥È¥ê¥ó¥°ÂÐ±þ¤Ë¤·¤Æ¥é¥¤¥Ö¥é¥ê²½
- *  ¤·¤Þ¤·¤¿¡£ 
- *  ¤¿¤À¤·¡¢CGI (INTERNET)¤Ç¤ÎÍøÍÑ¤ò¹Í¤¨¤Æ¡¢ÊÑ¹¹¤·¤Æ¤¢¤ê¤Þ¤¹¡£
+ *  ã“ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¯ã€CGI Programming with C and Perl ã®ãŸã‚ã«
+ *  Ken Lunde è‘— ã€Œæ—¥æœ¬èªžæƒ…å ±å‡¦ç†ã€ (O'llery) ã‚’å‚è€ƒã«ã—ã¦ã€
+ *  ã‚¹ãƒˆãƒªãƒ¼ãƒ ç”¨ã ã£ãŸjconv.c ã‚’ã€ã‚¹ãƒˆãƒªãƒ³ã‚°å¯¾å¿œã«ã—ã¦ãƒ©ã‚¤ãƒ–ãƒ©ãƒªåŒ–
+ *  ã—ã¾ã—ãŸã€‚ 
+ *  ãŸã ã—ã€CGI (INTERNET)ã§ã®åˆ©ç”¨ã‚’è€ƒãˆã¦ã€å¤‰æ›´ã—ã¦ã‚ã‚Šã¾ã™ã€‚
  */
 
 /* modified by ri to avoid may malloc */
@@ -39,7 +39,7 @@ static void _seven2euc(unsigned char *str, unsigned char *str2);
 
 #define CHAROUT(ch) *str2 = (unsigned char)(ch); str2++;
 
-/* --------------------------------------- JIS(ISO-2022) ¥³¡¼¥É¤ØÀÚ¤êÂØ¤¨ -- */
+/* --------------------------------------- JIS(ISO-2022) ã‚³ãƒ¼ãƒ‰ã¸åˆ‡ã‚Šæ›¿ãˆ -- */
 
 static unsigned char *_to_jis(unsigned char *str) {
   *str = (unsigned char)ESC; str++;
@@ -48,12 +48,12 @@ static unsigned char *_to_jis(unsigned char *str) {
   return str;
 }
 
-/* ----------------------------------------------- ASCII ¥³¡¼¥É¤ØÀÚ¤êÂØ¤¨ -- */
+/* ----------------------------------------------- ASCII ã‚³ãƒ¼ãƒ‰ã¸åˆ‡ã‚Šæ›¿ãˆ -- */
 
-/* ESC ( B ¤È ESC ( J ¤Î°ã¤¤¡£
-   ËÜÍè¤Ï¡¢ ESC ( J ¤¬Àµ¤·¤¤JIS-Roman ÂÎ·Ï¤Ç¤¢¤ë¤¬¡¢
-   ¥¤¥ó¥¿¡¼¥Í¥Ã¥È¤Î¾å¤Ç¤Ï¡¢±Ñ¿ô»ú¤ÏASCII ¤ÎÊý¤¬¼«Á³¤«¤È»×¤ï¤ì¤ë¡£
-   \ µ­¹æ¤È ~µ­¹æ¤¬°ã¤¦¤À¤±¤Ç¤¢¤ë¡£ */
+/* ESC ( B ã¨ ESC ( J ã®é•ã„ã€‚
+   æœ¬æ¥ã¯ã€ ESC ( J ãŒæ­£ã—ã„JIS-Roman ä½“ç³»ã§ã‚ã‚‹ãŒã€
+   ã‚¤ãƒ³ã‚¿ãƒ¼ãƒãƒƒãƒˆã®ä¸Šã§ã¯ã€è‹±æ•°å­—ã¯ASCII ã®æ–¹ãŒè‡ªç„¶ã‹ã¨æ€ã‚ã‚Œã‚‹ã€‚
+   \ è¨˜å·ã¨ ~è¨˜å·ãŒé•ã†ã ã‘ã§ã‚ã‚‹ã€‚ */
 
 static unsigned char *_to_ascii(unsigned char *str) {
   *str = (unsigned char)ESC; str++;
@@ -62,7 +62,7 @@ static unsigned char *_to_ascii(unsigned char *str) {
   return str;
 }
 
-/* -------------------------------------- JIS ¥³¡¼¥É ¤ò SJIS¤È¤·¤Æ¥·¥Õ¥È -- */
+/* -------------------------------------- JIS ã‚³ãƒ¼ãƒ‰ ã‚’ SJISã¨ã—ã¦ã‚·ãƒ•ãƒˆ -- */
 
 static void _jis_shift(int *p1, int *p2)
 {
@@ -75,7 +75,7 @@ static void _jis_shift(int *p1, int *p2)
   *p2 += cellOffset;
 }
 
-/* --------------------------------- SJIS ¥³¡¼¥É¤òJIS ¥³¡¼¥É¤È¤·¤Æ¥·¥Õ¥È -- */
+/* --------------------------------- SJIS ã‚³ãƒ¼ãƒ‰ã‚’JIS ã‚³ãƒ¼ãƒ‰ã¨ã—ã¦ã‚·ãƒ•ãƒˆ -- */
 
 static void _sjis_shift(int *p1, int *p2)
 {
@@ -89,7 +89,7 @@ static void _sjis_shift(int *p1, int *p2)
   *p2 -= cellOffset;
 }
 
-/* ---------------------------------------------- SJIS È¾³Ñ¤òÁ´³Ñ¤ËÊÑ´¹ -- */
+/* ---------------------------------------------- SJIS åŠè§’ã‚’å…¨è§’ã«å¤‰æ› -- */
 #define HANKATA(a)  (a >= 161 && a <= 223)
 #define ISMARU(a)   (a >= 202 && a <= 206)
 #define ISNIGORI(a) ((a >= 182 && a <= 196) || (a >= 202 && a <= 206) || (a == 179))
@@ -114,7 +114,7 @@ static unsigned char *_sjis_han2zen(unsigned char *str, int *p1, int *p2)
   *p1 = stable[c1 - 161][0];
   *p2 = stable[c1 - 161][1];
 
-  /* Âù²»¡¢È¾Âù²»¤Î½èÍý */
+  /* æ¿éŸ³ã€åŠæ¿éŸ³ã®å‡¦ç† */
   c2 = (int)*str;
   if (c2 == 222 && ISNIGORI(c1)) {
     if ((*p2 >= 74 && *p2 <= 103) || (*p2 >= 110 && *p2 <= 122))
@@ -131,7 +131,7 @@ static unsigned char *_sjis_han2zen(unsigned char *str, int *p1, int *p2)
   return str++;
 }
 
-/* -------------------------------------------------- SJIS ¥³¡¼¥É¤òÊÑ´¹ -- */
+/* -------------------------------------------------- SJIS ã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ› -- */
 
 #define SJIS1(A)    ((A >= 129 && A <= 159) || (A >= 224 && A <= 239))
 #define SJIS2(A)    (A >= 64 && A <= 252)
@@ -158,7 +158,7 @@ static void _shift2seven(unsigned char *str, unsigned char *str2)
     }
 
 #ifdef NO_HANKAKU_SJIS
-    /* È¾³Ñ SJIS ¤Ï¡¢¶¯À©Åª¤ËÁ´³Ñ¤ËÊÑ¤¨¤ë */
+    /* åŠè§’ SJIS ã¯ã€å¼·åˆ¶çš„ã«å…¨è§’ã«å¤‰ãˆã‚‹ */
     if (HANKATA(p1)) {
       str = _sjis_han2zen(str, &p1, &p2);
       _sjis_shift(&p1,&p2);
@@ -173,7 +173,7 @@ static void _shift2seven(unsigned char *str, unsigned char *str2)
 #endif
 
     if (esc_in) {
-      /* LF / CR ¤Î¾ì¹ç¤Ï¡¢Àµ¾ï¤Ë¥¨¥¹¥±¡¼¥×¥¢¥¦¥È¤µ¤ì¤ë */
+      /* LF / CR ã®å ´åˆã¯ã€æ­£å¸¸ã«ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚¢ã‚¦ãƒˆã•ã‚Œã‚‹ */
       esc_in = FALSE;
       str2 = _to_ascii(str2);
     }
@@ -186,7 +186,7 @@ static void _shift2seven(unsigned char *str, unsigned char *str2)
   *str2='\0';
 }
 
-/* --------------------------------------------- SJIS ¤ò EUC ¤ËÊÑ´¹¤¹¤ë -- */
+/* --------------------------------------------- SJIS ã‚’ EUC ã«å¤‰æ›ã™ã‚‹ -- */
 
 static void _shift2euc(unsigned char *str, unsigned char *str2)
 {
@@ -207,7 +207,7 @@ static void _shift2euc(unsigned char *str, unsigned char *str2)
     }
 
 #ifdef NO_HANKAKU_SJIS
-    /* È¾³Ñ SJIS ¤Ï¡¢¶¯À©Åª¤ËÁ´³Ñ¤ËÊÑ¤¨¤ë */
+    /* åŠè§’ SJIS ã¯ã€å¼·åˆ¶çš„ã«å…¨è§’ã«å¤‰ãˆã‚‹ */
     if (HANKATA(p1)) {
       str = _sjis_han2zen(str,&p1,&p2);
       _sjis_shift(&p1,&p2);
@@ -224,7 +224,7 @@ static void _shift2euc(unsigned char *str, unsigned char *str2)
   *str2='\0';
 }
 
-/* ------------------------------------------------- È¾³Ñ SJIS ¤ò¼è¤ê½ü¤¯ -- */
+/* ------------------------------------------------- åŠè§’ SJIS ã‚’å–ã‚Šé™¤ã -- */
 
 static void _shift_self(unsigned char *str, unsigned char *str2)
 {
@@ -232,7 +232,7 @@ static void _shift_self(unsigned char *str, unsigned char *str2)
   
   while ((p1 = (int)*str) != '\0') {
 #ifdef NO_HANKAKU_SJIS
-    /* È¾³Ñ SJIS ¤Ï¡¢¶¯À©Åª¤ËÁ´³Ñ¤ËÊÑ¤¨¤ë */
+    /* åŠè§’ SJIS ã¯ã€å¼·åˆ¶çš„ã«å…¨è§’ã«å¤‰ãˆã‚‹ */
     if (HANKATA(p1)) {
       str = _sjis_han2zen(str, &p1, &p2);
       CHAROUT(p1);
@@ -246,7 +246,7 @@ static void _shift_self(unsigned char *str, unsigned char *str2)
   *str2='\0';
 }
 
-/* ------------------------------------------------------EUC ¤«¤é JIS ¤Ø -- */
+/* ------------------------------------------------------EUC ã‹ã‚‰ JIS ã¸ -- */
 
 #define ISEUC(A)    (A >= 161 && A <= 254)
 
@@ -292,7 +292,7 @@ static void _euc2seven(unsigned char *str, unsigned char *str2)
   *str2='\0';
 }
 
-/* ------------------------------------------------ EUC ¤«¤é SJIS ¤ËÊÑ´¹ -- */
+/* ------------------------------------------------ EUC ã‹ã‚‰ SJIS ã«å¤‰æ› -- */
  
 static void _euc2shift(unsigned char *str, unsigned char *str2)
 {
@@ -318,7 +318,7 @@ static void _euc2shift(unsigned char *str, unsigned char *str2)
   *str2='\0';
 }
 
-/* -------------------------------------- ESC ¥·¡¼¥±¥ó¥¹¤ò¥¹¥­¥Ã¥×¤¹¤ë ----- */
+/* -------------------------------------- ESC ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ ----- */
 
 static unsigned char *_skip_esc(unsigned char *str, int *esc_in) {
   int c;
@@ -333,7 +333,7 @@ static unsigned char *_skip_esc(unsigned char *str, int *esc_in) {
 }
 
 
-/* ----------------------------------------------- JIS ¤ò SJIS ¤ËÊÑ´¹¤¹¤ë -- */
+/* ----------------------------------------------- JIS ã‚’ SJIS ã«å¤‰æ›ã™ã‚‹ -- */
 
 static void _seven2shift(unsigned char *str, unsigned char *str2)
 {
@@ -341,7 +341,7 @@ static void _seven2shift(unsigned char *str, unsigned char *str2)
 
   while ((p1 = (int)*str) != '\0') {
 
-    /* ESC¥·¡¼¥±¥ó¥¹¤ò¥¹¥­¥Ã¥×¤¹¤ë */
+    /* ESCã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ */
     if (p1 == ESC) {
       str = _skip_esc(str, &esc_in);
       continue;
@@ -351,14 +351,14 @@ static void _seven2shift(unsigned char *str, unsigned char *str2)
       if (esc_in) esc_in = FALSE;
     }
 
-    if(esc_in) { /* ISO-2022-JP ¥³¡¼¥É */
+    if(esc_in) { /* ISO-2022-JP ã‚³ãƒ¼ãƒ‰ */
       if((p2 = (int)*(++str)) == '\0') break;
 
       _jis_shift(&p1, &p2);
 
       CHAROUT(p1);
       CHAROUT(p2);
-    }else{       /* ASCII ¥³¡¼¥É */
+    }else{       /* ASCII ã‚³ãƒ¼ãƒ‰ */
       CHAROUT(p1);
     }
     str++;
@@ -366,7 +366,7 @@ static void _seven2shift(unsigned char *str, unsigned char *str2)
   *str2 = '\0';
 }
 
-/* ------------------------------------------------ JIS ¤ò EUC ¤ËÊÑ´¹¤¹¤ë -- */
+/* ------------------------------------------------ JIS ã‚’ EUC ã«å¤‰æ›ã™ã‚‹ -- */
 
 static void _seven2euc(unsigned char *str, unsigned char *str2)
 {
@@ -374,7 +374,7 @@ static void _seven2euc(unsigned char *str, unsigned char *str2)
 
   while ((p1 = (int)*str) != '\0') {
 
-    /* ESC¥·¡¼¥±¥ó¥¹¤ò¥¹¥­¥Ã¥×¤¹¤ë */
+    /* ESCã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ */
     if (p1 == ESC) {
       str = _skip_esc(str, &esc_in);
       continue;
@@ -384,12 +384,12 @@ static void _seven2euc(unsigned char *str, unsigned char *str2)
       if (esc_in) esc_in = FALSE;
     }
 
-    if(esc_in) { /* ISO-2022-JP ¥³¡¼¥É */
+    if(esc_in) { /* ISO-2022-JP ã‚³ãƒ¼ãƒ‰ */
       CHAROUT(p1 + 128); 
       
       if((p1 = (int)*(++str)) == '\0') break;
       CHAROUT(p1 + 128);
-    }else{       /* ASCII ¥³¡¼¥É */
+    }else{       /* ASCII ã‚³ãƒ¼ãƒ‰ */
       CHAROUT(p1);
     }
     str++;
@@ -398,7 +398,7 @@ static void _seven2euc(unsigned char *str, unsigned char *str2)
 }
 
 /* ------------------------------------------------------------------------ */
-/* --------------------------------------------------------- Public ´Ø¿ô -- */
+/* --------------------------------------------------------- Public é–¢æ•° -- */
 char *toStringJIS(char *str, char *buf, int maxlen) {
   int detected;
 

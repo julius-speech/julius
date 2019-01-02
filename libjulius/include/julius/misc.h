@@ -2,7 +2,7 @@
  * @file   misc.h
  * 
  * <JA>
- * @brief  ����¾�λ�¿�����
+ * @brief  その他の雑多な定義
  * </JA>
  * 
  * <EN>

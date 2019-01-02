@@ -2,7 +2,7 @@
  * @file   useropt.c
  * 
  * <JA>
- * @brief  ¥æ¡¼¥¶ÄêµÁ¥ª¥×¥·¥ç¥ó
+ * @brief  ãƒ¦ãƒ¼ã‚¶å®šç¾©ã‚ªãƒ—ã‚·ãƒ§ãƒ³
  * </JA>
  * 
  * <EN>
@@ -35,7 +35,7 @@ static USEROPT *useropt_root = NULL;
  * Generate a new option data.
  * </EN>
  * <JA>
- * ¿·¤¿¤Ê¥æ¡¼¥¶¥ª¥×¥·¥ç¥ó¥Ç¡¼¥¿¤òÀ¸À®. 
+ * æ–°ãŸãªãƒ¦ãƒ¼ã‚¶ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ç”Ÿæˆ. 
  * </JA>
  * 
  * @return a new user option data.
@@ -58,7 +58,7 @@ useropt_new()
 
 /** 
  * <EN>
- * ¥æ¡¼¥¶¥ª¥×¥·¥ç¥ó¥Ç¡¼¥¿¤ò²òÊü. 
+ * ãƒ¦ãƒ¼ã‚¶ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’è§£æ”¾. 
  * </EN>
  * <JA>
  * Release a user option data.
@@ -80,7 +80,7 @@ useropt_free(USEROPT *x)
  * Release all user option data.
  * </EN>
  * <JA>
- * Á´¤Æ¤Î¥æ¡¼¥¶¥ª¥×¥·¥ç¥ó¥Ç¡¼¥¿¤ò²òÊü¤¹¤ë. 
+ * å…¨ã¦ã®ãƒ¦ãƒ¼ã‚¶ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’è§£æ”¾ã™ã‚‹. 
  * </JA>
  *
  * @callgraph
@@ -107,10 +107,10 @@ useropt_free_all()
  * are required and the rest (argnum - reqargnum) options are optional.
  * </EN>
  * <JA>
- * Julius ¤Ë¥æ¡¼¥¶ÄêµÁ¥ª¥×¥·¥ç¥ó¤òÄÉ²Ã¤¹¤ë. 
- * argnum ¤Ë¤Ï°ú¿ô¤ÎºÇÂç¿ô¡¤reqargnum ¤Ï¤½¤Î¤¦¤ÁÉ¬¿Ü¤Ç¤¢¤ë°ú¿ô¤Î¿ô¤ò
- * »ØÄê¤¹¤ë. argnum > reqargnum ¤Î¾ì¹ç¡¤ÀèÆ¬¤«¤é reqargnum ¸Ä¤¬É¬¿Ü¤Ç¡¤
- * ¤½¤ì°Ê¹ß¤¬ optional ¤È¤·¤Æ°·¤ï¤ì¤ë. 
+ * Julius ã«ãƒ¦ãƒ¼ã‚¶å®šç¾©ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ ã™ã‚‹. 
+ * argnum ã«ã¯å¼•æ•°ã®æœ€å¤§æ•°ï¼Œreqargnum ã¯ãã®ã†ã¡å¿…é ˆã§ã‚ã‚‹å¼•æ•°ã®æ•°ã‚’
+ * æŒ‡å®šã™ã‚‹. argnum > reqargnum ã®å ´åˆï¼Œå…ˆé ­ã‹ã‚‰ reqargnum å€‹ãŒå¿…é ˆã§ï¼Œ
+ * ãã‚Œä»¥é™ãŒ optional ã¨ã—ã¦æ‰±ã‚ã‚Œã‚‹. 
  * </JA>
  * 
  * @param fmt [in] option string (should begin with '-')
@@ -170,7 +170,7 @@ j_add_option(char *fmt, int argnum, int reqargnum, char *desc, boolean (*func)(J
  * Inspect for the user-specified options at option parsing
  * </EN>
  * <JA>
- * ¥ª¥×¥·¥ç¥óÀßÄê¤Ë¤ª¤¤¤Æ¥æ¡¼¥¶ÄêµÁ¥ª¥×¥·¥ç¥ó½èÍı¤ò¹Ô¤¦. 
+ * ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¨­å®šã«ãŠã„ã¦ãƒ¦ãƒ¼ã‚¶å®šç¾©ã‚ªãƒ—ã‚·ãƒ§ãƒ³å‡¦ç†ã‚’è¡Œã†. 
  * 
  * </JA>
  * 
@@ -224,7 +224,7 @@ useropt_exec(Jconf *jconf, char *argv[], int argc, int *n)
  * Output description of all the registered user options.
  * </EN>
  * <JA>
- * ÅĞÏ¿¤µ¤ì¤Æ¤¤¤ëÁ´¤Æ¤Î¥æ¡¼¥¶ÄêµÁ¥ª¥×¥·¥ç¥ó¤ÎÀâÌÀ¤ò½ĞÎÏ¤¹¤ë. 
+ * ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹å…¨ã¦ã®ãƒ¦ãƒ¼ã‚¶å®šç¾©ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®èª¬æ˜ã‚’å‡ºåŠ›ã™ã‚‹. 
  * </JA>
  * 
  * @param fp [in] file pointer to output for

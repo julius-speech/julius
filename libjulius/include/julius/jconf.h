@@ -2,7 +2,7 @@
  * @file   jconf.h
  * 
  * <JA>
- * @brief  Jconf ╧╫б╓бн╓ндЙ╣а
+ * @brief  Jconf Ф╖▀И─═Д╫⌠Ц│╝Е╝ Г╬╘
  *
  * </JA>
  * 

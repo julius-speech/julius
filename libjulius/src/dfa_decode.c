@@ -2,23 +2,23 @@
  * @file   dfa_decode.c
  * 
  * <JA>
- * @brief  ����ʸˡ�˴�Ť���ñ��ͽ¬���裲�ѥ���
+ * @brief  記述文法に基づく次単語予測（第２パス）
  *
- * Ϳ����줿������Ф��ơ�DFA ʸˡ����³��ǽ�ʼ�ñ��ν������ꤹ��. 
- * �������ºݤˤ�, Ÿ���������ͽ¬������ü�ե졼����դ�ñ��ȥ�ꥹ
- * ��˻ĤäƤ���ñ��Τߤ�Ÿ�������. 
+ * 与えられた仮説に対して，DFA 文法上接続可能な次単語の集合を決定する. 
+ * ただし実際には, 展開元仮説の予測される始端フレーム周辺の単語トレリス
+ * 上に残っている単語のみが展開される. 
  *
- * ʸˡ����Ǥϥ��硼�ȥݡ�����ñ��Ȥ��Ƶ��Ҥ������Υ��硼�ȥݡ���ñ���
- * �и����֤�ʸˡ�ǻ��ꤹ��. ���������ºݤ����ϤǤϤ������ꤷ�����֤�
- * ɬ������ݡ���������ʤ����ᡤñ��Ÿ���ˤ����Ƥϡ�
- * ��ñ�콸��˥��硼�ȥݡ�����������ϡ�����ˤ��μ���ñ�콸��ޤǸ���
- * ��ñ�콸��˴ޤ��. �ºݤˤ����˥��硼�ȥݡ�������������뤫�ɤ����ϡ�
- * search_bestfirst_main.c ��ξ�ԤΥ���������Ӥ���Ƚ�Ǥ���. 
+ * 文法制約ではショートポーズは単語として記述し，そのショートポーズ単語の
+ * 出現位置を文法で指定する. ただし，実際の入力ではその想定した位置に
+ * 必ずしもポーズが入らないため，単語展開においては，
+ * 次単語集合にショートポーズがある場合は，さらにその次の単語集合まで見て
+ * 次単語集合に含める. 実際にそこにショートポーズが挿入されるかどうかは，
+ * search_bestfirst_main.c で両者のスコアを比較して判断する. 
  *
- * ʸˡ���Ѥ���ǧ���������󥹥��󥹤Ǥϡ�dfa_firstwords(), dfa_nextwords(),
- * dfa_acceptable(), dfa_eosscore() ����2�ѥ��Υᥤ��ؿ� wchmm_fbs() ����
- * ���Ѥ����. �ʤ� N-gram ���Ѥ���ǧ���������󥹥��󥹤Ǥϡ�
- * ����� ngram_decode.c ��δؿ����Ȥ���. 
+ * 文法を用いる認識処理インスタンスでは，dfa_firstwords(), dfa_nextwords(),
+ * dfa_acceptable(), dfa_eosscore() が第2パスのメイン関数 wchmm_fbs() から
+ * 使用される. なお N-gram を用いる認識処理インスタンスでは，
+ * 代わりに ngram_decode.c 内の関数が使われる. 
  * </JA>
  * 
  * <EN>
@@ -61,14 +61,14 @@
 
 /** 
  * <JA>
- * ʸˡ�ˤ������äơ�ʸƬ����³������ñ���ǽ��ͽ¬ñ�췲�Ȥ����֤�. 
+ * 文法にしたがって，文頭に接続しうる単語を最初の予測単語群として返す. 
  * 
- * @param nw [out] ��ñ�콸��γ�Ǽ��ؤΥݥ���
- * @param peseqlen [in] ���ϥե졼��Ĺ
- * @param maxnw [in] @a nw �ε���������Ĺ
- * @param r [in] ǧ���ץ��������󥹥���
+ * @param nw [out] 次単語集合の格納先へのポインタ
+ * @param peseqlen [in] 入力フレーム長
+ * @param maxnw [in] @a nw の許される最大長
+ * @param r [in] 認識プロセスインスタンス
  * 
- * @return ͽ¬���줿ñ��� (���������顼���� -1 ���֤�)
+ * @return 予測された単語数 (ただしエラー時は -1 を返す)
  * </JA>
  * <EN>
  * Return initial word set from grammar.
@@ -134,14 +134,14 @@ dfa_firstwords(NEXTWORD **nw, int peseqlen, int maxnw, RecogProcess *r)
 
 /** 
  * <JA>
- * ��ʬʸ������Ф��ơ�ʸˡ�˽��äƼ�����³������ñ�췲���֤�. 
+ * 部分文仮説に対して，文法に従って次に接続しうる単語群を返す. 
  * 
- * @param hypo [in] Ÿ��������ʬʸ����
- * @param nw [out] ��ñ�콸��γ�Ǽ��ؤΥݥ���
- * @param maxnw [in] @a nw �ε���������Ĺ
- * @param r [in] ǧ���ץ��������󥹥���
+ * @param hypo [in] 展開元の部分文仮説
+ * @param nw [out] 次単語集合の格納先へのポインタ
+ * @param maxnw [in] @a nw の許される最大長
+ * @param r [in] 認識プロセスインスタンス
  * 
- * @return ͽ¬���줿ñ��� (���������顼���� -1 ���֤�)
+ * @return 予測された単語数 (ただしエラー時は -1 を返す)
  * </JA>
  * <EN>
  * Given a part-of-sentence hypothesis, returns the next word set defined
@@ -213,12 +213,12 @@ dfa_nextwords(NODE *hypo, NEXTWORD **nw, int maxnw, RecogProcess *r)
 
 /** 
  * <JA>
- * ��ʬʸ���⤬ʸˡ��ʸ�Ȥ��ƺǽ�(������ǽ)���֤ˤ��뤫�ɤ������֤�. 
+ * 部分文仮説が文法上文として最終(受理可能)状態にあるかどうかを返す. 
  * 
- * @param hypo [in] ��ʬʸ����
- * @param r [in] ǧ���ץ��������󥹥���
+ * @param hypo [in] 部分文仮説
+ * @param r [in] 認識プロセスインスタンス
  * 
- * @return ������ǽ���֤ˤ���Ȥ� TRUE �����Բ�ǽ�ʤȤ� FALSE
+ * @return 受理可能状態にあるとき TRUE 受理不可能なとき FALSE
  * </JA>
  * <EN>
  * Return whether the hypothesis is currently on final state
@@ -246,18 +246,18 @@ dfa_acceptable(NODE *hypo, RecogProcess *r)
 /* patch by kashima */
 /** 
  * <JA>
- * ��ñ����䤬���ο��ꤵ�줿��³ͽ¬���������ñ��ȥ�ꥹ���
- * ���뤫�ɤ���������å������⤷����Ф��Υȥ�ꥹñ��ؤΥݥ��󥿤򥻥å�
- * ����. �ʤ��������³���Ϥ��ȤǷ�ޤ�Τǡ������ǤϺ�Ŭ�ʥȥ�ꥹñ��
- * �Ǥʤ��Ƥ褤. 
+ * 次単語候補がその推定された接続予測点の前後の単語トレリス上に
+ * あるかどうかをチェックし，もしあればそのトレリス単語へのポインタをセット
+ * する. なお最尤の接続点はあとで決まるので，ここでは最適なトレリス単語
+ * でなくてよい. 
  * 
- * @param nword [i/o] ��ñ����� (�б�����ȥ�ꥹñ��ؤΥݥ��󥿤�
- * ���åȤ����)
- * @param hypo [in] Ÿ��������
- * @param r [in] ǧ���ץ��������󥹥���
+ * @param nword [i/o] 次単語候補 (対応するトレリス単語へのポインタが
+ * セットされる)
+ * @param hypo [in] 展開元仮説
+ * @param r [in] 認識プロセスインスタンス
  * 
- * @return ñ��ȥ�ꥹ���ͽ¬�����ն�˼�ñ�줬¸�ߤ���� TRUE��¸��
- * ���ʤ���� FALSE ���֤�. 
+ * @return 単語トレリス上の予測位置付近に次単語が存在すれば TRUE，存在
+ * しなければ FALSE を返す. 
  * </JA>
  * <EN>
  * Check if the given nextword exists in the word trellis around the

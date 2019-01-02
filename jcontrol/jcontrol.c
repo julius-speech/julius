@@ -2,7 +2,7 @@
  * @file   jcontrol.c
  * 
  * <JA>
- * @brief  ����ץ�⥸�塼�륯�饤����� jcontrol �ᥤ��
+ * @brief  サンプルモジュールクライアント jcontrol メイン
  * </JA>
  * 
  * <EN>
@@ -30,9 +30,9 @@ static char rbuf[MAXLINELEN]; ///< Local workarea for message string handling
 
 /** 
  * <JA>
- * ���ޥ������: sbuf �Хåե��˳�Ǽ����Ƥ���桼�����ޥ�ɤ�������롥
+ * コマンド送信: sbuf バッファに格納されているユーザコマンドを処理する．
  * 
- * @param sd [in] ���������å�
+ * @param sd [in] 送信ソケット
  * </JA>
  * <EN>
  * Send command: process user command string in sbuf buffer.
@@ -105,9 +105,9 @@ do_command(int sd)
 
 /** 
  * <JA>
- * �ǡ�������: �����Ф���μ�����å�������ɸ����Ϥ˥���פ���
+ * データ受信: サーバからの受信メッセージを標準出力にダンプする
  * 
- * @param sd [in] ���������å�
+ * @param sd [in] 送信ソケット
  * </JA>
  * <EN>
  * Receive data: dump a message from server to standard out.
@@ -133,12 +133,12 @@ do_output(int sd)
 
 /** 
  * <JA>
- * @brief �ᥤ�󥤥٥�ȥ롼��
+ * @brief メインイベントループ
  * 
- * �����Ф���Υ�å������������٥�Ȥ���ӥ����ܡ��ɤ���Υ桼������
- * ���٥�Ȥ� �ƻ뤷���б����������Ԥ��ᥤ��ؿ���
+ * サーバからのメッセージ受信イベントおよびキーボードからのユーザ入力
+ * イベントを 監視し，対応する処理を行うメイン関数．
  * 
- * @param sd [in] ���������å�
+ * @param sd [in] 送信ソケット
  * </JA>
  * <EN>
  * @brief Main event loop
@@ -240,7 +240,7 @@ command_loop(int sd)
 
 /** 
  * <JA>
- * ������ˡ��ɸ����Ϥ˽��Ϥ��롥
+ * 使用方法を標準出力に出力する．
  * 
  * </JA>
  * <EN>
@@ -255,12 +255,12 @@ void usage()
 
 /** 
  * <JA>
- * �ᥤ��
+ * メイン
  * 
- * @param argc [in] �����ο�
- * @param argv [in] ������
+ * @param argc [in] 引数の数
+ * @param argv [in] 引数列
  * 
- * @return ���ｪλ�� 0, ���顼��λ�� 1 ���֤���
+ * @return 正常終了時 0, エラー終了時 1 を返す．
  * </JA>
  * <EN>
  * Main function.

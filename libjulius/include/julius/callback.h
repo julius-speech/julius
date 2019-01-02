@@ -6,7 +6,7 @@
  * </EN>
  * 
  * <JA>
- * @brief  ╔Ё║╪╔К╔п╔ц╔╞APIмядЙ╣а
+ * @brief  Ц┌ЁЦ┐╪Ц┐╚Ц┐░Ц┐┐Ц┌╞APIГ■╗Е╝ Г╬╘
  * </JA>
  * 
  * @author Akinobu Lee

@@ -2,10 +2,10 @@
  * @file   paramtypes.c
  *
  * <JA>
- * @brief  ��ħ�ѥ�᡼������ʸ����ɽ���ȥХ��ʥ�ɽ��������Ѵ�
+ * @brief  特徴パラメータ型の文字列表現とバイナリ表現の相互変換
  *
- * ���Υե�����δؿ��ϡ���ħ�ѥ�᡼������ʸ����ɽ����"MFCC_E_D_Z" �ʤɡ�
- * �� HTK �� short ����ɽ����������Х��ʥ�����Ȥ�����Ѵ���Ԥʤ��ޤ���
+ * このファイルの関数は，特徴パラメータ型の文字列表現（"MFCC_E_D_Z" など）
+ * と HTK の short 型で表される内部バイナリ形式との相互変換を行ないます．
  * </JA>
  * <EN>
  * @brief  Convert between string and binary expression of parameter type

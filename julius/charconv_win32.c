@@ -2,14 +2,14 @@
  * @file   charconv_win32.c
  * 
  * <JA>
- * @brief  ʸ���������Ѵ� (Win32 API + libjcode ����)
+ * @brief  文字コード変換 (Win32 API + libjcode 使用)
  *
- * Windows �� WideCharToMultiByte() ����� MultiByteToWideChar() ��
- * ���Ѥ���ʸ���������Ѵ���Ԥ�. "ansi" "oem" "mac" "utf-7" "utf-8" ���뤤��
- * Ǥ�դΥ����ɥڡ����ֹ�֤��Ѵ���unicode ��𤷤ƹԤ�. 
+ * Windows の WideCharToMultiByte() および MultiByteToWideChar() を
+ * 使用した文字コード変換を行う. "ansi" "oem" "mac" "utf-7" "utf-8" あるいは
+ * 任意のコードページ番号間の変換を，unicode を介して行う. 
  *
- * Windows �Ǥ� EUC �Υ����ɥڡ������б����Ƥ��ʤ��Τǡ��Ѵ�����ʸ�������ɤ�
- * euc-jp �ΤȤ��ϡ�libjcode �� SJIS ���Ѵ����Ƥ���unicode���Ѵ�����. 
+ * Windows では EUC のコードページに対応していないので，変換元の文字コードが
+ * euc-jp のときは，libjcode で SJIS に変換してからunicodeへ変換する. 
  *
  * </JA>
  * 

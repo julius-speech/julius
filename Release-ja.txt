@@ -1,802 +1,802 @@
 4.5 (2019.01.02)
 =================
-���V�@�\
-- ���o�X�g�� VAD �̂��߂� libfvad ����荞��
+○新機能
+- ロバストな VAD のために libfvad を取り込み
   - libfvad: a voice activity detection library based on WebRTC's VAD
   engine [https://github.com/dpirch/libfvad]
-  - �{�o�[�W������� dual-mode VAD �ƂȂ����F
-    - �����W���[���i���͐U���ƃ[���������x�[�X�j
-    - �V���W���[���ilibfvad�x�[�X (=���f���x�[�X)�j
-  - 2��VAD���W���[���̓I�[�f�B�I���͂ɑ΂��ĕ��s�œ����ɓ���
-  - �����Ƃ��g���K�����Ƃ��ɉ�����Ԃ��J�n�����
-  - �VVAD (libfvad) �̓f�t�H���g�ł̓I�t�B�I�v�V���� "-fvad �l" �ŗL��
-  ���B�l�� 0 ���� 3 �ő傫���قǃA�O���b�V�u�� VAD ���s���B(WebRTC�̎d
-  �l�̂܂܁j
-  - �VVAD �Ɗ֘A�I�v�V������ julius, adinrec, adintool �ɂĎg�p�\
-  - �g�����̗�: 
-      - "-fvad -1" �ŋ����W���[���̂ݎg�p�i�ȑO�̃o�[�W�����Ɠ����j
-      - "-fvad 3 -lv 1" �ŐV���W���[���̂ݎg�p�B "-lv 1" �Ƃ��邱�Ƃ�
-      �����W���[������Ƀg���K��Ԃɂ��邱�ƂŁAVAD���ʂ��V���W���[��
-      �݂̂Ɉˑ������邱�Ƃ��ł���
-- �}���`�X���b�h�� DNN �v�Z���T�|�[�g
-  - �X���b�h���� dnnconf �� "num_threads" �Ŏw��ł���B�f�t�H���g�� 2�Bo
+  - 本バージョンより dual-mode VAD となった：
+    - 旧モジュール（入力振幅とゼロ交差数ベース）
+    - 新モジュール（libfvadベース (=モデルベース)）
+  - 2つのVADモジュールはオーディオ入力に対して並行で同時に動く
+  - 両方ともトリガしたときに音声区間が開始される
+  - 新VAD (libfvad) はデフォルトではオフ。オプション "-fvad 値" で有効
+  化。値は 0 から 3 で大きいほどアグレッシブな VAD を行う。(WebRTCの仕
+  様のまま）
+  - 新VAD と関連オプションは julius, adinrec, adintool にて使用可能
+  - 使い方の例: 
+      - "-fvad -1" で旧モジュールのみ使用（以前のバージョンと等価）
+      - "-fvad 3 -lv 1" で新モジュールのみ使用。 "-lv 1" とすることで
+      旧モジュールを常にトリガ状態にすることで、VAD結果が新モジュール
+      のみに依存させることができる
+- マルチスレッドの DNN 計算をサポート
+  - スレッド数は dnnconf で "num_threads" で指定できる。デフォルトは 2。o
 
-���ύX�_
-- ���W���[�����[�h�̏o��(XML�`��) �� XML �G�X�P�[�v�ɑΉ�
-  - <, >, ", &, ' �� &lt;, &gt;, &quot; &amp;, %apos; �ɕϊ������
-  - �I�v�V���� "-noxmlescape" �ŃG�X�P�[�v���I�t�ɂ��ĈȑO�̃o�[�W����
-  �̓���ɖ߂��܂�
+○変更点
+- モジュールモードの出力(XML形式) で XML エスケープに対応
+  - <, >, ", &, ' は &lt;, &gt;, &quot; &amp;, %apos; に変換される
+  - オプション "-noxmlescape" でエスケープをオフにして以前のバージョン
+  の動作に戻せます
 
-���o�O�C��
-- ����r���h (ex. make -j 4)
-- adintool-gui �Ɉ�����^����Ƃ��܂ɃN���b�V������o�O���C��
-- ���[�j���O�E���������[�N���C��
-- �ꕔ OS �ł̃r���h�G���[���C��
+○バグ修正
+- 並列ビルド (ex. make -j 4)
+- adintool-gui に引数を与えるとたまにクラッシュするバグを修正
+- ワーニング・メモリリークを修正
+- 一部 OS でのビルドエラーを修正
 
-���V�I�v�V����
-  [-fvad mode]  libfvad�x�[�XVAD�̗L��/��������у��[�h�̐ݒ�B mode
-  �� -1 ���Ɩ������A0 ���� 3 ���ƗL�����B0 �ȏ�̒l�͋��x��\���A�l��
-  �傫���قǃA�O���b�V�u��VAD�ɂȂ�(= speech-like noise �ł����Ƃ�����
-  ����j�B�f�t�H���g�l�� -1 �i�����j  
+○新オプション
+  [-fvad mode]  libfvadベースVADの有効/無効およびモードの設定。 mode
+  が -1 だと無効化、0 から 3 だと有効化。0 以上の値は強度を表し、値が
+  大きいほどアグレッシブなVADになる(= speech-like noise でも落とそうと
+  する）。デフォルト値は -1 （無効）  
 
-  [-fvad_param nFrame thres]  libfvad �x�[�XVAD�̏ڍ׃p�����[�^��ύX
-  ����BnFrame �̓X���[�W���O�t���[�����Athres �͉����g���K���m臒l��
-  0.0 ���� 1.0 �̊Ԃ̒l�B�f�t�H���g�l�͂��ꂼ�� 5, 0.5 �ł���B
+  [-fvad_param nFrame thres]  libfvad ベースVADの詳細パラメータを変更
+  する。nFrame はスムージングフレーム数、thres は音声トリガ検知閾値で
+  0.0 から 1.0 の間の値。デフォルト値はそれぞれ 5, 0.5 である。
 
-���Vconfigure�I�v�V����
-  "--disable-libfvad": libfvad �̃r���h�𖳌���
+○新configureオプション
+  "--disable-libfvad": libfvad のビルドを無効化
 
-���h�L�������g�X�V��
+○ドキュメント更新中
 - adinrec,adintool README.md README.ja.md
 - julius README.md, Options.md
 
 
 4.4.2.1 (2016.12.20)
 ====================
-- Android��iOS�p�ׂ̍����C��
-- msvc�f�B���N�g���̐���
+- AndroidとiOS用の細かい修正
+- msvcディレクトリの整理
 
 4.4.2 (2016.09.12)
 ===================
-- dnnconf ���̑��΃p�X������dnnconf���g����̑��΃p�X�Ƃ��Ĉ����悤�C��
-- DNN�g�p���A�F�������̑�2�p�X���ُ�ɒx�����Ƃ�����s����C��
-- AVX��Ή���CPU��DNN�v�Z�����삵�Ȃ��s����C��
-- ARM��VisualStudio�ł̃r���h�����P
+- dnnconf 内の相対パスをそのdnnconf自身からの相対パスとして扱うよう修正
+- DNN使用時、認識処理の第2パスが異常に遅いことがある不具合を修正
+- AVX非対応のCPUでDNN計算が動作しない不具合を修正
+- ARMとVisualStudioでのビルドを改善
 
 4.4.1 (2016.09.07)
 ===================
-- DNN��SIMD�v�Z�̍������ƈ��艻�FSSE���߁AFMA���߁AARM��NEON���߂�����
-- DNN�g�p����CPU�������`�F�b�N���čœK��SIMD�R�[�h��I���g�p����悤�g��
-- VisualStudio2013�ł̃R���p�C���p�� PortAudio �� zlib �̃\�[�X�𓯍�
-- mkbinhmmlist�ō�����o�C�i��HMMList���������ǂ߂Ȃ����Ƃ�����o�O���C��
-- adintool-gui �R���p�C������SDL���肪�����Ȃ��̂��C��
-- "INSTALL.txt" �ɊeOS�ł̃r���h�̃Z�b�g�A�b�v�Ǝ��s���@���L�q
-- pkg-config �ɑΉ�
-- ���̑��o�O�̏C��
+- DNNのSIMD計算の高速化と安定化：SSE命令、FMA命令、ARMのNEON命令を実装
+- DNN使用時にCPUを自動チェックして最適なSIMDコードを選択使用するよう拡張
+- VisualStudio2013でのコンパイル用に PortAudio と zlib のソースを同梱
+- mkbinhmmlistで作ったバイナリHMMListが正しく読めないことがあるバグを修正
+- adintool-gui コンパイル時のSDL周りが動かないのを修正
+- "INSTALL.txt" に各OSでのビルドのセットアップと実行方法を記述
+- pkg-config に対応
+- その他バグの修正
 
 4.4 (2016.08.30)
 =================
-- DNN-HMM�̌v�Z���T�|�[�g
-- "adintool-gui": �������̓��j�^GUI�t�� adintool (adintool/README-GUI.txt�Q��)
-- "binlm2arpa": �o�C�i�����ꃂ�f����ARPA�ɕϊ�����
-- "mkbingram" �Ɍ��ꃂ�f���̕����R�[�h��ϊ����ďo�͂���I�v�V���� "-c" ��ǉ�
-- ���W���[�����[�h�œ��쎞�C�N���C�A���g�ؒf��ɗ������ɍĐڑ��ł���悤���P
-- �����OS�ł̃R���p�C���G���[���C��
-- ���������[�N������C��
-- �o�[�W����2.6�ȍ~�� Autoconf �œ��삷��悤�C��
-- GitHub�p�̃t�@�C����ǉ��iREADME.md, CONTRIBUTING.md ���j
-- DNN-HMM���g�����F���̐����e�L�X�g "00readme-DNN.txt" ��ǉ�
-- VisualStudio2013�ȍ~���T�|�[�g
+- DNN-HMMの計算をサポート
+- "adintool-gui": 音声入力モニタGUI付き adintool (adintool/README-GUI.txt参照)
+- "binlm2arpa": バイナリ言語モデルをARPAに変換する
+- "mkbingram" に言語モデルの文字コードを変換して出力するオプション "-c" を追加
+- モジュールモードで動作時，クライアント切断後に落ちずに再接続できるよう改善
+- 幾つかのOSでのコンパイルエラーを修正
+- メモリリークを幾つか修正
+- バージョン2.6以降の Autoconf で動作するよう修正
+- GitHub用のファイルを追加（README.md, CONTRIBUTING.md 等）
+- DNN-HMMを使った認識の説明テキスト "00readme-DNN.txt" を追加
+- VisualStudio2013以降をサポート
 
 4.3.1 (2014.01.15)
 ===================
-���o�O�C��
-- OS X �ł̃R���p�C���G���[
-- adintool �ł̕s�v�ȃf�o�b�O���b�Z�[�W�o��
-- "-cmnload" �܂��̓ǂݍ��݁E�v�Z�Ɋւ�邢�����̃o�O
+○バグ修正
+- OS X でのコンパイルエラー
+- adintool での不要なデバッグメッセージ出力
+- "-cmnload" まわりの読み込み・計算に関わるいくつかのバグ
 
 4.3 (2013.12.25)
 =================
-���V�@�\
-- �t�B���^�o���N�o�́iFBANK ����� MELSPEC�j�̃T�|�[�g
-- �l�b�g���[�N�o�R�̓����ʃx�N�g�����͂���яo�͊m���x�N�g������
-- DNN-HMM�f�R�[�f�B���O�̂��߂̏�ԏo�͊m���x�N�g���ioutprob vector�j����
-- DNN-HMM�f�R�[�f�B���O�̂��߂�hmmdefs�ւ� "<SID>" �g���̓���
-- adintool �Ń��A���^�C���̓����ʒ��o�ƃl�b�g���[�N���M���\��
+○新機能
+- フィルタバンク出力（FBANK および MELSPEC）のサポート
+- ネットワーク経由の特徴量ベクトル入力および出力確率ベクトル入力
+- DNN-HMMデコーディングのための状態出力確率ベクトル（outprob vector）入力
+- DNN-HMMデコーディングのためのhmmdefsへの "<SID>" 拡張の導入
+- adintool でリアルタイムの特徴量抽出とネットワーク送信が可能に
 
-���ύX�_
-- mkbinhmm ���ϊ���hmmdefs�̏�ԏ����邢��ID�i"<SID>"�j��ێ�
-- Portaudio �g�p���G���W����pause/resume�ŉ����f�o�C�X����~�E�ĊJ����
-- CMN/CVN�p�̃P�v�X�g�������ρE���U�� HTK �e�L�X�g�`���ŕۑ�����悤��
+○変更点
+- mkbinhmm が変換元hmmdefsの状態順あるいはID（"<SID>"）を保持
+- Portaudio 使用時エンジンのpause/resumeで音声デバイスも停止・再開する
+- CMN/CVN用のケプストラム平均・分散を HTK テキスト形式で保存するように
 
-���V�I�v�V����
-  [-input vecnet]       �l�b�g���[�N���������/�o�͊m���x�N�g����ǂݍ���
-  [-input outprob]      HTK�p�����[�^�t�@�C�����o�͊m���x�N�g���Ƃ��ēǂݍ���
-  [-outprobout [file]]  �v�Z���ꂽ�o�͊m���s���HTK�`���t�@�C���ɕۑ�(debug)
+○新オプション
+  [-input vecnet]       ネットワークから特徴量/出力確率ベクトルを読み込む
+  [-input outprob]      HTKパラメータファイルを出力確率ベクトルとして読み込む
+  [-outprobout [file]]  計算された出力確率行列をHTK形式ファイルに保存(debug)
 
 
 4.2.3 (2013.06.30)
 ==================
 
-���V�@�\
-- �����̃����[�h: j_reload_adddict()
-- �������͂̐U���̃X�P�[�����O�F"-lvscale factor" ����� 
+○新機能
+- 辞書のリロード: j_reload_adddict()
+- 音声入力の振幅のスケーリング："-lvscale factor" および 
   "j_adin_change_input_scaling_factor()"
-- �������͂̊��p�F"-rejectlong msec"
-- �o�C�i��N-gram�̕����R�[�h�ϊ����T�|�[�g: "mkbingram"
-- �x�C�Y���X�N�ŏ���(MBR)�T���̎����i�잊�_�P���C�ÒJ�Ɏ����񋟁j
+- 長い入力の棄却："-rejectlong msec"
+- バイナリN-gramの文字コード変換をサポート: "mkbingram"
+- ベイズリスク最小化(MBR)探索の実装（南條浩輝氏，古谷遼氏より提供）
 
-���C�����ꂽ�o�O
-- �r�b�O�G���f�B�A���}�V����adinnet�ŉ������l�b�g���[�N���M����Ƃ���
-  �G���f�B�A�����قȂ��Ă������
-- j_close_stream() �ŉ����f�o�C�X�̃N���[�Y�ɂ��܂Ɏ��s����
-- 64bit���ŕϊ����ꂽ�p�����[�^���ߍ��ݕt���o�C�i��HMM���ǂݍ��߂Ȃ����
-- N-gram �t�@�C���ǂݍ��ݎ��s���̃��������[�N
-- ���͒��I�[�o�[�t���[���̃��������[�N
-- �����x�N�g���Ăэ��݃v���O�C�������삵�Ȃ�
-- �ŐV��MacOSX�ŃR���p�C���Ɏ��s����
+○修正されたバグ
+- ビッグエンディアンマシンでadinnetで音声をネットワーク送信するときに
+  エンディアンが異なっていた問題
+- j_close_stream() で音声デバイスのクローズにたまに失敗する
+- 64bit環境で変換されたパラメータ埋め込み付きバイナリHMMが読み込めない問題
+- N-gram ファイル読み込み失敗時のメモリリーク
+- 入力長オーバーフロー時のメモリリーク
+- 特徴ベクトル呼び込みプラグインが動作しない
+- 最新のMacOSXでコンパイルに失敗する
 
 
 4.2.2 (2012.08.01)
 ==================
 
-���C���_
+○修正点
 
-- Flex ���C�u���������ŃR���p�C���ł���悤�ɂȂ���
-- "--enable-words-int" �w�莞�ɒʏ�̃o�C�i�� N-gram ���ǂ߂Ȃ��s����C��
-- Windows �ɂ����� jconf ���Ńo�b�N�X���b�V���̓������p�X�������Ȃ��o�O���C��
-- �G���[���܂ޒP�ꎫ����ǂ񂾂Ƃ��� segfault ����s����C��
-- �T�����ɋH�� segfault ����s����C��
+- Flex ライブラリ無しでコンパイルできるようになった
+- "--enable-words-int" 指定時に通常のバイナリ N-gram が読めない不具合を修正
+- Windows において jconf 内でバックスラッシュの入ったパスを扱えないバグを修正
+- エラーを含む単語辞書を読んだときに segfault する不具合を修正
+- 探索中に稀に segfault する不具合を修正
 
 
 4.2.1 (2011.12.25)
 ===================
 
-���V�@�\
-- ���@�F���ɂ����ĒP��ʂ̑}���y�i���e�B�ݒ���T�|�[�g�D
-  �����ɂ����Ĉȉ��̂悤�Ɏw�肷��
+○新機能
+- 文法認識において単語別の挿入ペナルティ設定をサポート．
+  辞書において以下のように指定する
         15 @-2.0 15 [a] a
-  ��P�t�B�[���h�͏]���Ɠ����J�e�S���ԍ��B
-�@��Q�t�B�[���h�� "@" �ɑ����đ}���y�i���e�B��ΐ��Ŏw�肷��B
-�@��R�t�B�[���h�͑�P�t�B�[���h�Ɠ����l�������B
+  第１フィールドは従来と同じカテゴリ番号。
+　第２フィールドに "@" に続けて挿入ペナルティを対数で指定する。
+　第３フィールドは第１フィールドと同じ値を書く。
 
-- �V�I�v�V���� "-chunk_size": �I�[�f�B�I���͂̃o�b�t�@�����T���v������
-  �w��\�i�f�t�H���g�F 1000�j����������ƒx�����������ł��邪������
-  ����ƕs����ɂȂ�B
-- adintool �ŕW�����͎��Ɍ��o���f�t�H���g�ŗL����
+- 新オプション "-chunk_size": オーディオ入力のバッファ長をサンプル数で
+  指定可能（デフォルト： 1000）小さくすると遅延を小さくできるが小さす
+  ぎると不安定になる。
+- adintool で標準入力時に検出をデフォルトで有効化
 
-���C�����ꂽ�o�O
-- �����ʂ� C0 ���g���Ă���Ƃ��CC0 �� CMN ���s���Ȃ�
-�@�i���̃o�O��4.1.3�`4.2�܂ł�Julius�ɑ��݂���j
-- mkbingram�Cgenerate-ngram �� cygwin �ŗ�����
-- "-adddict" �Œǉ����������� "-forcedict" �������Ȃ�
-- �����^�����CCTRL+C �Ŏ~�߂�� WAV �w�b�_�Ƀf�[�^�����������܂�Ȃ�
-- �G���[���܂ގ�����ǂ񂾂Ƃ��A�G���[��f������ segfault ����
-- "--enable-word-graph" �ŃR���p�C���G���[���o��
+○修正されたバグ
+- 特徴量に C0 を使っているとき，C0 に CMN が行われない
+　（このバグは4.1.3〜4.2までのJuliusに存在する）
+- mkbingram，generate-ngram が cygwin で落ちる
+- "-adddict" で追加した辞書に "-forcedict" が効かない
+- 音声録音時，CTRL+C で止めると WAV ヘッダにデータ長が書きこまれない
+- エラーを含む辞書を読んだとき、エラーを吐かずに segfault する
+- "--enable-word-graph" でコンパイルエラーが出る
 
 
 4.2 (2011.05.01)
 =================
 
-���V�@�\
-- ��P�p�X�̃X�R�A�v���[�j���O�D"-bs �l" �ŗL����, "�l" �̓X�R�A���D
-  �ʏ�̃����N�v���[�j���O(-b �l) �ƕ��p�D�f�t�H���g�̓I�t�D
-- �V�I�v�V���� "-adddict" "-addword"�F�����E�P��G���g����ǉ��ǂݍ��݁D
-- PulseAudio �T�|�[�g (--with-mictype=pulseaudio)
-- Portaudio �� V19 �ɍX�V�D
-- Portaudio ���g���S�Ă̏ꍇ�ɂ����āC�����̘^���f�o�C�X�����p�\�ȂƂ��C
-  ���ϐ� PORTAUDIO_DEV_NUM �Ŏg�p����^���f�o�C�X���w��\�ɂ����D
-  �N�����ɏo�͂����f�o�C�X�ꗗ�̒l���w�肷��D
+○新機能
+- 第１パスのスコアプルーニング．"-bs 値" で有効化, "値" はスコア幅．
+  通常のランクプルーニング(-b 値) と併用．デフォルトはオフ．
+- 新オプション "-adddict" "-addword"：辞書・単語エントリを追加読み込み．
+- PulseAudio サポート (--with-mictype=pulseaudio)
+- Portaudio を V19 に更新．
+- Portaudio を使う全ての場合において，複数の録音デバイスが利用可能なとき，
+  環境変数 PORTAUDIO_DEV_NUM で使用する録音デバイスを指定可能にした．
+  起動時に出力されるデバイス一覧の値を指定する．
 
-���d�l�ύX�𔺂����P
-- mkbinhmmlist ���������f�����璊�o���� pseudo phone ��������������
-  ���ɂȂ����D�N���̍������Ɋ�^����D�������쐬�����������f���ƃZ�b�g
-  �Ŏg�p����K�v������D�܂��C���̃o�[�W�����ȍ~�� mkbinhmmlist �ō쐬
-  ���� binhmmlist �t�@�C���͈ȑO�̃o�[�W�����ł͎g�p�ł��Ȃ��D
-- �I�[�f�B�I���C�u�����̃����N���@�̕ύX�Dconfigure ��
-  "--with-mictype" ���w�肵���Ƃ��́C���̎w�肳�ꂽ���C�u�������̂݁�
-  �������N����悤�ɂȂ����D�w�肪�Ȃ��Ƃ��́C�]���ʂ�C���o���ꂽ
-  ���C�u������S�ă����N����D
+○仕様変更を伴う改善
+- mkbinhmmlist が音響モデルから抽出した pseudo phone 情報も書きだすよ
+  うになった．起動の高速化に寄与する．ただし作成した音響モデルとセット
+  で使用する必要がある．また，このバージョン以降の mkbinhmmlist で作成
+  した binhmmlist ファイルは以前のバージョンでは使用できない．
+- オーディオライブラリのリンク方法の変更．configure に
+  "--with-mictype" を指定したときは，その指定されたライブラリ＊のみ＊
+  をリンクするようになった．指定がないときは，従来通り，検出された
+  ライブラリを全てリンクする．
 
-�����C�u�����֐�
-- j_config_load_string_new(char *str): j_config_load_file() �Ɠ��l�C
-  �������t�@�C���ł͂Ȃ� str �Ɋ܂܂��I�v�V�����w�蕶����𒼐�
-  �]������D
-- add_dict() ����� add_word(): �I�v�V���� "-adddict" "-addword" �Ɠ�
-  �����C������P���ǉ�����D�G���W���N���㓮�I�ɂ͂ł��Ȃ��̂ŁC
-  �G���W���C���X�^���X�����O�ɌĂԂ��ƁD
-- portaudio �g�p��(Windows��), ���ϐ� PORTAUDIO_DEV_NUM �Ɠ��l�ɁC
-  j_open_stream(recog, NUMSTR) �Ƃ��Ĉ����ł��f�o�C�X�I�����\�D
-- portaudio �g�p��(Windows��)�Cget_device_list() �ŗ��p�\�ȃf�o�C�X
-  �ꗗ���擾�ł���D
+○ライブラリ関数
+- j_config_load_string_new(char *str): j_config_load_file() と同様，
+  ただしファイルではなく str に含まれるオプション指定文字列を直接
+  評価する．
+- add_dict() および add_word(): オプション "-adddict" "-addword" と同
+  じく，辞書や単語を追加する．エンジン起動後動的にはできないので，
+  エンジンインスタンス生成前に呼ぶこと．
+- portaudio 使用時(Windows等), 環境変数 PORTAUDIO_DEV_NUM と同様に，
+  j_open_stream(recog, NUMSTR) として引数でもデバイス選択が可能．
+- portaudio 使用時(Windows等)，get_device_list() で利用可能なデバイス
+  一覧を取得できる．
 
-�����\���P�E�o�O�C��
-- �؍\�����������ꕔ�œK���C���ɑ��b�Ń������ʂ��팸
-- N-gram�ǂݍ��ݎ��C�ꍇ�ɂ���Ă͐�����malloc���Ă����̂����炵��
-- ���������[�N���قږo�ŁiValgrind�g�p�j
-- j_close_stream() �Ɋւ���s��𕡐��C��
-- "-iwsp" ���}���`�p�X�������f�������Ŏg����悤�C��
+○性能改善・バグ修正
+- 木構造化辞書を一部最適化，特に大語彙でメモリ量を削減
+- N-gram読み込み時，場合によっては数万回mallocしていたのを減らした
+- メモリリークをほぼ撲滅（Valgrind使用）
+- j_close_stream() に関する不具合を複数修正
+- "-iwsp" をマルチパス音響モデルだけで使えるよう修正
 
 
 4.1.5.1 (2010.12.25)
 =====================
 
-���C��
- - ���C�Z���X�Ɋւ�������C��
+○修正
+ - ライセンスに関する問題を修正
 
 
 4.1.5 (2010.06.04)
 ===================
 
-�ȉ��̃o�O���C���F
+以下のバグを修正：
 
-�E���ꃂ�f���ƃf�R�[�f�B���O�̃o�O�C��
- �i�X�R�A�ƔF�����ɉe������\������j
-  - ���@�F���ŒP��}���y�i���e�B�̈����������������Ƃ�����̂𔭌��E�C��
-�@- ��2�p�X�ōŏ��̒P�� "</s>" ��1-gram�𖳎����Ă����̂��C��
+・言語モデルとデコーディングのバグ修正
+ （スコアと認識率に影響する可能性あり）
+  - 文法認識で単語挿入ペナルティの扱いがおかしいことがあるのを発見・修正
+　- 第2パスで最初の単語 "</s>" の1-gramを無視していたのを修正
 
-�EMFCC�����ʌv�Z
-�@- Liftering �p�����[�^�iCEPLIFTER�j�� 0 �̂Ƃ��Ɍv�Z�����������Ȃ�o
-    �O���C��
+・MFCC特徴量計算
+　- Liftering パラメータ（CEPLIFTER）が 0 のときに計算がおかしくなるバ
+    グを修正
 
-�E�R���p�C����
-  - cygwin, MSVC �ł̃R���p�C�������P
-  - cygwin �� "gcc -mno-cygwin" ���T�|�[�g
-  - "--disable-plugin" �� configure �Ŏw�肵���Ƃ��ɃG���[�ɂȂ�̂��C��
+・コンパイル環境
+  - cygwin, MSVC でのコンパイルを改善
+  - cygwin で "gcc -mno-cygwin" をサポート
+  - "--disable-plugin" を configure で指定したときにエラーになるのを修正
 
-�E���W���[�����[�h
-  - jcontrol ���� addgram �� changegram �ŕ��@�E����������Ȃ����Ƃ���
-�@�@��̂��C��
-  - "DELPROCESS" �R�}���h���ASR �� LM �̃C���X�^���X�����قȂ�Ƃ�����
-�@�@�Ȃ��̂��C���B�iSR���݂̂ŉ\�j
+・モジュールモード
+  - jcontrol から addgram や changegram で文法・辞書が送れないことがあ
+　　るのを修正
+  - "DELPROCESS" コマンドが、SR と LM のインスタンス名が異なるとき動か
+　　ないのを修正。（SR名のみで可能）
 
-�E���̑��C��
-  - "-mapunk" �I�v�V�����������𐳂����ǂ߂Ȃ����Ƃ�����̂��C��
-  - jconf �t�@�C������ "-htkconf" ���t�@�C������ jconf ����̑��΃p�X
-    �Ɖ��߂��Ȃ��o�O���C��
-  - "-input stdin" �ŕW�����͂���^���鉹�����̓t�@�C���� WAV �`����
-    �g���Ȃ������̂��C��
-  - �v���O�C���̏ꏊ�w�� "-plugin �f�B���N�g����" �� MSVC �œ����Ȃ���
-    ���̂��C��
+・その他修正
+  - "-mapunk" オプションが引数を正しく読めないことがあるのを修正
+  - jconf ファイル内の "-htkconf" がファイル名を jconf からの相対パス
+    と解釈しないバグを修正
+  - "-input stdin" で標準入力から与える音声入力ファイルに WAV 形式が
+    使えなかったのを修正
+  - プラグインの場所指定 "-plugin ディレクトリ名" が MSVC で動かなかっ
+    たのを修正
 
 
 4.1.4 (2009.12.25)
 ===================
 
-���V�K
- - MSVC �ŃR���p�C�����ꂽJulius�ɂ����ĉ������̓f�o�C�X��I������@�\
-   ��ǉ��D���ϐ� PORTAUDIO_DEV_NUM �Ŕԍ����w�肷��D�f�o�C�X�̔ԍ�
-   �͋N�����Ɉꗗ�����O�ɏo��̂ł��̒�����I�����Ďw�肷�邱�ƁD
- - MSVC�� Julius �Ō��ꃂ�f�����ƂɃ��P�[�����w��ł���悤�ɂȂ����D
+○新規
+ - MSVC でコンパイルされたJuliusにおいて音声入力デバイスを選択する機能
+   を追加．環境変数 PORTAUDIO_DEV_NUM で番号を指定する．デバイスの番号
+   は起動時に一覧がログに出るのでその中から選択して指定すること．
+ - MSVC版 Julius で言語モデルごとにロケールを指定できるようになった．
 
-���C��
- - Mac OS X (OS X 10.6 SDK) �ŃR���p�C���ł���悤�ɂȂ���
- - �x���̒ጸ�ƌ݊����Ɋւ��� portaudio (Windows�p) ����̏C��
+○修正
+ - Mac OS X (OS X 10.6 SDK) でコンパイルできるようになった
+ - 遅延の低減と互換性に関する portaudio (Windows用) 周りの修正
 
 
 4.1.3 (2009.11.02)
 ===================
 
-���V�K
- - �V���� MSVC �T�|�[�g�F"msvc/00README.txt" ��ǂ�ł��������B
- - �C�Ӓ��� N-gram ���T�|�[�g
- - �V�X�e���� portaudio ���C�u�����ƃw�b�_������΁AJulius ������ 
-   portaudio �̑���ɂ�����g�p����悤�ɂȂ����B�O�����C�u������
-   V19 �ɂ��Ή�����B���̏ꍇ�A�^���f�o�C�X�� PORTAUDIO_DEV �Ŏw��\�B
-   �����͋N�����̃��O�����邱�ƁB
- - ���W���[�����[�h�ŃA���C�����g���� (-walign) ���o�͉\��
+○新規
+ - 新たな MSVC サポート："msvc/00README.txt" を読んでください。
+ - 任意長の N-gram をサポート
+ - システムに portaudio ライブラリとヘッダがあれば、Julius 内蔵の 
+   portaudio の代わりにそれを使用するようになった。外部ライブラリは
+   V19 にも対応する。その場合、録音デバイスを PORTAUDIO_DEV で指定可能。
+   書式は起動時のログを見ること。
+ - モジュールモードでアライメント結果 (-walign) を出力可能に
 
-���ύX�E�C��
- - 4.1.x �� 0���P�v�X�g��������CMN���Ă����̂��A4.0.x �ȑO�Ɠ��l�ɍs��
-   �Ȃ��悤�d�l�ύX�����B
- - j_get_current_filename() �� JuliusLib �ɒǉ�
- - "--enable-wpair" �̃A���S���Y�����኱���P
+○変更・修正
+ - 4.1.x で 0次ケプストラム項をCMNしていたのを、4.0.x 以前と同様に行わ
+   ないよう仕様変更した。
+ - j_get_current_filename() を JuliusLib に追加
+ - "--enable-wpair" のアルゴリズムを若干改善
 
-���o�O�C��
- - ���̓X�g���[���J�n�E�I���ɂ܂�镡���̃o�O���C��
- - julius-simple �� make �ł��Ȃ��o�O���C��
- - cygwin �Ř^���ł��Ȃ��o�O���C��
- - adintool �� "-server" �ŗ�����o�O���C��
- - ���܂ɕ��@�F���ŕ��@�؂�ւ���ɗ�����o�O���C��
+○バグ修正
+ - 入力ストリーム開始・終了にまつわる複数のバグを修正
+ - julius-simple が make できないバグを修正
+ - cygwin で録音できないバグを修正
+ - adintool が "-server" で落ちるバグを修正
+ - たまに文法認識で文法切り替え後に落ちるバグを修正
 
 
 4.1.2 (2009.02.12)
 ===================
 
 [N-gram]
- - �T�C�Y����� 2GB ���� 4GB �Ɋg��
- - "-mapunk" �� unknown word ���w��\�ɁD�f�t�H���g�� "<unk>" "<UNK>"
- - �`�F�b�N�̌������F�����ɖ��m�ꂪ����ꍇ�CN-gram �� "<unk>" �������ƃG���[
-[SRILM�Ή�]
- - backward ARPA �ǂݍ��ݎ��� <s> </s> ����������ւ�
- - mkbingram �� backward ARPA �ǂݍ��ݎ��� "-swap" �Ŗ����I�ɓ���ւ�
- - <s>�� 1-gram���K�� -99 �ɂȂ�̂������C��
-[�@�\���P]
- - successor list �\�z�A���S���Y�����������D
- - yomi2voca.pl �X�V
- - ALSA audio buffer overrun �΍�
- - generate-ngram �� -debug �w�莞�̋�����ύX
+ - サイズ上限を 2GB から 4GB に拡張
+ - "-mapunk" で unknown word を指定可能に．デフォルトは "<unk>" "<UNK>"
+ - チェックの厳密化：辞書に未知語がある場合，N-gram に "<unk>" が無いとエラー
+[SRILM対応]
+ - backward ARPA 読み込み時に <s> </s> を自動入れ替え
+ - mkbingram で backward ARPA 読み込み時に "-swap" で明示的に入れ替え
+ - <s>の 1-gramが必ず -99 になるのを自動修正
+[機能改善]
+ - successor list 構築アルゴリズムを高速化．
+ - yomi2voca.pl 更新
+ - ALSA audio buffer overrun 対策
+ - generate-ngram の -debug 指定時の挙動を変更
 [JuliusLib]
- - j_close_stream() �ǉ�
-[�o�O�C��]
- - adintool �����T�[�o�w��ł��Ȃ��o�O�C��
- - cygwin �ł̃R���p�C���G���[�C�� (libesd)
- - "-input" ���w�莞�ɗ�����o�O���C��
+ - j_close_stream() 追加
+[バグ修正]
+ - adintool 複数サーバ指定できないバグ修正
+ - cygwin でのコンパイルエラー修正 (libesd)
+ - "-input" 無指定時に落ちるバグを修正
 
 
 4.1.1 (2008.12.13)
 ===================
-�o�O�C���F
+バグ修正：
 
 [N-gram]
-  - SRILM �Ŋw�K�������ꃂ�f�����������ǂݍ��߂Ȃ��o�O���C��
-[��������]
-  - "-htkconf ConfigFile" �� ConfigFile ���� "SOURCERATE" �����������
-    �̂��C��
-  - "-input stdin" �������Ȃ��̂��C��
-[�A���C�������g]
-  - �P�P��F���� "-1pass" �w�莞�ł��A���C�������g���o����悤�ɂȂ���
-  - "-palign", "-walign" �� "-salign" �𕡐��w�肵�Ă��ǂꂩ�����
-    ���s����Ȃ��o�O���C��
+  - SRILM で学習した言語モデルが正しく読み込めないバグを修正
+[音声入力]
+  - "-htkconf ConfigFile" で ConfigFile 内の "SOURCERATE" が無視される
+    のを修正
+  - "-input stdin" が動かないのを修正
+[アラインメント]
+  - 単単語認識や "-1pass" 指定時でもアラインメントを出せるようになった
+  - "-palign", "-walign" と "-salign" を複数指定してもどれか一つしか
+    実行されないバグを修正
 [Module mode]
-  - �P�P��F���� �� receive/activate/dactivate �ł��Ȃ��o�O���C��
-  - �N���C�A���g���當�@��ID�ԍ��Ŏw�肷��ƃt���[�Y����o�O���C��
-  - �F�����ʂ̑����镶�@�ԍ� (GRAM=..) �̏o�͂���� 0 �ɂȂ�o�O���C��
-  - �P�P��F���� "SYNCGRAM" �𑗂��Julius��������o�O���C��
+  - 単単語認識時 に receive/activate/dactivate できないバグを修正
+  - クライアントから文法をID番号で指定するとフリーズするバグを修正
+  - 認識結果の属する文法番号 (GRAM=..) の出力が常に 0 になるバグを修正
+  - 単単語認識時 "SYNCGRAM" を送るとJuliusが落ちるバグを修正
 [Others]
-  - �������� OS �ŃR���p�C���ł��Ȃ��̂��C���i"-ldl" ��ǉ��j
-  - Jconf ���Ńo�b�N�X���b�V���������������Ȃ��o�O���C��
-  - 1�p�X���s���ɑ�1�p�X�̌��ʂ��ŏI���ʂƂ��Ă��o�͂���悤�C��
+  - いくつかの OS でコンパイルできないのを修正（"-ldl" を追加）
+  - Jconf 内でバックスラッシュが正しく扱えないバグを修正
+  - 1パス実行時に第1パスの結果を最終結果としても出力するよう修正
 [Tools]
   Jcontrol
-  - "graminfo" �R�}���h��V�K�T�|�[�g
-  - �P�P��F�����ɕ��@�i�����j���N���C�A���g���瑗��Ȃ��o�O���C��
+  - "graminfo" コマンドを新規サポート
+  - 単単語認識時に文法（辞書）をクライアントから送れないバグを修正
   mkdfa
-  - mkfa �����܂ɗ�����̂��C��
-  - DOS �`���̓��͂��ǂ߂Ȃ����Ƃ�����o�O���C��
+  - mkfa がたまに落ちるのを修正
+  - DOS 形式の入力が読めないことがあるバグを修正
   adintool
-  - �������ɂ��̎n�I�[�̎��Ԃ��o�͂���悤�ɂȂ����D
-  - �����I�[�f�B�I�t�@�C����؂�Ƃ��ɂ��������Ȃ�o�O���C��
+  - 分割時にその始終端の時間を出力するようになった．
+  - 長いオーディオファイルを切るときにおかしくなるバグを修正
 
 
 4.1 (2008.10.3)
 ================
-���v���O�C���ɂ��@�\�g���F
-  - �Ή�����v���O�C���̌^
-      - �����M������
-      - �����ʃx�N�g������
-      - �������͏���
-      - �����ʃx�N�g������
-      - ���ʏo��
-      - JuliusLib �̃R�[���o�b�N�֐����v���O�C������ǉ����邱�Ƃ��\
-  - �v���O�C���̃T���v���\�[�X�R�[�h�𓯍��D�e�֐��̎d�l�̏ڍׂȃR�����g�t���D
-  - ������FLinux, Windows ����� dlopen() ������ OS
+■プラグインによる機能拡張：
+  - 対応するプラグインの型
+      - 音声信号入力
+      - 特徴量ベクトル入力
+      - 音声入力処理
+      - 特徴量ベクトル処理
+      - 結果出力
+      - JuliusLib のコールバック関数をプラグインから追加することも可能
+  - プラグインのサンプルソースコードを同梱．各関数の仕様の詳細なコメント付き．
+  - 動作環境：Linux, Windows および dlopen() がある OS
 
-���V�@�\�F
-  - �}���`�X�g���[�������ʓ��͂̃T�|�[�g
-  - MSD-HMM �̃T�|�[�g�iHTS �c�[���L�b�g�Ŋw�K�������f�����g�p�\�j
-  - CVN �T�|�[�g
-  - VTLN �p frequency warping �i�p�����[�^����͖����j
-  - "-input alsa", "-input oss" ����� "-input esd" 
-  - ���W���[�����[�h�p�N���C�A���g�� perl �� "jclient-perl" �̓���
+■新機能：
+  - マルチストリーム特徴量入力のサポート
+  - MSD-HMM のサポート（HTS ツールキットで学習したモデルを使用可能）
+  - CVN サポート
+  - VTLN 用 frequency warping （パラメータ推定は無し）
+  - "-input alsa", "-input oss" および "-input esd" 
+  - モジュールモード用クライアントの perl 版 "jclient-perl" の同梱
 
-���d�l�ύX�F
-  - �������f���F�����̃I�v�V�����̈ʒu�𐧌�
-      - �I�v�V�����͑Ή�����C���X�^���X��`�̐^���ŏ����K�v������D
-      �@�i��F���ꃂ�f���I�v�V������ "-LM" �̒���C���̃C���X�^���X��`��
-      �@�@�O�ɏ����K�v������D���ꃂ�f���I�v�V������ "-AM" �̌��ɏ�������
-      �@�@����ƃG���[�ɂȂ�j
-      - �S�̃I�v�V�����́C�C���X�^���X��`�̑O�ɏ������C"-GLOBAL" �I�v�V����
-      �@�w�蒼��ɏ���
-  �@�Ȃ��C���̐V���Ȑ���� "-nosectioncheck" ���w�肷�邱�Ƃŉ����ł���D
+■仕様変更：
+  - 複数モデル認識時のオプションの位置を制限
+      - オプションは対応するインスタンス定義の真後ろで書く必要がある．
+      　（例：言語モデルオプションは "-LM" の直後，他のインスタンス定義の
+      　　前に書く必要がある．言語モデルオプションを "-AM" の後ろに書いたり
+      　　するとエラーになる）
+      - 全体オプションは，インスタンス定義の前に書くか，"-GLOBAL" オプション
+      　指定直後に書く
+  　なお，この新たな制約は "-nosectioncheck" を指定することで解除できる．
 
-���o�O�C���F
-  - "-record" �Ŋe���o��Ԃ̍ŏ��̖����������t�@�C���ɕۑ�����Ȃ�
-  - "-multigramout" �������������Ȃ�
-  - jconf �t�@�C�����Ŋ��ϐ��̓W�J�����܂ɂ��܂������Ȃ�
-  - HMM �̐�����ɘa�FHMM���̍ő咷�� 256, ��Ԑ��̏����P�p
-  - ���W���[���̕��@�֌W�G���[���̃��b�Z�[�W�𓝈�
+■バグ修正：
+  - "-record" で各検出区間の最初の無音部分がファイルに保存されない
+  - "-multigramout" が正しく動かない
+  - jconf ファイル内で環境変数の展開がたまにうまくいかない
+  - HMM の制約を緩和：HMM名の最大長を 256, 状態数の上限を撤廃
+  - モジュールの文法関係エラー時のメッセージを統一
 
-���h�L�������g
-  - "Juliusbook" �̃����[�X (pdf / html)
-  - �}�j���A�������V���Cman �f�B���N�g���ȉ��ɏW��D
-    �f�t�H���g�ŃC���X�g�[�������悤�ɂȂ����D
+■ドキュメント
+  - "Juliusbook" のリリース (pdf / html)
+  - マニュアルを刷新し，man ディレクトリ以下に集約．
+    デフォルトでインストールされるようになった．
 
 
 4.0.2 (2008.5.27)
 ==================
-�V�@�\�F
+新機能：
 
-- ��2�p�X�̒T�������s�����Ƃ��C���o�[�W���� (3.x �ȑO) �ł͑�1�p�X�̌�
-  �ʂ��ŏI���ʂƂ��ďo�͂��Ă������C4.x �ł͔F�����s�����Ȃ��ƂȂ�D
-  �V�I�v�V���� "-fallback1pass" ���w�肷�邱�ƂŁC���o�[�W�����Ɠ��l�ɁC
-  ��2�p�X���s���ɑ�1�p�X�̌��ʂ��ŏI���ʂƂ��ďo�͂���悤�ɂł���D
-- �����ʒ��o�� USEPOWER=T ���T�|�[�g
+- 第2パスの探索が失敗したとき，旧バージョン (3.x 以前) では第1パスの結
+  果を最終結果として出力していたが，4.x では認識失敗＝解なしとなる．
+  新オプション "-fallback1pass" を指定することで，旧バージョンと同様に，
+  第2パス失敗時に第1パスの結果を最終結果として出力するようにできる．
+- 特徴量抽出で USEPOWER=T をサポート
 
-�d�l�ύX�F
-- GMM �g�p���C"-AM_GMM" �̎w�肪�Ȃ��ꍇ�C�������f���̓����ʐݒ�����L
-  ����悤�ɂȂ����D
+仕様変更：
+- GMM 使用時，"-AM_GMM" の指定がない場合，音響モデルの特徴量設定を共有
+  するようになった．
 
-�o�O�C���F
-- GMM �ɂ����p�� 4.0.1 �œ����Ȃ��Ȃ��Ă����̂��C��
-- Linux/ALSA �ő��̃f�o�C�X�𐳂����w��ł���悤�ɂȂ����D
-- ����� N-gram �̓ǂݍ��݂ɂ��܂Ɏ��s����o�O���C��
-- "-record" �I�v�V�����w�莞�ɕs����ɂȂ�o�O���C��
-- �}�C�N���͂� sp-segment / GMM / VAD ���s���� callback ���s���C��
-- ���̑��C�ׂ����o�O�C��
+バグ修正：
+- GMM による棄却が 4.0.1 で動かなくなっていたのを修正
+- Linux/ALSA で他のデバイスを正しく指定できるようになった．
+- 巨大な N-gram の読み込みにたまに失敗するバグを修正
+- "-record" オプション指定時に不安定になるバグを修正
+- マイク入力で sp-segment / GMM / VAD 実行時の callback 実行を修正
+- その他，細かいバグ修正
 
 
 4.0.1 (2008.3.12)
 ==================
-�d�l�ύX�F
+仕様変更：
 
-- Linux �̃f�t�H���g�I�[�f�B�IAPI���COSS ���� ALSA �ɕύX�D
+- Linux のデフォルトオーディオAPIを，OSS から ALSA に変更．
 
-�o�O�C���F
+バグ修正：
 
-- ��������
-    - ALSA �l�C�e�B�u�̓��͂����������삵�Ȃ�
-    - "-48" �I�v�V�����w�莞�� segfault
-    - "-spsegment" �w�莞��MFCC���͂Ń[���t���[��������� segfault
-- VAD�֘A
-    - �V���[�g�|�[�Y�Z�O�����e�[�V�����CGMM VAD, ���邢�̓f�R�[�_�x�[
-      �XVAD�ɂ����āC�Z�O�����g�Ԃ� CMN �������Ă��Ȃ�����
-- �������f���֘A
-    - �}���`�p�X���[�h���C�V���[�g�|�[�Y���f������`����Ă��Ȃ��ƋN�����Ȃ�
-- N-gram�֘A
-    - backward N-gram �����^����ꂽ�Ƃ���1�p�X��2-gram�̒l���������Ȃ�
-    - ���m��G���g���ɑ΂��Ċm�������������蓖�Ă��Ȃ��D
-    - back-off �̒�`�ɂ���Ă͓ǂݍ��݂Ɏ��s���邱�Ƃ�����D
-    - 24bit�ȏ�̃G���g�����������N-gram�̈����Ɏ��s����
-    - �o�b�N�I�t�W���̊i�[�G���A���]���� malloc ����Ă����D
-- �P�P��F��
-    - �P�P��F�����[�h�ɂ����� N �x�X�g�o�� ("-output N") ���������Ȃ�
-- �C���X�g�[�����̖��
-    - cygwin �� "make install" �Ɏ��s����
-- �\�[�X�R�[�h�̐��B
-    - �֐����̕s�v�� static �ϐ������[�J���ϐ��ɏC��
-    - �T�����Ɏc���Ă������[�N�G���A�p���ϐ��� StackDecode �Ɉړ�
+- 音声入力
+    - ALSA ネイティブの入力が正しく動作しない
+    - "-48" オプション指定時に segfault
+    - "-spsegment" 指定時にMFCC入力でゼロフレームがあると segfault
+- VAD関連
+    - ショートポーズセグメンテーション，GMM VAD, あるいはデコーダベー
+      スVADにおいて，セグメント間で CMN が効いていなかった
+- 音響モデル関連
+    - マルチパスモード時，ショートポーズモデルが定義されていないと起動しない
+- N-gram関連
+    - backward N-gram だけ与えられたとき第1パスの2-gramの値が正しくない
+    - 未知語エントリに対して確率が正しく割り当てられない．
+    - back-off の定義によっては読み込みに失敗することがある．
+    - 24bit以上のエントリを持つ巨大なN-gramの扱いに失敗する
+    - バックオフ係数の格納エリアが余分に malloc されていた．
+- 単単語認識
+    - 単単語認識モードにおいて N ベスト出力 ("-output N") が正しくない
+- インストール時の問題
+    - cygwin で "make install" に失敗する
+- ソースコードの精錬
+    - 関数内の不要な static 変数をローカル変数に修正
+    - 探索部に残っていたワークエリア用大域変数を StackDecode に移動
 
-�V�@�\�F
+新機能：
 
-- ���W���[�����[�h
-    - "ACTIVATEGRAM", "DEACTIVATEGRAM", "DELGRAM" �ŕ��@���w�肷��ۂɁC
-      ���@ ID �ԍ������łȂ����@���ł��w��ł���悤�ɂȂ����D
-    - �V�R�}���h "GRAMINFO": ���݂̕��@���X�g��Ԃ��D
+- モジュールモード
+    - "ACTIVATEGRAM", "DEACTIVATEGRAM", "DELGRAM" で文法を指定する際に，
+      文法 ID 番号だけでなく文法名でも指定できるようになった．
+    - 新コマンド "GRAMINFO": 現在の文法リストを返す．
 
 
 4.0 (2007.12.19)
 =================
-�i4.0 �̐V�@�\�ɂ��āC�ڍׂ͕ʎ����Q�l�ɂ��Ă��������j
-- �����\���̐���
-- �G���W���{�̂̃��C�u������
-- �}���`�f�R�[�f�B���O�̃T�|�[�g
-- ���ꃂ�f���̃��W���[�����EJulian�̓���
-- �C�Ӓ� N-gram �̃T�|�[�g
-- ���[�U��`���ꐧ��
-- �Ǘ��P��F���̃T�|�[�g
-- confusion network �o��
-- �V���[�g�|�[�Y�Z�O�����e�[�V�����̉��P
-- GMM �x�[�X�� VAD
-- �f�R�[�_�x�[�X�� VAD
-- �R���p�C�����I�v�V�����̓���
-- �������ʂ̍팸
-- �T���v���A�v�� julius-simple �̒ǉ�
-- �c�[���̒ǉ� (generate-ngram)
-- adintool �̃}���`�T�[�o�Ή��C�@�\�����ȂǊ֘A�c�[���̋���
+（4.0 の新機能について，詳細は別紙を参考にしてください）
+- 内部構造の整理
+- エンジン本体のライブラリ化
+- マルチデコーディングのサポート
+- 言語モデルのモジュール化・Julianの統合
+- 任意長 N-gram のサポート
+- ユーザ定義言語制約
+- 孤立単語認識のサポート
+- confusion network 出力
+- ショートポーズセグメンテーションの改善
+- GMM ベースの VAD
+- デコーダベースの VAD
+- コンパイル時オプションの統合
+- メモリ量の削減
+- サンプルアプリ julius-simple の追加
+- ツールの追加 (generate-ngram)
+- adintool のマルチサーバ対応，機能強化など関連ツールの強化
 
 
 3.5.3 (2006.12.29)
 ===================
-- ���\�̉��P
-   - �����ޓx�v�Z�̍œK���F�� 20% ���� 40% �̍�����
-   - �������A�N�Z�X�̍œK���F���ɁC��2�p�X�ł̉����̃�������Ԃ̍ė��p
-   - �����E�P��g�����X����̃���������t�������P
+- 性能の改善
+   - 音響尤度計算の最適化：約 20% から 40% の高速化
+   - メモリアクセスの最適化：特に，第2パスでの仮説のメモリ空間の再利用
+   - 辞書・単語トレリス周りのメモリ割り付けを改善
 
-- �V���ȕ��@�֘A�c�[��
-   - "dfa_minimize", "dfa_determinize" �c DFA ���ŏ���/���艻����D
-   - mkdfa.pl �� dfa_minimize �������I�ɌĂяo���悤�ɂȂ����D
-   - "slf2dfa" �c HTK �̕��@�t�@�C������ DFA �`���ւ̕ϊ��c�[���𓯎����J
+- 新たな文法関連ツール
+   - "dfa_minimize", "dfa_determinize" … DFA を最小化/決定化する．
+   - mkdfa.pl は dfa_minimize を自動的に呼び出すようになった．
+   - "slf2dfa" … HTK の文法ファイルから DFA 形式への変換ツールを同時公開
 
-- HTK�������o�����p�����[�^�̖��ߍ���
-   - HTK �̊w�K���Ɏg���������ʒ��o�ݒ�� Config �t�@�C���𒼐ړǂݍ�
-     ��Ńp�����[�^��ݒ�ł���悤�ɂȂ����D
-   - mkbinhmm �ŏ�L�����o�C�i��HMM�̃w�b�_�ɖ��ߍ��߂�悤�ɂȂ����D
+- HTK特徴抽出条件パラメータの埋め込み
+   - HTK の学習時に使った特徴量抽出設定の Config ファイルを直接読み込
+     んでパラメータを設定できるようになった．
+   - mkbinhmm で上記情報をバイナリHMMのヘッダに埋め込めるようになった．
 
-- �P��O���t�̉��P
-   - �g���C�t�H���̃X�R�A���l�����ăO���t�𕪂���I�v�V�����̒ǉ��F��
-     ���ꏊ�̓����P��ł����Ă��C�P��̑O��̉��f�R���e�L�X�g���قȂ�
-     �ꍇ�ɕʂ̉����Ƃ��ďo�͂����� ("-graphrange -1")
+- 単語グラフの改善
+   - トライフォンのスコアを考慮してグラフを分けるオプションの追加：同
+     じ場所の同じ単語であっても，単語の前後の音素コンテキストが異なる
+     場合に別の仮説として出力させる ("-graphrange -1")
 
-- �I�����C���ł̃G�l���M�[�����K���̃T�|�[�g
-   - �G�l���M�[�����K�� (ENORMAL) �Ŋw�K���ꂽ�������f����p����
-     �I�����C�������F�����b��T�|�[�g�i���O�̉������͂̃p���[���琳�K������j
+- オンラインでのエネルギー項正規化のサポート
+   - エネルギー項正規化 (ENORMAL) で学習された音響モデルを用いた
+     オンライン音声認識を暫定サポート（直前の音声入力のパワーから正規化する）
 
-- �\�[�X�R�[�h�̏C��
-   - libsent/src/wav2mfcc ���č\��
-   - ���������ʃp�����[�^�̈��������W���[����
-   - "--setting" �I�v�V������ libsent �̃R���p�C�����ݒ�����킹�ďo��
-   - Doxygen-1.5.0 �̃T�|�[�g
-   - "julius-info@lists.sourceforge.jp" ���I�t�B�V�����̘A����A�h���X��
-   - Copyright ��typo���C��
+- ソースコードの修正
+   - libsent/src/wav2mfcc を再構成
+   - 音響特徴量パラメータの扱いをモジュール化
+   - "--setting" オプションで libsent のコンパイル時設定もあわせて出力
+   - Doxygen-1.5.0 のサポート
+   - "julius-info@lists.sourceforge.jp" をオフィシャルの連絡先アドレスに
+   - Copyright のtypoを修正
 
-- �ȉ��̃o�O���C��
-   - "--enable-words-int" ���Ɍ��ꃂ�f���̓ǂݍ��݂Ɏ��s���邱�Ƃ�����
-   - ���ϐ��C���[�J���o�b�t�@�C�I�v�V���������Ɋւ��郁�������[�N
-   - �������z���Ē������͂ɑ΂��� segmentation fault
-   - DFA �̏�����Ԃ��d�ɃJ�E���g
-   - mkdfa.pl: ���ɂ���� mkfa �������炸�����N���ł��Ȃ����Ƃ�����
-   - adintool: ���f���C�Ō�ɋ�̃t�@�C�����c��
-   - adintool: ���f���C���O�̐��b�̓��͂��t�@�C���ɋL�^����Ȃ�
-   - ���̑��C�ׂ����C��
+- 以下のバグを修正
+   - "--enable-words-int" 時に言語モデルの読み込みに失敗することがある
+   - 大域変数，ローカルバッファ，オプション扱いに関するメモリリーク
+   - 制限を越えて長い入力に対する segmentation fault
+   - DFA の初期状態を二重にカウント
+   - mkdfa.pl: 環境によって mkfa が見つからず内部起動できないことがある
+   - adintool: 中断時，最後に空のファイルが残る
+   - adintool: 中断時，直前の数秒の入力がファイルに記録されない
+   - その他，細かい修正
 
 
 3.5.2 (2006.07.31)
 ===================
-- Windows �R���\�[���ł̓���̑啝���P
-   - DirectSound �T�|�[�g (cygwin / mingw)
-   - ���͂̃X���b�h�� (portaudio API �g�p)
-   - �ŐV�� MinGW ��(5.0.2) �ɑΉ�
+- Windows コンソールでの動作の大幅改善
+   - DirectSound サポート (cygwin / mingw)
+   - 入力のスレッド化 (portaudio API 使用)
+   - 最新の MinGW 環境(5.0.2) に対応
 
-- �P��O���t�̐��x���P
-   - �P��O���t�̐[���ɂ��J�b�g�@�\�̒ǉ� (-graphcut)
-   - �㏈���̖������[�v���p�̏���ݒ� (-graphboundloop)
-   - �O���t�P�ꉼ���̃}�[�W�ƒT�����f�Ɋւ���A���S���Y���̉��P
+- 単語グラフの精度改善
+   - 単語グラフの深さによるカット機能の追加 (-graphcut)
+   - 後処理の無限ループ回避用の上限設定 (-graphboundloop)
+   - グラフ単語仮説のマージと探索中断に関するアルゴリズムの改善
 
-- ��1�p�X�ŒP��g�����X�̂����ɒP��O���t���o�͉\�ɂȂ���
-   - "--enable-word-graph" �ŒP��O���t���o�́C��2�p�X�̓O���t��ŒT��
-   - "--enable-wpair" �Ɠ����Ɏw�肷�邱�ƂŁC�L���p�����Ă���
-     2-gram ���g����1�p�X�ł̃O���t�����A���S���Y���Ƃقړ����ɂȂ�D
+- 第1パスで単語トレリスのかわりに単語グラフを出力可能になった
+   - "--enable-word-graph" で単語グラフを出力，第2パスはグラフ上で探索
+   - "--enable-wpair" と同時に指定することで，広く用いられている
+     2-gram を使った1パスでのグラフ生成アルゴリズムとほぼ等価になる．
 
-- �o�O�C��
-   - configure �X�N���v�g�� Solaris 8/9 �Ő��������삵�Ȃ�
-   - tied-mixture ���f���� -gprune none �������Ȃ�
-   - �������f���� duration �w�b�_�̃G���[���b�Z�[�W����������
-   - MFCC �� strip_zero ���������[�j���O���o��
+- バグ修正
+   - configure スクリプトが Solaris 8/9 で正しく動作しない
+   - tied-mixture モデルで -gprune none が動かない
+   - 音響モデルの duration ヘッダのエラーメッセージがおかしい
+   - MFCC の strip_zero がいつもワーニングを出す
 
-- �����̉��P
-   - �������f���̃������Ǘ��� hmmdefs ���Ƃɕ����ĊǗ�����悤�ɂ���
+- 実装の改善
+   - 音響モデルのメモリ管理を hmmdefs ごとに分けて管理するようにした
 
 
 3.5.1 (2006.03.31)
 ===================
-- ������(MFCC)���o�̊g��
-  - �񎟍����W��(Accel: _A)�ɑΉ��D
-      - _A ��p���鉹�����f���ŉ������͂𒼐ڔF���ł���悤�ɂȂ���
-      - �V�I�v�V���� "-accwin"
-  - �C�ӂ̌^�w��̑g�ݍ��킹�ɑΉ�(_0, _E, _N, _D, _A, _N)
-  - �C�ӂ̎������ɑΉ�
-      - ���o���������ʂ̃^�C�v����ю������́C�������f���̃w�b�_���玩�����f
-  - �ׂ��������ʒ��o�̃p�����[�^���w��\�ɂȂ����F
+- 特徴量(MFCC)抽出の拡張
+  - 二次差分係数(Accel: _A)に対応．
+      - _A を用いる音響モデルで音声入力を直接認識できるようになった
+      - 新オプション "-accwin"
+  - 任意の型指定の組み合わせに対応(_0, _E, _N, _D, _A, _N)
+  - 任意の次元数に対応
+      - 抽出される特徴量のタイプおよび次元数は，音響モデルのヘッダから自動判断
+  - 細かい特徴量抽出のパラメータを指定可能になった：
       -preemph, -fbank, -ceplif, -rawe / -norawe, 
       -enormal / -noenormal, -escale, -silfloor
-  - �V�I�v�V���� "-zmeanframe": �t���[�����Ƃ� DC offset ���� (HTK�݊�)
+  - 新オプション "-zmeanframe": フレームごとの DC offset 除去 (HTK互換)
 
-- MAP-CMN �𓱓�
-  - �}�C�N�E�l�b�g���[�N���͂ŗL��
-  - �V�I�v�V����"-cmnmapweight"�F�d�݌W����ύX�i�f�t�H���g 100.0�j
-  - �I�v�V���� "-cmnload" �ōŏ��̔��b�̏����P�v�X�g�������w��\
-  - 2���b�ڈȍ~�̏����P�v�X�g�����͉ߋ���5�b�̕��ς�p����D
-    �V�I�v�V���� "-cmnnoupdate" �ŏ����P�v�X�g�������X�V���Ȃ��悤�ɂł���D
+- MAP-CMN を導入
+  - マイク・ネットワーク入力で有効
+  - 新オプション"-cmnmapweight"：重み係数を変更（デフォルト 100.0）
+  - オプション "-cmnload" で最初の発話の初期ケプストラムを指定可能
+  - 2発話目以降の初期ケプストラムは過去の5秒の平均を用いる．
+    新オプション "-cmnnoupdate" で初期ケプストラムを更新しないようにできる．
 
-- ���W���[�����[�h�̈��艻
-  - �F���̒�~�E�ĊJ���� "<STARTPROC/>" "<STOPPROC/>" ��V���ɏo�͂���
-    �悤�ɂȂ���
-  - "ADDGRAM ���@��" "CHANGEGRAM ���@��" �ŕ��@�ɖ��O��������悤
-    �ɂȂ���
+- モジュールモードの安定化
+  - 認識の停止・再開時に "<STARTPROC/>" "<STOPPROC/>" を新たに出力する
+    ようになった
+  - "ADDGRAM 文法名" "CHANGEGRAM 文法名" で文法に名前をつけられるよう
+    になった
 
-- �o�O�C��
-  - ���W���[�����[�h��PAUSE/RESUME�^�C�~���O�Ɋւ���o�O�𕡐��C��
-  - �v�f����24bit�Ɏ��܂�Ȃ������N-gram�������Ȃ��o�O���C��
-  - �}���`�p�X�ł�3���(�o��1���)�̉������f�����ǂݍ��߂Ȃ��o�O���C��
-  - ���@�̍Ō�̏�Ԃ��J�E���g����Ȃ����Ƃ�����o�O���C��
-  - gramtools �̈ꕔ�� MacOSX �ł��܂��R���p�C���ł��Ȃ��o�O���C��
+- バグ修正
+  - モジュールモードのPAUSE/RESUMEタイミングに関するバグを複数修正
+  - 要素数が24bitに収まらない巨大なN-gramを扱えないバグを修正
+  - マルチパス版で3状態(出力1状態)の音響モデルが読み込めないバグを修正
+  - 文法の最後の状態がカウントされないことがあるバグを修正
+  - gramtools の一部が MacOSX でうまくコンパイルできないバグを修正
 
 
 3.5 (2005.11.11)
 =================
-- �V���ɃT�|�[�g���ꂽ�@�\
-  - GMM �ɂ��������ʂ���ѕs�v���͊��p(-gmm, -gmmnum -gmmreject)
-  - �P��O���t�o�� (--enable-graphout, --enable-graphout-nbest)
-  - �P��M���x�ɂ��}���� (--enable-cmthres)
-  - Julian�ŕ������@�F�����ɕ��@���Ƃ̌��ʂ��o���I�v�V������ǉ�
-    (-multigramout, �g������ README-multigramout-ja.txt ���Q�l�Ɂj
-  - �N�����ɕ����̕��@�t�@�C�����w��
-    "-gram prefix1,prefix2,..." �������� "-gramlist listfile"
-    prefix �� .dfa, .dict ���������t�@�C���̃v���t�B�b�N�X���w��
-  - �e�L�X�g�o�͂̃G���R�[�f�B���O�ϊ��F"-charconv from to"
-    Linux �ł� iconv, Win32 �ł� Win32API + libjcode ���g�p�D
+- 新たにサポートされた機能
+  - GMM による環境音識別および不要入力棄却(-gmm, -gmmnum -gmmreject)
+  - 単語グラフ出力 (--enable-graphout, --enable-graphout-nbest)
+  - 単語信頼度による枝刈り (--enable-cmthres)
+  - Julianで複数文法認識時に文法ごとの結果を出すオプションを追加
+    (-multigramout, 使い方は README-multigramout-ja.txt を参考に）
+  - 起動時に複数の文法ファイルを指定
+    "-gram prefix1,prefix2,..." もしくは "-gramlist listfile"
+    prefix は .dfa, .dict を除いたファイルのプレフィックスを指定
+  - テキスト出力のエンコーディング変換："-charconv from to"
+    Linux では iconv, Win32 では Win32API + libjcode を使用．
 
-- Linux �ł̉������͂̉��P
-  - ALSA-1.0.0 �ȍ~�ɑΉ� (--with-mictype=alsa)
-  - EsounD �I�[�f�B�I�T�[�o�[���T�|�[�g (--with-mictype=esd)
-  - USB�I�[�f�B�I�g�p���Ƀ}�C�N���͂����삵�Ȃ����Ƃ�����o�O���C��
-  - �����f�o�C�X��(�f�t�H���g:/dev/dsp)�����ϐ� AUDIODEV �Ŏw��\
-  - portaudio, spLib ���������͂Ƃ��Ďw��\��
+- Linux での音声入力の改善
+  - ALSA-1.0.0 以降に対応 (--with-mictype=alsa)
+  - EsounD オーディオサーバーをサポート (--with-mictype=esd)
+  - USBオーディオ使用時にマイク入力が動作しないことがあるバグを修正
+  - 音声デバイス名(デフォルト:/dev/dsp)を環境変数 AUDIODEV で指定可能
+  - portaudio, spLib を音声入力として指定可能に
 
-- �������g�p�ʂ̉��P
-  - ��1�p�X�̃r�[���̃��[�N�G���A�g�p�������ʂ��팸
-  - �؍\���������̃������ʂ��팸(outstyle, factoring�֘A�̍œK��)
-     �i20k JNAS fast �� 1.5MB�팸�j
-  - �P��N-gram�̃������g�p�ʂ����P
-    (1)2-gram�o�b�N�I�t�\�����œK���i20k JNAS �� 8MB�팸, 3-gram�ʂɂ��j
-    (2)2-gram��N-gram�C���f�b�N�X��32bit��24bit�ɏk��
+- メモリ使用量の改善
+  - 第1パスのビームのワークエリア使用メモリ量を削減
+  - 木構造化辞書のメモリ量を削減(outstyle, factoring関連の最適化)
+     （20k JNAS fast で 1.5MB削減）
+  - 単語N-gramのメモリ使用量を改善
+    (1)2-gramバックオフ構造を最適化（20k JNAS で 8MB削減, 3-gram量による）
+    (2)2-gramのN-gramインデックスを32bit→24bitに縮小
 
-- �d�l�ύX
-  - N-gram�̃C���f�b�N�X���k�ɔ����C�o�C�i��N-gram�̃t�@�C���`�����V��
-    ���Ȃ����D�Â��̂����̂܂ܓǂݍ��߂�i�����ŐV�`���Ɏ����ϊ������j
-    ���C�ȉ��̂悤�ɂ��邱�ƂŁC���炩���ߐV�����`���ɂ��Ă������Ƃ��ł���D
+- 仕様変更
+  - N-gramのインデックス圧縮に伴い，バイナリN-gramのファイル形式が新し
+    くなった．古いのもそのまま読み込める（内部で新形式に自動変換される）
+    が，以下のようにすることで，あらかじめ新しい形式にしておくことができる．
 		"mkbingram -d oldbinary newbinary"
-    �Ȃ��C�{�o�[�W������ mkbingram �ŏo�͂����o�C�i��N-gram�͐V�`����
-    �̂ŁC3.4.2�ȑO�ł͓ǂ߂Ȃ����Ƃɒ��ӂ��邱�ƁD
-    �i�Q�l�F�`���̓t�@�C���̍ŏ���17�o�C�g�Ŕ��ʂł���F
-      "julius_bingram_v3" �Ȃ�Â��o�[�W�����C
-      "julius_bingram_v4" �Ȃ�V�����o�[�W�����j
-  - adintool �Ƃ̐ڑ��F�l�b�g���[�N��̃o�C�g�I�[�_�����g���G���f�B�A
-    ���ɌŒ肵���D
-  - �f�t�H���g�ň��k�W�J�� zlib ���C�u�������g�p����悤�ɂȂ����D
-    �]���͊O�� gzip ���g�p�D"--disable-zlib" ��OFF (�]���ǂ���) �ɕύX�\
-  - Win: �o�͕����R�[�h�̃f�t�H���g���u�ϊ��Ȃ��v�ɕύX�D
-    3.4.2�ł̓f�t�H���g�� SJIS �ɕϊ����Ă����D
-  - Win: VC++�ł̃R���p�C�����@��ύX
-    �@Julian�� -DBUILD_JULIAN ������Djulius.h ��ύX���Ȃ��ėǂ��D
-      �ڍׂ� 00HowToCompile-win.txt���Q�Ƃ̂���
+    なお，本バージョンの mkbingram で出力したバイナリN-gramは新形式な
+    ので，3.4.2以前では読めないことに注意すること．
+    （参考：形式はファイルの最初の17バイトで判別できる：
+      "julius_bingram_v3" なら古いバージョン，
+      "julius_bingram_v4" なら新しいバージョン）
+  - adintool との接続：ネットワーク上のバイトオーダをリトルエンディア
+    ンに固定した．
+  - デフォルトで圧縮展開に zlib ライブラリを使用するようになった．
+    従来は外部 gzip を使用．"--disable-zlib" でOFF (従来どおり) に変更可能
+  - Win: 出力文字コードのデフォルトを「変換なし」に変更．
+    3.4.2ではデフォルトで SJIS に変換していた．
+  - Win: VC++でのコンパイル方法を変更
+    　Julianは -DBUILD_JULIAN をつける．julius.h を変更しなくて良い．
+      詳細は 00HowToCompile-win.txtを参照のこと
 
-- �o�O�C��
-  - �X�y�N�g���T�u�g���N�V�����������Ȃ��o�O���C��
-  - ��2�p�X�� stack empty �ŏI�����Ƀ��������[�N�������Ă����o�O���C��
-  - ���ɒZ����(���t���[��)�̓��͂ŗ�����o�O���C��
-  - CMN��g�p�̉������f���g�p���ɉ����t�@�C���E�}�C�N���͂ł��Ȃ��o�O���C��
-  - �����f�R�[�f�B���O(--enable-sp-segment)�ɂ�����sp�P�ꈵ���̃o�O���C��
-  - maxcodebooksize ���\������Ȃ��o�O���C��
-  - stack empty �ŒT�����s���ɓ���ꂽ��␔��\��
-  - ���W���[�����[�h�� -separatescore �ɑΉ� (AMSCORE=..., LMSCORE=...�j
-  - �S�T���I�v�V���� "-b 0" ���Ƀr�[���������@�ǉ����ɍX�V����Ȃ��o�O���C��
-  - ���@�ύX���ɒP��ԃg���C�t�H���̌v�Z���݌v�ƈقȂ��Ă����o�O���C��
-  - �������@�g�p���ɁC�F�����ʂ̕��@ID��W���o�͂ł��o�͂���悤�C��
-  - �G���f�B�A���̈قȂ�}�V���Ԃŉ����f�[�^�̑���M�ɑΉ�
-  - Linux: USB�I�[�f�B�I�g�p���Ƀ}�C�N���͂����삵�Ȃ����Ƃ�����o�O���C��
-  - Linux: icc�ŃR���p�C������Julius���N�����ɗ�����o�O���C��
-  - Win: ���s�R�[�h�Ή�(���@�t�@�C���E-filelist)
-  - Win: cygwin���� mkdfa.pl ���e���|�������J���Ȃ��o�O���C��
-  - Win: ZLIB��g�p����fopen�Ɏ��s���邱�Ƃ�����o�O���C��
-  - Win: -record �Ř^�������t�@�C���̊g���q�� .raw �������̂� .wav �ɏC��
+- バグ修正
+  - スペクトルサブトラクションが動かないバグを修正
+  - 第2パスで stack empty で終了時にメモリリークが生じていたバグを修正
+  - 非常に短時間(数フレーム)の入力で落ちるバグを修正
+  - CMN非使用の音響モデル使用時に音声ファイル・マイク入力できないバグを修正
+  - 逐次デコーディング(--enable-sp-segment)におけるsp単語扱いのバグを修正
+  - maxcodebooksize が表示されないバグを修正
+  - stack empty で探索失敗時に得られた候補数を表示
+  - モジュールモードで -separatescore に対応 (AMSCORE=..., LMSCORE=...）
+  - 全探索オプション "-b 0" 時にビーム幅が文法追加時に更新されないバグを修正
+  - 文法変更時に単語間トライフォンの計算が設計と異なっていたバグを修正
+  - 複数文法使用時に，認識結果の文法IDを標準出力でも出力するよう修正
+  - エンディアンの異なるマシン間で音声データの送受信に対応
+  - Linux: USBオーディオ使用時にマイク入力が動作しないことがあるバグを修正
+  - Linux: iccでコンパイルしたJuliusが起動時に落ちるバグを修正
+  - Win: 改行コード対応(文法ファイル・-filelist)
+  - Win: cygwin環境で mkdfa.pl がテンポラリを開けないバグを修正
+  - Win: ZLIB非使用時にfopenに失敗することがあるバグを修正
+  - Win: -record で録音したファイルの拡張子が .raw だったのを .wav に修正
 
-- �\�[�X�̓���
-  - Linux�� �� Windows �R���\�[���łŃ\�[�X�𓝍�
-  - Multipath �ł̃\�[�X�𓝍�
-    "--enable-multipath" �Ƃ��邱�ƂŁC���f���̑J�ڂɐ����̂Ȃ�
-    multipath �ł��R���p�C�����邱�Ƃ��ł���D�\�[�X�����ł�
-    "MULTIPATH_VERSION" �̒�`�Ő؂�ւ��Ă���D
+- ソースの統合
+  - Linux版 と Windows コンソール版でソースを統合
+  - Multipath 版のソースを統合
+    "--enable-multipath" とすることで，モデルの遷移に制限のない
+    multipath 版をコンパイルすることができる．ソース内部では
+    "MULTIPATH_VERSION" の定義で切り替えている．
 
-- ���̑�
-  - Win: MinGW �ŃR���p�C���ł���悤�ɂȂ����D
-  - �v���O�������̃R�����g�̑�K�͂ȍX�V�FDoxygen �ɑΉ��D
-    "make doxygen" �� HTML �`���̃N���X���t�@�����X�𐶐��ł���D
-  - make install ���C"julius-3.5-fast" �̂悤�Ƀo�[�W�����ԍ��Ɛݒ�
-    (--enable-setup �̒l)���������s�o�C�i����ǉ��C���X�g�[������悤�ݒ�
-  - "./support/build-all.sh" �Ŋe�ݒ�� julius, julian ����ёS�Ă̎��s�o�C�i
-    �����R���p�C������ build-bin/ �ȉ��ɐ����ł���悤�ɂ����D
+- その他
+  - Win: MinGW でコンパイルできるようになった．
+  - プログラム中のコメントの大規模な更新：Doxygen に対応．
+    "make doxygen" で HTML 形式のクロスリファレンスを生成できる．
+  - make install 時，"julius-3.5-fast" のようにバージョン番号と設定
+    (--enable-setup の値)をつけた実行バイナリを追加インストールするよう設定
+  - "./support/build-all.sh" で各設定の julius, julian および全ての実行バイナ
+    リをコンパイルして build-bin/ 以下に生成できるようにした．
   - Updated LICENSE.txt with English translation for reference.
 
 
 3.4.2 (2004.03.31)
 ===================
-- �w�莞�Ԃ��Z�����͂����p���� -rejectshort msec ��ǉ�
-- (-input adinnet) ���W���[�����[�h���p����PAUSE/TERMINATE�����艻
-- �o�O�C��
-  - ���t���[���̓��͎��̃��������[�N���C�� (beam.c)
-  - ���P��̔F����N-best��₪�������o�Ȃ����Ƃ�����s����C��
-  - generate �̖������[�v���C��
-- ���`
-  - 'gcc -Wall' �ɍ��킹�ă\�[�X�𐮌`
-  - copyright �\���� 2004 �N�֍X�V
-  - config.guess, config.sub ���X�V (for MacOSX)
+- 指定時間より短い入力を棄却する -rejectshort msec を追加
+- (-input adinnet) モジュールモード併用時のPAUSE/TERMINATEを安定化
+- バグ修正
+  - 数フレームの入力時のメモリリークを修正 (beam.c)
+  - 数単語の認識でN-best候補が正しく出ないことがある不具合を修正
+  - generate の無限ループを修正
+- 整形
+  - 'gcc -Wall' に合わせてソースを整形
+  - copyright 表示を 2004 年へ更新
+  - config.guess, config.sub を更新 (for MacOSX)
 
 3.4.1 (2004.02.25)
 ===================
-- �T���̈��艻�Ɍ������A���S���Y���̉��P
-  - �P��W�J���̌���X�R�A�̑��d�v�Z���C��
-  - �P��ԃg���C�t�H���̐V���ȃX�R�A�v�Z���@������(-iwcd1 best #)
-  �o�[�W����3.4 �ȑO�Ɣ�ׂĔF�����x�����P�����\��������܂��I
-- �o�C�i��HMM�`���iJulius��p�j�̃T�|�[�g
-  �ʏ��hmmdefs����o�C�i���`���ɕϊ�����c�[�� "mkbinhmm" �̒ǉ�
-- MFCC�����ʒ��o����荂���ɂȂ����isin/cos�e�[�u�����g�p�j
-- �ȉ��̃o�O���C��
-  - (-input adinnet) �����̎�M�J�n�Ɠ����ɔF�����J�n���Ȃ�
-  - (-input adinnet) ���W���[�����[�h�Ƃ̕��p����PAUSE/TERMINATE�������Ȃ�
-  - (-input adinnet) �v���Z�X��s�K�v�� fork ����
-  - (-input rawfile) Windows�̃T�E���h���R�[�_�[�Ř^������ wav �t�@�C��
-                     ��ǂ߂Ȃ�
-  - (�������f��) CMN���s�v�ȉ������f���ł�CMN���s���Ă���
-  - (�������f��) triphone �G���[���ɑ�ʂ̃��b�Z�[�W��f���Ă���
-  - (adintool) �A���t�@�C�����M���ł��Ȃ�����
-  - (sp-segment) �V���[�g�|�[�Y�ł̒T���ĊJ�E���f�Ɋւ���o�O�̏C���C�����
-		 �}�C�N���͂ł̃V���[�g�|�[�Y�Z�O�����e�[�V�����̎���
-  - (-[wps]align) �A�����͎��̃��������[�N���C��
-- �������͂�DC�����̏����@�\��ǉ� (-zmean)
-- (-module) �V�o�� '<INPUTPARAM FRAMES="���̓t���[����" MSEC="���̓~���b">'
-- ���܂��@�\�u�T����Ԃ̉����v��ǉ�
-- HTML�h�L�������g��啝�ɍX�V
-- rev.3.3 ���猻�݂܂ł̕ύX�̏ڍׂ� whatsnew/ �ȉ��ɋL�q
+- 探索の安定化に向けたアルゴリズムの改善
+  - 単語展開時の言語スコアの多重計算を修正
+  - 単語間トライフォンの新たなスコア計算方法を実装(-iwcd1 best #)
+  バージョン3.4 以前と比べて認識精度が改善される可能性があります！
+- バイナリHMM形式（Julius専用）のサポート
+  通常のhmmdefsからバイナリ形式に変換するツール "mkbinhmm" の追加
+- MFCC特徴量抽出がより高速になった（sin/cosテーブルを使用）
+- 以下のバグを修正
+  - (-input adinnet) 音声の受信開始と同時に認識を開始しない
+  - (-input adinnet) モジュールモードとの併用時にPAUSE/TERMINATEが効かない
+  - (-input adinnet) プロセスを不必要に fork する
+  - (-input rawfile) Windowsのサウンドレコーダーで録音した wav ファイル
+                     を読めない
+  - (音響モデル) CMNが不要な音響モデルでもCMNを行っていた
+  - (音響モデル) triphone エラー時に大量のメッセージを吐いていた
+  - (adintool) 連続ファイル送信ができなかった
+  - (sp-segment) ショートポーズでの探索再開・中断に関するバグの修正，および
+		 マイク入力でのショートポーズセグメンテーションの実現
+  - (-[wps]align) 連続入力時のメモリリークを修正
+- 音声入力のDC成分の除去機能を追加 (-zmean)
+- (-module) 新出力 '<INPUTPARAM FRAMES="入力フレーム長" MSEC="入力ミリ秒">'
+- おまけ機能「探索空間の可視化」を追加
+- HTMLドキュメントを大幅に更新
+- rev.3.3 から現在までの変更の詳細を whatsnew/ 以下に記述
 
-�V�I�v�V�����F"-iwcd1 best #" "-zmean"
-�Vconfigure�I�v�V�����F"--disable-lmfix", "--enable-visualize"
+新オプション："-iwcd1 best #" "-zmean"
+新configureオプション："--disable-lmfix", "--enable-visualize"
 
 3.4   (2003.10.01)
 ===================
-- �m�M�x�v�Z�̃T�|�[�g
-  - "-cmalpha" �I�v�V�����ŃX���[�W���O�W�����w��
-  - ���W���[�����[�h�ł̊m�M�x�o�͂� "-outcode" �� 'C' ���w��
-  - configure�� "--disable-cm"�Ŗ�����
-  - "--enable-cm-nbest"��N-best��p�����v�Z���@�ɕύX�\
-- �N���XN-gram�̃T�|�[�g
-  - configure�� "--disable-class-ngram"�Ŗ�����
-  - factoring�m�[�h�����N-gram�P��x�[�X���玫���P��x�[�X�ɕύX
-- adinrec, adintool����уI�v�V����"-record"�ł̉����L�^�`����
-  RAW�`������WAV�`���ɕύX
-- �o�̓��b�Z�[�W�̕ύX�F
-	System Info �̃��b�Z�[�W�\��
-	�G���W���ݒ�̃��b�Z�[�W
-- �C���F
-	���W���[�����[�h�̏o�͂̃o�O���������C��
-	���t���[�����͂��ꂽ�Ƃ��ɗ�����o�O���C�� (realtime-1stpass.c)
-	���o���ꂽ������Ԃ̖����̖����������s����C��
-	NetAudio�g�p���ɃR���p�C���Ɏ��s����o�O���C��
-	�o�C�i��N-gram�쐬���̃��[�h�T�C�Y���`�F�b�N����悤�C��
-	mixture�������̉����ޓx�v�Z�̌����C�� (gprune_none.c)
+- 確信度計算のサポート
+  - "-cmalpha" オプションでスムージング係数を指定
+  - モジュールモードでの確信度出力は "-outcode" で 'C' を指定
+  - configure時 "--disable-cm"で無効化
+  - "--enable-cm-nbest"でN-bestを用いた計算方法に変更可能
+- クラスN-gramのサポート
+  - configure時 "--disable-class-ngram"で無効化
+  - factoringノード決定をN-gram単語ベースから辞書単語ベースに変更
+- adinrec, adintoolおよびオプション"-record"での音声記録形式を
+  RAW形式からWAV形式に変更
+- 出力メッセージの変更：
+	System Info のメッセージ構成
+	エンジン設定のメッセージ
+- 修正：
+	モジュールモードの出力のバグをいくつか修正
+	数フレーム入力されたときに落ちるバグを修正 (realtime-1stpass.c)
+	検出された音声区間の末尾の無音が長い不具合を修正
+	NetAudio使用時にコンパイルに失敗するバグを修正
+	バイナリN-gram作成時のワードサイズをチェックするよう修正
+	mixture欠け時の音響尤度計算の誤りを修正 (gprune_none.c)
     	"-version"->"-setting", "-hipass"->"-hifreq", "-lopass"->"-lofreq"
 
 3.3p4 (2003.05.06)
 ===================
-- �������͂̂������̕s������P
-  - �}�C�N���͂Œ����ԓ��삳�����Ƃ��ɓˑR�n���O�A�b�v����s����C��
-  - ���W���[�����[�h�ŁC���͉��������������Ƃ��ɃN���C�A���g���n���O�A�b
-    �v����s��̏C���i�N���C�A���g�ɃG���[���b�Z�[�W�𑗐M����悤�ɂȂ�
-    ���j
-  - 1000�T���v���ȉ��̒Z�����͂ɑ΂���o�b�t�@�����O�̉��ǁD
-  - �l�b�g���[�N�o�R�̉������͂ɂ�����u���b�L���O�̉��ǁD
-- �\�[�X�̌��h���̏C�� �ijcontrol��typo, �萔LOG_TEN���`�C�Ȃǁj
+- 音声入力のいくつかの不具合を改善
+  - マイク入力で長時間動作させたときに突然ハングアップする不具合を修正
+  - モジュールモードで，入力音声が長すぎたときにクライアントがハングアッ
+    プする不具合の修正（クライアントにエラーメッセージを送信するようになっ
+    た）
+  - 1000サンプル以下の短い入力に対するバッファリングの改良．
+  - ネットワーク経由の音声入力におけるブロッキングの改良．
+- ソースの見栄えの修正 （jcontrolのtypo, 定数LOG_TENを定義，など）
 
 3.3p3 (2003.01.08)
 ===================
-- �P��ԃV���[�g�|�[�Y�̈������V���ɒǉ����ꂽ�D
-  - [Julius] "-iwspword" �ŃV���[�g�|�[�Y�ɑΉ�����P��G���g����F��
-    �����Ɏ����ǉ�����悤�ɂȂ����D�ǉ������P���N-gram�G���g����
-    �o�͕�����C����HMM��̓f�t�H���g�ł�"<UNK> [sp] sp sp"�ŁC�I�v�V����
-    "-iwspentry" �Ŏw��\�D
-  - [�}���`�p�X��] ���Z���Ԃ�context-free�ȒP��Ԃ̖����ɑΉ������D
-    �I�v�V���� "-iwsp" �ŁC�������̑S�P��̓ǂ݂̖����ɃX�L�b�v�\��
-    �V���[�g�|�[�Y���f����t������D�t�����郂�f���� "-spmodel" �ŕύX
-    �\�D�ڍׂ͕ʃh�L�������g���Q�Ƃ̂��ƁD
-- �������͕��̉��P:
-   - ���͂̒x�������P�F����ɂ��C�}�C�N���͂̒x�����C
-     �]���� 200ms �O�ォ�� 50ms �O��ɉ��P���ꂽ�D
-   - �����f�o�C�X�����̃v���Z�X�Ŏg�p���̏ꍇ�ɁC�u���b�N�����ɃG���[
-     �I������悤�ɕύX�D
-- �ŐV�f�o�C�X���ɑΉ��F
-   - libsndfile-1.0.x �ɑΉ��D
-   - ALSA-0.9.x �ɑΉ��D
-     �������o�ł� OSS ���D�悳���̂ŁC�g�p����ɂ� configure ����
-     "--with-mictype=alsa" �𖾎��I�Ɏw�肷�邱�ƁD
+- 単語間ショートポーズの扱いが新たに追加された．
+  - [Julius] "-iwspword" でショートポーズに対応する単語エントリを認識
+    辞書に自動追加するようになった．追加される単語のN-gramエントリや
+    出力文字列，音響HMM列はデフォルトでは"<UNK> [sp] sp sp"で，オプション
+    "-iwspentry" で指定可能．
+  - [マルチパス版] より短時間のcontext-freeな単語間の無音に対応した．
+    オプション "-iwsp" で，辞書中の全単語の読みの末尾にスキップ可能な
+    ショートポーズモデルを付加する．付加するモデルは "-spmodel" で変更
+    可能．詳細は別ドキュメントを参照のこと．
+- 音声入力部の改善:
+   - 入力の遅延を改善：これにより，マイク入力の遅延が，
+     従来の 200ms 前後から 50ms 前後に改善された．
+   - 音声デバイスが他のプロセスで使用中の場合に，ブロックせずにエラー
+     終了するように変更．
+- 最新デバイス環境に対応：
+   - libsndfile-1.0.x に対応．
+   - ALSA-0.9.x に対応．
+     自動検出では OSS が優先されるので，使用するには configure 時に
+     "--with-mictype=alsa" を明示的に指定すること．
  
 3.3p2 (2002.11.18)
 ===================
-- [�}���`�p�X��] ���f���X�L�b�v�J�ڂɑΉ������D�������f���̏�����Ԃ�
-  ��ŏI��Ԃւ́i�o�͏�Ԃ��n���Ɋ܂܂Ȃ��j�J�ڂ��T�|�[�g�����D����
-  �ɂ��C����ȍ~�̃o�[�W������ HTK �́u�S�Ắv��ԑJ�ڂ��T�|�[�g��
-  �����ƂɂȂ�D
-- �V�@�\: "-record dir" �ŁCJulius�ɓ��͂��ꂽ�����f�[�^��S�Ďw��f�B
-  ���N�g�����ɒ����L�^���Ă����@�\�̒ǉ��D
-- �ȉ��̃o�O���C��
-    - Solaris �� MFCC �t�@�C�����͎��ɗ�����D
-    - "-module" �� "-input adinnet" ���p���ɁC�N���C�A���g����̃R�}���h��
-      �󂯕t���Ȃ��Ȃ�D
-    - �Ō�̔F�����ʂ��o�b�t�@�����O���ꐳ�����^�C�~���O�Œ[���o�͂���Ȃ��D
+- [マルチパス版] モデルスキップ遷移に対応した．音響モデルの初期状態か
+  ら最終状態への（出力状態を系列上に含まない）遷移をサポートした．これ
+  により，これ以降のバージョンは HTK の「全ての」状態遷移をサポートし
+  たことになる．
+- 新機能: "-record dir" で，Juliusに入力された音声データを全て指定ディ
+  レクトリ下に逐次記録していく機能の追加．
+- 以下のバグを修正
+    - Solaris で MFCC ファイル入力時に落ちる．
+    - "-module" と "-input adinnet" 併用時に，クライアントからのコマンドを
+      受け付けなくなる．
+    - 最後の認識結果がバッファリングされ正しいタイミングで端末出力されない．
 
 3.3p1 (2002.10.15)
 ===================
-�ȉ��̃o�O���C���F
-- ��Q�p�X�̌��ꃂ�f���̏d�݂ƃy�i���e�B�̃f�t�H���g�l���O�ɂȂ��Ă����D
-- �����ɕ����X�y�[�X������Ɠǂݍ��݂Ɏ��s����D
-- monophone �g�p���� -separatescore �̏o�͂����������Ȃ�D
+以下のバグを修正：
+- 第２パスの言語モデルの重みとペナルティのデフォルト値が０になっていた．
+- 辞書に複数スペースがあると読み込みに失敗する．
+- monophone 使用時に -separatescore の出力がおかしくなる．

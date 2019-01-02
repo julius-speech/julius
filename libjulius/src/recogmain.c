@@ -2,7 +2,7 @@
  * @file   recogmain.c
  * 
  * <JA>
- * @brief  ǧ���ᥤ��ؿ�
+ * @brief  認識メイン関数
  * </JA>
  * 
  * <EN>
@@ -38,13 +38,13 @@
  * 
  * </EN>
  * <JA>
- * ����� Julius �Υ����������ɤΥ֥饦���Ǥ���
+ * これは Julius のソースコードのブラウザです．
  *
- * - JuliusLib����Ѥ��륵��ץ륳����: julius-simple/julius-simple.c
- * - JuliusLib API ��ե���󥹡� @ref jfunc
- * - ������Хå� ����: libjulius/include/julius/callback.h
+ * - JuliusLibを使用するサンプルコード: julius-simple/julius-simple.c
+ * - JuliusLib API リファレンス： @ref jfunc
+ * - コールバック 一覧: libjulius/include/julius/callback.h
  *
- * �ڡ��������Υ��֤���ե����롦�ؿ�����¤�����������򸫤뤳�Ȥ�����ޤ���
+ * ページ上部のタブからファイル・関数・構造体等の説明を見ることが出来ます．
  * 
  * </JA>
  * 
@@ -56,7 +56,7 @@
  * Here is a reference of all Julius library API functions.
  * </EN>
  * <JA>
- * Julius �饤�֥�� API �ؿ��Υ�ե���󥹤Ǥ�. 
+ * Julius ライブラリ API 関数のリファレンスです. 
  * </JA>
  * 
  */
@@ -68,7 +68,7 @@
  * Basic functions to start-up and initialize engines.
  * </EN>
  * <JA>
- * ǧ�����󥸥��������
+ * 認識エンジンの設定等
  * </JA>
  * 
  */
@@ -80,7 +80,7 @@
  * Functions to add callback to get results and status.
  * </EN>
  * <JA>
- * ǧ����̤䥨�󥸥���֤��Τ뤿��Υ�����Хå�
+ * 認識結果やエンジン状態を知るためのコールバック
  * </JA>
  * 
  */
@@ -92,7 +92,7 @@
  * Functions to pause / resume engine inputs.
  * </EN>
  * <JA>
- * ���󥸥�ΰ����ߡ��Ƴ�
+ * エンジンの一時停止・再開
  * </JA>
  * 
  */
@@ -104,7 +104,7 @@
  * Functions to register user function to be applied inside Julius.
  * </EN>
  * <JA>
- * �桼���ؿ�����Ͽ
+ * ユーザ関数の登録
  * </JA>
  * 
  */
@@ -117,7 +117,7 @@
  * on live.
  * </EN>
  * <JA>
- * ��ǥ뤪���ǧ���ץ�������ưŪ�ɲá������ͭ������̵����
+ * モデルおよび認識プロセスの動的追加・削除・有効化・無効化
  * </JA>
  * 
  */
@@ -129,7 +129,7 @@
  * Functions to manage grammars or word dictionaries at run time.
  * </EN>
  * <JA>
- * ʸˡ��ñ�켭������
+ * 文法・単語辞書の操作
  * </JA>
  * 
  */
@@ -141,7 +141,7 @@
  * Functions to load / create configuration parameters.
  * </EN>
  * <JA>
- * Jconf ��¤�Τˤ��ѥ�᡼������δ���
+ * Jconf 構造体によるパラメータ情報の管理
  * </JA>
  * 
  */
@@ -153,7 +153,7 @@
  * Functions to handle modules and processes directly.
  * </EN>
  * <JA>
- * ��ǥ�⥸�塼���ץ�������ľ�ܰ����ؿ���
+ * モデルモジュールやプロセスを直接扱う関数．
  * </JA>
  * 
  */
@@ -170,7 +170,7 @@
 #ifdef REPORT_MEMORY_USAGE
 /** 
  * <JA>
- * �̾ｪλ���˻��ѥ����̤�Ĵ�٤ƽ��Ϥ��� (Linux, sol2)
+ * 通常終了時に使用メモリ量を調べて出力する (Linux, sol2)
  * 
  * </JA>
  * <EN>
@@ -197,9 +197,9 @@ print_mem()
  * @return the new pointer
  * </EN>
  * <JA>
- * ���饤����ȷ�̤γ�Ǽ�������
+ * アラインメント結果の格納場所を確保
  *
- * @return ���ݤ��줿�ΰ�ؤΥݥ���
+ * @return 確保された領域へのポインタ
  * </JA>
  *
  * @callgraph
@@ -229,9 +229,9 @@ result_align_new()
  * @param a [i/o] alignment data to be released
  * </EN>
  * <JA>
- * ���饤����ȷ�̤γ�Ǽ�������
+ * アラインメント結果の格納場所を確保
  *
- * @param a [i/o] ��������륢�饤����ȥǡ���
+ * @param a [i/o] 解放されるアラインメントデータ
  * </JA>
  *
  * @callgraph
@@ -256,7 +256,7 @@ result_align_free(SentenceAlign *a)
  * Allocate storage of recognition results.
  * </EN>
  * <JA>
- * ǧ����̤γ�Ǽ������ݤ���. 
+ * 認識結果の格納場所を確保する. 
  * </JA>
  * 
  * @param r [out] recognition process instance
@@ -280,7 +280,7 @@ result_sentence_malloc(RecogProcess *r, int num)
  * Free storage of recognition results.
  * </EN>
  * <JA>
- * ǧ����̤γ�Ǽ�����������. 
+ * 認識結果の格納場所を解放する. 
  * </JA>
  * 
  * @param r [i/o] recognition process instance
@@ -312,7 +312,7 @@ result_sentence_free(RecogProcess *r)
  * Clear all result storages for next input.
  * </EN>
  * <JA>
- * ǧ����̤γ�Ǽ�������ƥ��ꥢ����. 
+ * 認識結果の格納場所を全てクリアする. 
  * </JA>
  * 
  * @param r [in] recognition process instance.
@@ -351,18 +351,18 @@ clear_result(RecogProcess *r)
 
 /** 
  * <JA>
- * @brief  ���Ф��줿����Хåե�����¸���� adin_go() ������Хå�
+ * @brief  検出された音をバッファに保存する adin_go() コールバック
  *
- * ���δؿ��ϡ����Ф��줿�������Ϥ�缡 recog->speech �˵�Ͽ����
- * ����. �Хåե������⡼�ɡʡ���ꥢ�륿����⡼�ɡˤ�ǧ����Ԥʤ�
- * �Ȥ����Ѥ�����. 
+ * この関数は，検出された音声入力を順次 recog->speech に記録して
+ * いく. バッファ処理モード（＝非リアルタイムモード）で認識を行なう
+ * ときに用いられる. 
  * 
- * @param now [in] ���Ф��줿�����ȷ��ǡ���������
- * @param len [in] @a now ��Ĺ��(����ץ��)
- * @param recog [i/o] ���󥸥󥤥󥹥���
+ * @param now [in] 検出された音声波形データの断片
+ * @param len [in] @a now の長さ(サンプル数)
+ * @param recog [i/o] エンジンインスタンス
  * 
- * @return ���顼�� -1 (adin_go ��¨�����Ǥ���)���̾�� 0 (adin_go ��
- * ³�Ԥ���)����ֽ�λ�׵�� 1 (adin_go �ϸ��ߤβ�����֤��Ĥ���). 
+ * @return エラー時 -1 (adin_go は即時中断する)，通常時 0 (adin_go は
+ * 続行する)，区間終了要求時 1 (adin_go は現在の音声区間を閉じる). 
  * 
  * </JA>
  * <EN>
@@ -414,15 +414,15 @@ adin_cut_callback_store_buffer(SP16 *now, int len, Recog *recog)
 /* --------------------- adin check callback --------------- */
 /** 
  * <JA>
- * @brief  ��������������Ū�˼¹Ԥ���륳����Хå�. 
+ * @brief  音声入力中に定期的に実行されるコールバック. 
  *
- * ���δؿ��ϡ�adin_go() �ˤƲ��������Ԥ������뤤�ϲ���ǧ�����
- * ���Ū�˷����֤��ƤӽФ����ؿ��Ǥ���. �桼������Υ�����Хå�
- * (CALLBACK_POLL) �θƤӽФ������������Ƚ���Ԥ�. 
+ * この関数は，adin_go() にて音声入力待ち，あるいは音声認識中に
+ * 定期的に繰り返し呼び出される関数である. ユーザ定義のコールバック
+ * (CALLBACK_POLL) の呼び出し，および中断判定を行う. 
  *
- * @param recog [in] ���󥸥󥤥󥹥���
+ * @param recog [in] エンジンインスタンス
  * 
- * @return �̾�� 0, ¨�����Ǥ��׵�� -2, ǧ����ߤ��׵���� -1 ���֤�. 
+ * @return 通常時 0, 即時中断を要求時 -2, 認識中止の要求時は -1 を返す. 
  * </JA>
  * <EN>
  * @brief  callback function periodically called while input.
@@ -477,7 +477,7 @@ callback_check_in_adin(Recog *recog)
  * Open input stream.
  * </EN>
  * <JA>
- * �������ϥ��ȥ꡼��򳫤�
+ * 音声入力ストリームを開く
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -580,7 +580,7 @@ j_open_stream(Recog *recog, char *file_or_dev_name)
  * stream has been closed.
  * </EN>
  * <JA>
- * �������ϥ��ȥ꡼����Ĥ��롥ǧ���Υᥤ��롼�פ��Ĥ���줿�彪λ���롥
+ * 音声入力ストリームを閉じる．認識のメインループは閉じられた後終了する．
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -643,7 +643,7 @@ j_close_stream(Recog *recog)
  * Recognition error handling.
  * </EN>
  * <JA>
- * ���顼�ˤ��ǧ����λ���ν���. 
+ * エラーによる認識終了時の処理. 
  * </JA>
  * 
  * @param recog [in] engine instance
@@ -690,16 +690,16 @@ result_error(Recog *recog, int status)
  * 
  * </EN>
  * <JA>
- * @brief  ����ǧ���μ¹�. 
+ * @brief  音声認識の実行. 
  *
- * ���δؿ������ϥ��ȥ꡼�ब�����ޤǲ���ǧ���򷫤��֤�. 
- * ɬ�פǤ���������Ԥ���Ԥäƶ�֤򸡽Ф�������ǧ����Ԥ�����̤�
- * ���Ϥ��Ƥդ����������Ԥ������. 
+ * この関数は入力ストリームが終わるまで音声認識を繰り返す. 
+ * 必要であれば入力待ちを行って区間を検出し，音声認識を行い，結果を
+ * 出力してふたたび入力待ちに戻る. 
  *
- * ���ϥ��ȥ꡼��򽪤��ޤ�ǧ�����뤫�����顼���������Ȥ��˽�λ����. 
+ * 入力ストリームを終わりまで認識するか，エラーが生じたときに終了する. 
  *
- * ���뤤�ϡ�ǧ��������ˡ�j_request_pause() �� j_request_terminate() ��
- * ���ץ꤫��ƤФ줿��硤ǧ���������ڤ��ܤǽ�λ����. 
+ * あるいは，認識処理中に，j_request_pause() や j_request_terminate() が
+ * アプリから呼ばれた場合，認識処理の切れ目で終了する. 
  * 
  * </JA>
  * 
@@ -1099,8 +1099,8 @@ j_recognize_stream_core(Recog *recog)
 	  seclen = (float)recog->speechlen / (float)jconf->input.sfreq;
 	  jlog("STAT: %d samples (%.2f sec.)\n", recog->speechlen, seclen);
 	  
-	  /* -rejectshort �����, ���Ϥ�������ְʲ��Ǥ����
-	     ���������Ϥ���Ѥ��� */
+	  /* -rejectshort 指定時, 入力が指定時間以下であれば
+	     ここで入力を棄却する */
 	  /* when using "-rejectshort", and input was shorter than
 	     specified, reject the input here */
 	  if (jconf->reject.rejectshortlen > 0) {
@@ -1197,8 +1197,8 @@ j_recognize_stream_core(Recog *recog)
     /**********************************/
     /* on-the-fly 1st pass processing will join here */
     
-    /* -rejectshort �����, ���Ϥ�������ְʲ��Ǥ����õ�����ԤȤ��� */
-    /* �裲�ѥ���¹Ԥ����ˤ����ǽ�λ���� */
+    /* -rejectshort 指定時, 入力が指定時間以下であれば探索失敗として */
+    /* 第２パスを実行せずにここで終了する */
     /* when using "-rejectshort", and input was shorter than the specified
        length, terminate search here and output recognition failure */
     if (jconf->reject.rejectshortlen > 0) {
@@ -1496,19 +1496,19 @@ j_recognize_stream_core(Recog *recog)
  * 
  * </EN>
  * <JA>
- * @brief  ���ϥ��ȥ꡼���ǧ����Ԥ�
+ * @brief  入力ストリームの認識を行う
  *
- * ���ϥ��ȥ꡼����Ф���
- * ��ɬ�פǤ���С˶�ָ��Ф�VAD��Ԥ��ʤ���ǧ���򷫤��֤��ԤäƤ���. 
- * ���Ϥ���ü��ã���뤫���뤤�ϥ��顼�ǽ�λ����. 
+ * 入力ストリームに対して
+ * （必要であれば）区間検出やVADを行いながら認識を繰り返し行っていく. 
+ * 入力が終端に達するかあるいはエラーで終了する. 
  *
- * ���ץꥱ������󤫤�ǧ�������Ǥ�ꥯ�����Ȥ��줿�Ȥ��ϡ�
- * CALLBACK_EVENT_PAUSE��CALLBACK_PAUSE_FUNCTION,
- * CALLBACK_EVENT_RESUME �ν�˸Ƥ������ǧ�������. ���Τ��ᡤ
- * ǧ�������Ǥ����Ƥ���֤˹Ԥ������ϡ�CALLBACK_PAUSE_FUNCTION
- * ����Ͽ���Ƥ���ɬ�פ�����. CALLBACK_PAUSE_FUNCTION ��
- * ��Ͽ����Ƥ������Ƥν�������λ������ǧ����ưŪ�˺Ƴ�����Τ�
- * ���դ��뤳��. 
+ * アプリケーションから認識の中断をリクエストされたときは，
+ * CALLBACK_EVENT_PAUSE，CALLBACK_PAUSE_FUNCTION,
+ * CALLBACK_EVENT_RESUME の順に呼んだあと認識に戻る. このため，
+ * 認識を中断させている間に行う処理は，CALLBACK_PAUSE_FUNCTION
+ * に登録しておく必要がある. CALLBACK_PAUSE_FUNCTION に
+ * 登録されている全ての処理が終了したら認識を自動的に再開するので
+ * 注意すること. 
  * 
  * </JA>
  * 

@@ -4,43 +4,43 @@ DFA_DETERMINIZE(1)                                          DFA_DETERMINIZE(1)
 
 
 
-���O
+名前
            dfa_determinize
-          - �L���I�[�g�}�g�����@�����艻����
+          - 有限オートマトン文法を決定化する
 
-�T�v
+概要
        dfa_determinize [-o outfile] {dfafile}
 
 DESCRIPTION
-       dfa_determinize �́C.dfa �t�@�C���𓙉��Ȍ��萫 .dfa �t�@�C���ɕϊ����C
-       �W���o�͂ɏo�͂��܂��D�I�v�V���� -o �ŏo�͐�� �w�肷�邱�Ƃ��ł��܂��D
+       dfa_determinize は，.dfa ファイルを等価な決定性 .dfa ファイルに変換し，
+       標準出力に出力します．オプション -o で出力先を 指定することもできます．
 
-       mkdfa.pl ����������DFA�͏�Ɍ��艻����Ă���C �ʏ�Cmkdfa.pl �ō쐬��
-       �ꂽ .dfa �t�@�C���ɑ΂��� ���̃c�[�����g���K�v�͂���܂���D
+       mkdfa.pl が生成するDFAは常に決定化されており， 通常，mkdfa.pl で作成さ
+       れた .dfa ファイルに対して このツールを使う必要はありません．
 
 OPTIONS
         -o  outfile
-           �o�̓t�@�C�������w�肷��D
+           出力ファイル名を指定する．
 
 EXAMPLES
-       foo.dfa �����艻���� bar.dfa �� �ۑ�����D
-       �ʂ̕��@�F
+       foo.dfa を決定化して bar.dfa に 保存する．
+       別の方法：
 
 SEE ALSO
         mkdfa.pl ( 1 ) ,
         dfa_minimize ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 

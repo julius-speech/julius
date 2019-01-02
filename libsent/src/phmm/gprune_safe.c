@@ -2,20 +2,20 @@
  * @file   gprune_safe.c
  * 
  * <JA>
- * @brief  ���祬����ʬ�۷׻�: Gaussian pruning (safe algorithm)
+ * @brief  混合ガウス分布計算: Gaussian pruning (safe algorithm)
  *
- * gprune_safe()�Ϻ��祬����ʬ�۽���η׻��롼����ΰ�ĤǤ���
- * safe pruning ��Ȥäƾ�̤Υ�����ʬ�ۤν��ϳ�Ψ�Τߤ��®�˵��ޤ���
- * Tied-mixture %HMM ���ѻ��� Julius ��GPRUNE_DEFAULT_SAFE ���������Ƥ��뤫��
- * ���뤤��Julius�Υ��ץ���� "-gprune safe" ����ꤹ�뤳�ȤǤ��δؿ���
- * ���Ѥ���ޤ���
+ * gprune_safe()は混合ガウス分布集合の計算ルーチンの一つです．
+ * safe pruning を使って上位のガウス分布の出力確率のみを高速に求めます．
+ * Tied-mixture %HMM 使用時に Julius でGPRUNE_DEFAULT_SAFE が定義されているか，
+ * あるいはJuliusのオプション "-gprune safe" を指定することでこの関数が
+ * 使用されます．
  *
- * safe pruning �ϺǤ�����ʻ޴���ˡ�Ǥ������N�ĤΥ�����ʬ�ۤ��μ¤�
- * �����ޤ�������®���θ��̤�¾�μ�ˡ����٤ƾ������Ǥ���
+ * safe pruning は最も安全な枝刈り法です．上位N個のガウス分布が確実に
+ * 得られますが，高速化の効果は他の手法に比べて小さいです．
  * 
- * gprune_safe() �� outprob_init() �ˤ�äƤ��δؿ��ؤΥݥ��󥿤�
- * compute_gaussset �˥��åȤ���뤳�Ȥǻ��Ѥ���ޤ������Υݥ��󥿤�
- * calc_tied_mix() �ޤ��� calc_mix() ����ƤӽФ���ޤ���
+ * gprune_safe() は outprob_init() によってその関数へのポインタが
+ * compute_gaussset にセットされることで使用されます．このポインタが
+ * calc_tied_mix() または calc_mix() から呼び出されます．
  * </JA>
  * 
  * <EN>

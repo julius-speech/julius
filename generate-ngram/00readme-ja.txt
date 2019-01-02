@@ -1,59 +1,59 @@
-    generate]ngram
+    generateâ€ngram
 
 GENERATE-NGRAM(1)                                            GENERATE-NGRAM(1)
 
 
 
-–¼‘O
+åå‰
            generate-ngram
-          - N-gram ‚É]‚Á‚Ä•¶‚ðƒ‰ƒ“ƒ_ƒ€¶¬‚·‚é
+          - N-gram ã«å¾“ã£ã¦æ–‡ã‚’ãƒ©ãƒ³ãƒ€ãƒ ç”Ÿæˆã™ã‚‹
 
-ŠT—v
+æ¦‚è¦
        generate-ngram [options...] {binary_ngram}
 
 DESCRIPTION
-       generate-ngram ‚ÍC—^‚¦‚ç‚ê‚½ N-gram Šm—¦‚É]‚Á‚Ä•¶‚ðƒ‰ƒ“ƒ_ƒ€¶¬‚·‚é
-       ƒc[ƒ‹‚Å‚·Dbinary_ngram ‚É‚ÍC ƒoƒCƒiƒŠŒ`Ž®‚Ì N-gram ƒtƒ@ƒCƒ‹‚ðŽw’è‚µ
-       ‚Ü‚·D
+       generate-ngram ã¯ï¼Œä¸Žãˆã‚‰ã‚ŒãŸ N-gram ç¢ºçŽ‡ã«å¾“ã£ã¦æ–‡ã‚’ãƒ©ãƒ³ãƒ€ãƒ ç”Ÿæˆã™ã‚‹
+       ãƒ„ãƒ¼ãƒ«ã§ã™ï¼Žbinary_ngram ã«ã¯ï¼Œ ãƒã‚¤ãƒŠãƒªå½¢å¼ã® N-gram ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡å®šã—
+       ã¾ã™ï¼Ž
 
 OPTIONS
         -n  num
-           ¶¬‚·‚é•¶”‚ðŽw’è‚·‚éiƒfƒtƒHƒ‹ƒgF10j
+           ç”Ÿæˆã™ã‚‹æ–‡æ•°ã‚’æŒ‡å®šã™ã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼š10ï¼‰
 
         -N
-           Žg—p‚·‚é N-gram ‚Ì’·‚³‚ð§ŒÀ‚·‚éiƒfƒtƒHƒ‹ƒgF—^‚¦‚ç‚ê‚½ƒ‚ƒfƒ‹‚Å’è
-           ‹`‚³‚ê‚Ä‚¢‚éÅ‘å’lC3-gram ‚È‚ç 3jD
+           ä½¿ç”¨ã™ã‚‹ N-gram ã®é•·ã•ã‚’åˆ¶é™ã™ã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼šä¸Žãˆã‚‰ã‚ŒãŸãƒ¢ãƒ‡ãƒ«ã§å®š
+           ç¾©ã•ã‚Œã¦ã„ã‚‹æœ€å¤§å€¤ï¼Œ3-gram ãªã‚‰ 3ï¼‰ï¼Ž
 
         -bos
-           •¶ŠJŽn‹L†‚ðŽw’è‚·‚éiƒfƒtƒHƒ‹ƒgF<s>j
+           æ–‡é–‹å§‹è¨˜å·ã‚’æŒ‡å®šã™ã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼š<s>ï¼‰
 
         -eos
-           •¶I—¹‹L†‚ðŽw’è‚·‚éiƒfƒtƒHƒ‹ƒgF</s>j
+           æ–‡çµ‚äº†è¨˜å·ã‚’æŒ‡å®šã™ã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼š</s>ï¼‰
 
         -ignore
-           o—Í‚µ‚Ä‚Ù‚µ‚­‚È‚¢’PŒê‚ðŽw’è‚·‚éiƒfƒtƒHƒ‹ƒgF<UNK>j
+           å‡ºåŠ›ã—ã¦ã»ã—ããªã„å˜èªžã‚’æŒ‡å®šã™ã‚‹ï¼ˆãƒ‡ãƒ•ã‚©ãƒ«ãƒˆï¼š<UNK>ï¼‰
 
         -v
-           ç’·‚Èo—Í‚ðs‚¤D
+           å†—é•·ãªå‡ºåŠ›ã‚’è¡Œã†ï¼Ž
 
         -debug
-           ƒfƒoƒbƒO—po—Í‚ðs‚¤D
+           ãƒ‡ãƒãƒƒã‚°ç”¨å‡ºåŠ›ã‚’è¡Œã†ï¼Ž
 
 SEE ALSO
         julius ( 1 ) ,
         mkbingram ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ‹ž“s‘åŠw ‰ÍŒ´Œ¤‹†Žº
+       Copyright (c) 1991-2013 äº¬éƒ½å¤§å­¦ æ²³åŽŸç ”ç©¶å®¤
 
-       Copyright (c) 1997-2000 î•ñˆ—U‹»Ž–‹Æ‹¦‰ï(IPA)
+       Copyright (c) 1997-2000 æƒ…å ±å‡¦ç†æŒ¯èˆˆäº‹æ¥­å”ä¼š(IPA)
 
-       Copyright (c) 2000-2005 “Þ—Çæ’[‰ÈŠw‹Zp‘åŠw‰@‘åŠw Ž­–ìŒ¤‹†Žº
+       Copyright (c) 2000-2005 å¥ˆè‰¯å…ˆç«¯ç§‘å­¦æŠ€è¡“å¤§å­¦é™¢å¤§å­¦ é¹¿é‡Žç ”ç©¶å®¤
 
-       Copyright (c) 2005-2013 –¼ŒÃ‰®H‹Æ‘åŠw JuliusŠJ”­ƒ`[ƒ€
+       Copyright (c) 2005-2013 åå¤å±‹å·¥æ¥­å¤§å­¦ Juliusé–‹ç™ºãƒãƒ¼ãƒ 
 
 LICENSE
-       Julius ‚ÌŽg—p‹–‘ø‚É€‚¶‚Ü‚·D
+       Julius ã®ä½¿ç”¨è¨±è«¾ã«æº–ã˜ã¾ã™ï¼Ž
 
 
 

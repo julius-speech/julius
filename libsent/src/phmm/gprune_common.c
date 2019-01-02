@@ -2,10 +2,10 @@
  * @file   gprune_common.c
  * 
  * <JA>
- * @brief  ���祬����ʬ�۷׻�: Gaussian pruning (������)
+ * @brief  混合ガウス分布計算: Gaussian pruning (共通部)
  *
- * �����ˤ� Gaussian pruning�ˤ����Ƴƥ��르�ꥺ��Ƕ��̤��Ѥ�����
- * ����å������ؿ��ʤɤ��ޤޤ�Ƥ��ޤ���
+ * ここには Gaussian pruningにおいて各アルゴリズムで共通に用いられる
+ * キャッシュ操作関数などが含まれています．
  * </JA>
  * 
  * <EN>

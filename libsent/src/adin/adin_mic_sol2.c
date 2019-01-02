@@ -2,19 +2,19 @@
  * @file   adin_mic_sol2.c
  * 
  * <JA>
- * @brief  �ޥ������� (Solaris2.x)
+ * @brief  マイク入力 (Solaris2.x)
  *
- * Solaris 2.x �ǥޥ������Ϥ���Ѥ��뤿������٥벻�����ϴؿ��Ǥ���
- * Solaris 2.x �Υޥ���Ǥϥǥե���ȤǤ��Υե����뤬���Ѥ���ޤ���
+ * Solaris 2.x でマイク入力を使用するための低レベル音声入力関数です．
+ * Solaris 2.x のマシンではデフォルトでこのファイルが使用されます．
  *
- * Sun Solaris 2.5.1 ����� 2.6 ��ư���ǧ�򤷤Ƥ��ޤ���
- * �ӥå�����ǥ����������Ȥ��Ƥ��뤿�ᡤSolaris x86 �Ǥ�ư���ޤ���
+ * Sun Solaris 2.5.1 および 2.6 で動作確認をしています．
+ * ビッグエンディアンを前提としているため，Solaris x86 では動きません．
  *
- * ��ư�奪���ǥ������Ϥϥޥ����˼�ưŪ���ڤ��ؤ��ޤ�����
- * �ܥ�塼��ϼ�ưĴ�ᤵ��ޤ���gaintool�ʤɤ�����Ĵ�ᤷ�Ƥ��������� 
+ * 起動後オーディオ入力はマイクに自動的に切り替わりますが，
+ * ボリュームは自動調節されません．gaintoolなどで別途調節してください． 
  *
- * �ǥե���ȤΥǥХ���̾�� "/dev/audio" �Ǥ����Ķ��ѿ� AUDIODEV ��
- * �ǥХ���̾����ꤹ�뤳�Ȥǡ�¾�ΥǥХ���̾����ѤǤ��ޤ���
+ * デフォルトのデバイス名は "/dev/audio" です．環境変数 AUDIODEV に
+ * デバイス名を指定することで，他のデバイス名を使用できます．
  * </JA>
  * <EN>
  * @brief  Microphone input on Solaris 2.x

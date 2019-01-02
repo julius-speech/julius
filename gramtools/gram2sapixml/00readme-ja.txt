@@ -4,49 +4,49 @@ GRAM2SAPIXML.(1)                                              GRAM2SAPIXML.(1)
 
 
 
-���O
+名前
            gram2sapixml.pl
-          - �F���p���@�� SAPI XML ���@�ɕϊ�����X�N���v�g
+          - 認識用文法を SAPI XML 文法に変換するスクリプト
 
-�T�v
+概要
        gram2sapixml.pl [prefix...]
 
 DESCRIPTION
-       gram2sapixml.pl �́CJulius �̔F���p���@�t�@�C�� (.grammar, .voca) ����
-       Microsoft SAPI XML �`���֕ϊ�����X�N���v�g�ł��D prefix �ɂ́C�ϊ�����
-       .grammar, .voca �t�@ �C���̃t�@�C��������g���q�����O�������̂��w�肵��
-       ���D�����w�肵���ꍇ�C �����͒����ϊ�����܂��D
+       gram2sapixml.pl は，Julius の認識用文法ファイル (.grammar, .voca) から
+       Microsoft SAPI XML 形式へ変換するスクリプトです． prefix には，変換する
+       .grammar, .voca ファ イルのファイル名から拡張子を除外したものを指定しま
+       す．複数指定した場合， それらは逐次変換されます．
 
-       ���͕����R�[�h�� EUC-JP��z�肵�Ă��܂��D�o�̓t�@�C���� UTF-8 �G���R�[
-       �f�B���O�ł��D�R�[�h�ϊ��̂��ߓ����� iconv ���g�p ���Ă��܂��D
+       入力文字コードは EUC-JPを想定しています．出力ファイルは UTF-8 エンコー
+       ディングです．コード変換のため内部で iconv を使用 しています．
 
-       ���ċA���ɂ��Ă͎��Ƃɂ��C�����K�v�ł��D���t�@�C���� .grammar ��
-       �\�������̂܂ܕێ����邽�߁C.grammar �ɂ����鐳���ł̍��ċA�L�q������
-       �܂� .xml �ɔ��f����܂��D���������āC�ϊ��� .xml �Ɋ܂܂�鍶�ċA����
-       �����͎��Ƃōs��Ȃ���΂����܂���D
+       左再帰性については手作業による修正が必要です．元ファイルの .grammar の
+       構造をそのまま保持するため，.grammar における正順での左再帰記述がその
+       まま .xml に反映されます．したがって，変換後 .xml に含まれる左再帰性の
+       解決は手作業で行わなければいけません．
 
 SEE ALSO
         mkdfa.pl ( 1 )
 
 DIAGNOSTICS
-       �ϊ��́C���t�@�C���̕��@�̔�I�[�L���ƏI�[�L��(�P��J�e�S����)�����[��
-       �ɕϊ�����Ƃ����P���Ȃ��̂ł��D���ۂ�SAPI�A�v���P�[�V�����Ŏg���ꍇ��
-       �́C�v���p�e�B���w�肷��ȂǁC���Ƃł̏C�����K�v�ł��D
+       変換は，元ファイルの文法の非終端記号と終端記号(単語カテゴリ名)をルール
+       に変換するという単純なものです．実際にSAPIアプリケーションで使う場合に
+       は，プロパティを指定するなど，手作業での修正が必要です．
 
-       �����ŃR�[�h�ϊ��� iconv ���g�p���Ă��܂��D ���s�p�X��� iconv ��������
-       ���C�G���[�ƂȂ�܂��D
+       内部でコード変換に iconv を使用しています． 実行パス上に iconv が無い場
+       合，エラーとなります．
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 

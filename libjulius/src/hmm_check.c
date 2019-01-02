@@ -2,7 +2,7 @@
  * @file   hmm_check.c
  * 
  * <JA>
- * @brief  �ȥ饤�ե���μ����Ǥ������������å�
+ * @brief  トライフォンの辞書上での整合性チェック
  * </JA>
  * 
  * <EN>
@@ -28,28 +28,28 @@
 
 /** 
  * <JA>
- * @brief  �����󤫤�HMM��ؤ��Ѵ���Ԥʤ�����̤�ɽ������. 
+ * @brief  音素列からHMM列への変換を行ない，結果を表示する. 
  *
- * ���Υ롼����ϡ�Julius/Julian ��Ϳ����줿������ǥ��
- * HMMList �ե�����ˤ����ơ������󤫤�HMM��ؤ��Ѵ���ƥ��Ȥ���
- * ����δؿ��Ǥ���. 
+ * このルーチンは，Julius/Julian に与えられた音響モデルと
+ * HMMList ファイルにおいて，音素列からHMM列への変換をテストする
+ * ための関数である. 
  * 
- * ����Ƕ��ڤ�줿�������ʸ������Ф��ơ��ȥ饤�ե����ǥ���ѻ��ˤ�
- * ����ƥ����Ȥ���θ���졤�ǽ�Ū���б����� HMM ����Ѵ������. 
- * ���θ塤�Ѵ�������̤�
- *   - �����󤫤�Ƴ����������Ŭ�Ѥ��٤���ǥ�̾
- *   - �嵭�� HMMList �ˤ������ä��Ѵ��������� HMM ̾
- *   - �ºݤ˷׻����Ѥ�����ʪ��HMM̾�ޤ��� pseudo HMM ̾
- * �ν�˽��Ϥ���. 
+ * 空白で区切られた音素列の文字列に対して，トライフォンモデル使用時には
+ * コンテキストが考慮され，最終的に対応する HMM 列へ変換される. 
+ * その後，変換した結果を，
+ *   - 音素列から導かれる本来の適用すべきモデル名
+ *   - 上記を HMMList にしたがって変換した論理 HMM 名
+ *   - 実際に計算で用いられる物理HMM名または pseudo HMM 名
+ * の順に出力する. 
  * 
- * �ʤ���ʸ������� "|" ��ޤ�뤳�Ȥǡ�������ñ����ڤ�Ȥ��ư�����
- * �ȥ饤�ե���ˤ�����ñ��֤�Ÿ�����θ���뤳�Ȥ��Ǥ���. 
+ * なお，文字列中に "|" を含めることで，そこを単語区切りとして扱い，
+ * トライフォンにおいて単語間の展開を考慮することができる. 
  * 
- * @param str [i/o] ����Ƕ��ڤ�줿�������ʸ����
- * @param hmminfo [in] HMM�����¤��
- * @param len_ret [out] �֤��ͤ����� HMM �����ǿ�
+ * @param str [i/o] 空白で区切られた音素列の文字列
+ * @param hmminfo [in] HMM定義構造体
+ * @param len_ret [out] 返り値の論理 HMM の要素数
  * 
- * @return �����˥������դ���줿�Ѵ��������HMM�Υݥ�����
+ * @return 新たにメモリ割り付けられた変換後の論理HMMのポインタ列
  * </JA>
  * <EN>
  * @brief  Convert phoneme sequences to logical HMM sequences, and output the
@@ -244,10 +244,10 @@ new_str2phseq(char *str, HTK_HMM_INFO *hmminfo, int *len_ret)
 
 /** 
  * <JA>
- * ɸ�����Ϥ���1�Ԥ�����ɽ���Ȥ����ɤ߹��ߡ��ȥ饤�ե���ؤ��Ѵ������å���
- * �Ԥʤ�. 
+ * 標準入力から1行を音素列表記として読み込み，トライフォンへの変換チェックを
+ * 行なう. 
  * 
- * @param hmminfo [in] HMM�����¤��
+ * @param hmminfo [in] HMM定義構造体
  * </JA>
  * <EN>
  * Read in line from stdin as phoneme sequence and try convertion to
@@ -286,9 +286,9 @@ test_expand_triphone(HTK_HMM_INFO *hmminfo)
 
 /** 
  * <JA>
- * ���ޥ�ɥ饤���ǥȥ饤�ե���Υ����å���Ԥʤ��⡼�� ("-check triphone"). 
+ * コマンドライン上でトライフォンのチェックを行なうモード ("-check triphone"). 
  *
- * @param r [in] ǧ���������󥹥���
+ * @param r [in] 認識処理インスタンス
  * </JA>
  * <EN>
  * Mode to do interactive triphone conversion check ("-check triphone").

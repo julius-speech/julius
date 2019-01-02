@@ -2,7 +2,7 @@
  * @file   global.h
  * 
  * <JA>
- * @brief  Âç°èÊÑ¿ô¤ÎÄêµÁ
+ * @brief  å¤§åŸŸå¤‰æ•°ã®å®šç¾©
  *
  * </JA>
  * 

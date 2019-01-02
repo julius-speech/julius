@@ -2,16 +2,16 @@
  * @file   search_bestfirst_main.c
  * 
  * <JA>
- * @brief  ��2�ѥ��������å��ǥ����ǥ���
+ * @brief  第2パス：スタックデコーディング
  *
- * Julius ����2�ѥ��Ǥ��륹���å��ǥ����ǥ��󥰥��르�ꥺ�ब���Ҥ���
- * �Ƥ��ޤ�. ��1�ѥ��η�̤�ñ��ȥ�ꥹ����򸵤ˡ���1�ѥ��Ȥϵո���
- * �� right-to-left ��õ����Ԥ��ޤ�. ����Υ������ϡ���1�ѥ��Υȥ��
- * ���Ȥ��Υ�������̤õ�����Υҥ塼�ꥹ�ƥ��å��Ȥ�����³���뤳�Ȥǡ�
- * ʸ���Τβ��⥹�������θ���ʤ���õ����Ԥ��ޤ�. 
+ * Julius の第2パスであるスタックデコーディングアルゴリズムが記述され
+ * ています. 第1パスの結果の単語トレリス情報を元に，第1パスとは逆向き
+ * の right-to-left に探索を行います. 仮説のスコアは、第1パスのトレリ
+ * スとそのスコアを未探索部のヒューリスティックとして接続することで，
+ * 文全体の仮説スコアを考慮しながら探索を行います. 
  *
- * ��ñ�콸��μ����Τ���ˡ�ñ��N-gram�Ǥ� ngram_decode.c ��δؿ�����
- * ʸˡ�Ǥ� dfa_decode.c �δؿ����Ѥ����ޤ�. 
+ * 次単語集合の取得のために，単語N-gramでは ngram_decode.c 内の関数が，
+ * 文法では dfa_decode.c の関数が用いられます. 
  * 
  * </JA>
  * 
@@ -56,20 +56,20 @@ static void put_hypo_woutput(NODE *hypo, WORD_INFO *winfo);
 static void put_hypo_wname(NODE *hypo, WORD_INFO *winfo);
 
 /**********************************************************************/
-/********** ��ñ���Ǽ�ΰ�γ������          *************************/
+/********** 次単語格納領域の割り当て          *************************/
 /********** allocate memory for nextword data *************************/
 /**********************************************************************/
 
 /** 
  * <JA>
- * ��ñ��γ�Ǽ�ΰ�γ������. 
- * ��ñ�������Ǽ���뤿��� NEXTWORD ����˥�������դ���. 
+ * 次単語の格納領域の割り当て. 
+ * 次単語候補を格納するための NEXTWORD 配列にメモリを割り付ける. 
  * 
- * @param maxlen [out] ��Ǽ��ǽ��ñ���
- * @param root [out] ����դ��ΰ����Ƭ�ؤΥݥ���
- * @param max [in] ����դ����ΰ�Υ�����
+ * @param maxlen [out] 格納可能な単語数
+ * @param root [out] 割り付け領域の先頭へのポインタ
+ * @param max [in] 割り付ける領域のサイズ
  * 
- * @return ����դ���줿��ñ������ؤΥݥ��󥿤��֤�. 
+ * @return 割り付けられた次単語配列へのポインタを返す. 
  * </JA>
  * <EN>
  * Allocate memory for next word candidates.
@@ -101,10 +101,10 @@ nw_malloc(int *maxlen, NEXTWORD **root, int max)
 
 /** 
  * <JA>
- * ��ñ��γ�Ǽ�ΰ�β���. 
+ * 次単語の格納領域の解放. 
  * 
- * @param nw [in] NEXTWORD����
- * @param root [in] nw_malloc() ��Ϳ����줿�ΰ���Ƭ�ؤΥݥ���
+ * @param nw [in] NEXTWORD配列
+ * @param root [in] nw_malloc() で与えられた領域先頭へのポインタ
  * </JA>
  * <EN>
  * Free next word candidate area.
@@ -123,23 +123,23 @@ nw_free(NEXTWORD **nw, NEXTWORD *root)
 
 /** 
  * <JA>
- * @brief  ��ñ������Ǽ�Ѥ� NEXTWORD ����Υ����ΰ��ĥ����. 
+ * @brief  次単語候補格納用の NEXTWORD 配列のメモリ領域を伸張する. 
  *
- * ���δؿ���õ����˼�ñ����佸�礬��줿�ݤ˸ƤФ졤����ˤ��¿����
- * ��ñ�������Ǽ�Ǥ���褦 NEXTWORD ����Ȥ� realloc() ����. 
- * �ºݤˤϺǽ�� nw_malloc() �Ǽ����ñ���ʬ�����ΰ����ݤ��Ƥ��ꡤ
- * ñ��N-gram���ѻ��ϸƤФ�뤳�ȤϤʤ�. ʸˡǧ���Ǥϡ����硼�ȥݡ�����
- * �����å׽����ˤ����֤ΰۤʤ�����Ʊ����Ÿ������Τǡ�
- * ��ñ��������ÿ������礭�����Ȥ������ꤦ��. 
+ * この関数は探索中に次単語候補集合が溢れた際に呼ばれ，配列により多くの
+ * 次単語候補を格納できるよう NEXTWORD の中身を realloc() する. 
+ * 実際には最初に nw_malloc() で辞書の単語数分だけ領域を確保しており，
+ * 単語N-gram使用時は呼ばれることはない. 文法認識では，ショートポーズの
+ * スキップ処理により状態の異なる候補を同時に展開するので，
+ * 次単語数が語彙数よりも大きいことが起こりうる. 
  * 
- * @param nwold [i/o] NEXTWORD����
- * @param maxlen [i/o] �����Ǽ�����Ǽ����ݥ���. ���ߤκ����Ǽ����
- * ����ƸƤӡ��ؿ���ǿ����˳��ݤ��줿�����ѹ������. 
- * @param root [i/o] �ΰ���Ƭ�ؤΥݥ��󥿤��Ǽ���륢�ɥ쥹. �ؿ����
- * �񤭴�������.
- * @param num [in] ��Ĺ����Ĺ��
+ * @param nwold [i/o] NEXTWORD配列
+ * @param maxlen [i/o] 最大格納数を格納するポインタ. 現在の最大格納数を
+ * 入れて呼び，関数内で新たに確保された数に変更される. 
+ * @param root [i/o] 領域先頭へのポインタを格納するアドレス. 関数内で
+ * 書き換えられる.
+ * @param num [in] 伸長する長さ
  * 
- * @return ��ĥ���줿�����ʼ�ñ������ؤΥݥ��󥿤��֤�. 
+ * @return 伸張された新たな次単語配列へのポインタを返す. 
  * </JA>
  * <EN>
  * @brief  expand data area of NEXTWORD.
@@ -182,18 +182,18 @@ nw_expand(NEXTWORD **nwold, int *maxlen, NEXTWORD **root, int num)
 
 
 /**********************************************************************/
-/********** ���⥹���å������         ********************************/
+/********** 仮説スタックの操作         ********************************/
 /********** Hypothesis stack operation ********************************/
 /**********************************************************************/
 
 /** 
  * <JA>
- * �����å��ȥåפκ��ಾ�����Ф�. 
+ * スタックトップの最尤仮説を取り出す. 
  * 
- * @param start [i/o] �����å�����Ƭ�Ρ��ɤؤΥݥ��󥿡ʽ񴹤������礢���
- * @param stacknum [i/o] ���ߤΥ����å��������ؤΥݥ��󥿡ʽ񤭴��������
+ * @param start [i/o] スタックの先頭ノードへのポインタ（書換えられる場合あり）
+ * @param stacknum [i/o] 現在のスタックサイズへのポインタ（書き換えあり）
  * 
- * @return ���Ф������ಾ��Υݥ��󥿤��֤�. 
+ * @return 取り出した最尤仮説のポインタを返す. 
  * </JA>
  * <EN>
  * Pop the best hypothesis from stack.
@@ -225,16 +225,16 @@ get_best_from_stack(NODE **start, int *stacknum)
 
 /** 
  * <JA>
- * ���벾�⤬�����å���˳�Ǽ����뤫�ɤ��������å�����. 
+ * ある仮説がスタック内に格納されるかどうかチェックする. 
  * 
- * @param new [in] �����å����벾��
- * @param bottom [in] �����å�����Ρ��ɤؤΥݥ���
- * @param stacknum [in] �����å��˸��߳�Ǽ����Ƥ���Ρ��ɿ��ؤΥݥ���
- * @param stacksize [in] �����å��ΥΡ��ɿ��ξ��
+ * @param new [in] チェックする仮説
+ * @param bottom [in] スタックの底ノードへのポインタ
+ * @param stacknum [in] スタックに現在格納されているノード数へのポインタ
+ * @param stacksize [in] スタックのノード数の上限
  * 
- * @return �����å��Υ���������¤�ã���Ƥ��ʤ���������������Ρ��ɤ���
- * �褱��г�Ǽ�����Ȥ��� 0 �򡤤���ʳ��Ǥ���г�Ǽ�Ǥ��ʤ��Ȥ��� -1 ��
- * �֤�. 
+ * @return スタックのサイズが上限に達していないか，スコアが底ノードよりも
+ * よければ格納されるとして 0 を，それ以外であれば格納できないとして -1 を
+ * 返す. 
  * </JA>
  * <EN>
  * Check whether a hypothesis will be stored in the stack.
@@ -262,17 +262,17 @@ can_put_to_stack(NODE *new, NODE **bottom, int *stacknum, int stacksize)
 
 /** 
  * <JA>
- * �����å��˿����ʲ�����Ǽ����. 
- * �����å���Υ���������θ�������֤����������. 
- * ��Ǽ�Ǥ��ʤ��ä���硤Ϳ����줿����� free_node() �����. 
+ * スタックに新たな仮説を格納する. 
+ * スタック内のスコア順を考慮した位置に挿入される. 
+ * 格納できなかった場合，与えられた仮説は free_node() される. 
  * 
- * @param new [in] �����å����벾��
- * @param start [i/o] �����å��ΥȥåץΡ��ɤؤΥݥ���
- * @param bottom [i/o] �����å�����Ρ��ɤؤΥݥ���
- * @param stacknum [i/o] �����å��˸��߳�Ǽ����Ƥ���Ρ��ɿ��ؤΥݥ���
- * @param stacksize [in] �����å��ΥΡ��ɿ��ξ��
+ * @param new [in] チェックする仮説
+ * @param start [i/o] スタックのトップノードへのポインタ
+ * @param bottom [i/o] スタックの底ノードへのポインタ
+ * @param stacknum [i/o] スタックに現在格納されているノード数へのポインタ
+ * @param stacksize [in] スタックのノード数の上限
  * 
- * @return ��Ǽ�Ǥ���� 0 �򡤤Ǥ��ʤ��ä����� -1 ���֤�. 
+ * @return 格納できれば 0 を，できなかった場合は -1 を返す. 
  * </JA>
  * <EN>
  * Push a new hypothesis into the stack, keeping score order.
@@ -362,11 +362,11 @@ put_to_stack(NODE *new, NODE **start, NODE **bottom, int *stacknum, int stacksiz
 
 /** 
  * <JA>
- * �����å�����Ȥ����ƽ��Ϥ���. �����å�����Ȥϼ�����. (�ǥХå���)
+ * スタックの中身を全て出力する. スタックの中身は失われる. (デバッグ用)
  * 
- * @param start [i/o] �����å��ΥȥåץΡ��ɤؤΥݥ���
- * @param stacknum [i/o] �����å��˸��߳�Ǽ����Ƥ���Ρ��ɿ��ؤΥݥ���
- * @param winfo [in] ñ�켭��
+ * @param start [i/o] スタックのトップノードへのポインタ
+ * @param stacknum [i/o] スタックに現在格納されているノード数へのポインタ
+ * @param winfo [in] 単語辞書
  * </JA>
  * <EN>
  * Output all nodes in the stack. All nodes will be lost (for debug).
@@ -391,9 +391,9 @@ put_all_in_stack(NODE **start, int *stacknum, WORD_INFO *winfo)
 
 /** 
  * <JA>
- * �����å������������������. 
+ * スタック内の全仮説を解放する. 
  * 
- * @param start [i/o] �����å��ΥȥåץΡ���
+ * @param start [i/o] スタックのトップノード
  * </JA>
  * <EN>
  * Free all nodes in a stack.
@@ -419,7 +419,7 @@ free_all_nodes(NODE *start)
 #ifdef CONFIDENCE_MEASURE
 
 /**********************************************************************/
-/********** ñ�쿮���٤η׻� ******************************************/
+/********** 単語信頼度の計算 ******************************************/
 /********** Confidence scoring ****************************************/
 /**********************************************************************/
 
@@ -432,11 +432,11 @@ free_all_nodes(NODE *start)
 
 /** 
  * <JA>
- * CM�׻��ѤΥѥ�᡼������������. CM�׻���ľ���˸ƤӽФ����. 
+ * CM計算用のパラメータを初期化する. CM計算の直前に呼び出される. 
  *
- * @param sd [i/o] ��2�ѥ��ѥ�����ꥢ
- * @param wnum [in] �����å�������
- * @param cm_alpha [in] ���Ѥ��륹���������
+ * @param sd [i/o] 第2パス用ワークエリア
+ * @param wnum [in] スタックサイズ
+ * @param cm_alpha [in] 使用するスケーリング値
  * 
  * </JA>
  * <EN>
@@ -475,10 +475,10 @@ cm_init(StackDecode *sd, int wnum, LOGPROB cm_alpha
 
 /** 
  * <JA>
- * CM�׻��Τ���˥������륹���å���Ÿ���������Ū����¸����. 
+ * CM計算のためにローカルスタックに展開仮説を一時的に保存する. 
  * 
- * @param sd [i/o] ��2�ѥ��ѥ�����ꥢ
- * @param new [in] Ÿ������
+ * @param sd [i/o] 第2パス用ワークエリア
+ * @param new [in] 展開仮説
  * </JA>
  * <EN>
  * Store an expanded hypothesis to the local stack for later CM scoring
@@ -496,9 +496,9 @@ cm_store(StackDecode *sd, NODE *new)
 
 /** 
  * <JA>
- * CM�׻��Τ���˥������륹���å���β���νи���Ψ�ι�פ����.
+ * CM計算のためにローカルスタック内の仮説の出現確率の合計を求める.
  *
- * @param sd [i/o] ��2�ѥ��ѥ�����ꥢ
+ * @param sd [i/o] 第2パス用ワークエリア
  * 
  * </JA>
  * <EN>
@@ -546,11 +546,11 @@ cm_sum_score(StackDecode *sd
 
 /** 
  * <JA>
- * Ÿ�����줿����ʸ����ˤĤ��ơ�����Ÿ��ñ��ο����٤򡤻����Ψ��
- * ��Ť��Ʒ׻�����. 
+ * 展開されたある文仮説について，その展開単語の信頼度を，事後確率に
+ * 基づいて計算する. 
  * 
- * @param sd [i/o] ��2�ѥ��ѥ�����ꥢ
- * @param node [i/o] Ÿ�����줿����ʸ����
+ * @param sd [i/o] 第2パス用ワークエリア
+ * @param node [i/o] 展開されたある文仮説
  * </JA>
  * <EN>
  * Compute confidence score of a new word at the end of the given hypothesis,
@@ -584,11 +584,11 @@ cm_set_score(StackDecode *sd, NODE *node
 
 /** 
  * <JA>
- * CM�׻��ѤΥ������륹���å����鲾�����Ф�. 
+ * CM計算用のローカルスタックから仮説を取り出す. 
  * 
- * @param sd [i/o] ��2�ѥ��ѥ�����ꥢ
+ * @param sd [i/o] 第2パス用ワークエリア
  * 
- * @return ���Ф��줿ʸ������֤�. 
+ * @return 取り出された文仮説を返す. 
  * </JA>
  * <EN>
  * Pop one node from local stack for confidence scoring.
@@ -614,12 +614,12 @@ cm_get_node(StackDecode *sd)
 
 /** 
  * <JA>
- * �����å���ˤ���ʸ���䤫��ñ�쿮���٤�׻�����. 
+ * スタック内にある文候補から単語信頼度を計算する. 
  * 
- * @param sd [i/o] ��2�ѥ��ѥ�����ꥢ
- * @param start [in] �����å�����Ƭ�Ρ���
- * @param stacknum [in] �����å�������
- * @param jconf [in] SEARCH������ѥ�᡼��
+ * @param sd [i/o] 第2パス用ワークエリア
+ * @param start [in] スタックの先頭ノード
+ * @param stacknum [in] スタックサイズ
+ * @param jconf [in] SEARCH用設定パラメータ
  * </JA>
  * <EN>
  * Compute confidence scores from N-best sentence candidates in the
@@ -726,8 +726,8 @@ cm_compute_from_nbest(StackDecode *sd, NODE *start, int stacknum, JCONF_SEARCH *
 /*
  * 1. Word envelope
  *
- * ���β���ӡ�����������: Ÿ�����Ȥʤä�����ο��򤽤β���Ĺ(ñ���)
- * ���Ȥ˥�����Ȥ���. �������ۤ����餽����û������ϰʸ�Ÿ�����ʤ�. 
+ * 一種の仮説ビーム幅を設定: 展開元となった仮説の数をその仮説長(単語数)
+ * ごとにカウントする. 一定数を越えたらそれより短い仮説は以後展開しない. 
  * 
  * Introduce a kind of beam width to search tree: count the number of
  * popped hypotheses per the depth of the hypotheses, and when a count
@@ -738,9 +738,9 @@ cm_compute_from_nbest(StackDecode *sd, NODE *start, int stacknum, JCONF_SEARCH *
 
 /** 
  * <JA>
- * Word envelope �Ѥ˥����󥿤���������.
+ * Word envelope 用にカウンタを初期化する.
  *
- * @param s [i/o] ��2�ѥ��ѥ�����ꥢ
+ * @param s [i/o] 第2パス用ワークエリア
  * 
  * </JA>
  * <EN>
@@ -759,15 +759,15 @@ wb_init(StackDecode *s)
 
 /** 
  * <JA>
- * Word envelope �򻲾Ȥ��ơ�Ϳ����줿�����Ÿ�����Ƥ褤���ɤ������֤�. 
- * �ޤ���Word envelope �Υ����󥿤򹹿�����. 
+ * Word envelope を参照して，与えられた仮説を展開してよいかどうかを返す. 
+ * また，Word envelope のカウンタを更新する. 
  * 
- * @param s [i/o] ��2�ѥ��ѥ�����ꥢ
- * @param now [in] ������Ÿ�����褦�Ȥ��Ƥ��벾��
- * @param width [in] Ÿ��������Ȥξ����
+ * @param s [i/o] 第2パス用ワークエリア
+ * @param now [in] 今から展開しようとしている仮説
+ * @param width [in] 展開カウントの上限値
  * 
- * @return Ÿ����ǽ��Ÿ��������Ȥ���¤�ã���Ƥ��ʤ��ˤʤ� TRUE,
- * Ÿ���Բ�ǽ�ʥ�����Ȥ���¤�ã���Ƥ���ˤʤ� FALSE ���֤�. 
+ * @return 展開可能（展開カウントが上限に達していない）なら TRUE,
+ * 展開不可能（カウントが上限に達している）なら FALSE を返す. 
  * </JA>
  * <EN>
  * Consult the current word envelope to check if word expansion from
@@ -808,13 +808,13 @@ wb_ok(StackDecode *s, NODE *now, int width)
 /*
  * 2. Score envelope
  *
- * Viterbi�׻��̤κ︺: ���ϥե졼�ऴ�Ȥκ������� (score envelope) ��
- * ������ˤ錄�äƵ�Ͽ���Ƥ���. ��������������ٷ׻����ˡ����� envelope
- * ����������ʾ她�����������Ȥ���Viterbi �ѥ��α黻�����Ǥ���. 
+ * Viterbi計算量の削減: 入力フレームごとの最大尤度 (score envelope) を
+ * 全仮説にわたって記録しておく. 仮説の前向き尤度計算時に，その envelope
+ * から一定幅以上スコアが下回るとき，Viterbi パスの演算を中断する. 
  *
- * �����Ǥϡ����Ф������⤫��ե졼�ऴ�Ȥ� score envelope �򹹿�����
- * ��ʬ�����Ҥ���Ƥ���. Envelope ���θ���� Viterbi �׻��μºݤ�
- * scan_word() �򻲾ȤΤ���. 
+ * ここでは，取り出した仮説からフレームごとの score envelope を更新する
+ * 部分が記述されている. Envelope を考慮した Viterbi 計算の実際は
+ * scan_word() を参照のこと. 
  *
  * Reduce computation cost of hypothesis Viterbi processing by setting a
  * "score envelope" that holds the maximum scores at every frames
@@ -830,10 +830,10 @@ wb_ok(StackDecode *s, NODE *now, int width)
 
 /** 
  * <JA>
- * Score envelope ����������. ��2�ѥ��γ��ϻ��˸ƤФ��. 
+ * Score envelope を初期化する. 第2パスの開始時に呼ばれる. 
  * 
- * @param s [i/o] ��2�ѥ��ѥ�����ꥢ
- * @param framenum [in] ���ϥե졼��Ĺ
+ * @param s [i/o] 第2パス用ワークエリア
+ * @param framenum [in] 入力フレーム長
  * </JA>
  * <EN>
  * Initialize score envelope.  This will be called once at the beginning
@@ -852,11 +852,11 @@ envl_init(StackDecode *s, int framenum)
 
 /** 
  * <JA>
- * ��������������������� score envelope �򹹿�����. 
+ * 仮説の前向きスコアから score envelope を更新する. 
  * 
- * @param s [i/o] ��2�ѥ��ѥ�����ꥢ
- * @param n [in] ����
- * @param framenum [in] ���ϥե졼��Ĺ
+ * @param s [i/o] 第2パス用ワークエリア
+ * @param n [in] 仮説
+ * @param framenum [in] 入力フレーム長
  * </JA>
  * <EN>
  * Update the score envelope using forward score of the given hypothesis.
@@ -883,11 +883,11 @@ envl_update(StackDecode *s, NODE *n, int framenum)
 
 /** 
  * <JA>
- * ǧ����̤��顤�������϶�֤�ǧ���򳫻Ϥ���ݤν��ñ������򥻥åȤ���. 
- * Ʃ��줪��Ӳ���ν�ʣ���θ���ƽ��ñ�����򤬷��ꤵ���. 
+ * 認識結果から，次の入力区間の認識を開始する際の初期単語履歴をセットする. 
+ * 透過語および仮説の重複を考慮して初期単語履歴が決定される. 
  * 
- * @param hypo [in] ���ߤ����϶�֤�ǧ����̤Ȥ��Ƥ�ʸ����
- * @param r [in] ǧ���������󥹥���
+ * @param hypo [in] 現在の入力区間の認識結果としての文候補
+ * @param r [in] 認識処理インスタンス
  * </JA>
  * <EN>
  * Set the previous word context for the recognition of the next input
@@ -936,10 +936,10 @@ segment_set_last_nword(NODE *hypo, RecogProcess *r)
 
 /** 
  * <JA>
- * �ǥХå��Ѥ˲����ñ�����ɽ������. 
+ * デバッグ用に仮説の単語列を表示する. 
  * 
- * @param hypo [in] ����
- * @param winfo [in] ñ�켭��
+ * @param hypo [in] 仮説
+ * @param winfo [in] 単語辞書
  * </JA>
  * <EN>
  * Output word sequence of a hypothesis for debug.
@@ -964,10 +964,10 @@ put_hypo_woutput(NODE *hypo, WORD_INFO *winfo)
 
 /** 
  * <JA>
- * �ǥХå��Ѥ˲����ñ��N-gram����ȥ�̾��Julian�Ǥϥ��ƥ����ֹ�ˤ���Ϥ���. 
+ * デバッグ用に仮説の単語N-gramエントリ名（Julianではカテゴリ番号）を出力する. 
  * 
- * @param hypo [in] ����
- * @param winfo [in] ñ�켭��
+ * @param hypo [in] 仮説
+ * @param winfo [in] 単語辞書
  * </JA>
  * <EN>
  * Output N-gram entries (or DFA category IDs) of a hypothesis for debug.
@@ -995,7 +995,7 @@ put_hypo_wname(NODE *hypo, WORD_INFO *winfo)
  * Save a hypothesis as a recognition result f 2nd pass.
  * </EN>
  * <JA>
- * ��2�ѥ��η�̤Ȥ��Ʋ������¸����. 
+ * 第2パスの結果として仮説を保存する. 
  * </JA>
  * 
  * @param hypo [in] hypothesis to save
@@ -1049,22 +1049,22 @@ store_result_pass2(NODE *hypo, RecogProcess *r)
 
 /** 
  * <JA>
- * �����å������̤β������Ф���ǧ����̤Ȥ��ƽ��Ϥ���. ����ˡ�
- * �����å��˳�Ǽ����Ƥ������Ƥβ�����������. 
+ * スタックから上位の仮説を取り出し，認識結果として出力する. さらに，
+ * スタックに格納されている全ての仮説を解放する. 
  *
- * ����줿ʸ����ϡ����ä����̳�Ǽ�ѤΥ����å��˳�Ǽ�����. õ����
- * λ��"-n" �ο�����ʸ���䤬���Ĥ��뤫��õ�������Ǥ����ˤθ塤���Ū
- * ������줿ʸ������椫����N�ġ�"-output" �ǻ��ꤵ�줿���ˤβ����
- * ���Ϥ���.
+ * 得られた文候補は，いったん結果格納用のスタックに格納される. 探索終
+ * 了（"-n" の数だけ文候補が見つかるか，探索が中断される）の後，結果的
+ * に得られた文候補の中から上位N個（"-output" で指定された数）の仮説を
+ * 出力する.
  *
- * ���꤬����Х��饤����Ȥ⤳���Ǽ¹Ԥ���. 
+ * 指定があればアラインメントもここで実行する. 
  * 
- * @param r_start [i/o] ��̳�Ǽ�ѥ����å�����Ƭ�Ρ��ɤؤΥݥ���
- * @param r_bottom [i/o] ��̳�Ǽ�ѥ����å�����Ρ��ɤؤΥݥ���
- * @param r_stacknum [i/o] �����å��˳�Ǽ����Ƥ���Ρ��ɿ��ؤΥݥ���
- * @param ncan [in] ���Ϥ����̲����
- * @param r [in] ǧ���������󥹥���
- * @param param [in] ���ϥѥ�᡼��
+ * @param r_start [i/o] 結果格納用スタックの先頭ノードへのポインタ
+ * @param r_bottom [i/o] 結果格納用スタックの底ノードへのポインタ
+ * @param r_stacknum [i/o] スタックに格納されているノード数へのポインタ
+ * @param ncan [in] 出力する上位仮説数
+ * @param r [in] 認識処理インスタンス
+ * @param param [in] 入力パラメータ
  * </JA>
  * <EN>
  * Output top N-best hypotheses in a stack as a recognition result, and
@@ -1137,17 +1137,17 @@ result_reorder_and_output(NODE **r_start, NODE **r_bottom, int *r_stacknum, int 
  * 
  * </EN>
  * <JA>
- * @brief  ��2�ѥ��β������ʤ����ν�λ����
+ * @brief  第2パスの解が得られない場合の終了処理
  *
- * ��2�ѥ������Ԥ���������2�ѥ����¹Ԥ���ʤ�����ξ���
- * ǧ����λ������Ԥ���use_1pass_as_final �� TRUE �ΤȤ���
- * ��1�ѥ��η�̤���2�ѥ��η�̤Ȥ��ƥ��ԡ����Ƴ�Ǽ����ǧ�������Ȥ��롥
- * FALSE����ǧ�����ԤȤ��롥
- * �ޤ���sp-segment ���ϡ�����ǧ������Ѥν�������������1�ѥ���
- * ��̤���Ԥ���
+ * 第2パスが失敗した場合や第2パスが実行されない設定の場合の
+ * 認識終了処理を行う．use_1pass_as_final が TRUE のとき，
+ * 第1パスの結果を第2パスの結果としてコピーして格納し，認識成功とする．
+ * FALSE時は認識失敗とする．
+ * また，sp-segment 時は，次の認識区間用の初期仮説設定も第1パスの
+ * 結果から行う．
  * 
- * @param r [in] ǧ���������󥹥���
- * @param use_1pass_as_final [in] TRUE ����1�ѥ��η�̤���2�ѥ���̤˳�Ǽ����
+ * @param r [in] 認識処理インスタンス
+ * @param use_1pass_as_final [in] TRUE 時第1パスの結果を第2パス結果に格納する
  * 
  * </JA>
  */
@@ -1157,7 +1157,7 @@ pass2_finalize_on_no_result(RecogProcess *r, boolean use_1pass_as_final)
   NODE *now;
   int i, j;
 
-  /* õ������ */
+  /* 探索失敗 */
   /* search failed */
 
   /* make temporal hypothesis data from the result of previous 1st pass */
@@ -1185,7 +1185,7 @@ pass2_finalize_on_no_result(RecogProcess *r, boolean use_1pass_as_final)
   }
     
   if (use_1pass_as_final) {
-    /* ��1�ѥ��η�̤򤽤Τޤ޽��Ϥ��� */
+    /* 第1パスの結果をそのまま出力する */
     /* output the result of the previous 1st pass as a final result. */
     store_result_pass2(now, r);
     r->result.status = J_RESULT_STATUS_SUCCESS;
@@ -1205,14 +1205,14 @@ pass2_finalize_on_no_result(RecogProcess *r, boolean use_1pass_as_final)
 
 /** 
  * <JA>
- * ��2õ���ѥ��Ǥ��륹���å��ǥ����ǥ��󥰤�Ԥ��ᥤ��ؿ�
+ * 第2探索パスであるスタックデコーディングを行うメイン関数
  *
- * �����Τ��� cate_bgn, cate_num ��ñ��N-gram�Ǥ�̵�뤵���. 
+ * 引数のうち cate_bgn, cate_num は単語N-gramでは無視される. 
  * 
- * @param param [in] ���ϥѥ�᡼���٥��ȥ���
- * @param r [i/o] ǧ���������󥹥���
- * @param cate_bgn [in] Ÿ���оݤȤ��٤����ƥ���γ����ֹ�
- * @param cate_num [in] Ÿ���оݤȤ��٤����ƥ���ο�
+ * @param param [in] 入力パラメータベクトル列
+ * @param r [i/o] 認識処理インスタンス
+ * @param cate_bgn [in] 展開対象とすべきカテゴリの開始番号
+ * @param cate_num [in] 展開対象とすべきカテゴリの数
  * </JA>
  * <EN>
  * Main function to perform stack decoding of the 2nd search pass.
@@ -1233,20 +1233,20 @@ pass2_finalize_on_no_result(RecogProcess *r, boolean use_1pass_as_final)
 void
 wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 {
-  /* ʸ���⥹���å� */
+  /* 文仮説スタック */
   /* hypothesis stack (double-linked list) */
   int stacknum;			/* current stack size */
   NODE *start = NULL;		/* top node */
   NODE *bottom = NULL;		/* bottom node */
 
-  /* ǧ����̳�Ǽ�����å�(��̤Ϥ����ؤ��ä��󽸤����) */
+  /* 認識結果格納スタック(結果はここへいったん集められる) */
   /* result sentence stack (found results will be stored here and then re-ordered) */
   int r_stacksize;
   int r_stacknum;
   NODE *r_start = NULL;
   NODE *r_bottom = NULL;
 
-  /* ������ꥢ */
+  /* ワークエリア */
   /* work area */
   NEXTWORD fornoise = {0}; /* Dummy NEXTWORD data for short-pause insertion handling */
 
@@ -1287,7 +1287,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
   }
 
   /*
-   * �����
+   * 初期化
    * Initialize
    */
 
@@ -1310,24 +1310,24 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
   /* store data for sub routines */
   r->peseqlen = backtrellis->framelen;
   //recog->ccd_flag = recog->jconf->am.ccd_flag;
-  /* ͽ¬ñ���Ǽ�ΰ����� */
+  /* 予測単語格納領域を確保 */
   /* malloc area for word prediction */
   /* the initial maximum number of nextwords is the size of vocabulary */
   nextword = nw_malloc(&maxnwnum, &nwroot, winfo->num);
-  /* �������������׻��Ѥ��ΰ����� */
+  /* 前向きスコア計算用の領域を確保 */
   /* malloc are for forward viterbi (scan_word()) */
-  malloc_wordtrellis(r);		/* scan_word���ΰ� */
-  /* ���⥹���å������ */
+  malloc_wordtrellis(r);		/* scan_word用領域 */
+  /* 仮説スタック初期化 */
   /* initialize hypothesis stack */
   start = bottom = NULL;
   stacknum = 0;
-  /* ��̳�Ǽ�����å������ */
+  /* 結果格納スタック初期化 */
   /* initialize result stack */
   r_stacksize = ncan;
   r_start = r_bottom = NULL;
   r_stacknum = 0;
 
-  /* �����󥿽���� */
+  /* カウンタ初期化 */
   /* initialize counter */
   dwrk->popctr = 0;
   dwrk->genectr = 0;
@@ -1348,7 +1348,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
   envl_init(dwrk, peseqlen);
 #endif /* SCAN_BEAM */
 
-  /* ����٥�����õ���Ѥ�ñ��Ĺ��Ÿ���������󥿤����� */
+  /* エンベロープ探索用の単語長別展開数カウンタを初期化 */
   /* initialize counters for envelope search */
   if (jconf->pass2.enveloped_bestfirst_width >= 0) wb_init(dwrk);
 
@@ -1357,7 +1357,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
   }
 
   /* 
-   * �������(1ñ�줫��ʤ�)����, ʸ���⥹���å��ˤ����
+   * 初期仮説(1単語からなる)を得, 文仮説スタックにいれる
    * get a set of initial words from LM function and push them as initial
    * hypotheses
    */
@@ -1366,7 +1366,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
     nwnum = ngram_firstwords(nextword, peseqlen, maxnwnum, r);
   } else if (r->lmtype == LM_DFA) {
     nwnum = dfa_firstwords(nextword, peseqlen, maxnwnum, r);
-    /* ��줿�顢�Хåե������䤷�ƺƥ����� */
+    /* 溢れたら、バッファを増やして再チャレンジ */
     /* If the number of nextwords can exceed the buffer size, expand the
        nextword data area */
     while (nwnum < 0) {
@@ -1474,14 +1474,14 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
      */
     
     /* 
-     * ���⥹���å�����Ǥ⥹�����ι⤤�������Ф�
+     * 仮説スタックから最もスコアの高い仮説を取り出す
      * pop the top hypothesis from stack
      */
 #ifdef DEBUG
     jlog("DEBUG: get one hypothesis\n");
 #endif
     now = get_best_from_stack(&start,&stacknum);
-    if (now == NULL) {  /* stack empty ---> õ����λ*/
+    if (now == NULL) {  /* stack empty ---> 探索終了*/
       jlog("WARNING: %02d %s: hypothesis stack exhausted, terminate search now\n", r->config->id, r->config->name);
       if (verbose_flag) {
 	jlog("STAT: %02d %s: %d sentences have been found\n", r->config->id, r->config->name, dwrk->finishnum);
@@ -1495,17 +1495,17 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
     }
 
 
-    /* ñ�쥰����Ѥ� pop ����� f ������������¸ */
+    /* 単語グラフ用に pop 仮説の f スコアを一時保存 */
     if (r->graphout) {
       prev_score = now->score;
     }
 
-    /* word envelope �����å� */
+    /* word envelope チェック */
     /* consult word envelope */
     if (jconf->pass2.enveloped_bestfirst_width >= 0) {
       if (!wb_ok(dwrk, now, jconf->pass2.enveloped_bestfirst_width)) {
-	/* ���β���Ĺ�ˤ�����Ÿ������������߷׿��ϴ������ͤ�ۤ��Ƥ���. 
-	   ���Τ��ᡤ���β���ϼΤƤ�. */
+	/* この仮説長における展開元仮説数の累計数は既に閾値を越えている. 
+	   そのため，この仮説は捨てる. */
 	/* the number of popped hypotheses at the length already
 	   reaches its limit, so the current popped hypothesis should
 	   be discarded here with no expansion */
@@ -1527,7 +1527,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 
     dwrk->popctr++;
 
-    /* (for debug) ���Ф�������Ȥ��Υ���������� */
+    /* (for debug) 取り出した仮説とそのスコアを出力 */
     /*             output information of the popped hypothesis to stdout */
     if (debug2_flag) {
       jlog("DEBUG: --- pop %d:\n", dwrk->popctr);
@@ -1603,13 +1603,13 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 #endif /* ~GRAPHOUT_DYNAMIC */
     }
 
-    /* ���Ф�������Υ������򸵤� score envelope �򹹿� */
+    /* 取り出した仮説のスコアを元に score envelope を更新 */
     /* update score envelope using the popped hypothesis */
     envl_update(dwrk, now, peseqlen);
 
     /* 
-     * ���Ф�������μ����ե饰������Ω�äƤ���С�
-     * ���β����õ����λ�Ȥߤʤ�����̤Ȥ��ƽ��Ϥ��Ƽ��Υ롼�פ�. 
+     * 取り出した仮説の受理フラグが既に立っていれば，
+     * その仮説は探索終了とみなし，結果として出力して次のループへ. 
      *
      * If the popped hypothesis already reached to the end, 
      * we can treat it as a recognition result.
@@ -1635,12 +1635,12 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 	jlog("DEBUG:  %d-th sentence found\n", dwrk->finishnum);
       }
 
-	/* ������β��⤬����줿���ȥ������ǥ����Ȥ��뤿�ᡤ
-	   ���Ū���̤Υ����å��˳�Ǽ���Ƥ��� */
+	/* 一定数の仮説が得られたあとスコアでソートするため，
+	   一時的に別のスタックに格納しておく */
 	/* store the result to result stack
 	   after search is finished, they will be re-ordered and output */
 	put_to_stack(now, &r_start, &r_bottom, &r_stacknum, r_stacksize);
-	/* �������ʸ���⤬����줿�ʤ�õ����λ���� */
+	/* 指定数の文仮説が得られたなら探索を終了する */
 	/* finish search if specified number of results are found */
 	if (dwrk->finishnum >= ncan) {
 	  break;
@@ -1652,8 +1652,8 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 
     
     /* 
-     * õ�����Ԥ򸡽Ф���. 
-     * ������� maxhypo �ʾ�Ÿ�����줿��, �⤦����ʾ��õ�����ʤ�
+     * 探索失敗を検出する. 
+     * 仮説数が maxhypo 以上展開されたら, もうこれ以上は探索しない
      *
      * detecting search failure:
      * if the number of expanded hypotheses reaches maxhypo, giveup further search
@@ -1663,13 +1663,13 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 #endif
     if (dwrk->popctr >= maxhypo) {
       jlog("WARNING: %02d %s: num of popped hypotheses reached the limit (%d)\n", r->config->id, r->config->name, maxhypo);
-      /* (for debug) õ�����Ի��ˡ������å��˻Ĥä�������Ǥ��Ф� */
+      /* (for debug) 探索失敗時に、スタックに残った情報を吐き出す */
       /* (for debug) output all hypothesis remaining in the stack */
       if (debug2_flag) put_all_in_stack(&start, &stacknum, r->lm->winfo);
       free_node(now);
       break;			/* end of search */
     }
-    /* ����Ĺ�������ͤ�ۤ����Ȥ������β�����˴����� */
+    /* 仮説長が一定値を越えたとき，その仮説を破棄する */
     /* check hypothesis word length overflow */
     if (now->seqnum >= MAXSEQNUM) {
       jlog("ERROR: sentence length exceeded system limit ( > %d)\n", MAXSEQNUM);
@@ -1688,7 +1688,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 #endif
 
     /*
-     * �������������򹹿����롧 �Ǹ��ñ�����ʬ����������������׻�����. 
+     * 前向きスコアを更新する： 最後の単語の部分の前向きスコアを計算する. 
      * update forward score: compute forward trellis for the last word
      */
 #ifdef DEBUG
@@ -1705,9 +1705,9 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
     }
 
     /* 
-     * ���Ф������⤬ʸ�Ȥ��Ƽ�����ǽ�Ǥ���С�
-     * �����ե饰��Ω�ƤƤ򥹥��å��ˤ���ľ���Ƥ���. 
-     * (���˼��Ф��줿���Ȥʤ�)
+     * 取り出した仮説が文として受理可能であれば，
+     * 受理フラグを立ててをスタックにいれ直しておく. 
+     * (次に取り出されたら解となる)
      *
      * if the current popped hypothesis is acceptable, set endflag
      * and return it to stack: it will become the recognition result
@@ -1724,13 +1724,13 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
     }
     if (acc && now->estimated_next_t <= 5) {
       new = newnode(r);
-      /* new �� now ����Ȥ򥳥ԡ����ơ��ǽ�Ū�ʥ�������׻� */
+      /* new に now の中身をコピーして，最終的なスコアを計算 */
       /* copy content of 'now' to 'new', and compute the final score */
       last_next_word(now, new, param, r);
       if (debug2_flag) {
 	jlog("DEBUG:  This is acceptable as a sentence candidate\n");
       }
-      /* g[] �����ϻ�ü��ã���Ƥ��ʤ���д��� */
+      /* g[] が入力始端に達していなければ棄却 */
       /* reject this sentence candidate if g[] does not reach the end */
       if (new->score <= LOG_ZERO) {
 	if (debug2_flag) {
@@ -1740,7 +1740,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 	free_node(now);
 	continue;
       }
-      /* �����ե饰��Ω�Ƥ�����ľ�� */
+      /* 受理フラグを立てて入れ直す */
       /* set endflag and push again  */
       if (debug2_flag) {
 	jlog("DEBUG  This hypo itself was pushed with final score=%f\n", new->score);
@@ -1790,17 +1790,17 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 	  }
 	} /* put_to_stack() != -1 */
       }	/* recog->graphout */
-      /* ���β���Ϥ����ǽ���餺��, �������餵���ñ��Ÿ������ */
+      /* この仮説はここで終わらずに, ここからさらに単語展開する */
       /* continue with the 'now' hypothesis, not terminate here */
     }
     
     /*
-     * ���β��⤫�顤��ñ�콸�����ꤹ��. 
-     * ��ñ�콸���, ���β���ο����ü�ե졼����դ�¸�ߤ���
-     * �裱�ѥ��Υȥ�ꥹñ�콸��. 
+     * この仮説から，次単語集合を決定する. 
+     * 次単語集合は, この仮説の推定始端フレーム周辺に存在した
+     * 第１パスのトレリス単語集合. 
      *
-     * N-gram�ξ��ϳ�ñ��� n-gram ��³��Ψ���ޤޤ��. 
-     * DFA �ξ���, ������Ǥ���� DFA �����³��ǽ�ʤ�ΤΤߤ��֤äƤ���
+     * N-gramの場合は各単語の n-gram 接続確率が含まれる. 
+     * DFA の場合は, その中でさらに DFA 上で接続可能なもののみが返ってくる
      */
     /*
      * Determine next word set that can connect to this hypothesis.
@@ -1818,7 +1818,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
       nwnum = ngram_nextwords(now, nextword, maxnwnum, r);
     } else if (r->lmtype == LM_DFA) {
       nwnum = dfa_nextwords(now, nextword, maxnwnum, r);
-      /* nextword ����줿�顢�Хåե������䤷�ƺƥ����� */
+      /* nextword が溢れたら、バッファを増やして再チャレンジ */
       /* If the number of nextwords can exceed the buffer size, expand the
 	 nextword data area */
       while (nwnum < 0) {
@@ -1831,7 +1831,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
     }
 
     /* 
-     * ����ȼ�ñ�콸�礫�鿷����ʸ������������������å��ˤ����. 
+     * 仮説と次単語集合から新たな文仮説を生成し，スタックにいれる. 
      */
     /*
      * generate new hypotheses from 'now' and 'nextword', 
@@ -1868,11 +1868,11 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
       if (r->lmtype == LM_DFA) {
 
 	if (nextword[w]->can_insert_sp == TRUE) {
-	  /* �Υ����򶴤���ȥ�ꥹ��������׻��������ޤʤ����Ȥκ����ͤ��� */
+	  /* ノイズを挟んだトレリススコアを計算し，挟まない場合との最大値を取る */
 	  /* compute hypothesis score with noise inserted */
 	  
 	  if (now_noise_calced == FALSE) {
-	    /* now �� sp ��Ĥ������� now_noise ����,���Υ�������׻� */
+	    /* now に sp をつけた仮説 now_noise を作り,そのスコアを計算 */
 	    /* generate temporal hypothesis 'now_noise' which has short-pause
 	       word after the original 'now' */
 	    fornoise.id = gdfa->sp_id;
@@ -1898,8 +1898,8 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 	    }
 	    /* end patch by kashima */
 	    
-	    /* now_nosie �� ������ g[] ��׻��������� now �� g[] ����Ӥ���
-	       �⤤������� */
+	    /* now_nosie の スコア g[] を計算し，元の now の g[] と比較して
+	       高い方を採用 */
 	    /* compute trellis score g[], and adopt the maximum score
 	       for each frame compared with now->g[] */
 	    next_word(now, now_noise, &fornoise, param, r);
@@ -1907,8 +1907,8 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 	    for(t=0;t<peseqlen;t++) {
 	      now_noise->g[t] = max(now_noise->g[t], now->g[t]);
 	    }
-	    /* �Υ����򶴤���ݤ��θ������������׻������Τǡ�
-	       �����ǺǸ�ΥΥ���ñ��� now_noise ����ä� */
+	    /* ノイズを挟んだ際を考慮したスコアを計算したので，
+	       ここで最後のノイズ単語を now_noise から消す */
 	    /* now that score has been computed considering pause insertion,
 	       we can delete the last noise word from now_noise here */
 	    now_noise->seqnum--;
@@ -1926,7 +1926,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 	  }
 	  /* end patch by kashima */
 	  
-	  /* ����������' new' �� 'now_noise' �������� */
+	  /* 新しい仮説' new' を 'now_noise' から生成 */
 	  /* generate a new hypothesis 'new' from 'now_noise' */
 	  next_word(now_noise, new, nextword[w], param, r);
 	  
@@ -1942,7 +1942,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 	  }
 	  /* end patch by kashima */
 	  
-	  /* ����������' new' �� 'now_noise' �������� */
+	  /* 新しい仮説' new' を 'now_noise' から生成 */
 	  /* generate a new hypothesis 'new' from 'now_noise' */
 	  next_word(now, new, nextword[w], param, r);
 	  
@@ -1951,8 +1951,8 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 
       if (r->lmtype == LM_PROB) {
 
-	/* ����������' new' �� 'now_noise' ��������
-	   N-gram �ξ��ϥΥ��������̰������ʤ� */
+	/* 新しい仮説' new' を 'now_noise' から生成
+	   N-gram の場合はノイズを特別扱いしない */
 	/* generate a new hypothesis 'new' from 'now'.
 	   pause insertion is treated as same as normal words in N-gram mode. */
 	next_word(now, new, nextword[w], param, r);
@@ -1970,7 +1970,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
       /* store the local hypothesis to temporal stack */
       cm_store(dwrk, new);
 #else 
-      /* ������������ 'new' �򥹥��å�������� */
+      /* 生成した仮説 'new' をスタックに入れる */
       /* push the generated hypothesis 'new' to stack */
 
       /* stack overflow */
@@ -2130,7 +2130,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
     }
     
     /* 
-     * ���Ф��������ΤƤ�
+     * 取り出した仮説を捨てる
      * free the source hypothesis
      */
     free_node(now);
@@ -2165,8 +2165,8 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
       }
 #endif
 
-      /* ��̤Ϥޤ����Ϥ���Ƥ��ʤ��Τǡ�ʸ�����ѥ����å���򥽡��Ȥ���
-	 �����ǽ��Ϥ��� */
+      /* 結果はまだ出力されていないので，文候補用スタック内をソートして
+	 ここで出力する */
       /* As all of the found candidate are in result stack, we sort them
 	 and output them here  */
       if (debug2_flag) jlog("DEBUG: done\n");
@@ -2177,7 +2177,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
       //callback_exec(CALLBACK_EVENT_PASS2_END, r);
   }
   
-  /* �Ƽ參���󥿤���� */
+  /* 各種カウンタを出力 */
   /* output counters */
   if (verbose_flag) {
     jlog("STAT: %02d %s: %d generated, %d pushed, %d nodes popped in %d\n",
@@ -2272,7 +2272,7 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
   } /* r->graphout */
 
   
-  /* ��λ���� */
+  /* 終了処理 */
   /* finalize */
   nw_free(nextword, nwroot);
   free_all_nodes(start);
@@ -2286,11 +2286,11 @@ wchmm_fbs(HTK_Param *param, RecogProcess *r, int cate_bgn, int cate_num)
 
 /** 
  * <JA>
- * ��2�ѥ��ѤΥ�����ꥢ����ݡ����������.
+ * 第2パス用のワークエリアを確保・初期化する.
  *
- * �����ǳ��ݤ����Τ�ǧ�����ѥ�᡼���˰ͤ�ʤ��ͤΤߡ�
+ * ここで確保されるのは認識・パラメータに依らない値のみ．
  * 
- * @param r [i/o] ǧ���������󥹥���
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * Initialize and allocate work area for 2nd pass.
@@ -2306,7 +2306,7 @@ wchmm_fbs_prepare(RecogProcess *r)
   StackDecode *dwrk;
   dwrk = &(r->pass2);
   
-  /* N-gram �ѥ�����ꥢ����� */
+  /* N-gram 用ワークエリアを確保 */
   /* malloc work area for N-gram */
   if (r->lmtype == LM_PROB && r->lm->ngram) {
     dwrk->cnword = (WORD_ID *)mymalloc(sizeof(WORD_ID) * r->lm->ngram->n);
@@ -2328,11 +2328,11 @@ wchmm_fbs_prepare(RecogProcess *r)
 
 /** 
  * <JA>
- * ��2�ѥ��ѤΥ�����ꥢ���������.
+ * 第2パス用のワークエリアを解放する.
  *
- * �����ǲ��������Τ�ǧ�����ѥ�᡼���˰ͤ�ʤ��ͤΤߡ�
+ * ここで解放されるのは認識・パラメータに依らない値のみ．
  * 
- * @param r [i/o] ǧ���������󥹥���
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * Free the work area for 2nd pass.

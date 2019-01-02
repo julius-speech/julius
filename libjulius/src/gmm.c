@@ -2,21 +2,21 @@
  * @file   gmm.c
  * 
  * <JA>
- * @brief  GMM ¤Ë¤è¤ëÆşÎÏ´şµÑ¤ª¤è¤ÓVAD
+ * @brief  GMM ã«ã‚ˆã‚‹å…¥åŠ›æ£„å´ãŠã‚ˆã³VAD
  *
- * Gaussian Mixture Model (GMM) ¤¬µ¯Æ°»ş¤Ë»ØÄê¤µ¤ì¤¿¾ì¹ç¡¤Julius/Julian ¤Ï
- * ÆşÎÏÈ¯ÏÃ¤ËÂĞ¤·¤Æ¥Õ¥ì¡¼¥à¤´¤È¤Ë¥¹¥³¥¢¤ò·×»»¤·¡¤¤½¤ÎÎßÀÑ¥¹¥³¥¢¤ò»»½Ğ¤¹¤ë. 
- * ¤³¤ì¤ÏGMM¤Ë´ğ¤Å¤¯ÆşÎÏ²»À¼¤ÎÈ¯ÏÃ¸¡¾Ú¤ª¤è¤Ó´şµÑ¤ËÍÑ¤¤¤é¤ì¤ë. ¼Âºİ¤Î·×»»¤Ï
- * Âè1¥Ñ¥¹¤ÎÇ§¼±½èÍı¤ÈÊÂ¹Ô¤·¤Æ¥ê¥¢¥ë¥¿¥¤¥à¤Ë¹Ô¤Ê¤ï¤ì¡¤Âè1¥Ñ¥¹½ªÎ»¤ÈÆ±»ş¤Ë
- * ·ë²Ì¤¬½ĞÎÏ¤µ¤ì¤ë. 
+ * Gaussian Mixture Model (GMM) ãŒèµ·å‹•æ™‚ã«æŒ‡å®šã•ã‚ŒãŸå ´åˆï¼ŒJulius/Julian ã¯
+ * å…¥åŠ›ç™ºè©±ã«å¯¾ã—ã¦ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨ã«ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã—ï¼Œãã®ç´¯ç©ã‚¹ã‚³ã‚¢ã‚’ç®—å‡ºã™ã‚‹. 
+ * ã“ã‚Œã¯GMMã«åŸºã¥ãå…¥åŠ›éŸ³å£°ã®ç™ºè©±æ¤œè¨¼ãŠã‚ˆã³æ£„å´ã«ç”¨ã„ã‚‰ã‚Œã‚‹. å®Ÿéš›ã®è¨ˆç®—ã¯
+ * ç¬¬1ãƒ‘ã‚¹ã®èªè­˜å‡¦ç†ã¨ä¸¦è¡Œã—ã¦ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ã«è¡Œãªã‚ã‚Œï¼Œç¬¬1ãƒ‘ã‚¹çµ‚äº†ã¨åŒæ™‚ã«
+ * çµæœãŒå‡ºåŠ›ã•ã‚Œã‚‹. 
  *
- * GMM¤Î¥¹¥³¥¢·×»»¤Ë¤Ï Gaussian pruning ¤Î safe algorithm ¤¬ÍÑ¤¤¤é¤ì¡¤
- * ³Æ¥Õ¥ì¡¼¥à¤Ë¤ª¤¤¤Æ¾å°Ì N ¸Ä¤À¤±¤¬Àµ¤·¤¯ÆÀ¤é¤ì¤ë¤è¤¦¤Ë·×»»¤µ¤ì¤ë. 
- * ¤¿¤À¤·ÄÌ¾ï¤ÎÇ§¼±ÍÑ²»¶Á¥â¥Ç¥ë¤Î¾ì¹ç¤È°Û¤Ê¤ê¡¤Ä¾Á°¥Õ¥ì¡¼¥à¤Î½ç°Ì¾ğÊó¤Ï
- * ÍÑ¤¤¤Æ¤¤¤Ê¤¤. 
+ * GMMã®ã‚¹ã‚³ã‚¢è¨ˆç®—ã«ã¯ Gaussian pruning ã® safe algorithm ãŒç”¨ã„ã‚‰ã‚Œï¼Œ
+ * å„ãƒ•ãƒ¬ãƒ¼ãƒ ã«ãŠã„ã¦ä¸Šä½ N å€‹ã ã‘ãŒæ­£ã—ãå¾—ã‚‰ã‚Œã‚‹ã‚ˆã†ã«è¨ˆç®—ã•ã‚Œã‚‹. 
+ * ãŸã ã—é€šå¸¸ã®èªè­˜ç”¨éŸ³éŸ¿ãƒ¢ãƒ‡ãƒ«ã®å ´åˆã¨ç•°ãªã‚Šï¼Œç›´å‰ãƒ•ãƒ¬ãƒ¼ãƒ ã®é †ä½æƒ…å ±ã¯
+ * ç”¨ã„ã¦ã„ãªã„. 
  *
- * GMM_VAD ÄêµÁ»ş¤Ï¡¤¾åµ­¤ÎÆşÎÏ´şµÑ¤Ë²Ã¤¨¤Æ¡¤short-pause segmentation ¤È
- * Æ±¤¸ÏÈÁÈ¤Ë¤òÍÑ¤¤¤¿ VAD ¤¬¹Ô¤ï¤ì¤ë. 
+ * GMM_VAD å®šç¾©æ™‚ã¯ï¼Œä¸Šè¨˜ã®å…¥åŠ›æ£„å´ã«åŠ ãˆã¦ï¼Œshort-pause segmentation ã¨
+ * åŒã˜æ çµ„ã«ã‚’ç”¨ã„ãŸ VAD ãŒè¡Œã‚ã‚Œã‚‹. 
  * </JA>
  * 
  * <EN>
@@ -57,13 +57,13 @@
 
 /** 
  * <JA>
- * Gaussian¤Î¥¹¥³¥¢¤ò·×»»ºÑ¤ßGaussian¥ê¥¹¥È¤Î¤É¤Î°ÌÃÖ¤ËÁŞÆş¤¹¤Ù¤­¤«¤òÊÖ¤¹. 
+ * Gaussianã®ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—æ¸ˆã¿Gaussianãƒªã‚¹ãƒˆã®ã©ã®ä½ç½®ã«æŒ¿å…¥ã™ã¹ãã‹ã‚’è¿”ã™. 
  *
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
- * @param score [in] ÁŞÆş¤·¤¿¤¤¥¹¥³¥¢
- * @param len [in] ¸½ºß¤Î¥ê¥¹¥È¤ÎÄ¹¤µ
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
+ * @param score [in] æŒ¿å…¥ã—ãŸã„ã‚¹ã‚³ã‚¢
+ * @param len [in] ç¾åœ¨ã®ãƒªã‚¹ãƒˆã®é•·ã•
  * 
- * @return ¥ê¥¹¥ÈÆâ¤ÎÁŞÆş°ÌÃÖ
+ * @return ãƒªã‚¹ãƒˆå†…ã®æŒ¿å…¥ä½ç½®
  * </JA>
  * <EN>
  * Return insertion point where a computed Gaussian score should be
@@ -97,14 +97,14 @@ gmm_find_insert_point(GMMCalc *gc, LOGPROB score, int len)
 
 /** 
  * <JA>
- * ¤¢¤ëGaussian¤Î·×»»·ë²Ì¤ò·×»»ºÑ¤ßGaussian¥ê¥¹¥È¤Ë³ÊÇ¼¤¹¤ë. 
+ * ã‚ã‚‹Gaussianã®è¨ˆç®—çµæœã‚’è¨ˆç®—æ¸ˆã¿Gaussianãƒªã‚¹ãƒˆã«æ ¼ç´ã™ã‚‹. 
  * 
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
- * @param id [in] Gaussian ¤Î GMM Æâ¤Ç¤ÎÈÖ¹æ
- * @param score [in] ¤½¤Î Gaussian ¤Î·×»»¤µ¤ì¤¿²»¶ÁÌàÅÙ
- * @param len [in] ¸½ºß¤Î¥ê¥¹¥È¤ÎÄ¹¤µ¡Ê¸½ºß³ÊÇ¼¤µ¤ì¤Æ¤¤¤ë Gaussian ¤Î¿ô¡Ë
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
+ * @param id [in] Gaussian ã® GMM å†…ã§ã®ç•ªå·
+ * @param score [in] ãã® Gaussian ã®è¨ˆç®—ã•ã‚ŒãŸéŸ³éŸ¿å°¤åº¦
+ * @param len [in] ç¾åœ¨ã®ãƒªã‚¹ãƒˆã®é•·ã•ï¼ˆç¾åœ¨æ ¼ç´ã•ã‚Œã¦ã„ã‚‹ Gaussian ã®æ•°ï¼‰
  * 
- * @return ³ÊÇ¼¸å¤Î¥ê¥¹¥È¤ÎÄ¹¤µ. 
+ * @return æ ¼ç´å¾Œã®ãƒªã‚¹ãƒˆã®é•·ã•. 
  * </JA>
  * <EN>
  * Store a Gaussian likelihood to the list of computed Gaussians.
@@ -155,13 +155,13 @@ gmm_cache_push(GMMCalc *gc, int id, LOGPROB score, int len)
 
 /** 
  * <JA>
- * ¸½ºß¤Î¥Õ¥ì¡¼¥à¤ÎÆşÎÏ¥Ù¥¯¥È¥ë¤ËÂĞ¤¹¤ë Gaussian ¤Î½ĞÎÏ³ÎÎ¨¤ò·×»»¤¹¤ë. 
- * Gaussian pruning ¤Ï¹Ô¤Ê¤ï¤Ê¤¤. 
+ * ç¾åœ¨ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®å…¥åŠ›ãƒ™ã‚¯ãƒˆãƒ«ã«å¯¾ã™ã‚‹ Gaussian ã®å‡ºåŠ›ç¢ºç‡ã‚’è¨ˆç®—ã™ã‚‹. 
+ * Gaussian pruning ã¯è¡Œãªã‚ãªã„. 
  * 
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
  * @param binfo [in] Gaussian
  * 
- * @return ½ĞÎÏ³ÎÎ¨¤ÎÂĞ¿ôÃÍ
+ * @return å‡ºåŠ›ç¢ºç‡ã®å¯¾æ•°å€¤
  * </JA>
  * <EN>
  * Compute an output probability of a Gaussian for the input vector of
@@ -195,14 +195,14 @@ gmm_compute_g_base(GMMCalc *gc, HTK_HMM_Dens *binfo)
 
 /** 
  * <JA>
- * ¸½ºß¤Î¥Õ¥ì¡¼¥à¤ÎÆşÎÏ¥Ù¥¯¥È¥ë¤ËÂĞ¤¹¤ë Gaussian ¤Î½ĞÎÏ³ÎÎ¨¤ò·×»»¤¹¤ë. 
- * ·×»»»ş¤Ë¤Ï¸ÇÄê¤·¤­¤¤ÃÍ¤Ë¤è¤ë safe pruning ¤ò¹Ô¤Ê¤¦. 
+ * ç¾åœ¨ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã®å…¥åŠ›ãƒ™ã‚¯ãƒˆãƒ«ã«å¯¾ã™ã‚‹ Gaussian ã®å‡ºåŠ›ç¢ºç‡ã‚’è¨ˆç®—ã™ã‚‹. 
+ * è¨ˆç®—æ™‚ã«ã¯å›ºå®šã—ãã„å€¤ã«ã‚ˆã‚‹ safe pruning ã‚’è¡Œãªã†. 
  * 
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
  * @param binfo [in] Gaussian
- * @param thres [in] safe pruning ¤Î¤¿¤á¤Î»Ş´¢¤ê¤·¤­¤¤ÃÍ
+ * @param thres [in] safe pruning ã®ãŸã‚ã®æåˆˆã‚Šã—ãã„å€¤
  * 
- * @return ½ĞÎÏ³ÎÎ¨¤ÎÂĞ¿ôÃÍ
+ * @return å‡ºåŠ›ç¢ºç‡ã®å¯¾æ•°å€¤
  * </JA>
  * <EN>
  * Compute an output probability of a Gaussian for the input vector of
@@ -239,11 +239,11 @@ gmm_compute_g_safe(GMMCalc *gc, HTK_HMM_Dens *binfo, LOGPROB thres)
 
 /** 
  * <JA>
- * GMM·×»»¤Ë¤ª¤±¤ë Gaussian pruning ¤Î¤¿¤á¤Î¥ï¡¼¥¯¥¨¥ê¥¢¤ò³ÎÊİ¤¹¤ë
+ * GMMè¨ˆç®—ã«ãŠã‘ã‚‹ Gaussian pruning ã®ãŸã‚ã®ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢ã‚’ç¢ºä¿ã™ã‚‹
  * 
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
- * @param hmminfo [in] HMM ¹½Â¤ÂÎ
- * @param prune_num [in] Gaussian pruning ¤Ë¤ª¤¤¤Æ·×»»¤¹¤ë¾å°Ì¥¬¥¦¥¹Ê¬ÉÛ¿ô
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
+ * @param hmminfo [in] HMM æ§‹é€ ä½“
+ * @param prune_num [in] Gaussian pruning ã«ãŠã„ã¦è¨ˆç®—ã™ã‚‹ä¸Šä½ã‚¬ã‚¦ã‚¹åˆ†å¸ƒæ•°
  * </JA>
  * <EN>
  * Allocate work area for Gaussian pruning for GMM calculation.
@@ -267,17 +267,17 @@ gmm_gprune_safe_init(GMMCalc *gc, HTK_HMM_INFO *hmminfo, int prune_num)
 
 /** 
  * <JA>
- * @brief  ¥¬¥¦¥¹Ê¬ÉÛ½¸¹çÆâ¤Î³Æ¥¬¥¦¥¹Ê¬ÉÛ¤Î¸½¥Õ¥ì¡¼¥à¤ËÂĞ¤¹¤ë½ĞÎÏ³ÎÎ¨¤ò·×»»¤¹¤ë. 
+ * @brief  ã‚¬ã‚¦ã‚¹åˆ†å¸ƒé›†åˆå†…ã®å„ã‚¬ã‚¦ã‚¹åˆ†å¸ƒã®ç¾ãƒ•ãƒ¬ãƒ¼ãƒ ã«å¯¾ã™ã‚‹å‡ºåŠ›ç¢ºç‡ã‚’è¨ˆç®—ã™ã‚‹. 
  *
- * Gaussian pruning ¤Ë¤è¤ê¡¤¼Âºİ¤Ë¤Ï¾å°Ì N ¸Ä¤Î¤ß¤òÊİ¾Ú¤¹¤ë»Ş´¢¤ê¤¬¹Ô¤Ê¤ï¤ì¡¤
- * ¥¹¥³¥¢¤ÎÄã¤¤¥¬¥¦¥¹Ê¬ÉÛ¤Ï·×»»¤µ¤ì¤Ê¤¤. 
+ * Gaussian pruning ã«ã‚ˆã‚Šï¼Œå®Ÿéš›ã«ã¯ä¸Šä½ N å€‹ã®ã¿ã‚’ä¿è¨¼ã™ã‚‹æåˆˆã‚ŠãŒè¡Œãªã‚ã‚Œï¼Œ
+ * ã‚¹ã‚³ã‚¢ã®ä½ã„ã‚¬ã‚¦ã‚¹åˆ†å¸ƒã¯è¨ˆç®—ã•ã‚Œãªã„. 
  *
- * ·×»»·ë²Ì¤Ï·×»»ºÑ¤ßGaussian¥ê¥¹¥È (OP_calced_score, OP_calced_id) ¤Ë
- * ³ÊÇ¼¤µ¤ì¤ë. 
+ * è¨ˆç®—çµæœã¯è¨ˆç®—æ¸ˆã¿Gaussianãƒªã‚¹ãƒˆ (OP_calced_score, OP_calced_id) ã«
+ * æ ¼ç´ã•ã‚Œã‚‹. 
  * 
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
- * @param g [in] ¥¬¥¦¥¹Ê¬ÉÛ½¸¹ç
- * @param gnum [in] @a g ¤ÎÄ¹¤µ
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
+ * @param g [in] ã‚¬ã‚¦ã‚¹åˆ†å¸ƒé›†åˆ
+ * @param gnum [in] @a g ã®é•·ã•
  * </JA>
  * <EN>
  * @brief  Compute scores for a set of Gaussians with Gaussian pruning for
@@ -314,12 +314,12 @@ gmm_gprune_safe(GMMCalc *gc, HTK_HMM_Dens **g, int gnum)
 
 /** 
  * <JA>
- * ¤¢¤ëGMM¾õÂÖ¤Î¸½¥Õ¥ì¡¼¥à¤ËÂĞ¤¹¤ë½ĞÎÏ³ÎÎ¨¤ò·×»»¤¹¤ë. 
+ * ã‚ã‚‹GMMçŠ¶æ…‹ã®ç¾ãƒ•ãƒ¬ãƒ¼ãƒ ã«å¯¾ã™ã‚‹å‡ºåŠ›ç¢ºç‡ã‚’è¨ˆç®—ã™ã‚‹. 
  * 
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
- * @param state [in] GMM ¾õÂÖ
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
+ * @param state [in] GMM çŠ¶æ…‹
  * 
- * @return ½ĞÎÏ³ÎÎ¨¤ÎÂĞ¿ô¥¹¥³¥¢
+ * @return å‡ºåŠ›ç¢ºç‡ã®å¯¾æ•°ã‚¹ã‚³ã‚¢
  * </JA>
  * <EN>
  * Compute the output probability of a GMM state for the current frame.
@@ -372,14 +372,14 @@ gmm_calc_mix(GMMCalc *gc, HTK_HMM_State *state)
 
 /** 
  * <JA>
- * ÆşÎÏ¤Î»ØÄê¥Õ¥ì¡¼¥à¤Ë¤ª¤±¤ëGMM¾õÂÖ¤Î¥¹¥³¥¢¤òµá¤á¤ë¥á¥¤¥ó´Ø¿ô. 
+ * å…¥åŠ›ã®æŒ‡å®šãƒ•ãƒ¬ãƒ¼ãƒ ã«ãŠã‘ã‚‹GMMçŠ¶æ…‹ã®ã‚¹ã‚³ã‚¢ã‚’æ±‚ã‚ã‚‹ãƒ¡ã‚¤ãƒ³é–¢æ•°. 
  * 
- * @param gc [i/o] GMM·×»»ÍÑ¥ï¡¼¥¯¥¨¥ê¥¢
- * @param t [in] ·×»»¤¹¤ë¥Õ¥ì¡¼¥à
- * @param stateinfo [in] GMM¾õÂÖ
- * @param param [in] ÆşÎÏ¥Ù¥¯¥È¥ë·ÏÎó
+ * @param gc [i/o] GMMè¨ˆç®—ç”¨ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
+ * @param t [in] è¨ˆç®—ã™ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ 
+ * @param stateinfo [in] GMMçŠ¶æ…‹
+ * @param param [in] å…¥åŠ›ãƒ™ã‚¯ãƒˆãƒ«ç³»åˆ—
  * 
- * @return ½ĞÎÏ³ÎÎ¨¤ÎÂĞ¿ô¥¹¥³¥¢
+ * @return å‡ºåŠ›ç¢ºç‡ã®å¯¾æ•°ã‚¹ã‚³ã‚¢
  * </JA>
  * <EN>
  * Main function to compute the output probability of a GMM state for
@@ -410,9 +410,9 @@ outprob_state_nocache(GMMCalc *gc, int t, HTK_HMM_State *stateinfo, HTK_Param *p
 
 /** 
  * <JA>
- * GMM¤Î·×»»¤Î¤¿¤á¤Î½é´ü²½. µ¯Æ°»ş¤Ë°ìÅÙ¤À¤±¸Æ¤Ğ¤ì¤ë. 
+ * GMMã®è¨ˆç®—ã®ãŸã‚ã®åˆæœŸåŒ–. èµ·å‹•æ™‚ã«ä¸€åº¦ã ã‘å‘¼ã°ã‚Œã‚‹. 
  * 
- * @param recog [i/o] ¥¨¥ó¥¸¥ó¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param recog [i/o] ã‚¨ãƒ³ã‚¸ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Initialization for computing GMM likelihoods.  This will be called
@@ -504,9 +504,9 @@ gmm_init(Recog *recog)
 
 /** 
  * <JA>
- * GMM·×»»¤Î¤¿¤á¤Î½àÈ÷¤ò¹Ô¤Ê¤¦. £±ÆşÎÏ³«»Ï¤´¤È¤Ë¸Æ¤Ğ¤ì¤ë. 
+ * GMMè¨ˆç®—ã®ãŸã‚ã®æº–å‚™ã‚’è¡Œãªã†. ï¼‘å…¥åŠ›é–‹å§‹ã”ã¨ã«å‘¼ã°ã‚Œã‚‹. 
  * 
- * @param recog [i/o] ¥¨¥ó¥¸¥ó¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param recog [i/o] ã‚¨ãƒ³ã‚¸ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Prepare for the next GMM computation.  This will be called just before
@@ -546,14 +546,14 @@ gmm_prepare(Recog *recog)
 
 /** 
  * <JA>
- * Í¿¤¨¤é¤ì¤¿ÆşÎÏ¥Ù¥¯¥È¥ëÎó¾å¤Î¤¢¤ë¥Õ¥ì¡¼¥à¤Ë¤Ä¤¤¤Æ¡¤Á´GMM¤Î¥¹¥³¥¢¤ò·×»»¤·¡¤
- * ·×»»·ë²Ì¤ò gmm_score ¤ËÀÑ»»¤¹¤ë. 
+ * ä¸ãˆã‚‰ã‚ŒãŸå…¥åŠ›ãƒ™ã‚¯ãƒˆãƒ«åˆ—ä¸Šã®ã‚ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ã«ã¤ã„ã¦ï¼Œå…¨GMMã®ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã—ï¼Œ
+ * è¨ˆç®—çµæœã‚’ gmm_score ã«ç©ç®—ã™ã‚‹. 
  *
- * GMM_VAD ÄêµÁ»ş¤Ï¡¤¸å¤Ç VAD È½Äê¤¹¤ë¤¿¤á¤Ë¡¤²áµî jconf->detect.gmm_margin
- * ¥Õ¥ì¡¼¥àÊ¬¤Î VAD ¥¹¥³¥¢ ¡Ê²»À¼GMM¤ÎºÇÂç¥¹¥³¥¢ - »¨²»GMM¤ÎºÇÂç¥¹¥³¥¢¡Ë¤¬
- * ÊİÂ¸¤µ¤ì¤ë. 
+ * GMM_VAD å®šç¾©æ™‚ã¯ï¼Œå¾Œã§ VAD åˆ¤å®šã™ã‚‹ãŸã‚ã«ï¼Œéå» jconf->detect.gmm_margin
+ * ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã® VAD ã‚¹ã‚³ã‚¢ ï¼ˆéŸ³å£°GMMã®æœ€å¤§ã‚¹ã‚³ã‚¢ - é›‘éŸ³GMMã®æœ€å¤§ã‚¹ã‚³ã‚¢ï¼‰ãŒ
+ * ä¿å­˜ã•ã‚Œã‚‹. 
  * 
- * @param recog [i/o] ¥¨¥ó¥¸¥ó¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param recog [i/o] ã‚¨ãƒ³ã‚¸ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Compute output probabilities of all GMM for a given input vector, and
@@ -631,13 +631,13 @@ gmm_proceed(Recog *recog)
 
 /** 
  * <JA>
- * @brief  GMM¤Î·×»»¤ò½ªÎ»¤·¡¤·ë²Ì¤ò½ĞÎÏ¤¹¤ë. 
+ * @brief  GMMã®è¨ˆç®—ã‚’çµ‚äº†ã—ï¼Œçµæœã‚’å‡ºåŠ›ã™ã‚‹. 
  *
- * gmm_proceed() ¤Ë¤è¤Ã¤ÆÎßÀÑ¤µ¤ì¤¿³Æ¥Õ¥ì¡¼¥à¤´¤È¤Î¥¹¥³¥¢¤«¤é¡¤
- * ºÇÂç¥¹¥³¥¢¤ÎGMM¤ò·èÄê¤¹¤ë. ¤½¤Î»ö¸å³ÎÎ¨¤Ë´ğ¤Å¤¯¿®ÍêÅÙ¤ò·×»»¤·
- * ºÇ½ªÅª¤Ê·ë²Ì¤ò result_gmm() ¤Ë¤è¤Ã¤Æ½ĞÎÏ¤¹¤ë. 
+ * gmm_proceed() ã«ã‚ˆã£ã¦ç´¯ç©ã•ã‚ŒãŸå„ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨ã®ã‚¹ã‚³ã‚¢ã‹ã‚‰ï¼Œ
+ * æœ€å¤§ã‚¹ã‚³ã‚¢ã®GMMã‚’æ±ºå®šã™ã‚‹. ãã®äº‹å¾Œç¢ºç‡ã«åŸºã¥ãä¿¡é ¼åº¦ã‚’è¨ˆç®—ã—
+ * æœ€çµ‚çš„ãªçµæœã‚’ result_gmm() ã«ã‚ˆã£ã¦å‡ºåŠ›ã™ã‚‹. 
  * 
- * @param recog [i/o] ¥¨¥ó¥¸¥ó¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param recog [i/o] ã‚¨ãƒ³ã‚¸ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * @brief  Finish the GMM computation for an input, and output the result.
@@ -708,13 +708,13 @@ gmm_end(Recog *recog)
 
 /** 
  * <JA>
- * GMM¤Î¼±ÊÌ·ë²Ì¡¤ºÇ¸å¤ÎÆşÎÏ¤¬²»À¼ÆşÎÏ¤È¤·¤ÆÍ­¸ú¤Ç¤¢¤Ã¤¿¤«
- * Ìµ¸ú¤Ç¤¢¤Ã¤¿¤«¤òÊÖ¤¹. 
+ * GMMã®è­˜åˆ¥çµæœï¼Œæœ€å¾Œã®å…¥åŠ›ãŒéŸ³å£°å…¥åŠ›ã¨ã—ã¦æœ‰åŠ¹ã§ã‚ã£ãŸã‹
+ * ç„¡åŠ¹ã§ã‚ã£ãŸã‹ã‚’è¿”ã™. 
  *
- * @param recog [i/o] ¥¨¥ó¥¸¥ó¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param recog [i/o] ã‚¨ãƒ³ã‚¸ãƒ³ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * 
- * @return °ì°Ì¤ÎGMM¤ÎÌ¾Á°¤¬ gmm_reject_cmn_string Æâ¤ËÌµ¤±¤ì¤Ğ valid ¤È¤·¤Æ
- * TRUE, ¤¢¤ì¤Ğ invalid ¤È¤·¤Æ FALSE ¤òÊÖ¤¹. 
+ * @return ä¸€ä½ã®GMMã®åå‰ãŒ gmm_reject_cmn_string å†…ã«ç„¡ã‘ã‚Œã° valid ã¨ã—ã¦
+ * TRUE, ã‚ã‚Œã° invalid ã¨ã—ã¦ FALSE ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Return whether the last input was valid or invalid, from the result of
@@ -745,7 +745,7 @@ gmm_valid_input(Recog *recog)
  * Free work area used for GMM calculation.
  * </EN>
  * <JA>
- * GMM·×»»¤ËÍÑ¤¤¤¿¥ï¡¼¥¯¥¨¥ê¥¢¤ò³«Êü¤¹¤ë. 
+ * GMMè¨ˆç®—ã«ç”¨ã„ãŸãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢ã‚’é–‹æ”¾ã™ã‚‹. 
  * </JA>
  * 
  * @param recog [i/o] engine instance
@@ -778,8 +778,8 @@ gmm_free(Recog *recog)
  * frames.  Positive value designates speech, and negative means noise.
  * </EN>
  * <JA>
- * Ä¾Á°¤Î (jconf->detect.gmm_margin) ¥Õ¥ì¡¼¥àÊ¬¤Î¥¹¥³¥¢¤«¤é
- * voice activity ¤Î¥¹¥³¥¢¤ò·×»»¤¹¤ë. Àµ¤ÎÃÍ¤Ï²»À¼¡¤Éé¤ÎÃÍ¤Ï»¨²»¤òÉ½¤¹. 
+ * ç›´å‰ã® (jconf->detect.gmm_margin) ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†ã®ã‚¹ã‚³ã‚¢ã‹ã‚‰
+ * voice activity ã®ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹. æ­£ã®å€¤ã¯éŸ³å£°ï¼Œè² ã®å€¤ã¯é›‘éŸ³ã‚’è¡¨ã™. 
  * </JA>
  * 
  * @param gc [i/o] work area for GMM calculation
@@ -838,10 +838,10 @@ voice_activity_score(GMMCalc *gc, float *mean_ret, float *var_ret, int *count_re
  * this frame, recog->gc->down_trigger will be set to FALSE.
  * </EN>
  * <JA>
- * ²»À¼/Èó²»À¼¶è´Ö¤Î¶èÀÚ¤ê¤ò¸¡ÃÎ¤¹¤ë. ¤³¤ì¤Ş¤Ç¤¬Èó²»À¼¶è´Ö¤Ç¤³¤Î¥Õ¥ì¡¼¥à¤Ç
- * ²»À¼¥È¥ê¥¬¤ò¸¡ÃÎ¤·¤¿¤È¤­¡¤recog->gc->up_trigger ¤ò TRUE ¤Ë¥»¥Ã¥È¤¹¤ë. ¸½ºß
- * ²»À¼¶è´Ö¤Ç¶è´Ö½ªÎ»¤ò¸¡ÃÎ¤·¤¿¤È¤­¡¤recog->gc->down_trigger ¤ò TRUE ¤Ë
- * ¥»¥Ã¥È¤¹¤ë. 
+ * éŸ³å£°/ééŸ³å£°åŒºé–“ã®åŒºåˆ‡ã‚Šã‚’æ¤œçŸ¥ã™ã‚‹. ã“ã‚Œã¾ã§ãŒééŸ³å£°åŒºé–“ã§ã“ã®ãƒ•ãƒ¬ãƒ¼ãƒ ã§
+ * éŸ³å£°ãƒˆãƒªã‚¬ã‚’æ¤œçŸ¥ã—ãŸã¨ãï¼Œrecog->gc->up_trigger ã‚’ TRUE ã«ã‚»ãƒƒãƒˆã™ã‚‹. ç¾åœ¨
+ * éŸ³å£°åŒºé–“ã§åŒºé–“çµ‚äº†ã‚’æ¤œçŸ¥ã—ãŸã¨ãï¼Œrecog->gc->down_trigger ã‚’ TRUE ã«
+ * ã‚»ãƒƒãƒˆã™ã‚‹. 
  * </JA>
  * 
  * @param recog [i/o] engine instance

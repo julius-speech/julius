@@ -1,47 +1,47 @@
-Julian �`���̕��@�� SAPI XML ���@�ɕϊ�����X�N���v�g
+Julian 形式の文法を SAPI XML 文法に変換するスクリプト
 2002/09/12 Takashi Sumiyoshi (sumiyosi@kuis.kyoto-u.ac.jp)
 
 
-�����̃v���O�����ɂ���
+■このプログラムについて
 
-���� Perl �X�N���v�g�́AJulian �p�ɏ����ꂽ .grammar, .voca
-�`���̃t�@�C������ASAPI XML �`���֕ϊ�����X�N���v�g�ł��B
+この Perl スクリプトは、Julian 用に書かれた .grammar, .voca
+形式のファイルから、SAPI XML 形式へ変換するスクリプトです。
 
 
-�����s���@
+■実行方法
 
-�v���O���������ŁAiconv �Ƃ����ϊ��v���O�����𗘗p���Ă��邽�߁A
-�ʓr iconv �v���O�������K�v�ł��B
+プログラム内部で、iconv という変換プログラムを利用しているため、
+別途 iconv プログラムが必要です。
 
-�����Ȃ��Ŏ��s���邱�ƂŁA�ȒP�Ȏg�������\������܂��B
+引数なしで実行することで、簡単な使い方が表示されます。
 
 	% ./gram2sapixml.pl
 
-�����ɂ͕ϊ����� .grammar, .voca �t�@�C���̃t�@�C��������g���q��
-���O�������̂��w�肵�܂��B
-�Ⴆ�� ../sample_grammars/vfr/vfr.{grammar,voca} ���R���o�[�g����
-�ꍇ�́A���̂悤�ɂ��܂��B
+引数には変換する .grammar, .voca ファイルのファイル名から拡張子を
+除外したものを指定します。
+例えば ../sample_grammars/vfr/vfr.{grammar,voca} をコンバートする
+場合は、次のようにします。
 
 	% ./gram2sapixml.pl ../sample_grammars/vfr/vfr
 
-����ɂ��Avfr.xml �Ƃ����t�@�C���� ../sample_grammars/vfr/ �ɏ�
-�����쐬����܂��B
+これにより、vfr.xml というファイルが ../sample_grammars/vfr/ に上
+書き作成されます。
 
-�����ɂ͕����̃t�@�C�������w��ł��A�����͒����ϊ�����܂��B
+引数には複数のファイル名を指定でき、それらは逐次変換されます。
 
-�쐬�����t�@�C���� UTF-8 �G���R�[�f�B���O�ł��B
+作成されるファイルは UTF-8 エンコーディングです。
 
 
-���⑫
+■補足
 
-�ϊ��́A���t�@�C���̕��@�̔�I�[�L���ƏI�[�L��(�P��J�e�S����)��
-���[���ɕϊ�����Ƃ����P���Ȃ��̂ł��B
+変換は、元ファイルの文法の非終端記号と終端記号(単語カテゴリ名)を
+ルールに変換するという単純なものです。
 
-���t�@�C���� .grammar �̍\�������̂܂ܕێ����邽�߁A.grammar ��
-�����鐳���ł̍��ċA�L�q�����̂܂� .xml �ɔ��f����܂��B
-���������āA�ϊ��� .xml �Ɋ܂܂�鍶�ċA���̉����͎��Ƃōs��Ȃ�
-��΂����܂���B
+元ファイルの .grammar の構造をそのまま保持するため、.grammar に
+おける正順での左再帰記述がそのまま .xml に反映されます。
+したがって、変換後 .xml に含まれる左再帰性の解決は手作業で行わなけ
+ればいけません。
 
-�܂��A���ۂ�SAPI�A�v���P�[�V�����Ŏg���ꍇ�ɂ́A�v���p�e�B���w�肷
-��ȂǁA���Ƃł̏C�����K�v�ł��B
+また、実際にSAPIアプリケーションで使う場合には、プロパティを指定す
+るなど、手作業での修正が必要です。
 

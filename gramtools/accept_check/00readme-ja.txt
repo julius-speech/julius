@@ -4,43 +4,43 @@ ACCEPT_CHECK(1)                                                ACCEPT_CHECK(1)
 
 
 
-���O
+名前
            accept_check
-          - ���@�ɂ�����P���̎�/��󗝃`�F�b�N
+          - 文法における単語列の受理/非受理チェック
 
-�T�v
+概要
        accept_check [-t] [-s spname] [-v] {prefix}
 
 DESCRIPTION
-       accept_check �́C���@�ŕ��̎󗝁E��󗝂𔻒肷��c�[���ł��D���͕W��
-       ���͂���^���܂��D�󗝂��ׂ�������s���e�L�X�g�t�@�C���ɂ܂Ƃ߂ď���
-       �Ă����C�����accept_check �̕W�����͂ɗ^���邱�ƂŁC���̕��@
-       (prefix.dfa ����� prefix.dict) �ɂ����ĖړI�̕����󗝂���邩�ǂ�����
-       �o�b�`�I�Ƀ`�F�b�N�ł��܂��D
+       accept_check は，文法で文の受理・非受理を判定するツールです．文は標準
+       入力から与えます．受理すべき文を一行ずつテキストファイルにまとめて書い
+       ておき，それをaccept_check の標準入力に与えることで，その文法
+       (prefix.dfa および prefix.dict) において目的の文が受理されるかどうかを
+       バッチ的にチェックできます．
 
-       ���s�ɂ� .dfa, .dict, .term �̊e�t�@�C�����K�v�ł��D ���炩����
-       mkdfa.pl �Ő������Ă����ĉ������D
+       実行には .dfa, .dict, .term の各ファイルが必要です． あらかじめ
+       mkdfa.pl で生成しておいて下さい．
 
-       �ΏۂƂ��镶�́C���@�̌�b�P��(.voca�̑�1�t�B�[���h)�ŋ󔒂ŋ�؂��ė^
-       ���܂��D�ŏ��ƍŌ�ɂ͑����̏ꍇ silB, silE ���K�v�ł��邱�ƂɋC����
-       �ĉ������D�܂��C �V���[�g�|�[�Y�P��͕��Ɋ܂߂Ȃ��ł��������D
+       対象とする文は，文法の語彙単位(.vocaの第1フィールド)で空白で区切って与
+       えます．最初と最後には多くの場合 silB, silE が必要であることに気をつけ
+       て下さい．また， ショートポーズ単語は文に含めないでください．
 
-       ����\�L�̒P�ꂪ��������ꍇ�Caccept_check �͂��̉\�ȉ��߂̑S�Ă̑g
-       �ݍ��킹�ɂ��Ē��ׁC�ǂꂩ�P�̃p�^�[���ł��󗝉\�ł���Ύ󗝁C��
-       �ׂẴp�^�[���Ŏ󗝕s�\�ł���Ύ󗝕s�\�Ƃ��܂��D
+       同一表記の単語が複数ある場合，accept_check はその可能な解釈の全ての組
+       み合わせについて調べ，どれか１つのパターンでも受理可能であれば受理，す
+       べてのパターンで受理不可能であれば受理不可能とします．
 
 OPTIONS
         -t
-           �P��ł͂Ȃ��J�e�S�����œ��́E�o�͂���D
+           単語ではなくカテゴリ名で入力・出力する．
 
         -s  spname
-           �X�L�b�v���ׂ��V���[�g�|�[�Y�P��̖��O���w�肷��D (default: "sp")
+           スキップすべきショートポーズ単語の名前を指定する． (default: "sp")
 
         -v
-           �f�o�b�O�o�́D
+           デバッグ出力．
 
 EXAMPLES
-       vfr (�t�B�b�e�B���O�^�X�N�p���@) �ł̎��s��F
+       vfr (フィッティングタスク用文法) での実行例：
 
            % accept_check vfr
            Reading in dictionary...done
@@ -50,8 +50,8 @@ EXAMPLES
            42 categories, 99 words
            DFA has 135 nodes and 198 arcs
            -----
-           please input word sequence>silB �� �� ���� ������ silE
-           wseq: silB �� �� ���� ������ silE
+           please input word sequence>silB 白 に して 下さい silE
+           wseq: silB 白 に して 下さい silE
            cate: NS_B COLOR_N (NI|NI_AT) SURU_V KUDASAI_V NS_E
            accepted
            please input word sequence>
@@ -63,16 +63,16 @@ SEE ALSO
         nextword ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 

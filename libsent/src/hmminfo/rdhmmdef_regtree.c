@@ -2,9 +2,9 @@
  * @file   rdhmmdef_regtree.c
  * 
  * <JA>
- * @brief  HTK %HMM ÄêµÁ¥Õ¥¡¥¤¥ë¤ÎÆÉ¤ß¹ş¤ß¡§Regression tree
+ * @brief  HTK %HMM å®šç¾©ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ï¼šRegression tree
  *
- * Regression tree ¤ÏÊİÂ¸¤µ¤ì¤º¡¤ÆÉ¤ßÈô¤Ğ¤µ¤ì¤Ş¤¹¡¥
+ * Regression tree ã¯ä¿å­˜ã•ã‚Œãšï¼Œèª­ã¿é£›ã°ã•ã‚Œã¾ã™ï¼
  * </JA>
  * 
  * <EN>

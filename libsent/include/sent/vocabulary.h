@@ -2,15 +2,15 @@
  * @file   vocabulary.h
  *
  * <JA>
- * @brief  ñ�켭��ι�¤�����
+ * @brief  単語辞書の構造体定義
  *
- * ���Υե������ǧ�����Ѥ�����ñ�켭���������ޤ���ñ�켭���ñ����ɤߡ�
- * ����ʸ���󡤲������¾�ˡ�ʸ�γ��ϡ���λñ���Ʃ��ñ�������ݻ����ޤ���
+ * このファイルは認識で用いられる単語辞書を定義します．単語辞書は単語の読み，
+ * 出力文字列，音素列の他に，文の開始・終了単語や透過単語情報も保持します．
  * 
- * N-gram�˽и�������äμ���� NGRAM_INFO �˳�Ǽ���졤����ǧ����ñ�켭��Ȥ�
- * ���̤���뤳�Ȥ����դ��Ʋ�������ñ�켭�񤫤�N-gram�θ��äؤΥޥåԥ󥰤�
- * WORD_INFO ��� wton[] �ˤ�äƹԤʤ��ޤ����ޤ�DFA�ξ�硤wton ��
- * ����ñ�줬°����DFA_INFO ��Υ��ƥ����ֹ��ޤߤޤ���
+ * N-gramに出現する語彙の辞書は NGRAM_INFO に格納され，この認識用単語辞書とは
+ * 区別されることに注意して下さい．単語辞書からN-gramの語彙へのマッピングは
+ * WORD_INFO 内の wton[] によって行なわれます．またDFAの場合，wton は
+ * その単語が属するDFA_INFO 内のカテゴリ番号を含みます．
  * </JA>
  * <EN>
  * @brief  Word dictionary for recognition

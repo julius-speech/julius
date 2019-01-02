@@ -2,16 +2,16 @@
  * @file   word_align.c
  * 
  * <JA>
- * @brief  Ã±¸ì¡¦²»ÁÇ¡¦¾õÂÖÃ±°Ì¤Î¥¢¥é¥¤¥ó¥á¥ó¥È
+ * @brief  å˜èªãƒ»éŸ³ç´ ãƒ»çŠ¶æ…‹å˜ä½ã®ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆ
  *
- * ¤³¤³¤Ç¤Ï¡¤Ç§¼±·ë²Ì¤ËÂĞ¤¹¤ëÆşÎÏ²»À¼¤Î¥¢¥é¥¤¥ó¥á¥ó¥È¤ò½ĞÎÏ¤¹¤ë¤¿¤á¤Î
- * ´Ø¿ô¤¬ÄêµÁ¤µ¤ì¤Æ¤¤¤Ş¤¹. 
+ * ã“ã“ã§ã¯ï¼Œèªè­˜çµæœã«å¯¾ã™ã‚‹å…¥åŠ›éŸ³å£°ã®ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã‚’å‡ºåŠ›ã™ã‚‹ãŸã‚ã®
+ * é–¢æ•°ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã™. 
  *
- * Julius/Julian ¤Ç¤Ï¡¤Ç§¼±·ë²Ì¤Ë¤ª¤¤¤Æ¤½¤ÎÃ±¸ì¤ä²»ÁÇ¡¤¤¢¤ë¤¤¤ÏHMM¤Î¾õÂÖ¤¬
- * ¤½¤ì¤¾¤ìÆşÎÏ²»À¼¤Î¤É¤Î¶è´Ö¤Ë¥Ş¥Ã¥Á¤·¤¿¤Î¤«¤òÃÎ¤ë¤³¤È¤¬¤Ç¤­¤Ş¤¹. 
- * ¤è¤êÀµ³Î¤Ê¥¢¥é¥¤¥ó¥á¥ó¥È¤òµá¤á¤ë¤¿¤á¤Ë¡¤Julius/Julian ¤Ç¤ÏÇ§¼±Ãæ¤Î
- * ¶á»÷¤ò´Ş¤à¾ğÊó¤ÏÍÑ¤¤¤º¤Ë¡¤Ç§¼±¤¬½ª¤ï¤Ã¤¿¸å¤ËÆÀ¤é¤ì¤¿Ç§¼±·ë²Ì¤ÎÃ±¸ìÎó¤Ë
- * ÂĞ¤·¤Æ¡¤¤¢¤é¤¿¤á¤Æ forced alignment ¤ò¼Â¹Ô¤·¤Æ¤¤¤Ş¤¹. 
+ * Julius/Julian ã§ã¯ï¼Œèªè­˜çµæœã«ãŠã„ã¦ãã®å˜èªã‚„éŸ³ç´ ï¼Œã‚ã‚‹ã„ã¯HMMã®çŠ¶æ…‹ãŒ
+ * ãã‚Œãã‚Œå…¥åŠ›éŸ³å£°ã®ã©ã®åŒºé–“ã«ãƒãƒƒãƒã—ãŸã®ã‹ã‚’çŸ¥ã‚‹ã“ã¨ãŒã§ãã¾ã™. 
+ * ã‚ˆã‚Šæ­£ç¢ºãªã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã‚’æ±‚ã‚ã‚‹ãŸã‚ã«ï¼ŒJulius/Julian ã§ã¯èªè­˜ä¸­ã®
+ * è¿‘ä¼¼ã‚’å«ã‚€æƒ…å ±ã¯ç”¨ã„ãšã«ï¼Œèªè­˜ãŒçµ‚ã‚ã£ãŸå¾Œã«å¾—ã‚‰ã‚ŒãŸèªè­˜çµæœã®å˜èªåˆ—ã«
+ * å¯¾ã—ã¦ï¼Œã‚ã‚‰ãŸã‚ã¦ forced alignment ã‚’å®Ÿè¡Œã—ã¦ã„ã¾ã™. 
  * </JA>
  * 
  * <EN>
@@ -47,17 +47,17 @@
 
 /** 
  * <JA>
- * Í¿¤¨¤é¤ì¤¿Ã±¸ìÎó¤«¤éHMM¤òÏ¢·ë¤·¤ÆÊ¸Á´ÂÎ¤ÎHMM¤ò¹½ÃÛ¤¹¤ë. 
+ * ä¸ãˆã‚‰ã‚ŒãŸå˜èªåˆ—ã‹ã‚‰HMMã‚’é€£çµã—ã¦æ–‡å…¨ä½“ã®HMMã‚’æ§‹ç¯‰ã™ã‚‹. 
  * 
- * @param wseq [in] Ã±¸ìÎó
- * @param num [in] @a wseq ¤Î¿ô
- * @param has_sp_ret [out] ¥·¥ç¡¼¥È¥İ¡¼¥º¤ò¸åÂ³¤ËÁŞÆş¤·¤¦¤ë¥æ¥Ë¥Ã¥È¤Î¾ğÊó
- * @param num_ret [out] ¹½ÃÛ¤µ¤ì¤¿HMM¤Ë´Ş¤Ş¤ì¤ë²»ÁÇHMM¤Î¿ô
- * @param end_ret [out] ¥¢¥é¥¤¥ó¥á¥ó¥È¤Î¶èÀÚ¤ê¤È¤Ê¤ë¾õÂÖÈÖ¹æ¤ÎÎó
- * @param per_what [in] Ã±¸ì¡¦²»ÁÇ¡¦¾õÂÖ¤Î¤É¤ÎÃ±°Ì¤Ç¥¢¥é¥¤¥ó¥á¥ó¥È¤ò¼è¤ë¤«¤ò»ØÄê
- * @param r [in] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param wseq [in] å˜èªåˆ—
+ * @param num [in] @a wseq ã®æ•°
+ * @param has_sp_ret [out] ã‚·ãƒ§ãƒ¼ãƒˆãƒãƒ¼ã‚ºã‚’å¾Œç¶šã«æŒ¿å…¥ã—ã†ã‚‹ãƒ¦ãƒ‹ãƒƒãƒˆã®æƒ…å ±
+ * @param num_ret [out] æ§‹ç¯‰ã•ã‚ŒãŸHMMã«å«ã¾ã‚Œã‚‹éŸ³ç´ HMMã®æ•°
+ * @param end_ret [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã®åŒºåˆ‡ã‚Šã¨ãªã‚‹çŠ¶æ…‹ç•ªå·ã®åˆ—
+ * @param per_what [in] å˜èªãƒ»éŸ³ç´ ãƒ»çŠ¶æ…‹ã®ã©ã®å˜ä½ã§ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã‚’å–ã‚‹ã‹ã‚’æŒ‡å®š
+ * @param r [in] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * 
- * @return ¤¢¤é¤¿¤Ë³ä¤êÉÕ¤±¤é¤ì¤¿Ê¸Á´ÂÎ¤ò¤¢¤é¤ï¤¹HMM¥â¥Ç¥ëÎó¤Ø¤Î¥İ¥¤¥ó¥¿¤òÊÖ¤¹. 
+ * @return ã‚ã‚‰ãŸã«å‰²ã‚Šä»˜ã‘ã‚‰ã‚ŒãŸæ–‡å…¨ä½“ã‚’ã‚ã‚‰ã‚ã™HMMãƒ¢ãƒ‡ãƒ«åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™. 
  * </JA>
  * <EN>
  * Make the whole sentence HMM from given word sequence by connecting
@@ -164,14 +164,14 @@ make_phseq(WORD_ID *wseq, short num, boolean **has_sp_ret, int *num_ret, int **e
 
 /** 
  * <JA>
- * Ê¸Á´ÂÎ¤ÎHMM¤ò¹½ÃÛ¤·¡¤Viterbi¥¢¥é¥¤¥ó¥á¥ó¥È¤ò¼Â¹Ô¤·¡¤·ë²Ì¤ò½ĞÎÏ¤¹¤ë. 
+ * æ–‡å…¨ä½“ã®HMMã‚’æ§‹ç¯‰ã—ï¼ŒViterbiã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã‚’å®Ÿè¡Œã—ï¼Œçµæœã‚’å‡ºåŠ›ã™ã‚‹. 
  * 
- * @param words [in] Ê¸²¾Àâ¤ò¤¢¤é¤ï¤¹Ã±¸ìÎó
- * @param wnum [in] @a words ¤ÎÄ¹¤µ
- * @param param [in] ÆşÎÏÆÃÄ§¥Ñ¥é¥á¡¼¥¿Îó
- * @param per_what [in] Ã±¸ì¡¦²»ÁÇ¡¦¾õÂÖ¤Î¤É¤ÎÃ±°Ì¤Ç¥¢¥é¥¤¥ó¥á¥ó¥È¤ò¼è¤ë¤«¤ò»ØÄê
- * @param align [out] ¥¢¥é¥¤¥ó¥á¥ó¥È·ë²Ì¤ò³ÊÇ¼¤¹¤ëSentence¹½Â¤ÂÎ
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param words [in] æ–‡ä»®èª¬ã‚’ã‚ã‚‰ã‚ã™å˜èªåˆ—
+ * @param wnum [in] @a words ã®é•·ã•
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åˆ—
+ * @param per_what [in] å˜èªãƒ»éŸ³ç´ ãƒ»çŠ¶æ…‹ã®ã©ã®å˜ä½ã§ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã‚’å–ã‚‹ã‹ã‚’æŒ‡å®š
+ * @param align [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆçµæœã‚’æ ¼ç´ã™ã‚‹Sentenceæ§‹é€ ä½“
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Build sentence HMM, call viterbi_segment() and output result.
@@ -346,13 +346,13 @@ do_align(WORD_ID *words, short wnum, HTK_Param *param, int per_what, SentenceAli
 
 /** 
  * <JA>
- * Ã±¸ì¤´¤È¤Î forced alignment ¤ò¹Ô¤¦. 
+ * å˜èªã”ã¨ã® forced alignment ã‚’è¡Œã†. 
  * 
- * @param words [in] Ã±¸ìÎó
- * @param wnum [in] @a words ¤ÎÃ±¸ì¿ô
- * @param param [in] ÆşÎÏÆÃÄ§¥Ù¥¯¥È¥ëÎó
- * @param align [out] ¥¢¥é¥¤¥ó¥á¥ó¥È·ë²Ì¤ò³ÊÇ¼¤¹¤ëSentence¹½Â¤ÂÎ
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param words [in] å˜èªåˆ—
+ * @param wnum [in] @a words ã®å˜èªæ•°
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«åˆ—
+ * @param align [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆçµæœã‚’æ ¼ç´ã™ã‚‹Sentenceæ§‹é€ ä½“
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Do forced alignment per word for the given word sequence.
@@ -374,13 +374,13 @@ word_align(WORD_ID *words, short wnum, HTK_Param *param, SentenceAlign *align, R
 
 /** 
  * <JA>
- * Ã±¸ì¤´¤È¤Î forced alignment ¤ò¹Ô¤¦¡ÊÃ±¸ì¤¬µÕ½ç¤ÇÍ¿¤¨¤é¤ì¤ë¾ì¹ç¡Ë
+ * å˜èªã”ã¨ã® forced alignment ã‚’è¡Œã†ï¼ˆå˜èªãŒé€†é †ã§ä¸ãˆã‚‰ã‚Œã‚‹å ´åˆï¼‰
  * 
- * @param revwords [in] Ã±¸ìÎó¡ÊµÕ½ç¡Ë
- * @param wnum [in] @a revwords ¤ÎÃ±¸ì¿ô
- * @param param [in] ÆşÎÏÆÃÄ§¥Ù¥¯¥È¥ëÎó
- * @param align [out] ¥¢¥é¥¤¥ó¥á¥ó¥È·ë²Ì¤ò³ÊÇ¼¤¹¤ëSentence¹½Â¤ÂÎ
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param revwords [in] å˜èªåˆ—ï¼ˆé€†é †ï¼‰
+ * @param wnum [in] @a revwords ã®å˜èªæ•°
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«åˆ—
+ * @param align [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆçµæœã‚’æ ¼ç´ã™ã‚‹Sentenceæ§‹é€ ä½“
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Do forced alignment per word for the given word sequence (reversed order).
@@ -407,13 +407,13 @@ word_rev_align(WORD_ID *revwords, short wnum, HTK_Param *param, SentenceAlign *a
 
 /** 
  * <JA>
- * ²»ÁÇ¤´¤È¤Î forced alignment ¤ò¹Ô¤¦. 
+ * éŸ³ç´ ã”ã¨ã® forced alignment ã‚’è¡Œã†. 
  * 
- * @param words [in] Ã±¸ìÎó
- * @param num [in] @a words ¤ÎÃ±¸ì¿ô
- * @param param [in] ÆşÎÏÆÃÄ§¥Ù¥¯¥È¥ëÎó
- * @param align [out] ¥¢¥é¥¤¥ó¥á¥ó¥È·ë²Ì¤ò³ÊÇ¼¤¹¤ëSentence¹½Â¤ÂÎ
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param words [in] å˜èªåˆ—
+ * @param num [in] @a words ã®å˜èªæ•°
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«åˆ—
+ * @param align [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆçµæœã‚’æ ¼ç´ã™ã‚‹Sentenceæ§‹é€ ä½“
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Do forced alignment per phoneme for the given word sequence.
@@ -435,13 +435,13 @@ phoneme_align(WORD_ID *words, short num, HTK_Param *param, SentenceAlign *align,
 
 /** 
  * <JA>
- * ²»ÁÇ¤´¤È¤Î forced alignment ¤ò¹Ô¤¦¡ÊÃ±¸ì¤¬µÕ½ç¤ÇÍ¿¤¨¤é¤ì¤ë¾ì¹ç¡Ë
+ * éŸ³ç´ ã”ã¨ã® forced alignment ã‚’è¡Œã†ï¼ˆå˜èªãŒé€†é †ã§ä¸ãˆã‚‰ã‚Œã‚‹å ´åˆï¼‰
  * 
- * @param revwords [in] Ã±¸ìÎó¡ÊµÕ½ç¡Ë
- * @param num [in] @a revwords ¤ÎÃ±¸ì¿ô
- * @param param [in] ÆşÎÏÆÃÄ§¥Ù¥¯¥È¥ëÎó
- * @param align [out] ¥¢¥é¥¤¥ó¥á¥ó¥È·ë²Ì¤ò³ÊÇ¼¤¹¤ëSentence¹½Â¤ÂÎ
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param revwords [in] å˜èªåˆ—ï¼ˆé€†é †ï¼‰
+ * @param num [in] @a revwords ã®å˜èªæ•°
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«åˆ—
+ * @param align [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆçµæœã‚’æ ¼ç´ã™ã‚‹Sentenceæ§‹é€ ä½“
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Do forced alignment per phoneme for the given word sequence (reversed order).
@@ -468,13 +468,13 @@ phoneme_rev_align(WORD_ID *revwords, short num, HTK_Param *param, SentenceAlign 
 
 /** 
  * <JA>
- * HMM¾õÂÖ¤´¤È¤Î forced alignment ¤ò¹Ô¤¦. 
+ * HMMçŠ¶æ…‹ã”ã¨ã® forced alignment ã‚’è¡Œã†. 
  * 
- * @param words [in] Ã±¸ìÎó
- * @param num [in] @a words ¤ÎÃ±¸ì¿ô
- * @param param [in] ÆşÎÏÆÃÄ§¥Ù¥¯¥È¥ëÎó
- * @param align [out] ¥¢¥é¥¤¥ó¥á¥ó¥È·ë²Ì¤ò³ÊÇ¼¤¹¤ëSentence¹½Â¤ÂÎ
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param words [in] å˜èªåˆ—
+ * @param num [in] @a words ã®å˜èªæ•°
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«åˆ—
+ * @param align [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆçµæœã‚’æ ¼ç´ã™ã‚‹Sentenceæ§‹é€ ä½“
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Do forced alignment per HMM state for the given word sequence.
@@ -496,13 +496,13 @@ state_align(WORD_ID *words, short num, HTK_Param *param, SentenceAlign *align, R
 
 /** 
  * <JA>
- * HMM¾õÂÖ¤´¤È¤Î forced alignment ¤ò¹Ô¤¦¡ÊÃ±¸ì¤¬µÕ½ç¤ÇÍ¿¤¨¤é¤ì¤ë¾ì¹ç¡Ë
+ * HMMçŠ¶æ…‹ã”ã¨ã® forced alignment ã‚’è¡Œã†ï¼ˆå˜èªãŒé€†é †ã§ä¸ãˆã‚‰ã‚Œã‚‹å ´åˆï¼‰
  * 
- * @param revwords [in] Ã±¸ìÎó¡ÊµÕ½ç¡Ë
- * @param num [in] @a revwords ¤ÎÃ±¸ì¿ô
- * @param param [in] ÆşÎÏÆÃÄ§¥Ù¥¯¥È¥ëÎó
- * @param align [out] ¥¢¥é¥¤¥ó¥á¥ó¥È·ë²Ì¤ò³ÊÇ¼¤¹¤ëSentence¹½Â¤ÂÎ
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
+ * @param revwords [in] å˜èªåˆ—ï¼ˆé€†é †ï¼‰
+ * @param num [in] @a revwords ã®å˜èªæ•°
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«åˆ—
+ * @param align [out] ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆçµæœã‚’æ ¼ç´ã™ã‚‹Sentenceæ§‹é€ ä½“
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
  * </JA>
  * <EN>
  * Do forced alignment per state for the given word sequence (reversed order).
@@ -529,10 +529,10 @@ state_rev_align(WORD_ID *revwords, short num, HTK_Param *param, SentenceAlign *a
 
 /** 
  * <JA>
- * Ç§¼±·ë²Ì¤ËÂĞ¤·¤ÆÉ¬Í×¤Ê¥¢¥é¥¤¥ó¥á¥ó¥È¤òÁ´¤Æ¼Â¹Ô¤¹¤ë¡¥
+ * èªè­˜çµæœã«å¯¾ã—ã¦å¿…è¦ãªã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆã‚’å…¨ã¦å®Ÿè¡Œã™ã‚‹ï¼
  * 
- * @param r [i/o] Ç§¼±½èÍı¥¤¥ó¥¹¥¿¥ó¥¹
- * @param param [in] ÆşÎÏÆÃÄ§¥Ù¥¯¥È¥ëÎó
+ * @param r [i/o] èªè­˜å‡¦ç†ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+ * @param param [in] å…¥åŠ›ç‰¹å¾´ãƒ™ã‚¯ãƒˆãƒ«åˆ—
  * </JA>
  * <EN>
  * Do required forced alignment for the recognition results

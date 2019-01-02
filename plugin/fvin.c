@@ -6,7 +6,7 @@
  * </EN>
  * 
  * <JA>
- * @brief  ��ħ�����ϥץ饰����ΤҤʷ�
+ * @brief  特徴量入力プラグインのひな形
  * </JA>
  * 
  * @author Akinobu Lee
@@ -63,11 +63,11 @@
  * This function is OPTIONAL.
  * </EN>
  * <JA>
- * @brief  �ɤ߹��߻��ν������Ǥ�ա�
+ * @brief  読み込み時の初期化（任意）
  *
- * ��ư����Julius �����Υץ饰������ɤ߹���ݤ˺ǽ�˸ƤФ�롥
- * -1 ���֤��ȡ����Υץ饰�������Τ��ɤ߹��ޤ�ʤ��ʤ롥
- * �¹Բ�ǽ���Υ����å��˻Ȥ��롥
+ * 起動時，Julius がこのプラグインを読み込む際に最初に呼ばれる．
+ * -1 を返すと，このプラグイン全体が読み込まれなくなる．
+ * 実行可能性のチェックに使える．
  *
  * </JA>
  * 
@@ -101,19 +101,19 @@ initialize()
  * 
  * </EN>
  * <JA>
- * @brief  �ץ饰������������ɬ�ܡ�
+ * @brief  プラグイン情報取得（必須）
  *
- * ���Υץ饰����˴ؤ��������֤���Ϳ����줿 opcode �ˤ�ä�ư��롥
- *  - 0 �ξ�硤���Υץ饰����ե������̾�Τ�Ϳ����줿�Хåե��˳�Ǽ����
+ * このプラグインに関する情報を返す．与えられた opcode によって動作する．
+ *  - 0 の場合，このプラグインファイルの名称を与えられたバッファに格納する
  *
- * ���δؿ��ϡ�Julius �����Υץ饰������ɤ߹����ľ��˸ƤФ�롥
+ * この関数は，Julius がこのプラグインを読み込んだ直後に呼ばれる．
  * 
- * @param opcode [in] �׵�ư����� (���� 0 �Τ߼���)
- * @param buf [out] �ͤ��Ǽ����Хåե�
- * @param buflen [in] buf �κ���Ĺ
+ * @param opcode [in] 要求動作コード (現在 0 のみ実装)
+ * @param buf [out] 値を格納するバッファ
+ * @param buflen [in] buf の最大長
  * 
- * @return ���顼�� -1, ������ 0 ���֤������顼�Ȥ��� -1 ���֤�����硤
- * ���Υץ饰�������Τ��ɤ߹��ޤ�ʤ���
+ * @return エラー時 -1, 成功時 0 を返す．エラーとして -1 を返した場合，
+ * このプラグイン全体は読み込まれない．
  * </JA>
  * 
  */
@@ -148,17 +148,17 @@ get_plugin_info(int opcode, char *buf, int buflen)
  * @param buflen [in] maximum length of buf
  * </EN>
  * <JA>
- * @brief  ���������ѤΥ��ץ����ʸ������֤���ɬ�ܡ�
+ * @brief  入力選択用のオプション文字列を返す（必須）
  *
- * ���Υץ饰��������ϤȤ������򤹤�ݤˡ�"-input" ���ץ����ǻ��ꤹ
- * �٤�ʸ������Ǽ�����֤����֤�ʸ���ϡ������ƥ�ˤ��Ǥˤ����Τ䡤
- * ¾�Υץ饰���󤬻��Ѥ��Ƥ����Τ�Ʊ���Ǥʤ����ȡ�
- * �ʤ⤷Ʊ�����ä���祷���ƥ�¦��ͥ�褵����
+ * このプラグインを入力として選択する際に，"-input" オプションで指定す
+ * べき文字列を格納して返す．返す文字は，システムにすでにあるものや，
+ * 他のプラグインが使用しているものと同じでないこと．
+ * （もし同じだった場合システム側が優先される）
  *
- * ���δؿ��ϡ���ư���Υ��ץ������ϻ��˲��٤��ƤФ�롥
+ * この関数は，起動時のオプション解析時に何度か呼ばれる．
  *
- * @param buf [out] �ͤ��Ǽ�����֤��Хåե�
- * @param buflen [in] buf �κ���Ĺ
+ * @param buf [out] 値を格納して返すバッファ
+ * @param buflen [in] buf の最大長
  * </JA>
  * 
  */
@@ -193,25 +193,25 @@ fvin_get_optname(char *buf, int buflen)
  * </EN>
  * 
  * <JA>
- * @brief  ��ħ�̤Υѥ�᡼�����֤���ɬ�ܡ�
+ * @brief  特徴量のパラメータを返す（必須）
  *
- * �������ϥץ饰����Julius���Ϥ���ħ�̤˴ؤ���ѥ�᡼�����֤���
- * Ϳ����줿�ʲ��� opcode ���Ȥˡ��ͤ��֤���
+ * この入力プラグインがJuliusに渡す特徴量に関するパラメータを返す．
+ * 与えられた以下の opcode ごとに，値を返す．
  *
- * opcode = 0: �٥��ȥ�μ�����
- * opcode = 1: ���ե졼�ढ����λ�������ñ�̡��ߥ��á�
- * opcode = 2: �ѥ�᡼���η�
+ * opcode = 0: ベクトルの次元数
+ * opcode = 1: １フレームあたりの時間幅（単位：ミリ秒）
+ * opcode = 2: パラメータの型
  *
- * opcode = 2 �Υѥ�᡼���η��ϡ�������ǥ����ħ�̤Ȥη�������
- * �����å��˻Ȥ��롥�ͤϡ�HTK ����ħ�̥ե�����Υإå�������
- * ���󥳡��ɤ��줿�ͤ��֤����������å���Ԥ�ʤ����ϡ�
- * 0xffff ���֤����ȡ�
+ * opcode = 2 のパラメータの型は，音響モデルの特徴量との型整合性
+ * チェックに使われる．値は，HTK の特徴量ファイルのヘッダ形式で
+ * エンコードされた値を返す．型チェックを行わない場合は，
+ * 0xffff を返すこと．
  *
- * opcode =3 �ΤȤ���ħ�̥٥��ȥ����Ϥʤ� 0, ���ϳ�Ψ�٥��ȥ�ʤ�1���֤���
+ * opcode =3 のとき特徴量ベクトル入力なら 0, 出力確率ベクトルなら1を返す．
  *
- * @param opcode [in] �׵�ư����� (���� 0 �Τ߼���)
+ * @param opcode [in] 要求動作コード (現在 0 のみ実装)
  * 
- * @return opcode ���Ȥ��׵ᤵ�줿�ͤ��֤���
+ * @return opcode ごとに要求された値を返す．
  * </JA>
  */
 int
@@ -246,16 +246,16 @@ fvin_get_configuration(int opcode)
  * @return TRUE on success, FALSE on failure.
  * </EN>
  * <JA>
- * @brief  �ǥХ��������������ɬ�ܡ�
+ * @brief  デバイスを初期化する（必須）
  *
- * ���δؿ��ϵ�ư���˰������ƤФ�롥�����Ǥ����ϥե�����ν�����
- * �����åȤ��ѰդȤ��ä������ϤΤ���ν�����Ԥ��Τ˻Ȥ���
+ * この関数は起動時に一回だけ呼ばれる．ここでは入力ファイルの準備や
+ * ソケットの用意といった，入力のための準備を行うのに使う．
  *
- * FALSE ���֤�����硤Julius �Ͻ�λ���롥
+ * FALSE を返した場合，Julius は終了する．
  * 
- * JuliusLib: ���δؿ��� j_adin_init() �ǸƤФ�롥
+ * JuliusLib: この関数は j_adin_init() で呼ばれる．
  *
- * @return ������ TRUE�����Ի� FALSE ���֤���
+ * @return 成功時 TRUE，失敗時 FALSE を返す．
  * </JA>
  */
 boolean
@@ -281,16 +281,16 @@ fvin_standby()
  * @return TRUE on success, FALSE on failure.
  * </EN>
  * <JA>
- * @brief  ���Ϥ򳫤���ɬ�ܡ�
+ * @brief  入力を開く（必須）
  *
- * ���Ϥ򿷵��˳������ե�����Υ����ץ󡤥ͥåȥ�����饤����Ȥ����
- * ��³�ʤɤϤ����ǹԤ���
+ * 入力を新規に開く．ファイルのオープン，ネットワーククライアントからの
+ * 接続などはここで行う．
  *
- * FALSE ���֤����Ȥ���Julius ��ǧ���롼�פ�ȴ���롥
+ * FALSE を返したとき，Julius は認識ループを抜ける．
  * 
- * JuliusLib: ���δؿ��� j_open_stream() ��ǸƤФ�롥
+ * JuliusLib: この関数は j_open_stream() 内で呼ばれる．
  * 
- * @return ������ TRUE�����Ի� FALSE ���֤���
+ * @return 成功時 TRUE，失敗時 FALSE を返す．
  * </JA>
  */
 boolean
@@ -324,30 +324,30 @@ fvin_open()
  * request segmentation to Julius, or ADIN_ERROR on error.
  * </EN>
  * <JA>
- * @brief ���Ϥ���٥��ȥ���ɤ߹����ɬ�ܡ�
+ * @brief 入力からベクトルを読み込む（必須）
  *
- * ���δؿ������Ϥ���٥��ȥ�򣱤Ĥ����ɤ߹��ࡥ���δؿ���
- * �ե졼�ऴ�Ȥ˸ƤФ졤�ɤ߹��ޤ줿�٥��ȥ�Ϥ��Τ��Ȥ�����ǧ���������졤
- * �ޤ����Υե졼��Υǡ������ɤि��ˤ��δؿ����ƤФ�롥
+ * この関数は入力からベクトルを１つだけ読み込む．この関数は
+ * フレームごとに呼ばれ，読み込まれたベクトルはこのあとすぐに認識処理され，
+ * また次のフレームのデータを読むためにこの関数が呼ばれる．
  *
- * ���Ϥ���ü�ޤ�ã�����Ȥ���ADIN_EOF ���֤������ΤȤ���Julius �ϸ���
- * ��ǧ��������λ���������Ϥ��Ĥ��롥
+ * 入力が終端まで達したとき，ADIN_EOF を返す．このとき，Julius は現在
+ * の認識処理を終了させ，入力を閉じる．
  *
- * ADIN_ERROR �Ϥ��δؿ���ǿ���ʥ��顼�������������֤������줬�֤�
- * �줿��硤Julius �Ϥ��ξ�ǰ۾ｪλ���롥
+ * ADIN_ERROR はこの関数内で深刻なエラーが生じた場合に返す．これが返さ
+ * れた場合，Julius はその場で異常終了する．
  *
- * ADIN_SEGMENT ���֤����Ȥǡ�Julius �˸��ߤ�ǧ���򸽻����Ƕ��ڤ뤳��
- * ���׵᤹�뤳�Ȥ��Ǥ��롥���ߤ�ǧ�������Ϥ��λ����Ǥ��ä�����ڤ�졤
- * �����ޤǤ�ǧ����̤����ꡦ���Ϥ��줿���ȡ�����ǧ���������Ϥޤꤳ��
- * �ؿ����ƤФ�롥ADIN_SEGMENT �� ADIN_EOF ��ư����Ƥ��뤬��
- * ADIN_EOF �� adin_close(), adin_open() ��Ƥ�����Ϥ�λ����
- * ��Τ��Ф��ơ�ADIN_SEGMENT �Ϥ�����ƤФ������Ϥ�³�Ԥ��롥
+ * ADIN_SEGMENT を返すことで，Julius に現在の認識を現時点で区切ること
+ * を要求することができる．現在の認識処理はこの時点でいったん区切られ，
+ * そこまでの認識結果が確定・出力されたあと，次の認識処理が始まりこの
+ * 関数が呼ばれる．ADIN_SEGMENT は ADIN_EOF と動作が似ているが，
+ * ADIN_EOF が adin_close(), adin_open() を呼んで入力を終了させ
+ * るのに対して，ADIN_SEGMENT はこれらを呼ばずに入力を続行する．
  * 
- * @param vecbuf [out] ����줿�٥��ȥ���Ǽ����Хåե�
- * @param veclen [in] �٥��ȥ�Ĺ
+ * @param vecbuf [out] 得られたベクトルを格納するバッファ
+ * @param veclen [in] ベクトル長
  * 
- * @return ������ 0 ���뤤�� end of stream ���� ADIN_EOF, Julius �˶�
- * �ڤ��׵��Ф��Ȥ��ˤ� ADIN_SEGMENT, ���顼����ADIN_ERROR ���֤���
+ * @return 成功時 0 あるいは end of stream 時に ADIN_EOF, Julius に区
+ * 切り要求を出すときには ADIN_SEGMENT, エラー時はADIN_ERROR を返す．
  * </JA>
  */
 int
@@ -379,19 +379,19 @@ fvin_read(float *vecbuf, int veclen)
  * @return TRUE on success, FALSE on failure.
  * </EN>
  * <JA>
- * @brief  ���Ϥ��Ĥ����ɬ�ܡ�
+ * @brief  入力を閉じる（必須）
  *
- * ���ߤ����Ϥ��Ĥ��롥���δؿ��ϡ����Ϥ���ü��EOF�ˤ�ã�����Ȥ��ʤ���
- * ��� fvin_read() �� ADIN_EOF ���֤����Ȥ��ˤ˸ƤФ�롥�̾�����Ǥ�
- * �ե�������Ĥ��롤�ͥåȥ����³�����Ǥ���ʤɤν�����Ԥ���
+ * 現在の入力を閉じる．この関数は，入力が終端（EOF）に達したとき（すな
+ * わち fvin_read() が ADIN_EOF を返したとき）に呼ばれる．通常，ここでは
+ * ファイルを閉じる，ネットワーク接続を切断するなどの処理を行う．
  *
- * ���ｪλ�Ȥ���TRUE���֤����Ȥ���Julius �� adin_open() ����ä�
- * ¾�Υ��ȥ꡼��򳫤����Ȥ��롥 FALSE ���֤����Ȥ��ϡ�Julius ��
- * ǧ���롼�פ�ȴ���롥
+ * 正常終了としてTRUEを返したとき，Julius は adin_open() に戻って
+ * 他のストリームを開こうとする． FALSE を返したときは，Julius は
+ * 認識ループを抜ける．
  * 
- * JuliusLib: ���δؿ��� j_recognize_stream() �κǸ�ǸƤФ�롥
+ * JuliusLib: この関数は j_recognize_stream() の最後で呼ばれる．
  * 
- * @return ������ TRUE�����Ի� FALSE ���֤���
+ * @return 成功時 TRUE，失敗時 FALSE を返す．
  * </JA>
  */
 boolean
@@ -424,26 +424,26 @@ fvin_close()
  * @return TRUE on success, FALSE on failure.
  * </EN>
  * <JA>
- * @brief  �����׵��ѥեå���Ǥ�ա�
+ * @brief  中断要求用フック（任意）
  *
- * ���δؿ����������ȡ�Julius �������׵�������ä��ݤˤ��δؿ���ƤӽФ���
- * �����Ȥäơ�Julius �����ǡ��Ƴ���Ʊ����������Ʊ��������������뤳�Ȥ�
- * �Ǥ��롥���㡧�������������Ф������������׵��Ф��ʤɡ�
+ * この関数を定義すると，Julius は中断要求を受け取った際にこの関数を呼び出す．
+ * これを使って，Julius の中断・再開と同期した入力同期処理を実装することが
+ * できる．（例：入力送信元に対して送信中断要求を出すなど）
  *
- * �����׵�ϡ�Julius �����ץꥱ�������䥯�饤����Ȥ��������
- * ǧ�����Ǥ��׵�Ǥ��롥����Ū�ˤϡ�Julius ���⥸�塼��⡼�ɤ�ư���
- * ������� TERMINATE ���ޥ�ɤ򥯥饤����Ȥ��������ä��Ȥ��䡤
- * JuliusLib���Ȥ߹�������ץꥱ������� j_request_terminate() ��
- * �Ƥ���Ȥ���ȯ�����롥
+ * 中断要求は，Julius がアプリケーションやクライアントより受け取る
+ * 認識中断の要求である．具体的には，Julius がモジュールモードで動作して
+ * いる時に TERMINATE コマンドをクライアントから受け取ったときや，
+ * JuliusLibを組み込んだアプリケーションが j_request_terminate() を
+ * 呼んだときに発生する．
  *
- * �����׵��������ȡ�Julius �ϸ��ߤ�ǧ�����������Ǥ��롥
- * ǧ������Ǥ��ä���硤�������Ϥ��˴�����¨�����Ǥ��롥
- * �����κƳ��ϡ�RESUME ���ޥ�ɤ� j_request_resume() �θƤӽФ��ǹԤ��롥
+ * 中断要求を受け取ると，Julius は現在の認識処理を中断する．
+ * 認識途中であった場合，その入力を破棄して即時中断する．
+ * 処理の再開は，RESUME コマンドか j_request_resume() の呼び出しで行われる．
  *
- * ���δؿ��������׵�� Julius ��������ä������ǸƤФ�롥
- * �ºݤ˽��������Ǥ�����ǸƤФ��ΤǤϤʤ����Ȥ����դ��줿����
+ * この関数は中断要求を Julius が受け取った時点で呼ばれる．
+ * 実際に処理が中断した後で呼ばれるのではないことに注意されたい．
  * 
- * @return ������ TRUE, ���顼�� FALSE ���֤���
+ * @return 成功時 TRUE, エラー時 FALSE を返す．
  * </JA>
  * 
  */
@@ -476,30 +476,30 @@ fvin_terminate()
  * @return TRUE on success, FALSE on failure.
  * </EN>
  * <JA>
- * @brief  ����׵��ѥեå���Ǥ�ա�
+ * @brief  停止要求用フック（任意）
  *
- * ���δؿ����������ȡ�Julius ������׵�������ä��ݤˤ��δؿ���ƤӽФ���
- * �����Ȥäơ�Julius �����ǡ��Ƴ���Ʊ����������Ʊ��������������뤳�Ȥ�
- * �Ǥ��롥���㡧�������������Ф������������׵��Ф��ʤɡ�
+ * この関数を定義すると，Julius は停止要求を受け取った際にこの関数を呼び出す．
+ * これを使って，Julius の中断・再開と同期した入力同期処理を実装することが
+ * できる．（例：入力送信元に対して送信中断要求を出すなど）
  *
- * ����׵�ϡ�Julius �����ץꥱ�������䥯�饤����Ȥ�������롤
- * ǧ���ΰ����ߤ��׵�Ǥ��롥����Ū�ˤϡ�Julius ���⥸�塼��⡼�ɤ�ư���
- * ������� PAUSE ���ޥ�ɤ򥯥饤����Ȥ��������ä��Ȥ��䡤
- * JuliusLib���Ȥ߹�������ץꥱ������� j_request_pause() ��
- * �Ƥ���Ȥ���ȯ�����롥
+ * 停止要求は，Julius がアプリケーションやクライアントより受け取る，
+ * 認識の一時停止の要求である．具体的には，Julius がモジュールモードで動作して
+ * いる時に PAUSE コマンドをクライアントから受け取ったときや，
+ * JuliusLibを組み込んだアプリケーションが j_request_pause() を
+ * 呼んだときに発生する．
  *
- * ����׵��������ȡ�Julius �ϸ��ߤ�ǧ�����������Ǥ��롥
- * ǧ������Ǥ��ä���硤����ǧ���������ޤ��ԤäƤ������Ǥ��롥
- * �����κƳ��ϡ�RESUME ���ޥ�ɤ� j_request_resume() �θƤӽФ��ǹԤ��롥
+ * 停止要求を受け取ると，Julius は現在の認識処理を中断する．
+ * 認識途中であった場合，その認識が終わるまで待ってから中断する．
+ * 処理の再開は，RESUME コマンドか j_request_resume() の呼び出しで行われる．
  * 
- * �����׵� (fvin_terminate) �Ȥΰ㤤�ϡ�ǧ��������׵��������Ȥ���ư�
- * �ۤʤ롥�����׵�Ǥ϶������Ǥ��뤬������׵�ǤϤ���ǧ���������ޤ�
- * �ԤäƤ�����ߤ��롥
+ * 中断要求 (fvin_terminate) との違いは，認識途中に要求を受けたときの動作が
+ * 異なる．中断要求では強制中断するが，停止要求ではその認識が終わるまで
+ * 待ってから停止する．
  *
- * ���δؿ�������׵�� Julius ��������ä������ǸƤФ�롥
- * �ºݤ˽�������ߤ�����ǸƤФ��ΤǤϤʤ����Ȥ����դ��줿����
+ * この関数は停止要求を Julius が受け取った時点で呼ばれる．
+ * 実際に処理が停止した後で呼ばれるのではないことに注意されたい．
  * 
- * @return ������ TRUE, ���顼�� FALSE ���֤���
+ * @return 成功時 TRUE, エラー時 FALSE を返す．
  * </JA>
  * 
  */
@@ -531,22 +531,22 @@ fvin_pause()
  * @return TRUE on success, FALSE on failure.
  * </EN>
  * <JA>
- * @brief  ǧ���Ƴ��׵��ѥեå���Ǥ�ա�
+ * @brief  認識再開要求用フック（任意）
  *
- * ���δؿ����������ȡ�Julius ����߾��֤����ǧ���Ƴ��׵�κݤ�
- * ���δؿ���ƤӽФ���
+ * この関数を定義すると，Julius は停止状態からの認識再開要求の際に
+ * この関数を呼び出す．
  *
- * ǧ���Ƴ��׵�ϡ�Julius ���⥸�塼��⡼�ɤ�ư��� RESUME ���ޥ�ɤ�
- * ���饤����Ȥ��������ä��Ȥ��䡤JuliusLib���Ȥ߹�������ץꥱ�������
- * �� j_request_resume() ��Ƥ���Ȥ���ȯ�����롥���κƳ��׵᤬ȯ��
- * ����ȡ�Julius ����ߤ��Ƥ���ǧ����Ƴ����롥
+ * 認識再開要求は，Julius がモジュールモードで動作して RESUME コマンドを
+ * クライアントから受け取ったときや，JuliusLibを組み込んだアプリケーション
+ * が j_request_resume() を呼んだときに発生する．この再開要求が発生
+ * すると，Julius は停止していた認識を再開する．
  *
- * ���ա����δؿ��ϡ��ºݤ���ߤ����Ȥ��˸ƤФ��ΤǤϤʤ���Julius ��
- * �׵�������ä������ǡ����Τ��Ӥ˸ƤФ�롥ʣ����ƤФ�뤳�Ȥ䡤
- * ���Ǥ�ư����Ǥ�����ˤ���ˤ��Υ��ޥ�ɤ������ä��Ȥ��ˤ�Ƥ�
- * ��뤳�Ȥ����뤳�Ȥ����դ��줿����
+ * 注意：この関数は，実際に停止したときに呼ばれるのではなく，Julius が
+ * 要求を受け取った時点で，そのたびに呼ばれる．複数回呼ばれることや，
+ * すでに動作中である場合にさらにこのコマンドを受け取ったときにも呼ば
+ * れることがあることに注意されたい．
  * 
- * @return ������ TRUE, ���顼�� FALSE ���֤���
+ * @return 成功時 TRUE, エラー時 FALSE を返す．
  * </JA>
  * 
  */
@@ -566,9 +566,9 @@ fvin_resume()
  * @return pointer to the device name string
  * </EN>
  * <JA>
- * @brief  ���ϥե����롦�ǥХ���̾���֤��ؿ���Ǥ�ա�
+ * @brief  入力ファイル・デバイス名を返す関数（任意）
  *
- * @return ���ϥե����뤢�뤤�ϥǥХ���̾��ʸ����ؤΥݥ���
+ * @return 入力ファイルあるいはデバイス名の文字列へのポインタ
  * </JA>
  * 
  */

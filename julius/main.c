@@ -2,7 +2,7 @@
  * @file   main.c
  * 
  * <JA>
- * @brief  Julius/Julian ¥á¥¤¥ó
+ * @brief  Julius/Julian ãƒ¡ã‚¤ãƒ³
  * </JA>
  * 
  * <EN>
@@ -216,8 +216,8 @@ main(int argc, char *argv[])
   callback_add(recog, CALLBACK_DEBUG_PASS2_PUSH, visual2_next_word, NULL);
   /* below should be called at result */
   visual2_best(now, winfo);
-  /* ²»À¼¼è¤ê¹þ¤ß¤Ï¥³¡¼¥ë¥Ð¥Ã¥¯¤Ç¿·µ¬ºîÀ® */
-  /* Âè2¥Ñ¥¹¤ÇÇ§¼±·ë²Ì½ÐÎÏ»þ¤Ë°Ê²¼¤ò¼Â¹Ô */
+  /* éŸ³å£°å–ã‚Šè¾¼ã¿ã¯ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã§æ–°è¦ä½œæˆ */
+  /* ç¬¬2ãƒ‘ã‚¹ã§èªè­˜çµæžœå‡ºåŠ›æ™‚ã«ä»¥ä¸‹ã‚’å®Ÿè¡Œ */
   visual2_best(now, recog->model->winfo);
 #endif
   

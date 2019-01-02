@@ -2,22 +2,22 @@
  * @file   outprob.c
  * 
  * <JA>
- * @brief  �������ٷ׻��μ¹Ԥ���Ӿ��֥�٥륭��å���
+ * @brief  音響尤度計算の実行および状態レベルキャッシュ
  *
- * %HMM �ξ��֤ν��ϳ�Ψ���п����١ˤ�׻����ޤ������֤η���ñ����ü��
- * pseudo %HMM set ���ɤ����ˤˤ������äƤ����Ĥ��������Ƥ��ޤ�����
- * ���Ʋ��̤� outprob_state() ��ƤӤޤ���outprob_state() ��
- * ɬ�פʾ���� OP_ �ǻϤޤ�����ѿ��˳�Ǽ����calc_outprob_state() ��Ƥ�
- * �Ф��ޤ���calc_outprob_state() �ϴؿ��Υݥ��󥿤Ǥ��ꡤ���Τ� tied-mixture
- * ��ǥ�ξ�� calc_tied_mix(), ����ʳ��ξ��� calc_mix() �Ȥʤ�ޤ���
- * ��GMS ����Ѥ������ gms_state()�ˤˤʤ�ޤ���
+ * %HMM の状態の出力確率（対数尤度）を計算します．状態の型（単語末端の
+ * pseudo %HMM set かどうか）にしたがっていくつか定義されていますが，
+ * 全て下位の outprob_state() を呼びます．outprob_state() は
+ * 必要な情報を OP_ で始まる大域変数に格納し，calc_outprob_state() を呼び
+ * 出します．calc_outprob_state() は関数のポインタであり，実体は tied-mixture
+ * モデルの場合 calc_tied_mix(), それ以外の場合は calc_mix() となります．
+ * （GMS を使用する場合は gms_state()）になります．
  *
- * ���֥�٥�β������٥���å��夬�Ԥʤ��ޤ�������å���� ���� x
- * ���ϥե졼��ǳ�Ǽ���졤ɬ�פ�Ĺ���ˤ������äƿ�Ĺ����ޤ������Υ���å����
- * ��2�ѥ��η׻��Ǥ��Ѥ��뤿�ᡤ�����֤��ϤäƵ�Ͽ����Ƥ��ޤ���
+ * 状態レベルの音響尤度キャッシュが行なわれます．キャッシュは 状態 x
+ * 入力フレームで格納され，必要な長さにしたがって伸長されます．このキャッシュは
+ * 第2パスの計算でも用いるため，全時間に渡って記録されています．
  *
- * �ʤ� tied-mixture �ξ��ϥ����ɥ֥å���٥�ǤΥ���å����Ʊ����
- * �Ԥʤ��ޤ�������ˤĤ��Ƥ� calc_tied_mix.c ������������
+ * なお tied-mixture の場合はコードブックレベルでのキャッシュも同時に
+ * 行なわれます．これについては calc_tied_mix.c をご覧下さい．
  * </JA>
  * 
  * <EN>

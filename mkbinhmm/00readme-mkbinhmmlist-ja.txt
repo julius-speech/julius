@@ -4,65 +4,65 @@ MKBINHMMLIST(1)                                                MKBINHMMLIST(1)
 
 
 
-���O
+名前
            mkbinhmmlist
-          - HMMList �t�@�C�����o�C�i���`���ɕϊ�
+          - HMMList ファイルをバイナリ形式に変換
 
-�T�v
+概要
        mkbinhmmlist {hmmdefs_file} {HMMList_file} {output_binhmmlist_file}
 
 DESCRIPTION
-       mkbinhmmlist �́C��Ƀg���C�t�H���ƂƂ��Ɏg�p����� HMMList �t�@�C����
-       �o�C�i���`���ɕϊ����܂��D�ʏ�̃e�L�X�g�`���̑���ɂ�����g�����Ƃ�
-       Julius�̋N�������������邱�Ƃ��ł��܂��D
+       mkbinhmmlist は，主にトライフォンとともに使用される HMMList ファイルを
+       バイナリ形式に変換します．通常のテキスト形式の代わりにこれを使うことで
+       Juliusの起動を高速化することができます．
 
-       �ϊ��ɂ́CHMMList �t�@�C���̂ق��ɁC�ꏏ�Ɏg���������f����`�t�@�C��
-       hmmdefs_file ���K�v�ł��iHTK ASCII�`�� / Julius�o�C�i���`���̂ǂ����
-       �j�D
+       変換には，HMMList ファイルのほかに，一緒に使う音響モデル定義ファイル
+       hmmdefs_file が必要です（HTK ASCII形式 / Juliusバイナリ形式のどちらも
+       可）．
 
-       Julius �Ŏg�p����ۂɂ́C�ʏ�̃e�L�X�g�`���Ɠ����� "-hlist" �I�v�V����
-       �Ŏw�肵�܂��D �e�L�X�g�`�����o�C�i���`�����̔���� Julius ���Ŏ����I��
-       �s���܂��D
+       Julius で使用する際には，通常のテキスト形式と同じく "-hlist" オプション
+       で指定します． テキスト形式かバイナリ形式かの判定は Julius 側で自動的に
+       行われます．
 
-       �o�[�W���� 4.2��艹�����f�����璊�o���� pseudo phone ������������ ��
-       ���ɂȂ�܂����D����ɂ��Julius�̋N�������������邱�Ƃ��ł��܂��D�� ��
-       ���쐬�����������f���ƃZ�b�g�Ŏg�p����K�v������܂��D�܂��C���̃o�[
-       �W�����ȍ~�� mkbinhmmlist �ō쐬���� binhmmlist �t�@�C���͈ȑO�̃o�[
-       �W�� ���ł͎g�p�ł��܂���D
+       バージョン 4.2より音響モデルから抽出した pseudo phone 情報も書きだす よ
+       うになりました．これによりJuliusの起動を高速化することができます．た だ
+       し作成した音響モデルとセットで使用する必要があります．また，このバー
+       ジョン以降の mkbinhmmlist で作成した binhmmlist ファイルは以前のバー
+       ジョ ンでは使用できません．
 
-       mkbinhmmlist �� gzip ���k���ꂽ�t�@�C�������̂܂ܓǂݍ��߂܂��D
+       mkbinhmmlist は gzip 圧縮されたファイルをそのまま読み込めます．
 
 OPTIONS
        hmmdefs_file
-           �������f����`�t�@�C���DHTK ASCII �`���C���邢��Julius �o�C�i ���`
-           ���D
+           音響モデル定義ファイル．HTK ASCII 形式，あるいはJulius バイナ リ形
+           式．
 
        HMMList_file
-           �ϊ��Ώۂ� HMMList �t�@�C���D
+           変換対象の HMMList ファイル．
 
        output_binhmmlist_file
-           �o�͐�ƂȂ�Julius�p�o�C�i���`��HMMList�t�@�C���D���ł� ����ꍇ��
-           �㏑�������D
+           出力先となるJulius用バイナリ形式HMMListファイル．すでに ある場合は
+           上書きされる．
 
 EXAMPLES
-       HMMList �t�@�C�� logicalTri���o�C�i���`���ɕϊ����� logicalTri.bin �ɕ�
-       ������F
+       HMMList ファイル logicalTriをバイナリ形式に変換して logicalTri.bin に保
+       存する：
 
 SEE ALSO
         julius ( 1 ) ,
         mkbinhmm ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 

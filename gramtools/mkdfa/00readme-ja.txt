@@ -4,43 +4,43 @@ MKDFA.PL(1)                                                        MKDFA.PL(1)
 
 
 
-–¼‘O
+åå‰
            mkdfa.pl
-          - Julius Œ`Ž®‚Ì•¶–@‚ðƒI[ƒgƒ}ƒgƒ“‚É•ÏŠ·‚·‚éƒRƒ“ƒpƒCƒ‰
+          - Julius å½¢å¼ã®æ–‡æ³•ã‚’ã‚ªãƒ¼ãƒˆãƒžãƒˆãƒ³ã«å¤‰æ›ã™ã‚‹ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©
 
-ŠT—v
+æ¦‚è¦
        mkdfa.pl [options...] {prefix}
 
 DESCRIPTION
-       mkdfa.pl ‚Í Julius ‚Ì•¶–@ƒRƒ“ƒpƒCƒ‰‚Å‚·D‹Lq‚³‚ê‚½•¶–@ƒtƒ@ƒCƒ‹
-       (.grammar) ‚ÆŒêœbƒtƒ@ƒCƒ‹ (.voca) ‚©‚çCJulius—p‚Ì—LŒÀó‘ÔƒI[ƒgƒ}ƒgƒ“
-       ƒtƒ@ƒCƒ‹ (.dfa) ‚¨‚æ‚Ñ”FŽ¯Ž«‘ (.dict) ‚ð¶¬‚µ‚Ü‚·DƒJƒeƒSƒŠ–¼‚Æ¶¬
-       Œã‚ÌŠeƒtƒ@ƒCƒ‹‚Å—p‚¢‚ç‚ê‚éƒJƒeƒSƒŠ ID ”Ô†‚Æ‚Ì‘Î‰ž‚ª .term ƒtƒ@ƒCƒ‹‚Æ
-       ‚µ‚Äo—Í‚³‚ê‚Ü‚·D
+       mkdfa.pl ã¯ Julius ã®æ–‡æ³•ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ã§ã™ï¼Žè¨˜è¿°ã•ã‚ŒãŸæ–‡æ³•ãƒ•ã‚¡ã‚¤ãƒ«
+       (.grammar) ã¨èªžå½™ãƒ•ã‚¡ã‚¤ãƒ« (.voca) ã‹ã‚‰ï¼ŒJuliusç”¨ã®æœ‰é™çŠ¶æ…‹ã‚ªãƒ¼ãƒˆãƒžãƒˆãƒ³
+       ãƒ•ã‚¡ã‚¤ãƒ« (.dfa) ãŠã‚ˆã³èªè­˜è¾žæ›¸ (.dict) ã‚’ç”Ÿæˆã—ã¾ã™ï¼Žã‚«ãƒ†ã‚´ãƒªåã¨ç”Ÿæˆ
+       å¾Œã®å„ãƒ•ã‚¡ã‚¤ãƒ«ã§ç”¨ã„ã‚‰ã‚Œã‚‹ã‚«ãƒ†ã‚´ãƒª ID ç•ªå·ã¨ã®å¯¾å¿œãŒ .term ãƒ•ã‚¡ã‚¤ãƒ«ã¨
+       ã—ã¦å‡ºåŠ›ã•ã‚Œã¾ã™ï¼Ž
 
-       Šeƒtƒ@ƒCƒ‹Œ`Ž®‚ÌÚ×‚É‚Â‚¢‚Ä‚ÍC•Ê“rƒhƒLƒ…ƒƒ“ƒg‚ð‚²——‰º‚³‚¢D
+       å„ãƒ•ã‚¡ã‚¤ãƒ«å½¢å¼ã®è©³ç´°ã«ã¤ã„ã¦ã¯ï¼Œåˆ¥é€”ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã‚’ã”è¦§ä¸‹ã•ã„ï¼Ž
 
-       prefix ‚ÍC.grammar ƒtƒ@ƒCƒ‹‚¨‚æ‚Ñ .vocaƒtƒ@ƒCƒ‹‚Ì ƒvƒŒƒtƒBƒbƒNƒX‚ðˆø”
-       ‚Æ‚µ‚Ä—^‚¦‚Ü‚·Dprefix.grammar‚Æ prefix.voca‚©‚çprefix.dfaC
-       prefix.dict‚¨‚æ‚Ñ prefix.term‚ª¶¬‚³‚ê‚Ü‚·D
+       prefix ã¯ï¼Œ.grammar ãƒ•ã‚¡ã‚¤ãƒ«ãŠã‚ˆã³ .vocaãƒ•ã‚¡ã‚¤ãƒ«ã® ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚’å¼•æ•°
+       ã¨ã—ã¦ä¸Žãˆã¾ã™ï¼Žprefix.grammarã¨ prefix.vocaã‹ã‚‰prefix.dfaï¼Œ
+       prefix.dictãŠã‚ˆã³ prefix.termãŒç”Ÿæˆã•ã‚Œã¾ã™ï¼Ž
 
-       ƒo[ƒWƒ‡ƒ“ 3.5.3 ˆÈ~‚Ì Julius ‚É•t‘®‚Ì mkdfa.pl ‚ÍC dfa_minimize ‚ð“à
-       •”‚ÅŽ©“®“I‚ÉŒÄ‚Ño‚·‚Ì‚ÅC o—Í‚³‚ê‚é .dfa ‚Íí‚ÉÅ¬‰»‚³‚ê‚Ä‚¢‚Ü‚·D
+       ãƒãƒ¼ã‚¸ãƒ§ãƒ³ 3.5.3 ä»¥é™ã® Julius ã«ä»˜å±žã® mkdfa.pl ã¯ï¼Œ dfa_minimize ã‚’å†…
+       éƒ¨ã§è‡ªå‹•çš„ã«å‘¼ã³å‡ºã™ã®ã§ï¼Œ å‡ºåŠ›ã•ã‚Œã‚‹ .dfa ã¯å¸¸ã«æœ€å°åŒ–ã•ã‚Œã¦ã„ã¾ã™ï¼Ž
 
 OPTIONS
         -n
-           Ž«‘‚ðo—Í‚µ‚È‚¢D.voca –³‚µ‚Å .grammar ‚Ì‚Ý‚ð .dfa ‚É•ÏŠ·‚·‚é ‚±‚Æ
-           ‚ª‚Å‚«‚éD
+           è¾žæ›¸ã‚’å‡ºåŠ›ã—ãªã„ï¼Ž.voca ç„¡ã—ã§ .grammar ã®ã¿ã‚’ .dfa ã«å¤‰æ›ã™ã‚‹ ã“ã¨
+           ãŒã§ãã‚‹ï¼Ž
 
 ENVIRONMENT VARIABLES
-        TMP ‚Ü‚½‚Í TEMP
-           •ÏŠ·’†‚ÉˆêŽžƒtƒ@ƒCƒ‹‚ð’u‚­ƒfƒBƒŒƒNƒgƒŠ‚ðŽw’è‚·‚éD Žw’è‚ª–³‚¢ê‡C
-           /tmp, /var/tmp, /WINDOWS/Temp, /WINNT/Temp ‚Ì‡‚ÅÅ‰‚ÉŒ©‚Â‚©‚Á‚½ê
-           Š‚ªŽg—p‚³‚ê‚éD
+        TMP ã¾ãŸã¯ TEMP
+           å¤‰æ›ä¸­ã«ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç½®ããƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã™ã‚‹ï¼Ž æŒ‡å®šãŒç„¡ã„å ´åˆï¼Œ
+           /tmp, /var/tmp, /WINDOWS/Temp, /WINNT/Temp ã®é †ã§æœ€åˆã«è¦‹ã¤ã‹ã£ãŸå ´
+           æ‰€ãŒä½¿ç”¨ã•ã‚Œã‚‹ï¼Ž
 
 EXAMPLES
-       •¶–@ƒtƒ@ƒCƒ‹ foo.grammar, foo.voca‚É ‘Î‚µ‚ÄˆÈ‰º‚ðŽÀs‚·‚é‚±‚Æ‚Å
-       foo.dfa‚Æ foo.voca‚¨‚æ‚Ñfoo.term‚ªo—Í‚³‚ê‚éD
+       æ–‡æ³•ãƒ•ã‚¡ã‚¤ãƒ« foo.grammar, foo.vocaã« å¯¾ã—ã¦ä»¥ä¸‹ã‚’å®Ÿè¡Œã™ã‚‹ã“ã¨ã§
+       foo.dfaã¨ foo.vocaãŠã‚ˆã³foo.termãŒå‡ºåŠ›ã•ã‚Œã‚‹ï¼Ž
 
 SEE ALSO
         julius ( 1 ) ,
@@ -50,21 +50,21 @@ SEE ALSO
         dfa_minimize ( 1 )
 
 DIAGNOSTICS
-       mkdfa.pl ‚Í“à•”‚Å mkfa ‚¨‚æ‚Ñ dfa_minimize ‚ðŒÄ‚Ño‚µ‚Ü‚·DŽÀsŽžC‚±‚ê
-       ‚ç‚ÌŽÀsƒtƒ@ ƒCƒ‹‚ªC‚±‚Ì mkdfa.pl ‚Æ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚É’u‚¢‚Ä‚ ‚é•K—v‚ª
-       ‚ ‚è‚Ü‚·D ‚±‚ê‚ç‚ÍJulius ‚É“¯«‚³‚ê‚Ä‚¢‚Ü‚·D
+       mkdfa.pl ã¯å†…éƒ¨ã§ mkfa ãŠã‚ˆã³ dfa_minimize ã‚’å‘¼ã³å‡ºã—ã¾ã™ï¼Žå®Ÿè¡Œæ™‚ï¼Œã“ã‚Œ
+       ã‚‰ã®å®Ÿè¡Œãƒ•ã‚¡ ã‚¤ãƒ«ãŒï¼Œã“ã® mkdfa.pl ã¨åŒã˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ç½®ã„ã¦ã‚ã‚‹å¿…è¦ãŒ
+       ã‚ã‚Šã¾ã™ï¼Ž ã“ã‚Œã‚‰ã¯Julius ã«åŒæ¢±ã•ã‚Œã¦ã„ã¾ã™ï¼Ž
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ‹ž“s‘åŠw ‰ÍŒ´Œ¤‹†Žº
+       Copyright (c) 1991-2013 äº¬éƒ½å¤§å­¦ æ²³åŽŸç ”ç©¶å®¤
 
-       Copyright (c) 1997-2000 î•ñˆ—U‹»Ž–‹Æ‹¦‰ï(IPA)
+       Copyright (c) 1997-2000 æƒ…å ±å‡¦ç†æŒ¯èˆˆäº‹æ¥­å”ä¼š(IPA)
 
-       Copyright (c) 2000-2005 “Þ—Çæ’[‰ÈŠw‹Zp‘åŠw‰@‘åŠw Ž­–ìŒ¤‹†Žº
+       Copyright (c) 2000-2005 å¥ˆè‰¯å…ˆç«¯ç§‘å­¦æŠ€è¡“å¤§å­¦é™¢å¤§å­¦ é¹¿é‡Žç ”ç©¶å®¤
 
-       Copyright (c) 2005-2013 –¼ŒÃ‰®H‹Æ‘åŠw JuliusŠJ”­ƒ`[ƒ€
+       Copyright (c) 2005-2013 åå¤å±‹å·¥æ¥­å¤§å­¦ Juliusé–‹ç™ºãƒãƒ¼ãƒ 
 
 LICENSE
-       Julius ‚ÌŽg—p‹–‘ø‚É€‚¶‚Ü‚·D
+       Julius ã®ä½¿ç”¨è¨±è«¾ã«æº–ã˜ã¾ã™ï¼Ž
 
 
 

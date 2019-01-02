@@ -8,9 +8,9 @@
  * </EN>
  * 
  * <JA>
- * @brief  ������ʬ�۷׻��ץ饰����Υ���ץ�
+ * @brief  ガウス分布計算プラグインのサンプル
  *
- * ���Υ���ץ�� julius �Υ饤�֥�����Ѥ��ޤ���
+ * このサンプルは julius のライブラリを使用します．
  * </JA>
  * 
  * @author Akinobu Lee
@@ -59,11 +59,11 @@
  * This function is OPTIONAL.
  * </EN>
  * <JA>
- * @brief  �ɤ߹��߻��ν������Ǥ�ա�
+ * @brief  読み込み時の初期化（任意）
  *
- * ��ư����Julius �����Υץ饰������ɤ߹���ݤ˺ǽ�˸ƤФ�롥
- * -1 ���֤��ȡ����Υץ饰�������Τ��ɤ߹��ޤ�ʤ��ʤ롥
- * �¹Բ�ǽ���Υ����å��˻Ȥ��롥
+ * 起動時，Julius がこのプラグインを読み込む際に最初に呼ばれる．
+ * -1 を返すと，このプラグイン全体が読み込まれなくなる．
+ * 実行可能性のチェックに使える．
  *
  * </JA>
  * 
@@ -97,19 +97,19 @@ initialize()
  * 
  * </EN>
  * <JA>
- * @brief  �ץ饰������������ɬ�ܡ�
+ * @brief  プラグイン情報取得（必須）
  *
- * ���Υץ饰����˴ؤ��������֤���Ϳ����줿 opcode �ˤ�ä�ư��롥
- *  - 0 �ξ�硤���Υץ饰����ե������̾�Τ�Ϳ����줿�Хåե��˳�Ǽ����
+ * このプラグインに関する情報を返す．与えられた opcode によって動作する．
+ *  - 0 の場合，このプラグインファイルの名称を与えられたバッファに格納する
  *
- * ���δؿ��ϡ�Julius �����Υץ饰������ɤ߹����ľ��˸ƤФ�롥
+ * この関数は，Julius がこのプラグインを読み込んだ直後に呼ばれる．
  * 
- * @param opcode [in] �׵�ư����� (���� 0 �Τ߼���)
- * @param buf [out] �ͤ��Ǽ����Хåե�
- * @param buflen [in] buf �κ���Ĺ
+ * @param opcode [in] 要求動作コード (現在 0 のみ実装)
+ * @param buf [out] 値を格納するバッファ
+ * @param buflen [in] buf の最大長
  * 
- * @return ���顼�� -1, ������ 0 ���֤������顼�Ȥ��� -1 ���֤�����硤
- * ���Υץ饰�������Τ��ɤ߹��ޤ�ʤ���
+ * @return エラー時 -1, 成功時 0 を返す．エラーとして -1 を返した場合，
+ * このプラグイン全体は読み込まれない．
  * </JA>
  * 
  */
@@ -143,18 +143,18 @@ get_plugin_info(int opcode, char *buf, int buflen)
  * @param buflen [in] maximum length of buf
  * </EN>
  * <JA>
- * @brief  �׻���ˡ�����ѥ��ץ����Τ����ʸ������֤���ɬ�ܡ�
+ * @brief  計算方法選択用オプションのための文字列を返す（必須）
  *
- * Julius �ǵ�ư���� "-gprune �������֤���" �Ȼ��ꤹ��Ȥ��Υץ饰����
- * �����Ѥ���롥���δؿ��Ǥϡ��嵭�� "-gprune" ��Ϳ����٤�ʸ������
- * Ǽ�����֤����֤�ʸ���ϡ������ƥ�� "-gprune" ���ץ����ˤ��Ǥˤ���
- * ��Τ䡤¾�Υץ饰���󤬻��Ѥ��Ƥ����Τ�Ʊ���Ǥʤ����ȡ��ʤ⤷Ʊ
- * �����ä���祷���ƥ�¦��ͥ�褵����
+ * Julius で起動時に "-gprune ここで返す値" と指定するとこのプラグイン
+ * が使用される．この関数では，上記の "-gprune" に与えるべき文字列を格
+ * 納して返す．返す文字は，システムの "-gprune" オプションにすでにある
+ * ものや，他のプラグインが使用しているものと同じでないこと．（もし同
+ * じだった場合システム側が優先される）
  *
- * ���δؿ��ϡ���ư���Υ��ץ������ϻ��˲��٤��ƤФ�롥
+ * この関数は，起動時のオプション解析時に何度か呼ばれる．
  *
- * @param buf [out] �ͤ��Ǽ�����֤��Хåե�
- * @param buflen [in] buf �κ���Ĺ
+ * @param buf [out] 値を格納して返すバッファ
+ * @param buflen [in] buf の最大長
  * </JA>
  * 
  */
@@ -190,37 +190,37 @@ calcmix_get_optname(char *buf, int buflen)
  * @param lnum [in] length of last_id
  * </EN>
  * <JA>
- * @brief  ������ʬ�۷׻��ؿ�
+ * @brief  ガウス分布計算関数
  *
- * ���δؿ��Ǥϡ�Ϳ����줿ʣ���Υ�����ʬ�ۤ��Ф������ϥ٥��ȥ��
- * ���ϳ�Ψ����롥���δؿ����Ԥ��Τϡ�ʣ���Υ�����ʬ�ۤ��줾���
- * ���ϳ�Ψ�λ��Фȳ�Ǽ�ΤߤǤ��ꡤ����ʬ�ۤȤ��ƤνŤ߷׻��� addlog
- * �Ϥ��δؿ����֤ä����Ȥ� Julius ¦�ǹԤ��롥
+ * この関数では，与えられた複数のガウス分布に対して入力ベクトルの
+ * 出力確率を求める．この関数が行うのは，複数のガウス分布それぞれの
+ * 出力確率の算出と格納のみであり，混合分布としての重み計算や addlog
+ * はこの関数が返ったあとに Julius 側で行われる．
  *
- * ���ϥ٥��ȥ�� wrk->OP_vec[] �˳�Ǽ����Ƥ��ꡤĹ���� wrk->OP_veclen
- * �Ǥ��롥������ʬ������� g[] ������Ȥ���ʣ���Ϥ��졤���ο��� num �Ǥ��롥
+ * 入力ベクトルは wrk->OP_vec[] に格納されており，長さは wrk->OP_veclen
+ * である．ガウス分布定義は g[] に配列として複数渡され，その数は num である．
  * 
- * �ʤ���last_id �� lnum �Ϥ��Υ�����ʬ�۽��� g[] �ˤ�����ľ�������ϥ�
- * �졼��Ƿ׻����줿��Τ� id �����äƤ��롥Julius �����������ѤʤΤǡ�
- * �Ȥ�ʤ��Ƥ⺹���٤��ʤ���
+ * なお，last_id と lnum はこのガウス分布集合 g[] において直前の入力フ
+ * レームで計算されたものの id が入っている．Julius の内部処理用なので，
+ * 使わなくても差し支えない．
  *
- * �ƥ�����ʬ�ۤ��Ф������ϥ٥��ȥ���п����ϳ�Ψ�ϡ����Υ�����ʬ�ۤ�
- * ID (0 ����Ϥޤ������ź����) �� wrk->OP_calced_id �ˡ��ͤ�
- * wrk->OP_calced_score �˳�Ǽ���뤳�ȡ��ޤ����ºݤ˷׻����줿
- * ������ʬ�ۤο��� wrk->OP_calced_num �˳�Ǽ���뤳�ȡ�
- * �ʤ���� Gaussian pruning �����ꤷ�������Ǥ����
+ * 各ガウス分布に対する入力ベクトルの対数出力確率は，そのガウス分布の
+ * ID (0 から始まる配列の添え字) を wrk->OP_calced_id に，値を
+ * wrk->OP_calced_score に格納すること．また，実際に計算された
+ * ガウス分布の数を wrk->OP_calced_num に格納すること．
+ * （これは Gaussian pruning を想定した実装である）
  *
- * �ʲ��ϡ�pruning ����Ԥ�ʤ�ñ��ʽ��ϳ�Ψ�׻������������ΤǤ��롥
- * ������ʬ�ۤ��гѶ�ʬ�����ꤷ�Ƥ��롥�ʤ� Julius �Ǥ��ɤ߹��߻���
- * HTK �Ǥ����Ȥ����� gconst �ͤϤ��餫����׻�����롥���Τ��ᡤ�׻�����
- * ������ dens->gconst �Τ褦�����ѤǤ��롥
+ * 以下は，pruning 等を行わない単純な出力確率計算を実装したものである．
+ * ガウス分布は対角共分散を仮定している．なお Julius では読み込み時に
+ * HTK でいうところの gconst 値はあらかじめ計算される．このため，計算時に
+ * 下記の dens->gconst のように利用できる．
  * 
- * @param wrk [i/o] HMM�׻��ѥ�����ꥢ
- * @param g [in] ���ϳ�Ψ��׻����륬����ʬ�ۤ���
- * @param num [in] @a g �Υ�����ʬ�ۤο�
- * @param last_id [in] ľ�����ϥե졼��Ǿ�̤��ä�������ʬ�ۤ�ID�ꥹ�ȡ�
- * �ޤ�������� NULL
- * @param lnum [in] @a last_id ��Ĺ��
+ * @param wrk [i/o] HMM計算用ワークエリア
+ * @param g [in] 出力確率を計算するガウス分布の列
+ * @param num [in] @a g のガウス分布の数
+ * @param last_id [in] 直前入力フレームで上位だったガウス分布のIDリスト，
+ * または内場合は NULL
+ * @param lnum [in] @a last_id の長さ
  * </JA>
  */
 void
@@ -271,9 +271,9 @@ calcmix(HMMWork *wrk, HTK_HMM_Dens **g, int num, int *last_id, int lnum)
  * @param wrk [i/o] HMM computation work area
  * </EN>
  * <JA>
- * calcmix_init() �ǳ��ݤ��줿������ꥢ�������롥
+ * calcmix_init() で確保されたワークエリアを開放する．
  * 
- * @param wrk [i/o] HMM �׻��ѥ�����ꥢ
+ * @param wrk [i/o] HMM 計算用ワークエリア
  * </JA>
  * 
  */
@@ -298,16 +298,16 @@ calcmix_free(HMMWork *wrk)
  * @return TRUE on success, FALSE on failure.
  * </EN>
  * <JA>
- * @brief  �׻��ѤΥ�����ꥢ����ݤ��롥
+ * @brief  計算用のワークエリアを確保する．
  *
- * ������ʬ�۷׻��ѤΥ�����ꥢ����ݤ��롥�����ˤ��Ǥ˽񤤤Ƥ���ʬ�ϡ�
- * ���Τޤ� Julius �������Ǥ���Ѥ��Ƥ���Τǡ����ʤ����ȡ�
+ * ガウス分布計算用のワークエリアを確保する．下記にすでに書いてある分は，
+ * そのまま Julius の内部でも使用しているので，削らないこと．
  *
- * ���δؿ��Ϻǽ�˲������ٷ׻����󥹥��󥹤����������Ȥ��˸ƤӽФ���롥
+ * この関数は最初に音響尤度計算インスタンスが作成されるときに呼び出される．
  * 
- * @param wrk [i/o] HMM �׻��ѥ�����ꥢ
+ * @param wrk [i/o] HMM 計算用ワークエリア
  * 
- * @return ������ TRUE�����Ի� FALSE ���֤���
+ * @return 成功時 TRUE，失敗時 FALSE を返す．
  * </JA>
  */
 boolean

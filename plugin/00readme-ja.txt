@@ -1,82 +1,82 @@
-�T���v���v���O�C��
+サンプルプラグイン
 
 
-�� �v���O�C���ɂ���
+◆ プラグインについて
 
-Julius-4.1 ���v���O�C�����g����悤�ɂȂ�܂����D
-���̃f�B���N�g���ɂ́C�v���O�C���̃T���v���\�[�X���܂܂�Ă��܂��D
+Julius-4.1 よりプラグインが使えるようになりました．
+このディレクトリには，プラグインのサンプルソースが含まれています．
 
-�v���O�C���̎d�g�݂�T�v�C�����ȂǑS�ʓI�Ȏ����ɂ��ẮC
-Juliusbook ���������������D
-�T���v���\�[�X�ɂ́C�֐��̎d�l���R�����g�Ƃ��ď�����Ă��܂��D
-
-
-�� �t�@�C���\��
-
-    00readme.txt		���̃t�@�C��
-    plugin_defs.h		�v���O�C���p��`�w�b�_
-    adin_oss.c			�������̓v���O�C���̃T���v���FOSS�}�C�N����
-    audio_postprocess.c		�����㏈���v���O�C���̃e���v���[�g
-    fvin.c			�����ʓ��̓v���O�C���̃e���v���[�g
-    feature_postprocess.c	�����ʌ㏈���v���O�C���̃e���v���[�g
-    calcmix.c			�K�E�X���z�W���v�Z�v���O�C���̃T���v��
-    Makefile			Linux �p Makefile
+プラグインの仕組みや概要，作り方など全般的な事項については，
+Juliusbook をご覧ください．
+サンプルソースには，関数の仕様がコメントとして書かれています．
 
 
-�� �v���O�C���̎d�l�ƃR���p�C���ɂ���
+◆ ファイル構成
 
-�v���O�C���t�@�C���̊g���q�� .jpi �ł��D���Ԃ́C���L�I�u�W�F�N�g�t�@�C
-���ł��DLinux �� cygwin �ł��ƁC�ȉ��̂悤�ɂ��ăR���p�C���ł��܂��D
+    00readme.txt		このファイル
+    plugin_defs.h		プラグイン用定義ヘッダ
+    adin_oss.c			音声入力プラグインのサンプル：OSSマイク入力
+    audio_postprocess.c		音声後処理プラグインのテンプレート
+    fvin.c			特徴量入力プラグインのテンプレート
+    feature_postprocess.c	特徴量後処理プラグインのテンプレート
+    calcmix.c			ガウス分布集合計算プラグインのサンプル
+    Makefile			Linux 用 Makefile
+
+
+◆ プラグインの仕様とコンパイルについて
+
+プラグインファイルの拡張子は .jpi です．実態は，共有オブジェクトファイ
+ルです．Linux や cygwin ですと，以下のようにしてコンパイルできます．
 
     % gcc -shared -o result.jpi result.c
 
-cygwin �ŃR���p�C�������v���O�C�����Ccygwin �������ł����삳����ɂ́C
--mno-cygwin �����܂��D
+cygwin でコンパイルしたプラグインを，cygwin 環境無しでも動作させるには，
+-mno-cygwin をつけます．
 
     % gcc -shared -mno-cygwin -o result.jpi result.c
 
-Mac OS X (darwin) �ł͈ȉ��̂悤�ɃR���p�C�����܂��D
+Mac OS X (darwin) では以下のようにコンパイルします．
 
     % gcc -bundle -flat_namespace -undefined suppress -o result.jpi result.c
 
 
-�� Julius �Ƀv���O�C����ǂݍ��܂�����@
+◆ Julius にプラグインを読み込ませる方法
 
-Julius �̃I�v�V���� "-plugindir dirname" ���g���܂��Ddirname �ɂ̓v��
-�O�C����u���Ă���f�B���N�g�����w�肵�Ă��������D
-�w�肵���f�B���N�g�����ɂ���S�Ă� .jpi �t�@�C�����ǂݍ��܂�܂��D
+Julius のオプション "-plugindir dirname" を使います．dirname にはプラ
+グインを置いてあるディレクトリを指定してください．
+指定したディレクトリ内にある全ての .jpi ファイルが読み込まれます．
 
-�Ȃ��C�I�v�V�������g������v���O�C�������݂���̂ŁC"-plugindir" ��
-�ݒ�̂ł��邾���ŏ��̂ق��Ŏw�肵�������悢�ł��傤�D
+なお，オプションを拡張するプラグインも存在するので，"-plugindir" は
+設定のできるだけ最初のほうで指定した方がよいでしょう．
 
 
-�� ����e�X�g���̂P�iresult.jpi�j
+◆ 動作テストその１（result.jpi）
 
-result.c �́C�F�����ʂ̕�������󂯎���ďo�͂���ȒP�ȃv���O�C���ł��D
-Julius ���R���p�C����C�ȉ��̂悤�ɂ��Ď����Ă݂܂��傤�D
+result.c は，認識結果の文字列を受け取って出力する簡単なプラグインです．
+Julius をコンパイル後，以下のようにして試してみましょう．
 
-	% cd plugin (���̃f�B���N�g��)
+	% cd plugin (このディレクトリ)
 	% make result.jpi
 	% cd ..
 	% ./julius/julius ... -plugindir plugin
 
-�Ȃ��CMac OS X �ł͈ȉ��̂悤�� Makefile.darwin �����g���������D
+なお，Mac OS X では以下のように Makefile.darwin をお使い下さい．
 
         % make -f Makefile.darwin result.jpi
 
 
-�� ����e�X�g���̂Q�i�I�[�f�B�I���̓v���O�C���j
+◆ 動作テストその２（オーディオ入力プラグイン）
 
-adin_oss.c �́COSS API ���g�������͂̊g�����s���v���O�C���ł��D
-Julius �{�̂���� "-input myadin" �őI���ł��܂��D
-Julius ���R���p�C����C�ȉ��̂悤�ɂ��Ď����Ă݂܂��傤�D
+adin_oss.c は，OSS API を使った入力の拡張を行うプラグインです．
+Julius 本体からは "-input myadin" で選択できます．
+Julius をコンパイル後，以下のようにして試してみましょう．
 
-	% cd plugin (���̃f�B���N�g��)
+	% cd plugin (このディレクトリ)
 	% make adin_oss.jpi
 	% cd ..
 	% ./julius/julius -plugindir plugin -input myadin
 
-�܂��C�������̓v���O�C���� adintool �� adinrec ������Ăяo���܂��D
+また，音声入力プラグインは adintool や adinrec からも呼び出せます．
 
 	% ./adinrec/adinrec -plugindir plugin -input myadin
 

@@ -2,19 +2,19 @@
  * @file   beam.c
  * 
  * <JA>
- * @brief  �ե졼��Ʊ���ӡ���õ���μ¹ԡ���1�ѥ���
+ * @brief  フレーム同期ビーム探索の実行（第1パス）
  *
- * ��1�ѥ��Υե졼��Ʊ���ӡ���õ����ºݤ˼¹Ԥ���ؿ����Ǥ�. 
- * ǧ���������󥹥��󥹤��Ȥ˼¹Ԥ���ޤ�. 
- * �������1�ե졼���ǧ����������λ��������1�ѥ��η�̷��ꡤ��������
- * ��λ�θ��Τʤɤν������ޤޤ�Ƥ��ޤ�. 
+ * 第1パスのフレーム同期ビーム探索を実際に実行する関数群です. 
+ * 認識処理インスタンスごとに実行されます. 
+ * 初期化，1フレームの認識処理，終了処理，第1パスの結果決定，セグメント
+ * 終了の検知などの処理が含まれています. 
  *
- * ���르�ꥺ��ˤĤ��Ƥϡ�ñ���������� 1-best ������ǥե���ȤǤ�
- * ����ñ���ж������Ѳ�ǽ�Ǥ�. ñ��N-gram �Ǥ�ñ��֤���³����� 1-gram
- * factoring (2-gram factoring �������)���Ѥ��Ʒ׻�����ޤ�. ʸˡ��
- * ��硤�ڹ�¤�������ʸˡ�Υ��ƥ���ñ�̤Ǻ������졤ñ��֤���³(ñ��
- * ������)��ñ������ܤ�Ŭ�Ѥ���ޤ�. ñ��ǧ���⡼�ɤǤ�ñ�����³��
- * ��θ����ޤ���. 
+ * アルゴリズムについては，単語履歴近似は 1-best 近似がデフォルトです
+ * が，単語対近似も使用可能です. 単語N-gram では単語間の接続制約は 1-gram
+ * factoring (2-gram factoring も選択可)を用いて計算されます. 文法の
+ * 場合，木構造化辞書は文法のカテゴリ単位で作成され，単語間の接続(単語
+ * 対制約)は単語間遷移で適用されます. 単語認識モードでは単語間接続は
+ * 考慮されません. 
  * </JA>
  * 
  * <EN>
@@ -58,25 +58,25 @@
 
 
 /* ---------------------------------------------------------- */
-/*                     �裱�ѥ��η�̽���                     */
+/*                     第１パスの結果処理                     */
 /*              end procedure to get result of 1st pass       */
 /* ---------------------------------------------------------- */
 
 #ifdef WORD_GRAPH
 /** 
  * <JA>
- * @brief  ǧ����̤�ñ��ȥ�ꥹ����ñ�쥰��դ���Ф���
+ * @brief  認識結果の単語トレリスから単語グラフを抽出する
  *
- * (WORD_GRAPH �����)
- * ���δؿ����裱�ѥ��η�̤�ñ��ȥ�ꥹ��ü����Хå��ȥ졼������
- * �ѥ���ˤ���ȥ�ꥹñ���ñ�쥰��դȤ�����Ф���. �ºݤˤϡ�
- * ñ��ȥ�ꥹ��ǥ���վ�˻Ĥ��ΤΤߤ˥ޡ������դ���
- * ��2�ѥ��Ǥϡ��ޡ����ΤĤ���ñ��Τߤ�Ÿ������. 
+ * (WORD_GRAPH 指定時)
+ * この関数は第１パスの結果の単語トレリスを終端からバックトレースし，
+ * パス上にあるトレリス単語を単語グラフとして抽出する. 実際には，
+ * 単語トレリス上でグラフ上に残るもののみにマークを付け，
+ * 第2パスでは，マークのついた単語のみを展開する. 
  *
- * ����դ� r->result.wg1 �˳�Ǽ�����. 
+ * グラフは r->result.wg1 に格納される. 
  * 
- * @param frame [in] ñ��ȥ�ꥹ���ñ����ü�򸡺�����ե졼��
- * @param r [i/o] ǧ���������󥹥���
+ * @param frame [in] 単語トレリス上で単語末端を検索するフレーム
+ * @param r [i/o] 認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Extract word graph from the resulting word trellis
@@ -172,8 +172,8 @@ generate_lattice(int frame, RecogProcess *r)
  * 
  * </EN>
  * <JA>
- * generate_lattice() ������������1�ѥ���������ñ��ɤ����򶭳�����
- * �˽��ä�Ϣ�뤹��. Ʊ���������֤���Ĥ��٤Ƥ�ñ�줬��³�����. 
+ * generate_lattice() で生成した第1パスグラフ中の単語どうしを境界時間
+ * に従って連結する. 同じ境界時間を持つすべての単語が接続される. 
  * 
  * </JA>
  * 
@@ -208,8 +208,8 @@ link_lattice_by_time(WordGraph *root)
  * re-compute 2-gram prob for all link in 1st pass word graph mode.
  * </EN>
  * <JA>
- * ��1�ѥ���ñ�쥰��դ���������⡼�ɤˤ����ơ��������ñ�쥰��վ��
- * ���Τ�2-gram�����Ω��Ʒ׻�����. 
+ * 第1パスで単語グラフを生成するモードにおいて，生成後に単語グラフ上の
+ * 正確な2-gram言語確立を再計算する. 
  * </JA>
  * 
  * @param root [in] pointer to root node of word graph
@@ -236,10 +236,10 @@ re_compute_lattice_lm(WordGraph *root, WCHMM_INFO *wchmm)
 
 /** 
  * <JA>
- * ����ȥ�ꥹñ��ξ����ƥ����Ȥǽ��� (�ǥХå���)
+ * あるトレリス単語の情報をテキストで出力 (デバッグ用)
  * 
- * @param atom [in] ���Ϥ���ȥ�ꥹñ��
- * @param winfo [in] ñ�켭��
+ * @param atom [in] 出力するトレリス単語
+ * @param winfo [in] 単語辞書
  * </JA>
  * <EN>
  * Output a trellis word information in text (for debug)
@@ -262,18 +262,18 @@ put_atom(TRELLIS_ATOM *atom, WORD_INFO *winfo)
 
 /** 
  * <JA>
- * @brief ǧ����̤�ñ��ȥ�ꥹ��κ���ñ���������
+ * @brief 認識結果の単語トレリス上の最尤単語系列を求める
  * 
- * Ϳ����줿�ȥ�ꥹñ�줫�����ϻ�ü�˸����ä�ñ��ȥ�ꥹ���
- * �ȥ졼���Хå���, ���κ���ñ�������䤪��Ӥ��θ��쥹�������֤�. 
- * �����Ȥʤ�ǽ�Υȥ�ꥹñ�줬Ϳ������ɬ�פ�����. 
+ * 与えられたトレリス単語から入力始端に向かって単語トレリス上を
+ * トレースバックし, その最尤単語系列候補およびその言語スコアを返す. 
+ * 起点となる最初のトレリス単語が与えられる必要がある. 
  * 
- * @param wordseq_rt [out] ��̤κ���ñ����󤬳�Ǽ�����Хåե�
- * @param rt_wordlen [out] @a wordseq_rt ��Ĺ��
- * @param atom [in] �Хå��ȥ졼���ε����Ȥʤ�ȥ�ꥹñ��
- * @param winfo [in] ñ�켭��
+ * @param wordseq_rt [out] 結果の最尤単語系列が格納されるバッファ
+ * @param rt_wordlen [out] @a wordseq_rt の長さ
+ * @param atom [in] バックトレースの起点となるトレリス単語
+ * @param winfo [in] 単語辞書
  * 
- * @return ����줿����ñ�����θ��쥹����.
+ * @return 得られた最尤単語系列の言語スコア.
  * </JA>
  * <EN>
  * @brief Find the best word sequence in the word trellis
@@ -334,20 +334,20 @@ trace_backptr(WORD_ID wordseq_rt[MAXSEQNUM], int *rt_wordlen, TRELLIS_ATOM *atom
 
 /** 
  * <JA>
- * @brief  �裱�ѥ���ǧ��������̤���ǧ����̤�Ƚ�ꤷ������ñ�����򸫤Ĥ���. 
+ * @brief  第１パスの認識処理結果から認識結果を判定し，最尤単語系列を見つける. 
  *
- * �裱�ѥ��η׻���̤Ǥ���ñ��ȥ�ꥹ���顤�裱�ѥ��Ǥκ��������
- * �ᡤ���󥹥������ result.pass1 ����¸����. ���䤬�����ʤ����
- * �ϥ��顼��õ�����ꡧ������ -1�ˤȤʤ�. 
+ * 第１パスの計算結果である単語トレリスから，第１パスでの最尤候補を求
+ * め，インスタンス内の result.pass1 に保存する. 候補が得られない場合
+ * はエラー（探索誤り：コード -1）となる. 
  *
- * ���硼�ȥݡ����������ơ��������ϡ�ǧ����̤�̵��ñ��Τߤ���ʤ��硤
- * ���顼�ʥǥ������ˤ����ѡ������� -4�ˤȤʤ�. 
+ * ショートポーズセグメンテーション時は，認識結果が無音単語のみからなる場合，
+ * エラー（デコーダによる棄却：コード -4）となる. 
  *
- * �ޤ���WORD_GRAPH ������ϡ����δؿ���Ǥ���� generate_lattice() ��
- * �ƤӽФ���ñ�쥰��դ���Ф�Ԥ�. 
+ * また，WORD_GRAPH 定義時は，この関数内でさらに generate_lattice() を
+ * 呼び出し，単語グラフの抽出を行う. 
  * 
- * @param framelen [in] �裱�ѥ��ǽ�������ã�����ե졼���
- * @param r [in] ǧ���������󥹥���
+ * @param framelen [in] 第１パスで処理が到達したフレーム数
+ * @param r [in] 認識処理インスタンス
  * 
  * </JA>
  * <EN>
@@ -403,7 +403,7 @@ find_1pass_result(int framelen, RecogProcess *r)
 #endif
 	if (r->config->successive.enabled) {
 	  /* short-pause segmentation mode */
-	  /* �ǽ��ե졼��˻Ĥä����祹������ñ�� */
+	  /* 最終フレームに残った最大スコアの単語 */
 	  /* it should be the best trellis word on the last frame */
 	  if (maxscore < tmp->backscore) {
 	    maxscore = tmp->backscore;
@@ -411,7 +411,7 @@ find_1pass_result(int framelen, RecogProcess *r)
 	  }
 	} else {
 	  /* not segmentation mode */
-	  /* �ǽ�ñ��� winfo->tail_silwid �˸��� */
+	  /* 最終単語は winfo->tail_silwid に固定 */
 	  /* it is fixed to the tail silence model (winfo->tail_silwid) */
 	  if (tmp->wid == winfo->tail_silwid && maxscore < tmp->backscore) {
 	    maxscore = tmp->backscore;
@@ -436,7 +436,7 @@ find_1pass_result(int framelen, RecogProcess *r)
 
     for (last_time = framelen - 1; last_time >= 0; last_time--) {
 
-      /* �����˻Ĥä�ñ�����Ǻ��祹������ñ��(cp_end�ϻ��Ѥ��ʤ�) */
+      /* 末尾に残った単語の中で最大スコアの単語(cp_endは使用しない) */
       /* the best trellis word on the last frame (not use cp_end[]) */
       maxscore = LOG_ZERO;
       for (i=0;i<backtrellis->num[last_time];i++) {
@@ -512,7 +512,7 @@ find_1pass_result(int framelen, RecogProcess *r)
   r->pass1_score = best->backscore;
 
 #ifdef WORD_GRAPH
-  /* ñ��ȥ�ꥹ���顤��ƥ������������� */
+  /* 単語トレリスから，ラティスを生成する */
   /* generate word graph from the word trellis */
   r->peseqlen = backtrellis->framelen;
   r->result.wg1 = NULL;
@@ -530,12 +530,12 @@ find_1pass_result(int framelen, RecogProcess *r)
 
 /** 
  * <JA>
- * �ȥ�ꥹñ��򥹥����ǥ����Ȥ���qsort�ؿ�. 
+ * トレリス単語をスコアでソートするqsort関数. 
  * 
- * @param x1 [in] ����1�ؤΥݥ���
- * @param x2 [in] ����2�ؤΥݥ���
+ * @param x1 [in] 要素1へのポインタ
+ * @param x2 [in] 要素2へのポインタ
  * 
- * @return qsort ����
+ * @return qsort の値
  * </JA>
  * <EN>
  * qsort function to sort trellis words by their score.
@@ -554,11 +554,11 @@ compare_backscore(TRELLIS_ATOM **x1, TRELLIS_ATOM **x2)
 
 /** 
  * <JA>
- * find_1pass_result() ��ñ��ǧ���⡼����. ñ��ǧ���⡼�ɤǤ���1�ѥ���
- * ǧ����λ����Τǡ�����줿������̾���裲�ѥ���Ʊ�����˳�Ǽ����. 
+ * find_1pass_result() の単語認識モード版. 単語認識モードでは第1パスで
+ * 認識を終了するので，得られた候補は通常の第２パスと同じ場所に格納する. 
  * 
- * @param framelen [in] �裱�ѥ��ǽ�������ã�����ե졼���
- * @param r [i/o] ǧ���������󥹥���
+ * @param framelen [in] 第１パスで処理が到達したフレーム数
+ * @param r [i/o] 認識処理インスタンス
  * 
  * </JA>
  * <EN>
@@ -703,16 +703,16 @@ find_1pass_result_word(int framelen, RecogProcess *r)
 
 /** 
  * <JA>
- * �裱�ѥ�������ǡ���������������ǽ���ɤ���Ƚ�ꤹ��ʼ¸���. tremax ��
- * NULL �ΤȤ��Ͻ��������. ������� r->have_determine �� TRUE �ˤ���. 
+ * 第１パスの途中データから早期確定可能かどうか判定する（実験）. tremax が
+ * NULL のときは初期化する. 確定時は r->have_determine を TRUE にする. 
  *
- * @param r [i/o] ����ǧ���������󥹥���
- * @param t [in] �ե졼��
- * @param tremax [in] ���ߤΥե졼���Ǻ���Υȥ�ꥹñ��
- * @param thres [in] �����ѤΥ���������
- * @param countthres [in] �����Ѥλ�³�ե졼���������
+ * @param r [i/o] 音声認識処理インスタンス
+ * @param t [in] フレーム
+ * @param tremax [in] 現在のフレーム上で最尤のトレリス単語
+ * @param thres [in] 確定用のスコア閾値
+ * @param countthres [in] 確定用の持続フレーム数の閾値
  *
- * @return ������� tremax ���֤�. ̤������� NULL ���֤�. 
+ * @return 確定時は tremax を返す. 未確定時は NULL を返す. 
  * </JA>
  * <EN>
  * Try to Determine a word hypothesis before end of input on isolated
@@ -800,12 +800,12 @@ determine_word(RecogProcess *r, int t, TRELLIS_ATOM *tremax, LOGPROB thres, int 
 
 /** 
  * <JA>
- * ñ��ǧ�����ˡ��裱�ѥ��ν������������ꤹ��ʼ¸���. ����Ǥ�����硤
- * ��1�ѥ��η�̳�Ǽ�ѥ��ꥢ (r->result.pass1) �˳����̤��Ǽ����. 
- * �ޤ�������� r->have_determine �� TRUE ������. 
+ * 単語認識時に，第１パスの処理中に早期確定する（実験）. 確定できた場合，
+ * 第1パスの結果格納用エリア (r->result.pass1) に確定結果を格納する. 
+ * また確定時は r->have_determine に TRUE が入る. 
  * 
- * @param r [in] ǧ���������󥹥���
- * @param t [in] ���ߤ����ϥե졼��
+ * @param r [in] 認識処理インスタンス
+ * @param t [in] 現在の入力フレーム
  * </JA>
  * <EN>
  * Determine word hypothesis before end of input (EXPERIMENT).  When
@@ -859,10 +859,10 @@ check_determine_word(RecogProcess *r, int t)
 
 /** 
  * <JA>
- * �裱�ѥ��ν�����ˡ�����ե졼��ޤǤΥ٥��ȥѥ���ɽ������. 
+ * 第１パスの処理中に，あるフレームまでのベストパスを表示する. 
  * 
- * @param r [i/o] ǧ���������󥹥���
- * @param t [in] ���ߤ����ϥե졼��
+ * @param r [i/o] 認識処理インスタンス
+ * @param t [in] 現在の入力フレーム
  * </JA>
  * <EN>
  * Output the current best word sequence ending
@@ -918,10 +918,10 @@ bt_current_max(RecogProcess *r, int t)
 
 /** 
  * <JA>
- * �裱�ѥ��ν�����ˡ�����ե졼���κ���ñ���ɽ������(�ǥХå���)
+ * 第１パスの処理中に，あるフレーム上の最尤単語を表示する(デバッグ用)
  * 
- * @param r [i/o] ǧ���������󥹥���
- * @param t [in] ���ߤ����ϥե졼��
+ * @param r [i/o] 認識処理インスタンス
+ * @param t [in] 現在の入力フレーム
  * </JA>
  * <EN>
  * Output the current best word on a specified time frame in the course
@@ -940,7 +940,7 @@ bt_current_max_word(RecogProcess *r, int t)
   LOGPROB maxscore;
   WORD_ID w;
 
-  /* bt->list �ϻ��ֽ�˳�Ǽ����Ƥ��� */
+  /* bt->list は時間順に格納されている */
   /* bt->list is order by time */
   maxscore = LOG_ZERO;
   tremax = NULL;
@@ -971,18 +971,18 @@ bt_current_max_word(RecogProcess *r, int t)
 
 
 /* -------------------------------------------------------------------- */
-/*                 �ӡ���õ����Υȡ�����򰷤����ִؿ�                 */
+/*                 ビーム探索中のトークンを扱うサブ関数                 */
 /*                functions to handle hypothesis tokens                 */
 /* -------------------------------------------------------------------- */
 
 /** 
  * <JA>
- * �裱�ѥ��Υӡ���õ���Ѥν��������ꥢ����ݤ���. 
- * ­��ʤ�����õ�����ưŪ�˿�Ĺ�����. 
+ * 第１パスのビーム探索用の初期ワークエリアを確保する. 
+ * 足りない場合は探索中に動的に伸長される. 
  *
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param n [in] �ڹ�¤������ΥΡ��ɿ�
- * @param ntoken_init [in] �ǽ�˳��ݤ���ȡ�����ο�
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param n [in] 木構造化辞書のノード数
+ * @param ntoken_init [in] 最初に確保するトークンの数
  * </JA>
  * <EN>
  * Allocate initial work area for beam search on the 1st pass.
@@ -1011,9 +1011,9 @@ malloc_nodes(FSBeam *d, int n, int ntoken_init)
 
 /** 
  * <JA>
- * �裱�ѥ��Υӡ���õ���ѤΥ�����ꥢ�򿭤Ф��ƺƳ��ݤ���. 
+ * 第１パスのビーム探索用のワークエリアを伸ばして再確保する. 
  *
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
+ * @param d [i/o] 第1パス探索処理用ワークエリア
  * </JA>
  * <EN>
  * Re-allocate work area for beam search on the 1st pass.
@@ -1041,9 +1041,9 @@ expand_tlist(FSBeam *d)
  * free and re-allocate the work area.
  * </EN>
  * <JA>
- * �Ρ��ɾ������������. Julius �ϡ��ڹ�¤������Υ�������ľ��������
- * �����Ѳ����ʤ��Ȥ��ϡ����δؿ��ˤ�äƥΡ��ɾ�����������������
- * �褤. ���������ѹ�����Ƥ���Ȥ��ϥΡ��ɤ������Ƴ��ݤ���. 
+ * ノード情報を初期化する. Julius は，木構造化辞書のサイズが直前の入力
+ * 時と変化がないときは，この関数によってノード情報を初期化するだけで
+ * よい. サイズが変更されているときはノードを開放・再確保する. 
  * </JA>
  * 
  * @param d [i/o] work area for 1st pass recognition processing
@@ -1059,9 +1059,9 @@ prepare_nodes(FSBeam *d, int ntoken_step)
 
 /** 
  * <JA>
- * �裱�ѥ��Υӡ���õ���ѤΥ�����ꥢ�����Ʋ�������. 
+ * 第１パスのビーム探索用のワークエリアを全て解放する. 
  *
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
+ * @param d [i/o] 第1パス探索処理用ワークエリア
  * 
  * </JA>
  * <EN>
@@ -1086,10 +1086,10 @@ free_nodes(FSBeam *d)
 
 /** 
  * <JA>
- * �ȡ����󥹥ڡ�����ꥻ�åȤ���. 
+ * トークンスペースをリセットする. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param tt [in] ������ꥢID (0 �ޤ��� 1)
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param tt [in] ワークエリアID (0 または 1)
  * </JA>
  * <EN>
  * Reset the token space.
@@ -1106,10 +1106,10 @@ clear_tlist(FSBeam *d, int tt)
 
 /** 
  * <JA>
- * �����ƥ��֥ȡ�����ꥹ�Ȥ򥯥ꥢ����. 
+ * アクティブトークンリストをクリアする. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param tt [in] ľ���Υ�����ꥢID (0 �ޤ��� 1)
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param tt [in] 直前のワークエリアID (0 または 1)
  * </JA>
  * <EN>
  * Clear the active token list.
@@ -1130,11 +1130,11 @@ clear_tokens(FSBeam *d, int tt)
 
 /** 
  * <JA>
- * �ȡ����󥹥ڡ������鿷���ʥȡ�����������. 
+ * トークンスペースから新たなトークンを取りだす. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
+ * @param d [i/o] 第1パス探索処理用ワークエリア
  * 
- * @return �����˼��Ф��줿�ȡ������ID
+ * @return 新たに取り出されたトークンのID
  * </JA>
  * <EN>
  * Assign a new token from token space.
@@ -1163,17 +1163,17 @@ create_token(FSBeam *d)
 
 /** 
  * <JA>
- * @brief  �ڹ�¤������ΥΡ��ɤ˥ȡ���������դ���. 
+ * @brief  木構造化辞書のノードにトークンを割り付ける. 
  *
- * �ڹ�¤������ΥΡ��ɤΥ����ƥ��֥ȡ�����ꥹ�Ȥ˥ȡ��������¸����. 
- * �ޤ��ȡ����󥹥ڡ����ˤ����ƥȡ����󤫤�Ρ����ֹ�ؤΥ�󥯤���¸����. 
+ * 木構造化辞書のノードのアクティブトークンリストにトークンを保存する. 
+ * またトークンスペースにおいてトークンからノード番号へのリンクを保存する. 
  * 
- * ���˥ȡ����󤬤�����ϡ������ʥȡ�����ˤ�äƾ�񤭤����. �ʤ�
- * WPAIR ������Ϥ��Υꥹ�Ȥ˿����ʥȡ�������ɲä���. 
+ * 既にトークンがある場合は，新たなトークンによって上書きされる. なお
+ * WPAIR 指定時はそのリストに新たなトークンを追加する. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param node [in] �ڹ�¤������ΥΡ����ֹ�
- * @param tkid [in] �ȡ������ֹ�
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param node [in] 木構造化辞書のノード番号
+ * @param tkid [in] トークン番号
  * </JA>
  * <EN>
  * @brief  Assign token to a node on tree lexicon
@@ -1203,21 +1203,21 @@ node_assign_token(FSBeam *d, int node, TOKENID tkid)
 
 /** 
  * <JA>
- * @brief  �ڹ�¤�������Τ���Ρ��ɤ������ߤʤ�餫�Υȡ������
- * �ݻ����Ƥ��뤫������å�����. 
+ * @brief  木構造化辞書上のあるノードが，現在なんらかのトークンを
+ * 保持しているかをチェックする. 
  *
- * WPAIR ���������Ƥ����硤�Ρ��ɤ�ľ��ñ�줴�Ȥ˰ۤʤ�ȡ������ʣ��
- * �ݻ�����. ���ξ��, ���ꤵ�줿ñ��ID��ľ��ñ��Ȥ���ȡ�����
- * ���ΥΡ��ɤ��ݻ�����Ƥ��뤫�ɤ����������å������. ���ʤ�������˥ȡ�����
- * ��¸�ߤ��Ƥ⡤���Υȡ������ɽ���ѥ���ľ��ñ�줬���ꤷ��ñ��Ȱۤʤä�
- * �����̤�ݻ� (TOKENID_UNDEFINED) ���֤�. 
+ * WPAIR が定義されている場合，ノードは直前単語ごとに異なるトークンを複数
+ * 保持する. この場合, 指定された単語IDを直前単語とするトークンが
+ * そのノードに保持されているかどうかがチェックされる. すなわち，既にトークン
+ * が存在しても，そのトークンの表すパスの直前単語が指定した単語と異なって
+ * いれば未保持 (TOKENID_UNDEFINED) を返す. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param tt [in] ľ���Υ�����ꥢID (0 �ޤ��� 1)
- * @param node [in] �Ρ����ֹ�
- * @param wid [in] ľ��ñ���ID (WPAIR������Τ�ͭ��, ¾�Ǥ�̵�뤵���)
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param tt [in] 直前のワークエリアID (0 または 1)
+ * @param node [in] ノード番号
+ * @param wid [in] 直前単語のID (WPAIR定義時のみ有効, 他では無視される)
  *
- * @return ���ΥΡ��ɤ������ݻ�����ȡ������ֹ桤̵����� TOKENID_UNDEFINED. 
+ * @return そのノードが既に保持するトークン番号，無ければ TOKENID_UNDEFINED. 
  * </JA>
  * <EN>
  * @brief  Check if a node holds any token
@@ -1244,8 +1244,8 @@ node_exist_token(FSBeam *d, int tt, int node, WORD_ID wid)
   /* In word-pair mode, multiple tokens are assigned to a node as a list.
      so we have to search for tokens with same last word ID */
 #ifdef WPAIR_KEEP_NLIMIT
-  /* 1�Ρ��ɤ��Ȥ��ݻ�����token���ξ�¤����� */
-  /* token��̵������¤�ã���Ƥ���Ȥ��ϰ��֥��������㤤token���񤭤��� */
+  /* 1ノードごとに保持するtoken数の上限を設定 */
+  /* tokenが無いが上限に達しているときは一番スコアの低いtokenを上書きする */
   /* N-best: limit number of assigned tokens to a node */
   int i = 0;
   TOKENID lowest_token = TOKENID_UNDEFINED;
@@ -1273,7 +1273,7 @@ node_exist_token(FSBeam *d, int tt, int node, WORD_ID wid)
 #endif
   
 #else  /* not WPAIR */
-  /* 1�Ĥ����ݻ�,������˾�� */
+  /* 1つだけ保持,これを常に上書き */
   /* Only one token is kept in 1-best mode (default), so
      simply return the ID */
   return(d->token[node]);
@@ -1281,7 +1281,7 @@ node_exist_token(FSBeam *d, int tt, int node, WORD_ID wid)
 }
 
 #ifdef DEBUG
-/* tlist �� token ���б�������å�����(debug) */
+/* tlist と token の対応をチェックする(debug) */
 /* for debug: check tlist <-> token correspondence
    where  tlist[tt][tokenID].node = nodeID and
           token[nodeID] = tokenID
@@ -1301,11 +1301,11 @@ node_check_token(FSBeam *d, int tt)
 
 
 /* -------------------------------------------------------------------- */
-/*       �ȡ�����򥽡��Ȥ� ��� N �ȡ������Ƚ�̤��� (heap sort)       */
+/*       トークンをソートし 上位 N トークンを判別する (heap sort)       */
 /*        Sort generated tokens and get N-best (use heap sort)          */
 /* -------------------------------------------------------------------- */
-/* �ӡ�������ͤȤ��ƾ�� N ���ܤΥ��������ߤ��������Ǥ��ꡤ�ºݤ˥�����
-   �����ɬ�פϤʤ� */
+/* ビームの閾値として上位 N 番目のスコアが欲しいだけであり，実際にソート
+   される必要はない */
 /* we only want to know the N-th score for determining beam threshold, so
    order is not considered here */
 
@@ -1316,14 +1316,14 @@ node_check_token(FSBeam *d, int tt)
 
 /** 
  * <JA>
- * @brief  �ȡ����󥹥ڡ����򥹥������礭����˥����Ȥ���. 
+ * @brief  トークンスペースをスコアの大きい順にソートする. 
  *
- * heap sort ���Ѥ��Ƹ��ߤΥȡ����󽸹�򥹥������礭����˥����Ȥ���. 
- * ��� @a neednum �ĤΥȡ����󤬥����Ȥ����Ф����ǽ�����λ����. 
+ * heap sort を用いて現在のトークン集合をスコアの大きい順にソートする. 
+ * 上位 @a neednum 個のトークンがソートされればそこで処理を終了する. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param neednum [in] ��� @a neednum �Ĥ�������ޤǥ����Ȥ���
- * @param totalnum [in] �ȡ����󥹥ڡ������ͭ���ʥȡ������
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param neednum [in] 上位 @a neednum 個が得られるまでソートする
+ * @param totalnum [in] トークンスペース内の有効なトークン数
  * </JA>
  * <EN>
  * @brief  Sort the token space upward by score.
@@ -1386,15 +1386,15 @@ sort_token_upward(FSBeam *d, int neednum, int totalnum)
 
 /** 
  * <JA>
- * @brief  �ȡ����󥹥ڡ����򥹥����ξ�������˥����Ȥ���. 
+ * @brief  トークンスペースをスコアの小さい順にソートする. 
  *
- * �ӡ���Τ������ͷ���Τ���ˡ�heap sort ���Ѥ���
- * ���ߤΥȡ����󽸹�򥹥����ξ�������˥����Ȥ���. 
- * ���� @a neednum �ĤΥȡ����󤬥����Ȥ����Ф����ǽ�����λ����. 
+ * ビームのしきい値決定のために，heap sort を用いて
+ * 現在のトークン集合をスコアの小さい順にソートする. 
+ * 下位 @a neednum 個のトークンがソートされればそこで処理を終了する. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param neednum [in] ���� @a neednum �Ĥ�������ޤǥ����Ȥ���
- * @param totalnum [in] �ȡ����󥹥ڡ������ͭ���ʥȡ������
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param neednum [in] 下位 @a neednum 個が得られるまでソートする
+ * @param totalnum [in] トークンスペース内の有効なトークン数
  * </JA>
  * <EN>
  * @brief  Sort the token space downward by score.
@@ -1458,19 +1458,19 @@ sort_token_downward(FSBeam *d, int neednum, int totalnum)
 
 /** 
  * <JA>
- * @brief �ȡ����󥹥ڡ����򥽡��Ȥ��ƥӡ�����˻Ĥ�ȡ��������ꤹ��
+ * @brief トークンスペースをソートしてビーム内に残るトークンを決定する
  * 
- * heap sort ���Ѥ��Ƹ��ߤΥȡ����󽸹�򥽡��Ȥ�����̥������Υȡ�����
- * ��������. ��� @a neednum �ĤΥȡ����󽸹礬��������ɤ��Τǡ�
- * ���Τ������˥����Ȥ���Ƥ���ɬ�פϤʤ�. ��ä�
- * ��� @a neednum �ĤΥȡ�����Τߤ򥽡��Ȥ���. �ºݤˤϡ����ΤΥȡ�����
- * ����ɬ�פʥȡ���������� sort_token_upward()
- * �� sort_token_downward() ���ᤤ�����Ѥ�����. 
+ * heap sort を用いて現在のトークン集合をソートし，上位スコアのトークン
+ * 集合を求める. 上位 @a neednum 個のトークン集合が得られれば良いので，
+ * 全体が完全にソートされている必要はない. よって
+ * 上位 @a neednum 個のトークンのみをソートする. 実際には，全体のトークン
+ * 数と必要なトークン数から sort_token_upward()
+ * と sort_token_downward() の早い方が用いられる. 
  * 
- * @param d [i/o] ��1�ѥ�õ�������ѥ�����ꥢ
- * @param neednum [in] �����̥ȡ�����ο�
- * @param start [out] ��� @a neednum �Υȡ�����¸�ߤ���ȡ����󥹥ڡ����κǽ�Υ���ǥå����ֹ�
- * @param end [out] ��� @a neednum �Υȡ�����¸�ߤ���ȡ����󥹥ڡ����κǸ�Υ���ǥå����ֹ�
+ * @param d [i/o] 第1パス探索処理用ワークエリア
+ * @param neednum [in] 求める上位トークンの数
+ * @param start [out] 上位 @a neednum のトークンが存在するトークンスペースの最初のインデックス番号
+ * @param end [out] 上位 @a neednum のトークンが存在するトークンスペースの最後のインデックス番号
  * </JA>
  * <EN>
  * @brief Sort the token space to find which tokens to be survived in the beam
@@ -1516,23 +1516,23 @@ sort_token_no_order(FSBeam *d, int neednum, int *start, int *end)
 }
 
 /* -------------------------------------------------------------------- */
-/*             �裱�ѥ�(�ե졼��Ʊ���ӡ��ॵ����) �ᥤ��                */
+/*             第１パス(フレーム同期ビームサーチ) メイン                */
 /*           main routines of 1st pass (frame-synchronous beam search)  */
 /* -------------------------------------------------------------------- */
 
 /** 
  * <JA>
- * @brief  ������������
+ * @brief  初期仮説の生成
  *
- * �������ϡ�N-gram�Ǥ� winfo->head_silwid �˸��ꤵ��Ƥ���. DFA �Ǥ�
- * ʸˡ��ʸƬ�ˤ�����ñ�줹�٤Ƥ��������Ȥʤ�. ñ��ǧ���⡼�ɤǤ�
- * ���Ƥ�ñ�줬�������Ȥʤ�. 
+ * 初期仮説は，N-gramでは winfo->head_silwid に固定されている. DFA では
+ * 文法上文頭にきうる単語すべてが初期仮説となる. 単語認識モードでは
+ * 全ての単語が初期仮説となる. 
  *
- * ������ǥ뤬��multipath�ξ�硤�����Ǻǽ�Υե졼��ν��ϳ�Ψ
- * �׻��ޤǹԤ���. 
+ * 音響モデルが非multipathの場合，ここで最初のフレームの出力確率
+ * 計算まで行われる. 
  * 
- * @param param [in] ���ϥ٥��ȥ������(�ǽ�Υե졼��Τ�ɬ��)
- * @param r [in] ����ǧ���������󥹥���
+ * @param param [in] 入力ベクトル列情報(最初のフレームのみ必要)
+ * @param r [in] 音声認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Generate initial hypotheses
@@ -1562,7 +1562,7 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
   wchmm = r->wchmm;
   d = &(r->pass1);
 
-  /* ���������ñ������ */
+  /* 初期仮説用単語履歴 */
   /* setup initial word context */
   if (r->config->successive.enabled) { /* sp segment mode */
     /* initial word context = last non-sp word of previous 2nd pass at last segment*/
@@ -1582,7 +1582,7 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
 
   d->bos.begintime = d->bos.endtime = -1;
 
-  /* �Ρ��ɡ��ȡ���������� */
+  /* ノード・トークンを初期化 */
   /* clear tree lexicon nodes and tokens */
   for(node = 0; node < d->totalnodenum; node++) {
     d->token[node] = TOKENID_UNDEFINED;
@@ -1590,20 +1590,20 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
   d->tnum[0] = d->tnum[1]  = 0;
   
 #ifdef PASS1_IWCD
-  /* ���ϳ�Ψ�׻�����å�������� */
+  /* 出力確率計算キャッシュを初期化 */
   /* initialize outprob cache */
   outprob_style_cache_init(wchmm);
 #endif
 
-  /* �������κ���: ���ñ��η���Ƚ���ȡ���������� */
+  /* 初期仮説の作成: 初期単語の決定と初期トークンの生成 */
   /* initial word hypothesis */
 
   if (r->lmtype == LM_PROB) {
 
     if (r->config->successive.enabled) { /* sp segment mode */
       if (r->sp_break_last_word != WORD_INVALID) { /* last segment exist */
-	/* ����ñ������Υ������ȷ׻����κǸ�κ���ñ�� */
-	/* ʸ��λñ��(silE,����(IPA��ǥ�))�ʤ顤silB �ǳ��� */
+	/* 開始単語＝前のセグメント計算時の最後の最尤単語 */
+	/* 文終了単語(silE,句点(IPAモデル))なら，silB で開始 */
 	/* initial word = best last word hypothesis on the last segment */
 	/* if silE or sp, begin with silB */
 	/*if (is_sil(recog.sp_break_last_word, wchmm->winfo, wchmm->hmminfo)) {*/
@@ -1668,9 +1668,9 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
 
   if (r->lmtype == LM_DFA && r->lmvar == LM_DFA_GRAMMAR) {
   
-    /* �������: ʸˡ��ʸƬ����³������ñ�콸�� */
+    /* 初期仮説: 文法上文頭に接続しうる単語集合 */
     /* initial words: all words that can be begin of sentence grammatically */
-    /* �����ƥ��֤�ʸˡ��°����ñ��Τߵ��� */
+    /* アクティブな文法に属する単語のみ許す */
     /* only words in active grammars are allowed to be an initial words */
     MULTIGRAM *m;
     int t,tb,te;
@@ -1731,7 +1731,7 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
   }
 
   if (r->lmtype == LM_DFA && r->lmvar == LM_DFA_WORD) {
-    /* �����ƥ��֤�ʸˡ��°����ñ��Τߵ��� */
+    /* アクティブな文法に属する単語のみ許す */
     /* only words in active grammars are allowed to be an initial words */
     MULTIGRAM *m;
 
@@ -1764,19 +1764,19 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
 }
 
 /******************************************************/
-/* �ե졼��Ʊ���ӡ���õ���μ¹� --- �ǽ�Υե졼����  */
+/* フレーム同期ビーム探索の実行 --- 最初のフレーム用  */
 /* frame synchronous beam search --- first frame only */
 /******************************************************/
 
 /** 
  * <JA>
- * @brief  �ե졼��Ʊ���ӡ���õ���ν����
+ * @brief  フレーム同期ビーム探索の初期化
  *
- * �����Ǥϥӡ��ॵ�������Ѥ��������ꥢ�γ��ݤȽ������Ԥ�. 
- * �������������� init_nodescore() �ǹԤ���. 
+ * ここではビームサーチに用いるワークエリアの確保と初期化を行う. 
+ * 初期化説の生成は init_nodescore() で行われる. 
  * 
- * @param param [in] ���ϥ٥��ȥ������ (�ǽ�Σ��ե졼���ܤΤ��Ѥ�����)
- * @param r [i/o] ����ǧ���������󥹥���
+ * @param param [in] 入力ベクトル列情報 (最初の１フレーム目のみ用いられる)
+ * @param r [i/o] 音声認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Initialization of the frame synchronous beam search
@@ -1803,18 +1803,18 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
   backtrellis = r->backtrellis;
   d = &(r->pass1);
 
-  /* Viterbi�黻�ѥ�����ꥢ�Υ����å��㡼 tl,tn �ν�������� */
-  /* tn: ���Υե졼����ID   tl: ���ե졼������ID */
+  /* Viterbi演算用ワークエリアのスイッチャー tl,tn の初期値設定 */
+  /* tn: このフレーム用ID   tl: １フレーム前のID */
   /* initialize switch tl, tn for Viterbi computation */
   /* tn: this frame  tl: last frame */
   d->tn = 0;
   d->tl = 1;
 
-  /* ��̤�ñ��ȥ�ꥹ���Ǽ����Хå��ȥ�ꥹ��¤�Τ����� */
+  /* 結果の単語トレリスを格納するバックトレリス構造体を初期化 */
   /* initialize backtrellis structure to store resulting word trellis */
   bt_prepare(backtrellis);
 
-  /* �׻��ѥ�����ꥢ������ */
+  /* 計算用ワークエリアを初期化 */
   /* initialize some data on work area */
 
   if (r->lmtype == LM_PROB) {
@@ -1828,10 +1828,10 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
   d->wpair_keep_nlimit = r->config->pass1.wpair_keep_nlimit;
 #endif
 
-  /* ������ꥢ����� */
+  /* ワークエリアを確保 */
   /* malloc work area */
-  /* ���Ѥ���ȡ������� = viterbi����������Ȥʤ���ָ���ο�
-   * ͽ¬: �ӡ���� x 2 (��������+������) + �ڹ�¤������Υ롼�ȥΡ��ɿ�
+  /* 使用するトークン量 = viterbi時に遷移先となる状態候補の数
+   * 予測: ビーム数 x 2 (自己遷移+次状態) + 木構造化辞書のルートノード数
    */
   /* assumed initial number of needed tokens: beam width x 2 (self + next trans.)
    * + root node on the tree lexicon (for inter-word trans.)
@@ -1844,7 +1844,7 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
   }
   prepare_nodes(d, r->trellis_beam_width);
   
-  /* ����������� nodescore[tn] �˥��å� */
+  /* 初期スコアを nodescore[tn] にセット */
   /* set initial score to nodescore[tn] */
   if (init_nodescore(param, r) == FALSE) {
     jlog("ERROR: get_back_trellis_init: failed to set initial node scores\n");
@@ -1853,12 +1853,12 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
 
   sort_token_no_order(d, r->trellis_beam_width, &(d->n_start), &(d->n_end));
 
-  /* �������Ϥ�Ԥʤ����Υ��󥿡��Х��׻� */
+  /* 漸次出力を行なう場合のインターバルを計算 */
   /* set interval frame for progout */
   r->config->output.progout_interval_frame = (int)((float)r->config->output.progout_interval / ((float)param->header.wshift / 10000.0));
 
   if (r->config->successive.enabled) {
-    /* ���硼�ȥݡ����������ơ�������ѥѥ�᡼���ν���� */
+    /* ショートポーズセグメンテーション用パラメータの初期化 */
     /* initialize parameter for short pause segmentation */
     d->in_sparea = TRUE;		/* assume beginning is silence */
     r->am->mfcc->sparea_start = d->tmp_sparea_start = 0; /* set start frame to 0 */
@@ -1866,7 +1866,7 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
     d->tmp_sp_break_last_word = WORD_INVALID;
 #endif
     r->sp_break_last_word = WORD_INVALID;
-    /* �ǽ�Υ�������: ������ݡ����ե졼�����2�ѥ��ذܹԤ��ʤ� */
+    /* 最初のセグメント: 次の非ポーズフレームで第2パスへ移行しない */
     /* the first end of pause segment should be always silB, so
        skip the first segment */
     d->first_sparea = TRUE;
@@ -1890,7 +1890,7 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
 
 /*****************************************************/
 /* frame synchronous beam search --- proceed 1 frame */
-/* �ե졼��Ʊ���ӡ���õ���μ¹� --- 1�ե졼��ʤ��  */
+/* フレーム同期ビーム探索の実行 --- 1フレーム進める  */
 /*****************************************************/
 
 /** 
@@ -1899,7 +1899,7 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
  * 
  * </EN>
  * <JA>
- * �ȡ�����򼡥Ρ��ɤ����¤���. 
+ * トークンを次ノードに伝搬する. 
  * 
  * </JA>
  * 
@@ -1921,11 +1921,11 @@ propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last
   if (next_score <= LOG_ZERO) return;
 
   if ((tknextid = node_exist_token(d, d->tn, next_node, last_tre->wid)) != TOKENID_UNDEFINED) {
-    /* ������Ρ��ɤˤϴ���¾�Ρ��ɤ������ºѤ�: ���������⤤�ۤ���Ĥ� */
+    /* 遷移先ノードには既に他ノードから伝搬済み: スコアが高いほうを残す */
     /* the destination node already has a token: compare score */
     tknext = &(d->tlist[d->tn][tknextid]);
     if (tknext->score < next_score) {
-      /* ����������Ρ��ɤ����ĥȡ���������Ƥ��񤭤���(�����ȡ�����Ϻ��ʤ�) */
+      /* その遷移先ノードが持つトークンの内容を上書きする(新規トークンは作らない) */
       /* overwrite the content of existing destination token: not create a new token */
       tknext->last_tre = last_tre; /* propagate last word info */
       tknext->last_cword = last_cword; /* propagate last context word info */
@@ -1933,7 +1933,7 @@ propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last
       tknext->score = next_score; /* set new score */
     }
   } else {
-    /* ������Ρ��ɤ�̤����: �����ȡ�������äƳ���դ��� */
+    /* 遷移先ノードは未伝搬: 新規トークンを作って割り付ける */
     /* token unassigned: create new token and assign */
     tknextid = create_token(d); /* get new token */
     tknext = &(d->tlist[d->tn][tknextid]);
@@ -1947,14 +1947,14 @@ propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last
 
 /** 
  * <JA>
- * ñ����Τ���Ρ��ɴ֤����ܤ�Ԥ�. 
+ * 単語内のあるノード間の遷移を行う. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param d [i/o] ��1�ѥ�������ꥢ
- * @param tk_ret [i/o] ���¸��Υȡ�����������ǥݥ��󥿹������Ͼ�񤭡�
- * @param j [in] @a tk_ret �θ��Υȡ�����ꥹ�Ȥ�ID
- * @param next_node [in] ������ΥΡ����ֹ�
- * @param next_a [in] ���ܳ�Ψ
+ * @param wchmm [in] 木構造化辞書
+ * @param d [i/o] 第1パスワークエリア
+ * @param tk_ret [i/o] 伝搬元のトークン（内部でポインタ更新時は上書き）
+ * @param j [in] @a tk_ret の元のトークンリストのID
+ * @param next_node [in] 遷移先のノード番号
+ * @param next_a [in] 遷移確率
  * </JA>
  * <EN>
  * Word-internal transition for a set of nodes.
@@ -1985,7 +1985,7 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
   /* tk->score is the accumulated score at the 'node' on previous frame */
   
   /******************************************************************/
-  /* 2.1.1 ������ؤΥ������׻�(���ܳ�Ψ�ܸ��쥹����)               */
+  /* 2.1.1 遷移先へのスコア計算(遷移確率＋言語スコア)               */
   /*       compute score of destination node (transition prob + LM) */
   /******************************************************************/
   tmpsum = tk->score + next_a;
@@ -1994,9 +1994,9 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
      the new LM probability (if updated) will be stored on 'ngram_score_cache' at below */
   
   if (!wchmm->category_tree) {
-    /* ���쥹���� factoring:
-       arc���������ܤǤʤ�ñ��������ܤǡ������������successor�ꥹ��
-       ������С�lexicon tree ��ʬ����ʬ�����ܤǤ��� */
+    /* 言語スコア factoring:
+       arcが自己遷移でない単語内の遷移で，かつ遷移先にsuccessorリスト
+       があれば，lexicon tree の分岐部分の遷移である */
     /* LM factoring:
        If this is not a self transition and destination node has successor
        list, this is branching transition
@@ -2004,12 +2004,12 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
     if (next_node != node) {
       if (wchmm->state[next_node].scid != 0
 #ifdef UNIGRAM_FACTORING
-	  /* 1-gram factoring ���ѻ���, ʣ���Ƕ�ͭ�����ޤǤ�
-	     wchmm->state[node].scid ������ͤȤʤꡤ���������ͤ�
-	     ź���Ȥ��� wchmm->fscore[] ��ñ�콸���1-gram�κ����ͤ���Ǽ
-	     ����Ƥ���. ��ü�λ�(ʣ��ñ��Ƕ�ͭ����ʤ�)�Ǥϡ�
-	     wchmm->state[node].scid �������ͤȤʤꡤ
-	     ��ñ��� sc �Ȥ��ƻ��ĤΤǤ��������Τ�2-gram��׻����� */
+	  /* 1-gram factoring 使用時は, 複数で共有される枝では
+	     wchmm->state[node].scid は負の値となり，その絶対値を
+	     添字として wchmm->fscore[] に単語集合の1-gramの最大値が格納
+	     されている. 末端の枝(複数単語で共有されない)では，
+	     wchmm->state[node].scid は正の値となり，
+	     １単語を sc として持つのでそこで正確な2-gramを計算する */
 	  /* When uni-gram factoring,
 	     wchmm->state[node].scid is below 0 for shared branches.
 	     In this case the maximum uni-gram probability for sub-tree
@@ -2022,9 +2022,9 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
 	  ){
 	
 	if (wchmm->lmtype == LM_PROB) {
-	  /* �����Ǹ����ǥ��Ψ�򹹿����� */
+	  /* ここで言語モデル確率を更新する */
 	  /* LM value should be update at this transition */
-	  /* N-gram��Ψ����factoring �ͤ�׻� */
+	  /* N-gram確率からfactoring 値を計算 */
 	  /* compute new factoring value from N-gram probabilities */
 #ifdef FIX_PENALTY
 	  /* if at the beginning of sentence, not add lm_penalty */
@@ -2036,9 +2036,9 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
 #else
 	  ngram_score_cache = max_successor_prob(wchmm, tk->last_cword, next_node) * d->lm_weight + d->lm_penalty;
 #endif
-	  /* �������ι���: tk->last_lscore ��ñ����ǤκǸ��factoring�ͤ�
-	     ���äƤ���Τ�, ����򥹥�����������ƥꥻ�åȤ�, �����ʥ�������
-	     ���åȤ��� */
+	  /* スコアの更新: tk->last_lscore に単語内での最後のfactoring値が
+	     入っているので, それをスコアから引いてリセットし, 新たなスコアを
+	     セットする */
 	  /* update score: since 'tk->last_lscore' holds the last LM factoring
 	     value in this word, we first remove the score from the current
 	     score, and then add the new LM value computed above. */
@@ -2047,10 +2047,10 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
 	}
 	
 	if (wchmm->lmtype == LM_DFA && wchmm->lmvar == LM_DFA_GRAMMAR) {
-	  /* ʸˡ���Ѥ�����, ���ƥ���ñ�̤��ڹ�¤�����ʤ���Ƥ����,
-	     ��³�����ñ������ܤΤߤǰ�����Τǡ�factoring ��ɬ�פʤ�. 
-	     ���ƥ���ñ���ڹ�¤�����Ԥ��ʤ����, ʸˡ�֤���³����Ϥ���
-	     �� factoring �ǹԤ��뤳�Ȥˤʤ�. */
+	  /* 文法を用いる場合, カテゴリ単位の木構造化がなされていれば,
+	     接続制約は単語間遷移のみで扱われるので，factoring は必要ない. 
+	     カテゴリ単位木構造化が行われない場合, 文法間の接続制約はここ
+	     で factoring で行われることになる. */
 	  /* With DFA, we use category-pair constraint extracted from the DFA
 	     at this 1st pass.  So if we compose a tree lexicon per word's
 	     category, the each category tree has the same connection
@@ -2062,8 +2062,8 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
 	     factoring style at here.
 	  */
 	  
-	  /* ����Ūfactoring: ľ��ñ����Ф���,sub-tree��˥��ƥ����������
-	     ��³������ñ�줬���Ĥ�ʤ����, �������ܤ��Բ� */
+	  /* 決定的factoring: 直前単語に対して,sub-tree内にカテゴリ対制約上
+	     接続しうる単語が１つもなければ, この遷移は不可 */
 	  /* deterministic factoring in grammar mode:
 	     transition disabled if there are totally no sub-tree word that can
 	     grammatically (in category-pair constraint) connect
@@ -2080,7 +2080,7 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
   /* factoring not needed when DFA mode and uses category-tree */
   
   /****************************************/
-  /* 2.1.2 ������Ρ��ɤإȡ���������     */
+  /* 2.1.2 遷移先ノードへトークン伝搬     */
   /*       pass token to destination node */
   /****************************************/
   
@@ -2101,12 +2101,12 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
 
 /** 
  * <JA>
- * ñ�������ܤ�Ԥ�. 
+ * 単語内遷移を行う. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param d [i/o] ��1�ѥ�������ꥢ
- * @param tk_ret [i/o] ���¸��Υȡ�����������ǥݥ��󥿹������Ͼ�񤭡�
- * @param j [in] @a tk_ret �θ��Υȡ�����ꥹ�Ȥ�ID
+ * @param wchmm [in] 木構造化辞書
+ * @param d [i/o] 第1パスワークエリア
+ * @param tk_ret [i/o] 伝搬元のトークン（内部でポインタ更新時は上書き）
+ * @param j [in] @a tk_ret の元のトークンリストのID
  * </JA>
  * <EN>
  * Word-internal transition.
@@ -2146,20 +2146,20 @@ beam_intra_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j)
 }
 
 /**************************/
-/* 2.2. �ȥ�ꥹñ����¸  */
+/* 2.2. トレリス単語保存  */
 /*      save trellis word */
 /**************************/
 /** 
  * <JA>
- * �ȡ����󤫤�ȥ�ꥹñ�����¸����. 
+ * トークンからトレリス単語を保存する. 
  * 
- * @param bt [i/o] �Хå��ȥ�ꥹ��¤��
- * @param wchmm [in] �ڹ�¤������
- * @param tk [in] ñ����ü����ã���Ƥ���ȡ�����
- * @param t [in] ���ߤλ��֥ե졼��
- * @param final_for_multipath [in] ���ϺǸ�Σ�������� TRUE
+ * @param bt [i/o] バックトレリス構造体
+ * @param wchmm [in] 木構造化辞書
+ * @param tk [in] 単語末端に到達しているトークン
+ * @param t [in] 現在の時間フレーム
+ * @param final_for_multipath [in] 入力最後の１回処理時 TRUE
  * 
- * @return �����˳�Ǽ���줿�ȥ�ꥹñ��ؤΥݥ���
+ * @return 新たに格納されたトレリス単語へのポインタ
  * </JA>
  * <EN>
  * Store a new trellis word on the token.
@@ -2181,10 +2181,10 @@ save_trellis(BACKTRELLIS *bt, WCHMM_INFO *wchmm, TOKEN2 *tk, int t, boolean fina
  
   sword = wchmm->stend[tk->node];
 
-  /* �������ܸ���ñ�콪ü�Ρ��ɤϡ�ľ���ե졼��ǡ������Ĥä��Ρ���. 
-     (�֤��Υե졼��פǤʤ����Ȥ����ա���)
-     ��äƤ�����, ����(t-1) ��ñ�콪ü�Ȥ���ȥ�ꥹ���ñ�첾��
-     (TRELLIS_ATOM)�Ȥ��ơ�ñ��ȥ�ꥹ��¤�Τ���¸����. */
+  /* この遷移元の単語終端ノードは「直前フレームで」生き残ったノード. 
+     (「このフレーム」でないことに注意！！)
+     よってここで, 時間(t-1) を単語終端とするトレリス上の単語仮説
+     (TRELLIS_ATOM)として，単語トレリス構造体に保存する. */
   /* This source node (= word end node) has been survived in the
      "last" frame (notice: not "this" frame!!).  So this word end
      is saved here to the word trellis structure (BACKTRELLIS) as a
@@ -2216,13 +2216,13 @@ save_trellis(BACKTRELLIS *bt, WCHMM_INFO *wchmm, TOKEN2 *tk, int t, boolean fina
 
 /** 
  * <JA>
- * ñ�����ȡ����󤫤��ñ�������. 
+ * 単語末トークンからの単語間遷移. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param d [i/o] ��1�ѥ�������ꥢ
- * @param tk_ret [in] ���¸���ñ�����ȡ�����
- * @param tre [in] @a tk_ret �����������줿�ȥ�ꥹñ��
- * @param j [in] @a tk_ret �θ��Υȡ�����ꥹ�Ȥ�ID
+ * @param wchmm [in] 木構造化辞書
+ * @param d [i/o] 第1パスワークエリア
+ * @param tk_ret [in] 伝搬元の単語末トークン
+ * @param tre [in] @a tk_ret から生成されたトレリス単語
+ * @param j [in] @a tk_ret の元のトークンリストのID
  * </JA>
  * <EN>
  * Cross-word transition processing from word-end token.
@@ -2258,14 +2258,14 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 
   if (wchmm->lmtype == LM_PROB) {
 
-    /* ���ܸ�ñ�줬����ñ��ν�ü�ʤ顤�ɤ��ؤ����ܤ����ʤ� */
+    /* 遷移元単語が末尾単語の終端なら，どこへも遷移させない */
     /* do not allow transition if the source word is end-of-sentence word */
     if (sword == wchmm->winfo->tail_silwid) return;
 
 #ifdef UNIGRAM_FACTORING
 #ifndef WPAIR
-    /* ���ȤǶ�ͭñ����Ƭ�Ρ��ɤ��Ф���ñ������ܤ�ޤȤ�Ʒ׻����뤿�ᡤ*/
-    /* ���Υ롼����ǤϺ������٤����ñ�콪ü�Ρ��ɤ�Ͽ���Ƥ��� */
+    /* あとで共有単語先頭ノードに対して単語間遷移をまとめて計算するため，*/
+    /* このループ内では最大尤度を持つ単語終端ノードを記録しておく */
     /* here we will record the best wordend node of maximum likelihood
        at this frame, to compute later the cross-word transitions toward
        shared factoring word-head node */
@@ -2280,9 +2280,9 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 #endif
 #endif
     
-    /* N-gram�ˤ����ƤϾ����ñ�����³���θ����ɬ�פ����뤿�ᡤ
-       ������ñ��֤θ����Ψ�ͤ򤹤٤Ʒ׻����Ƥ���. 
-       ����å���� max_successor_prob_iw() ��ǹ�θ. */
+    /* N-gramにおいては常に全単語の接続を考慮する必要があるため，
+       ここで単語間の言語確率値をすべて計算しておく. 
+       キャッシュは max_successor_prob_iw() 内で考慮. */
     /* As all words are possible to connect in N-gram, we first compute
        all the inter-word LM probability here.
        Cache is onsidered in max_successor_prob_iw(). */
@@ -2293,9 +2293,9 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
     }
   }
 
-  /* ���٤Ƥ�ñ���ü�Ρ��ɤ��Ф��ưʲ���¹� */
+  /* すべての単語始端ノードに対して以下を実行 */
   /* for all beginning-of-word nodes, */
-  /* wchmm->startnode[0..stid-1] ... ñ���ü�Ρ��ɥꥹ�� */
+  /* wchmm->startnode[0..stid-1] ... 単語始端ノードリスト */
   /* wchmm->startnode[0..stid-1] ... list of word start node (shared) */
   for (stid = wchmm->startnum - 1; stid >= 0; stid--) {
     next_node = wchmm->startnode[stid];
@@ -2307,16 +2307,16 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
     }
     
     /*****************************************/
-    /* 2.3.1. ñ��ָ��������Ŭ��           */
+    /* 2.3.1. 単語間言語制約を適用           */
     /*        apply cross-word LM constraint */
     /*****************************************/
 	
     if (wchmm->lmtype == LM_PROB) {
-      /* N-gram��Ψ��׻� */
+      /* N-gram確率を計算 */
       /* compute N-gram probability */
 #ifdef UNIGRAM_FACTORING
-      /* wchmm,start2isolate[0..stid-1] ... �Ρ��ɤ�ͭ���ʤ�ñ���
-	 �����̤�ID, ��ͭ����(����å����ɬ�פΤʤ�)ñ��� -1 */
+      /* wchmm,start2isolate[0..stid-1] ... ノードを共有しない単語は
+	 その通しID, 共有する(キャッシュの必要のない)単語は -1 */
       /* wchmm->start2isolate[0..stid-1] ... isolate ID for
 	 beginning-of-word state.  value: -1 for states that has
 	 1-gram factoring value (share nodes with some other words),
@@ -2332,12 +2332,12 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 	tmpprob = iwparray[isoid];
       }
 #else  /* ~WPAIR */
-      /* 1-gram factoring �ˤ�����ñ��ָ����Ψ����å���θ�Ψ��:
-	 1-gram factoring ��ñ������˰�¸���ʤ��Τǡ�
-	 �����ǻ��Ȥ��� factoring �ͤ�¿����
-	 wchmm->fscore[] �˴��˳�Ǽ����, õ��������ѤǤ���. 
-	 ��äƷ׻���ɬ�פ�ñ��(�ɤ�ñ��Ȥ�Ρ��ɤ�ͭ���ʤ�ñ��)
-	 �ˤĤ��ƤΤ� iwparray[] �Ƿ׻�������å��夹��.  */
+      /* 1-gram factoring における単語間言語確率キャッシュの効率化:
+	 1-gram factoring は単語履歴に依存しないので，
+	 ここで参照する factoring 値の多くは
+	 wchmm->fscore[] に既に格納され, 探索中も不変である. 
+	 よって計算が必要な単語(どの単語ともノードを共有しない単語)
+	 についてのみ iwparray[] で計算・キャッシュする.  */
       /* Efficient cross-word LM cache:
 	 As 1-gram factoring values are independent of word context,
 	 they remain unchanged while search.  So, in cross-word LM
@@ -2346,8 +2346,8 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 	 So only the unshared beginning-of-word states are computed and
 	 cached here in iwparray[].
       */
-      /* �׻���ɬ�פǤʤ�ñ����Ƭ�Ρ��ɤϥѥ���ޤȤ�Ƹ�˷׻�����Τ�
-	 �����Ǥϥ����å� */
+      /* 計算が必要でない単語先頭ノードはパスをまとめて後に計算するので
+	 ここではスキップ */
       /* the shared nodes will be computed afterward, so just skip them
 	 here */
       if (isoid == -1) continue;
@@ -2358,9 +2358,9 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 #endif
     }
 
-    /* �������ñ�줬��Ƭñ��ʤ����ܤ����ʤ�. 
-       ����� wchmm.c �ǳ���ñ��� stid ���꿶��ʤ����Ȥ��б�
-       ���Ƥ���Τǡ������Ǥϲ��⤷�ʤ��Ƥ褤 */
+    /* 遷移先の単語が先頭単語なら遷移させない. 
+       これは wchmm.c で該当単語に stid を割り振らないことで対応
+       しているので，ここでは何もしなくてよい */
     /* do not allow transition if the destination word is
        beginning-of-sentence word.  This limitation is realized by
        not assigning 'stid' for the word in wchmm.c, so we have nothing
@@ -2368,7 +2368,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
     */
     
     if (wchmm->category_tree) {
-      /* ʸˡ�ξ��, ����Ϸ���Ū: ���ƥ���������������ʤ��������ܤ����ʤ� */
+      /* 文法の場合, 制約は決定的: カテゴリ対制約上許されない場合は遷移させない */
       /* With DFA and per-category tree lexicon,
 	 LM constraint is deterministic:
 	 do not allow transition if the category connection is not allowed
@@ -2377,7 +2377,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
     }
 
     /*******************************************************************/
-    /* 2.3.2. �������ñ����Ƭ�ؤΥ������׻�(���ܳ�Ψ�ܸ��쥹����)     */
+    /* 2.3.2. 遷移先の単語先頭へのスコア計算(遷移確率＋言語スコア)     */
     /*        compute score of destination node (transition prob + LM) */
     /*******************************************************************/
     tmpsum = tk->score;
@@ -2385,7 +2385,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 
     /* 'tmpsum' now holds outgoing score from the wordend node */
     if (wchmm->lmtype == LM_PROB) {
-      /* ���쥹�������ɲ� */
+      /* 言語スコアを追加 */
       /* add LM score */
       ngram_score_cache = tmpprob * d->lm_weight + d->lm_penalty;
       tmpsum += ngram_score_cache;
@@ -2395,7 +2395,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
       }
     }
     if (wchmm->lmtype == LM_DFA) {
-      /* grammar: ñ�������ڥʥ�ƥ����ɲ� */
+      /* grammar: 単語挿入ペナルティを追加 */
       /* grammar: add insertion penalty */
       ngram_score_cache = d->penalty1;
 #ifdef CLASS_NGRAM
@@ -2413,7 +2413,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
     }
     
     /*********************************************************************/
-    /* 2.3.3. ������Ρ��ɤإȡ���������(ñ���������Ϲ���)             */
+    /* 2.3.3. 遷移先ノードへトークン伝搬(単語履歴情報は更新)             */
     /*        pass token to destination node (updating word-context info */
     /*********************************************************************/
 
@@ -2474,16 +2474,16 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 
 /** 
  * <JA>
- * @brief  1-gram factoring ��ñ������ܤ��ɲý���
+ * @brief  1-gram factoring 用単語間遷移の追加処理
  * 
- * 1-gram factoring ���ѻ��ϡ�ʣ����ñ��֤Ƕ�ͭ����Ƥ���
- * ñ����Ƭ�ΥΡ��� (= factoring ����Ƥ���ñ����Ƭ�Ρ���) �ˤĤ��Ƥϡ�
- * ���٤ơ��Ǥ����٤ι⤤ñ�콪ü��������ܤ����򤵤�롣����������
- * �Ѥ��ơ����δؿ��ǤϤ��餫�������줿�Ǥ����٤ι⤤ñ�콪ü
- * ���顢�ե�������󥰤��줿ñ����Ƭ�Ρ��ɤؤ����ܷ׻�����٤˹Ԥ���
+ * 1-gram factoring 使用時は、複数の単語間で共有されている
+ * 単語先頭のノード (= factoring されている単語先頭ノード) については、
+ * すべて、最も尤度の高い単語終端からの遷移が選択される。この性質を
+ * 用いて、この関数ではあらかじめ求められた最も尤度の高い単語終端
+ * から、ファクタリングされた単語先頭ノードへの遷移計算を一度に行う。
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param d [in] ��1�ѥ��ѥ�����ꥢ
+ * @param wchmm [in] 木構造化辞書
+ * @param d [in] 第1パス用ワークエリア
  * </JA>
  * <EN>
  * @brief  Additional cross-word transition processing for 1-gram factoring.
@@ -2573,20 +2573,20 @@ beam_inter_word_factoring(WCHMM_INFO *wchmm, FSBeam *d)
 
 /** 
  * <JA>
- * @brief  �ե졼��Ʊ���ӡ���õ����ʹԤ���. 
+ * @brief  フレーム同期ビーム探索を進行する. 
  *
- * Ϳ����줿���ե졼��ʬ��õ��������ʤ��. �ޤ����ե졼����˻Ĥä�
- * ñ���ñ��ȥ�ꥹ��¤�Τ���¸����. ���硼�ȥݡ����������ơ�������
- * �ϥ������Ƚ�λ��Ƚ�Ǥ⤳���椫��ƤӽФ����. 
+ * 与えられた１フレーム分，探索処理を進める. また，フレーム内に残った
+ * 単語を単語トレリス構造体に保存する. ショートポーズセグメンテーション時
+ * はセグメント終了の判断もこの中から呼び出される. 
  * 
- * @param t [in] ���ߤΥե졼�� (���Υե졼��ˤĤ��Ʒ׻����ʤ����)
- * @param param [in] ���ϥ٥��ȥ���¤�� (@a t ���ܤΥե졼��Τ��Ѥ�����)
- * @param r [in] ǧ���������󥹥���
- * @param final_for_multipath [i/o] ���ϺǸ�Υե졼����������Ȥ��� TRUE
+ * @param t [in] 現在のフレーム (このフレームについて計算が進められる)
+ * @param param [in] 入力ベクトル列構造体 (@a t 番目のフレームのみ用いられる)
+ * @param r [in] 認識処理インスタンス
+ * @param final_for_multipath [i/o] 入力最後のフレームを処理するときに TRUE
  * 
- * @return TRUE (�̾�ɤ��꽪λ) ���뤤�� FALSE (������õ�������Ǥ���
- * ���: �༡�ǥ����ǥ��󥰻��˥��硼�ȥݡ�����֤򸡽Ф��������ӡ������
- * �����ƥ��֥Ρ��ɿ���0�ˤʤä��Ȥ�)
+ * @return TRUE (通常どおり終了) あるいは FALSE (ここで探索を中断する
+ * 場合: 逐次デコーディング時にショートポーズ区間を検出したか，ビーム内の
+ * アクティブノード数が0になったとき)
  * </JA>
  * <EN>
  * @brief  Frame synchronous beam search: proceed for 2nd frame and later.
@@ -2639,12 +2639,12 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
   lmvar  = r->lmvar;
 
   /*********************/
-  /* 1. �����         */
+  /* 1. 初期化         */
   /*    initialization */
   /*********************/
 
-  /* tl �� tn �������ؤ��ƺ���ΰ���ڤ��ؤ� */
-  /* tl (= ľ���� tn) ��ľ���ե졼��η�̤���� */
+  /* tl と tn を入れ替えて作業領域を切り替え */
+  /* tl (= 直前の tn) は直前フレームの結果を持つ */
   /* swap tl and tn to switch work buffer */
   /* tl (= last tn) holds result of the previous frame */
   d->tl = d->tn;
@@ -2656,12 +2656,12 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
 
 #ifdef UNIGRAM_FACTORING
 #ifndef WPAIR
-  /* 1-gram factoring �Ǥ�ñ����Ƭ�Ǥθ����Ψ�������ľ��ñ��˰�¸���ʤ�
-     ���ᡤñ��� Viterbi �ˤ��������Ф��ľ��ñ���,��ñ��ˤ�餺���̤Ǥ���. 
-     ��ä�ñ�콪ü����factoring�ͤΤ���ñ����Ƭ�ؤ����ܤϣ��ĤˤޤȤ����. 
-     ���������ڤ�����Ω����ñ��ˤĤ��Ƥ�, ñ����Ƭ������˰�¸����2-gram��
-     Ϳ�����뤿��, �����ñ��� Viterbi �ѥ��ϼ�ñ�줴�Ȥ˰ۤʤ�. 
-     ��äƤ����ˤĤ��ƤϤޤȤ᤺���̤˷׻����� */
+  /* 1-gram factoring では単語先頭での言語確率が一定で直前単語に依存しない
+     ため，単語間 Viterbi において選ばれる直前単語は,次単語によらず共通である. 
+     よって単語終端からfactoring値のある単語先頭への遷移は１つにまとめられる. 
+     ただし，木から独立した単語については, 単語先頭で履歴に依存した2-gramが
+     与えられるため, 最尤の単語間 Viterbi パスは次単語ごとに異なる. 
+     よってそれらについてはまとめずに別に計算する */
   /* In 1-gram factoring, the language score on the word-head node is constant
      and independent of the previous word.  So, the same word hypothesis will
      be selected as the best previous word at the inter-word Viterbi
@@ -2684,16 +2684,16 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
   /* node_check_token(d, tl); */
 #endif
 
-  /* �ȡ�����Хåե�������: ľ���ե졼��ǻȤ�줿��ʬ�������ꥢ����Ф褤 */
+  /* トークンバッファを初期化: 直前フレームで使われた部分だけクリアすればよい */
   /* initialize token buffer: for speedup, only ones used in the last call will be cleared */
   clear_tokens(d, tl);
 
   /**************************/
-  /* 2. Viterbi�׻�         */
+  /* 2. Viterbi計算         */
   /*    Viterbi computation */
   /**************************/
-  /* ľ���ե졼�फ�餳�Υե졼��ؤ� Viterbi �׻���Ԥʤ� */
-  /* tindex[tl][n_start..n_end] ��ľ���ե졼���̥Ρ��ɤ�ID����Ǽ����Ƥ��� */
+  /* 直前フレームからこのフレームへの Viterbi 計算を行なう */
+  /* tindex[tl][n_start..n_end] に直前フレーム上位ノードのIDが格納されている */
   /* do one viterbi computation from last frame to this frame */
   /* tindex[tl][n_start..n_end] holds IDs of survived nodes in last frame */
 
@@ -2703,7 +2703,7 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
     /*********************************/
 
     for (j = d->n_start; j <= d->n_end; j++) {
-      /* tk: �оݥȡ�����  node: ���Υȡ����������ڹ�¤������Ρ���ID */
+      /* tk: 対象トークン  node: そのトークンを持つ木構造化辞書ノードID */
       /* tk: token data  node: lexicon tree node ID that holds the 'tk' */
       tk = &(d->tlist[tl][d->tindex[tl][j]]);
       if (tk->score <= LOG_ZERO) continue; /* invalid node */
@@ -2715,19 +2715,19 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
 #endif
       node = tk->node;
       /*********************************/
-      /* 2.1. ñ��������               */
+      /* 2.1. 単語内遷移               */
       /*      word-internal transition */
       /*********************************/
       beam_intra_word(wchmm, d, &tk, j);
     }
     /*******************************************************/
-    /* 2.2. �������ǥȡ�����򥽡��Ȥ��ӡ�����ʬ�ξ�̤���� */
+    /* 2.2. スコアでトークンをソートしビーム幅分の上位を決定 */
     /*    sort tokens by score up to beam width            */
     /*******************************************************/
     sort_token_no_order(d, r->trellis_beam_width, &(d->n_start), &(d->n_end));
   
     /*************************/
-    /* 2.3. ñ���Viterbi�׻�  */
+    /* 2.3. 単語間Viterbi計算  */
     /*    cross-word viterbi */
     /*************************/
     for(j = d->n_start; j <= d->n_end; j++) {
@@ -2739,12 +2739,12 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
 	continue;
       }
 #endif
-      /* ���ܸ��Ρ��ɤ�ñ�콪ü�ʤ�� */
+      /* 遷移元ノードが単語終端ならば */
       /* if source node is end state of a word, */
       if (wchmm->stend[node] != WORD_INVALID) {
 
 	/**************************/
-	/* 2.4. �ȥ�ꥹñ����¸  */
+	/* 2.4. トレリス単語保存  */
 	/*      save trellis word */
 	/**************************/
 #ifdef SPSEGMENT_NAIST
@@ -2756,20 +2756,20 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
 #else
 	tre = save_trellis(r->backtrellis, wchmm, tk, t, final_for_multipath);
 #endif
-	/* �ǽ��ե졼��Ǥ���Ф����ޤǡ����ܤϤ����ʤ� */
+	/* 最終フレームであればここまで：遷移はさせない */
 	/* If this is a final frame, does not do cross-word transition */
 	if (final_for_multipath) continue;
-	/* ñ��ǧ���⡼�ɤǤ�ñ������ܤ�ɬ�פʤ� */
+	/* 単語認識モードでは単語間遷移は必要ない */
 	if (lmvar == LM_DFA_WORD) continue;
 
 	/******************************/
-	/* 2.5. ñ�������            */
+	/* 2.5. 単語間遷移            */
 	/*      cross-word transition */
 	/******************************/
 
 #ifdef UNIGRAM_FACTORING
-	/* �����ǽ��������Τ� isolated words �Τߡ�
-	   shared nodes �ϤޤȤ�Ƥ��Υ롼�פγ��Ƿ׻����� */
+	/* ここで処理されるのは isolated words のみ，
+	   shared nodes はまとめてこのループの外で計算する */
 	/* Only the isolated words will be processed here.
 	   The shared nodes with constant factoring values will be computed
 	   after this loop */
@@ -2789,7 +2789,7 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
     /*********************************/
 
     for (j = d->n_start; j <= d->n_end; j++) {
-      /* tk: �оݥȡ�����  node: ���Υȡ����������ڹ�¤������Ρ���ID */
+      /* tk: 対象トークン  node: そのトークンを持つ木構造化辞書ノードID */
       /* tk: token data  node: lexicon tree node ID that holds the 'tk' */
       tk = &(d->tlist[tl][d->tindex[tl][j]]);
       if (tk->score <= LOG_ZERO) continue; /* invalid node */
@@ -2802,17 +2802,17 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
       node = tk->node;
       
       /*********************************/
-      /* 2.1. ñ��������               */
+      /* 2.1. 単語内遷移               */
       /*      word-internal transition */
       /*********************************/
       beam_intra_word(wchmm, d, &tk, j);
 
-      /* ���ܸ��Ρ��ɤ�ñ�콪ü�ʤ�� */
+      /* 遷移元ノードが単語終端ならば */
       /* if source node is end state of a word, */
       if (wchmm->stend[node] != WORD_INVALID) {
 	
 	/**************************/
-	/* 2.2. �ȥ�ꥹñ����¸  */
+	/* 2.2. トレリス単語保存  */
 	/*      save trellis word */
 	/**************************/
 #ifdef SPSEGMENT_NAIST
@@ -2824,17 +2824,17 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
 #else
 	tre = save_trellis(r->backtrellis, wchmm, tk, t, final_for_multipath);
 #endif
-	/* ñ��ǧ���⡼�ɤǤ�ñ������ܤ�ɬ�פʤ� */
+	/* 単語認識モードでは単語間遷移は必要ない */
 	if (lmvar == LM_DFA_WORD) continue;
 
 	/******************************/
-	/* 2.3. ñ�������            */
+	/* 2.3. 単語間遷移            */
 	/*      cross-word transition */
 	/******************************/
 	
 #ifdef UNIGRAM_FACTORING
-	/* �����ǽ��������Τ� isolated words �Τߡ�
-	   shared nodes �ϤޤȤ�Ƥ��Υ롼�פγ��Ƿ׻����� */
+	/* ここで処理されるのは isolated words のみ，
+	   shared nodes はまとめてこのループの外で計算する */
 	/* Only the isolated words will be processed here.
 	   The shared nodes with constant factoring values will be computed
 	   after this loop */
@@ -2855,7 +2855,7 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
   if (lmtype == LM_PROB) {
 
     /***********************************************************/
-    /* 2.x ñ�콪ü����factoring�դ�ñ����Ƭ�ؤ����� ***********/
+    /* 2.x 単語終端からfactoring付き単語先頭への遷移 ***********/
     /*    transition from wordend to shared (factorized) nodes */
     /***********************************************************/
     /* d->wordend_best_* holds the best word ends at this frame. */
@@ -2867,13 +2867,13 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
 #endif /* UNIGRAM_FACTORING */
 
   /***************************************/
-  /* 3. ���֤ν��ϳ�Ψ�׻�               */
+  /* 3. 状態の出力確率計算               */
   /*    compute state output probability */
   /***************************************/
 
-  /* ���ʤ�ͭ���Ρ��ɤˤĤ��ƽ��ϳ�Ψ��׻����ƥ������˲ä��� */
+  /* 次段の有効ノードについて出力確率を計算してスコアに加える */
   /* compute outprob for new valid (token assigned) nodes and add to score */
-  /* �����äƤ���Τ����Ϥκǽ��ե졼��ξ����ϳ�Ψ�Ϸ׻����ʤ� */
+  /* 今扱っているのが入力の最終フレームの場合出力確率は計算しない */
   /* don't calculate the last frame (transition only) */
 
 #ifdef SCORE_PRUNING
@@ -2913,18 +2913,18 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
   }
 #endif
   /*******************************************************/
-  /* 4. �������ǥȡ�����򥽡��Ȥ��ӡ�����ʬ�ξ�̤���� */
+  /* 4. スコアでトークンをソートしビーム幅分の上位を決定 */
   /*    sort tokens by score up to beam width            */
   /*******************************************************/
 
-  /* tlist[tl]���ʤΤ���˥ꥻ�å� */
+  /* tlist[tl]を次段のためにリセット */
   clear_tlist(d, tl);
 
-  /* �ҡ��ץ����Ȥ��Ѥ��Ƥ����ʤΥΡ��ɽ��礫����(bwidth)�Ĥ����Ƥ��� */
-  /* (�����ν����ɬ�פʤ�) */
+  /* ヒープソートを用いてこの段のノード集合から上位(bwidth)個を得ておく */
+  /* (上位内の順列は必要ない) */
   sort_token_no_order(d, r->trellis_beam_width, &(d->n_start), &(d->n_end));
   /***************/
-  /* 5. ��λ���� */
+  /* 5. 終了処理 */
   /*    finalize */
   /***************/
 
@@ -2936,7 +2936,7 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
     r->have_interim = FALSE;
     if (t > 0) {
       if (r->config->output.progout_flag) {
-	/* ��������: ���ե졼��Υ٥��ȥѥ��������֤����˾�񤭽��� */
+	/* 漸次出力: 現フレームのベストパスを一定時間おきに上書き出力 */
 	/* progressive result output: output current best path in certain time interval */
 	if (((t-1) % r->config->output.progout_interval_frame) == 0) {
 	  r->have_interim = TRUE;
@@ -2961,7 +2961,7 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
   }
 #endif
     
-  /* �ӡ�����Ρ��ɿ��� 0 �ˤʤäƤ��ޤä��顤������λ */
+  /* ビーム内ノード数が 0 になってしまったら，強制終了 */
   if (d->tnum[tn] == 0) {
     jlog("ERROR: get_back_trellis_proceed: %02d %s: frame %d: no nodes left in beam, now terminates search\n", r->config->id, r->config->name, t);
     return(FALSE);
@@ -2973,19 +2973,19 @@ get_back_trellis_proceed(int t, HTK_Param *param, RecogProcess *r, boolean final
 
 /*************************************************/
 /* frame synchronous beam search --- last frame  */
-/* �ե졼��Ʊ���ӡ���õ���μ¹� --- �ǽ��ե졼�� */
+/* フレーム同期ビーム探索の実行 --- 最終フレーム */
 /*************************************************/
 
 /** 
  * <JA>
- * @brief  �ե졼��Ʊ���ӡ���õ�����ǽ��ե졼��
+ * @brief  フレーム同期ビーム探索：最終フレーム
  *
- * �裱�ѥ��Υե졼��Ʊ���ӡ���õ����λ���뤿��ˡ�
- * (param->samplenum -1) �κǽ��ե졼����Ф��뽪λ������Ԥ�. 
+ * 第１パスのフレーム同期ビーム探索を終了するために，
+ * (param->samplenum -1) の最終フレームに対する終了処理を行う. 
  * 
  * 
- * @param param [in] ���ϥ٥��ȥ��� (param->samplenum ���ͤΤ��Ѥ�����)
- * @param r [in] ����ǧ���������󥹥���
+ * @param param [in] 入力ベクトル列 (param->samplenum の値のみ用いられる)
+ * @param r [in] 音声認識処理インスタンス
  * </JA>
  * <EN>
  * @brief  Frame synchronous beam search: last frame
@@ -3012,21 +3012,21 @@ get_back_trellis_end(HTK_Param *param, RecogProcess *r)
   wchmm = r->wchmm;
   d = &(r->pass1);
 
-  /* �Ǹ�˥ӡ�����˻Ĥä�ñ�콪ü�ȡ������������� */
+  /* 最後にビーム内に残った単語終端トークンを処理する */
   /* process the last wordend tokens */
 
 
   if (r->am->hmminfo->multipath) {
     /* MULTI-PATH VERSION */
 
-    /* ñ�����Ρ��ɤؤ����ܤΤ߷׻� */
+    /* 単語末ノードへの遷移のみ計算 */
     /* only arcs to word-end node is calculated */
     get_back_trellis_proceed(param->samplenum, param, r, TRUE);
 
   } else {
     /* NORMAL VERSION */
 
-    /* �Ǹ�����ܤΤ��Ȥ�ñ�콪ü������Ԥ� */
+    /* 最後の遷移のあとの単語終端処理を行う */
     /* process the word-ends at the last frame */
     d->tl = d->tn;
     if (d->tn == 0) d->tn = 1; else d->tn = 0;
@@ -3045,23 +3045,23 @@ get_back_trellis_end(HTK_Param *param, RecogProcess *r)
 }
 
 /*************************/
-/* õ����λ --- ��λ���� */
+/* 探索終了 --- 終了処理 */
 /* end of search         */
 /*************************/
 /** 
  * <JA>
- * @brief  �裱�ѥ��ν�λ������Ԥ�. 
+ * @brief  第１パスの終了処理を行う. 
  *
- * ���δؿ��� get_back_trellis_end() ��ľ��˸ƤФ졤�裱�ѥ��ν�λ������
- * �Ԥ�. ��������ñ��ȥ�ꥹ��¤�Τκǽ�Ū�ʸ������Ԥ��裲�ѥ���
- * ����������ǽ�ʷ����������Ѵ�����. �ޤ���
- * ����ΥХå��ȥ졼����Ԥ��裱�ѥ��Υ٥��Ȳ������Ϥ���. 
+ * この関数は get_back_trellis_end() の直後に呼ばれ，第１パスの終了処理を
+ * 行う. 生成した単語トレリス構造体の最終的な後処理を行い第２パスで
+ * アクセス可能な形に内部を変換する. また，
+ * 仮説のバックトレースを行い第１パスのベスト仮説を出力する. 
  * 
- * @param r [in] ǧ���������󥹥���
- * @param len [in] �裱�ѥ��ǽ������줿�ǽ�Ū�ʥե졼��Ĺ
+ * @param r [in] 認識処理インスタンス
+ * @param len [in] 第１パスで処理された最終的なフレーム長
  * 
- * @return �裱�ѥ��κ��ಾ����������١����뤤�ϲ��⤬���Ĥ���ʤ����
- * �� LOG_ZERO. 
+ * @return 第１パスの最尤仮説の累積尤度，あるいは仮説が見つからない場合
+ * は LOG_ZERO. 
  * </JA>
  * <EN>
  * @brief  Finalize the 1st pass.
@@ -3091,7 +3091,7 @@ finalize_1st_pass(RecogProcess *r, int len)
  
   backtrellis->framelen = len;
 
-  /* ñ��ȥ�ꥹ(backtrellis) ������: �ȥ�ꥹñ��κ����֤ȥ����� */
+  /* 単語トレリス(backtrellis) を整理: トレリス単語の再配置とソート */
   /* re-arrange backtrellis: index them by frame, and sort by word ID */
 
   bt_relocate_rw(backtrellis);
@@ -3105,7 +3105,7 @@ finalize_1st_pass(RecogProcess *r, int len)
     return;
   }
 
-  /* ��1�ѥ��Υ٥��ȥѥ����̤˳�Ǽ���� */
+  /* 第1パスのベストパスを結果に格納する */
   /* store 1st pass result (best hypothesis) to result */
   if (r->lmvar == LM_DFA_WORD) {
     find_1pass_result_word(len, r);
@@ -3119,7 +3119,7 @@ finalize_1st_pass(RecogProcess *r, int len)
  * Free work area for the first pass
  * </EN>
  * <JA>
- * ��1�ѥ��Τ���Υ�����ꥢ�ΰ��������
+ * 第1パスのためのワークエリア領域を開放する
  * </JA>
  * 
  * @param d [in] work are for 1st pass input handling

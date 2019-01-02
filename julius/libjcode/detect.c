@@ -1,14 +1,14 @@
 /*
- * detect.c - libjcode ¥³¡¼¥É¼«Æ°È½Äê¥ë¡¼¥Á¥ó
+ * detect.c - libjcode ã‚³ãƒ¼ãƒ‰è‡ªå‹•åˆ¤å®šãƒ«ãƒ¼ãƒãƒ³
  *                (C) Kuramitsu Kimio, Tokyo Univ. 1996-97 
  *
- * Ken Lunde Ãø ¡ÖÆüËÜ¸ì¾ðÊó½èÍý¡× ¤È jconv.c ¤ò»²¹Í¤Ëºî¤ê 
- * ¤Þ¤·¤¿¡£
- * CGI ¥×¥í¥°¥é¥à¤Ç¤ÎÍøÍÑ¤ò¹Í¤¨¤Æ¡¢¤Ò¤é¤¬¤Ê¡¢¤«¤¿¤«¤Ê¤ÎÊÂ¤Ó
- * ¤Ë¤è¤ëSJIS, EUC ¤Î¿äÄê¥¢¥ë¥´¥ê¥º¥àÅù¤ò²Ã¤¨¤Æ¤¢¤ê¤Þ¤¹¡£
+ * Ken Lunde è‘— ã€Œæ—¥æœ¬èªžæƒ…å ±å‡¦ç†ã€ ã¨ jconv.c ã‚’å‚è€ƒã«ä½œã‚Š 
+ * ã¾ã—ãŸã€‚
+ * CGI ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã§ã®åˆ©ç”¨ã‚’è€ƒãˆã¦ã€ã²ã‚‰ãŒãªã€ã‹ãŸã‹ãªã®ä¸¦ã³
+ * ã«ã‚ˆã‚‹SJIS, EUC ã®æŽ¨å®šã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ç­‰ã‚’åŠ ãˆã¦ã‚ã‚Šã¾ã™ã€‚
  *
- * ¹¹¿·ÍúÎò
- *       - jcode.pl¤ÎSJIS/EUCÈ½Äê¤Ë¥³¡¼¥É¤òÍÑ¤¤¤¿
+ * æ›´æ–°å±¥æ­´
+ *       - jcode.plã®SJIS/EUCåˆ¤å®šã«ã‚³ãƒ¼ãƒ‰ã‚’ç”¨ã„ãŸ
  *                Yasuyuki Furukawa (yasu@on.cs.keio.ac.jp)
  */
 
@@ -21,7 +21,7 @@ void printDetectCode(int detected);
 int detectKanjiCode(char *str);
 
 
-/* ------------------------------------------------------ ´Á»ú¥³¡¼¥É¤Î¼±ÊÌ --*/
+/* ------------------------------------------------------ æ¼¢å­—ã‚³ãƒ¼ãƒ‰ã®è­˜åˆ¥ --*/
 
 static int _detect(unsigned char *str, int expected)
 {
@@ -29,13 +29,13 @@ static int _detect(unsigned char *str, int expected)
 
   while((c = (int)*str)!= '\0') {
 
-    /* JIS ¥³¡¼¥É¤ÎÈ½Äê */
+    /* JIS ã‚³ãƒ¼ãƒ‰ã®åˆ¤å®š */
     if(c == ESC) {
       if((c = (int)*(++str)) == '\0') return expected; 
       if (c == '$') {
 	if((c = (int)*(++str)) == '\0') return expected; 
-	/* ESC $ B --> ¿·JIS 
-	   ESC $ @ --> µìJIS */
+	/* ESC $ B --> æ–°JIS 
+	   ESC $ @ --> æ—§JIS */
 	if (c == 'B' || c == '@') return JIS;
       }
 #ifdef NECKANJI
@@ -46,7 +46,7 @@ static int _detect(unsigned char *str, int expected)
       continue;
     }
     
-    /* SJIS ¤Ë°ì°Õ¤Ë·èÄê */
+    /* SJIS ã«ä¸€æ„ã«æ±ºå®š */
     if ((c >= 129 && c <= 141) || (c >= 143 && c <= 159))
         return SJIS;
     /* SS2 */
@@ -102,9 +102,9 @@ static int _detect(unsigned char *str, int expected)
   return expected;
 }
 
-/* ---------------------------------------------------SJIS ¤« EUC ¤ÎÈ½Äê -- */
-/* ÆüËÜ¸ì¤ÎÆÃÄ§(¤Ò¤é¤¬¤Ê¡¢¥«¥¿¥«¥Ê)¤«¤éÈ½Äê¤¹¤ë¤¿¤á¡¢
-   È½Äê¥ß¥¹¤¬È¯À¸¤¹¤ë¾ì¹ç¤â¤¢¤ê¤Þ¤¹¡£ */
+/* ---------------------------------------------------SJIS ã‹ EUC ã®åˆ¤å®š -- */
+/* æ—¥æœ¬èªžã®ç‰¹å¾´(ã²ã‚‰ãŒãªã€ã‚«ã‚¿ã‚«ãƒŠ)ã‹ã‚‰åˆ¤å®šã™ã‚‹ãŸã‚ã€
+   åˆ¤å®šãƒŸã‚¹ãŒç™ºç”Ÿã™ã‚‹å ´åˆã‚‚ã‚ã‚Šã¾ã™ã€‚ */
 
 static int _detect_euc_or_sjis(unsigned char *str) {
   int c1, c2;
@@ -142,7 +142,7 @@ static int _detect_euc_or_sjis(unsigned char *str) {
   return expected;
 }
 
-/* ---------------------------------------------------------- Public ´Ø¿ô -- */
+/* ---------------------------------------------------------- Public é–¢æ•° -- */
 
 
 #ifdef DEBUG
@@ -181,19 +181,19 @@ int detectKanjiCode(char *str)
 
   if(!str) return (0);
 
-  /* JIS, EUC, SJIS, EUCORSJIS ¤ÎÈ½Äê */
+  /* JIS, EUC, SJIS, EUCORSJIS ã®åˆ¤å®š */
   detected = _detect((unsigned char *)str, ASCII);
 
-  /* ¿·JIS, µìJIS, NEC JIS ¤Î¾ì¹ç¡¢JIS ¤ËÊÑ¹¹¤¹¤ë */
+  /* æ–°JIS, æ—§JIS, NEC JIS ã®å ´åˆã€JIS ã«å¤‰æ›´ã™ã‚‹ */
   if(detected == NEW || detected == OLD || detected == NEC)
     return JIS;
 
-  /* SJIS ¤« EUC ¤Î¶èÊÌ¤ò¥«¥Ê¤ÎÊÂ¤Ó¤«¤é¿äÄê¤¹¤ë */
+  /* SJIS ã‹ EUC ã®åŒºåˆ¥ã‚’ã‚«ãƒŠã®ä¸¦ã³ã‹ã‚‰æŽ¨å®šã™ã‚‹ */
   if(detected == EUCORSJIS)
 #ifdef KANA_NARABI
     detected = _detect_euc_or_sjis((unsigned char *)str);
 #else
-    detected = EUC;  /* ¥Ç¥Õ¥©¥ë¥È EUC */
+    detected = EUC;  /* ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ EUC */
 #endif
 #ifdef DEBUG
     printDetectCode(detected);

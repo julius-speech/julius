@@ -6,7 +6,7 @@
  * </EN>
  * 
  * <JA>
- * @brief  API��Ϣ�ؿ������ƤǤϤʤ���
+ * @brief  API関連関数（全てではない）
  * </JA>
  * 
  * @author Akinobu Lee

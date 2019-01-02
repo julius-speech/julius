@@ -4,92 +4,92 @@ MKBINGRAM(1)                                                      MKBINGRAM(1)
 
 
 
-���O
+名前
            mkbingram
-          - �o�C�i�� N-gram �ϊ�
+          - バイナリ N-gram 変換
 
-�T�v
+概要
        mkbingram [-nlr forward_ngram.arpa] [-nrl backward_ngram.arpa]
                  [-d old_bingram_file] {output_bingram_file}
 
 DESCRIPTION
-       mkbingram �́CARPA�`���� N-gram ��`�t�@�C����Julius�p�̃o�C�i��N-gram
-       �t�@�C���ɕϊ�����c�[���ł��D���炩���ߕϊ����Ă������ƂŁCJulius�̋N
-       ����啝�ɍ������ł��܂��D
+       mkbingram は，ARPA形式の N-gram 定義ファイルをJulius用のバイナリN-gram
+       ファイルに変換するツールです．あらかじめ変換しておくことで，Juliusの起
+       動を大幅に高速化できます．
 
-       Julius-4���CN-gram �͑O�����C�������C���邢�͗������w��ł���悤
-       �ɂȂ�܂����Dmkbingram �ł��C�ǂ��炩��������Ńo�C�i��N-gram���쐬��
-       �邱 �Ƃ��ł��܂��D�܂��C�������w�肵���ꍇ�́C�����2��N-gram�͈��
-       �̃o �C�i��N-gram�Ɍ�������܂��D
+       Julius-4より，N-gram は前向き，後ろ向き，あるいは両方を指定できるよう
+       になりました．mkbingram でも，どちらか一方だけでバイナリN-gramを作成す
+       るこ とができます．また，両方を指定した場合は，それら2つのN-gramは一つ
+       のバ イナリN-gramに結合されます．
 
-       �O����N-gram�݂̂��w�肳�ꂽ�Ƃ��Cmkbingram �� �O����N-gram��������o
-       �C�i��N-gram�𐶐����܂��D���̃o�C�i��N-gram���g���Ƃ��CJulius �͂���
-       ���� 2-gram ���g���đ�1�p�X���s���C��2 �p �X�ł͂��̑O�����m��������
-       ���̊m�����C�x�C�Y���ɏ]���ĎZ�o���Ȃ���F�����s���܂��D
+       前向きN-gramのみが指定されたとき，mkbingram は 前向きN-gramだけからバ
+       イナリN-gramを生成します．このバイナリN-gramを使うとき，Julius はその
+       中の 2-gram を使って第1パスを行い，第2 パ スではその前向き確率から後向
+       きの確率を，ベイズ則に従って算出しながら認識を行います．
 
-       �����N-gram�݂̂��w�肳�ꂽ�Ƃ��Cmkbingram�͌�����N-gram��������o
-       �C�i��N-gram�𐶐����܂��D���̃o�C�i��N-gram���g���Ƃ��CJulius �͂���
-       ���̌���� 2-gram ����x�C�Y���ɏ]���ĎZ�o���Ȃ����1�p�X�̔F�����s���C
-       ��2�p�X�ł͌���� N-gram���g�����F�����s���܂��D
+       後向きN-gramのみが指定されたとき，mkbingramは後ろ向きN-gramだけからバ
+       イナリN-gramを生成します．このバイナリN-gramを使うとき，Julius はその
+       中の後向き 2-gram からベイズ則に従って算出しながら第1パスの認識を行い，
+       第2パスでは後向き N-gramを使った認識を行います．
 
-       �������w�肳�ꂽ�Ƃ��́C�O����N-gram����2-gram�ƌ����N-gram����������
-       ���o�C�i��N-gram����������܂��DJulius�ł͂��̑O����2-gram�ő�1�p�X��
-       �s���C�����N-gram�ő�2�p�X���s���܂��D�Ȃ��� N-gram �͓���̃R�[�p�X
-       ���瓯 ��̏����i�J�b�g�I�t�l�C�o�b�N�I�t�v�Z���@���j�Ŋw�K����Ă���C
-       ����̌�b�������Ă���K�v������܂��D
+       両方が指定されたときは，前向きN-gram中の2-gramと後向きN-gramが統合され
+       たバイナリN-gramが生成されます．Juliusではその前向き2-gramで第1パスを
+       行い，後向きN-gramで第2パスを行います．なお両 N-gram は同一のコーパス
+       から同 一の条件（カットオフ値，バックオフ計算方法等）で学習されてあり，
+       同一の語彙を持っている必要があります．
 
-       �Ȃ��Cmkbingram �� gzip ���k���ꂽ ARPA �t�@�C�������̂܂ܓǂݍ��߂�
-       ���D
+       なお，mkbingram は gzip 圧縮された ARPA ファイルもそのまま読み込めま
+       す．
 
-       �܂��C�o�[�W���� 4.2.3���o�C�i��N-gram���̕����R�[�h�̕ϊ����� �\�ɂ�
-       ��܂����D
+       また，バージョン 4.2.3よりバイナリN-gram内の文字コードの変換が可 能にな
+       りました．
 
-       �o�[�W���� 3.x �ȑO�ō쐬�����o�C�i��N-gram�́C���̂܂� 4.0 �ł��ǂ߂�
-       ���Dmkbingram �� -d �ŗ^���邱�ƂŁC�Â��o�C�i���`�� ��V�����o�C�i���`
-       ���ɕϊ����邱�Ƃ��ł��܂��D�Ȃ��C4.0 �ȍ~�� mkbingram �ō쐬�����o�C�i
-       ��N-gram�t�@�C����3.x �ȑO�̃o�[�W�����ł� �g���܂���̂ł����ӂ�����
-       ���D
+       バージョン 3.x 以前で作成したバイナリN-gramは，そのまま 4.0 でも読めま
+       す．mkbingram に -d で与えることで，古いバイナリ形式 を新しいバイナリ形
+       式に変換することもできます．なお，4.0 以降の mkbingram で作成したバイナ
+       リN-gramファイルは3.x 以前のバージョンでは 使えませんのでご注意くださ
+       い．
 
 OPTIONS
         -nlr  forward_ngram.arpa
-           �O�����ileft-to-right�j��ARPA�`�� N-gram �t�@�C����ǂݍ���
+           前向き（left-to-right）のARPA形式 N-gram ファイルを読み込む
 
         -nrl  backward_ngram.arpa
-           �������iright-to-left�j��ARPA�`�� N-gram �t�@�C����ǂݍ���
+           後ろ向き（right-to-left）のARPA形式 N-gram ファイルを読み込む
 
         -d  old_bingram_file
-           �o�C�i��N-gram��ǂݍ��ށi�Â��o�C�i���`���̕ϊ��p�j
+           バイナリN-gramを読み込む（古いバイナリ形式の変換用）
 
         -swap
-           �����L�� <s> �ƕ����L�� </s> �����ւ���D
+           文頭記号 <s> と文末記号 </s> を入れ替える．
 
         -c  from to
-           �o�C�i��N-gram���̕����R�[�h��ϊ�����D�ifrom, to�͕����R�[�h��\
-           ��������j
+           バイナリN-gram内の文字コードを変換する．（from, toは文字コードを表
+           す文字列）
 
        output_bingram_file
-           �o�͐�̃o�C�i��N-gram�t�@�C����
+           出力先のバイナリN-gramファイル名
 
 EXAMPLES
-       ARPA�`���� N-gram ���o�C�i���`���ɕϊ�����i�O����+�������j�F
-       ARPA�`���̑O���� 4-gram ���o�C�i���`���ɕϊ�����i�O�����̂݁j�F
-       �Â��o�C�i��N-gram�t�@�C�������݂̌`���ɕϊ�����F
+       ARPA形式の N-gram をバイナリ形式に変換する（前向き+後ろ向き）：
+       ARPA形式の前向き 4-gram をバイナリ形式に変換する（前向きのみ）：
+       古いバイナリN-gramファイルを現在の形式に変換する：
 
 SEE ALSO
         julius ( 1 ) ,
         mkbinhmm ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 

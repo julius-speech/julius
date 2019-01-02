@@ -2,15 +2,15 @@
  * @file   record.c
  * 
  * <JA>
- * @brief  ǧ���������ϲ�����ե��������¸����. 
+ * @brief  認識した入力音声をファイルに保存する. 
  *
- * ���Ϥ��줿�����ǡ�����1�Ĥ��ĥե��������¸����. 
- * �ե�����̾��Ͽ�����Υ����ॹ����פ��� "YYYY.MMDD.HHMMSS.wav" �Ȥʤ�. 
- * �ե���������� Microsoft WAVE format, 16bit, PCM (̵����) �Ǥ���. 
+ * 入力された音声データを1つずつファイルに保存する. 
+ * ファイル名は録音時のタイムスタンプから "YYYY.MMDD.HHMMSS.wav" となる. 
+ * ファイル形式は Microsoft WAVE format, 16bit, PCM (無圧縮) である. 
  *
- * Ͽ���Ϥ��ä������˳��ݤ��줺�ˡ����Ϥ�ʿ�Ԥ��ƥե������ľ��
- * �񤭹��ޤ�롣�ǽ�ϰ���ե�����˵�Ͽ���졢Ͽ����λ��ʡ���1�ѥ�
- * ��λ��ˤ˾嵭�η����Υե�����̾���ѹ�����롣
+ * 録音はいったんメモリに確保されずに、入力と平行してファイルに直接
+ * 書き込まれる。最初は一時ファイルに記録され、録音終了後（＝第1パス
+ * 終了後）に上記の形式のファイル名に変更される。
  * </JA>
  * 
  * <EN>
@@ -52,10 +52,10 @@ static boolean open_error = FALSE;
 
 /** 
  * <JA>
- * �����ƥ���֤���١����ե�����̾���������. 
+ * システム時間からベースファイル名を作成する. 
  * 
- * @param t [out] ��̤��Ǽ����ʸ����Хåե�
- * @param maxlen [in] @a t �κ���Ĺ
+ * @param t [out] 結果を格納する文字列バッファ
+ * @param maxlen [in] @a t の最大長
  * </JA>
  * <EN>
  * Make base filename string from current system time.
@@ -78,12 +78,12 @@ timestring(char *t, int maxlen)
 
 /** 
  * <JA>
- * �١����ե�����̾����ºݤΥѥ�̾���������. �ǥ��쥯�ȥ������ѿ�
- * record_dirname �Ǥ��餫������ꤵ��Ƥ���. 
+ * ベースファイル名から実際のパス名を作成する. ディレクトリは大域変数
+ * record_dirname であらかじめ指定されている. 
  * 
- * @param buf [out] ��̤Υѥ�̾���Ǽ����Хåե��ؤΥݥ���
- * @param buflen [in] @a buf �κ���Ĺ
- * @param filename [in] �١����ե�����̾
+ * @param buf [out] 結果のパス名を格納するバッファへのポインタ
+ * @param buflen [in] @a buf の最大長
+ * @param filename [in] ベースファイル名
  * </JA>
  * <EN>
  * Make actual file path name from base file name.  The recording directory
@@ -112,10 +112,10 @@ make_record_filename(char *buf, int buflen, char *basename, char *dirname)
 
 /** 
  * <JA>
- * ����ե�����̾���������. 
+ * 一時ファイル名を作成する. 
  * 
- * @param buf [out] ��̤Υե�����̾���Ǽ����ݥ���
- * @param buflen [in] @a buf �κ���Ĺ
+ * @param buf [out] 結果のファイル名を格納するポインタ
+ * @param buflen [in] @a buf の最大長
  * </JA>
  * <EN>
  * Make temporary filename to store the incoming data while recording.
@@ -136,7 +136,7 @@ make_tmp_filename(char *buf, int buflen, char *dirname)
 
 /** 
  * <JA>
- * Ͽ���Τ���˰���ե�����򥪡��ץ󤹤�. 
+ * 録音のために一時ファイルをオープンする. 
  * 
  * </JA>
  * <EN>
@@ -165,10 +165,10 @@ record_sample_open(Recog *recog, void *dummy)
 
 /** 
  * <JA>
- * ���ϲ������Ҥ�ե�������ɲõ�Ͽ����. 
+ * 入力音声断片をファイルに追加記録する. 
  * 
- * @param speech [in] �����ǡ����ΥХåե�
- * @param samplenum [in] �����ǡ�����Ĺ���ʥ���ץ����
+ * @param speech [in] 音声データのバッファ
+ * @param samplenum [in] 音声データの長さ（サンプル数）
  * </JA>
  * <EN>
  * Append speech segment to file previously opened by record_sample_open().
@@ -204,7 +204,7 @@ record_sample_write(Recog *recog, SP16 *speech, int samplenum, void *dummy)
 
 /** 
  * <JA>
- * Ͽ����λ����. Ͽ���Ѥΰ���ե�����򥯥��������������̾����rename���롣
+ * 録音を終了する. 録音用の一時ファイルをクローズし、本来の名前にrenameする。
  * 
  * </JA>
  * <EN>

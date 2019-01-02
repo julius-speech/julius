@@ -2,19 +2,19 @@
  * @file   wav2mfcc.c
  * 
  * <JA>
- * @brief  ��ħ�̥٥��ȥ�(MFCC)����λ��С���»����ǡ�
+ * @brief  特徴量ベクトル(MFCC)系列の算出（非実時間版）
  *
- * ���Ϥ��줿�����ȷ����顤��ħ�٥��ȥ�������Ф��ޤ�. 
- * Julius/Julian����ФǤ�����ħ�٥��ȥ�ϡ�MFCC ��Ǥ�ռ������Τ�Τǡ�
- * _0, _E, _D, _A, _Z, _N ��Ǥ�դ��ȹ�碌�򥵥ݡ��Ȥ��ޤ�. 
- * ���Τۤ�����Ĺ��ե졼�ॷ�եȡ��Ӱ襫�åȤʤɤΥѥ�᡼�������Ǥ��ޤ�. 
- * ǧ�����ˤϡ�������ǥ�Υإå��ȥ����å����Ԥ�졤CMN��̵ͭ�ʤ�
- * �����ꤵ��ޤ�. 
+ * 入力された音声波形から，特徴ベクトル系列を抽出します. 
+ * Julius/Julianで抽出できる特徴ベクトルは，MFCC の任意次元数のもので，
+ * _0, _E, _D, _A, _Z, _N の任意の組合わせをサポートします. 
+ * そのほか，窓長やフレームシフト，帯域カットなどのパラメータを指定できます. 
+ * 認識時には，音響モデルのヘッダとチェックが行われ，CMNの有無など
+ * が決定されます. 
  * 
- * �����δؿ��ϡ��Хåե�������Ѥ��줿�����ȷ��ǡ�������٤�
- * ��ħ�٥��ȥ������Ѵ������Τǡ��ե��������Ϥʤɤ��Ѥ����ޤ�. 
- * �ޥ������Ϥʤɤǡ����Ϥ�ʿ�Ԥ�ǧ����Ԥ����ϡ������δؿ��ǤϤʤ���
- * realtime-1stpass.c ��ǹԤ��ޤ�. 
+ * ここの関数は，バッファ上に蓄積された音声波形データを一度に
+ * 特徴ベクトル系列に変換するもので，ファイル入力などに用いられます. 
+ * マイク入力などで，入力と平行に認識を行う場合は，ここの関数ではなく，
+ * realtime-1stpass.c 内で行われます. 
  * </JA>
  * 
  * <EN>
@@ -56,15 +56,15 @@
 
 /** 
  * <JA>
- * �����ȷ��ǡ������� MFCC �ѥ�᡼������Ф���.
- * ���󥸥󥤥󥹥������ MFCC �׻����󥹥��󥹤��Ȥ˥ѥ�᡼����Ф�
- * �Ԥ�졤���줾��� mfcc->param �˳�Ǽ�����. 
+ * 音声波形データから MFCC パラメータを抽出する.
+ * エンジンインスタンス内の MFCC 計算インスタンスごとにパラメータ抽出が
+ * 行われ，それぞれの mfcc->param に格納される. 
  * 
- * @param speech [in] �����ȷ��ǡ���
- * @param speechlen [in] @a speech ��Ĺ����ñ�̡�����ץ����
- * @param recog [in] ���󥸥󥤥󥹥���
+ * @param speech [in] 音声波形データ
+ * @param speechlen [in] @a speech の長さ（単位：サンプル数）
+ * @param recog [in] エンジンインスタンス
  * 
- * @return ������ TRUE, ���顼�� FALSE ���֤�. 
+ * @return 成功時 TRUE, エラー時 FALSE を返す. 
  * </JA>
  * <EN>
  * Extract MFCC parameters with sentence CMN from given waveform.

@@ -2,7 +2,7 @@
  * @file   japi_misc.c
  * 
  * <JA>
- * @brief  ¥â¥¸¥å¡¼¥ë¥³¥Ş¥ó¥ÉÁ÷¿®Éô
+ * @brief  ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚³ãƒãƒ³ãƒ‰é€ä¿¡éƒ¨
  * </JA>
  * 
  * <EN>
@@ -26,9 +26,9 @@
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É DIE: Ç§¼±¥µ¡¼¥Ğ¤ò½ªÎ»¤µ¤»¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ DIE: èªè­˜ã‚µãƒ¼ãƒã‚’çµ‚äº†ã•ã›ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Command "DIE": kill the recognition server.
@@ -44,9 +44,9 @@ japi_die(int sd)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É VERSION: ¥Ğ¡¼¥¸¥ç¥ó¾ğÊó¤òÁ÷¿®¤µ¤»¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ VERSION: ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’é€ä¿¡ã•ã›ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Command "VERSION": let the server send version information.
@@ -62,9 +62,9 @@ japi_get_version(int sd)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É STATUS: Ç§¼±¥µ¡¼¥Ğ¤Î¸½ºß¤Î¾õÂÖ(Ç§¼±Ãæ/Ää»ßÃæ)¤òÁ÷¿®¤µ¤»¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ STATUS: èªè­˜ã‚µãƒ¼ãƒã®ç¾åœ¨ã®çŠ¶æ…‹(èªè­˜ä¸­/åœæ­¢ä¸­)ã‚’é€ä¿¡ã•ã›ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Command "STATUS": ask server about its current status (run/stop)
@@ -80,10 +80,10 @@ japi_get_status(int sd)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É PAUSE: Ç§¼±¥µ¡¼¥Ğ¤ò°ì»şÄä»ß¤¹¤ë¡¥¥µ¡¼¥Ğ¤¬Ç§¼±Ãæ¤Î¾ì¹ç¡¤¤½¤ÎÆşÎÏ
- * ¤¬½ª¤ï¤Ã¤Æ¤«¤éÄä»ß¤¹¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ PAUSE: èªè­˜ã‚µãƒ¼ãƒã‚’ä¸€æ™‚åœæ­¢ã™ã‚‹ï¼ã‚µãƒ¼ãƒãŒèªè­˜ä¸­ã®å ´åˆï¼Œãã®å…¥åŠ›
+ * ãŒçµ‚ã‚ã£ã¦ã‹ã‚‰åœæ­¢ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Command "PAUSE": tell server to pause recognition.  If audio input is
@@ -101,10 +101,10 @@ japi_pause_recog(int sd)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É TERMINATE: Ç§¼±¥µ¡¼¥Ğ¤ò°ì»şÄä»ß¤¹¤ë¡¥¥µ¡¼¥Ğ¤¬Ç§¼±Ãæ¤Î¾ì¹ç¡¤
- * ¤½¤ÎÆşÎÏ¤ò¼Î¤Æ¤ÆÂ¨»şÄä»ß¤¹¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ TERMINATE: èªè­˜ã‚µãƒ¼ãƒã‚’ä¸€æ™‚åœæ­¢ã™ã‚‹ï¼ã‚µãƒ¼ãƒãŒèªè­˜ä¸­ã®å ´åˆï¼Œ
+ * ãã®å…¥åŠ›ã‚’æ¨ã¦ã¦å³æ™‚åœæ­¢ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Command "TERMINATE": tell server to pause recognition immediately,
@@ -121,10 +121,10 @@ japi_terminate_recog(int sd)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É RESUME: PAUSE¤äTERMINATE¤Ë¤è¤Ã¤Æ°ì»şÄä»ß¤·¤¿Ç§¼±¥µ¡¼¥Ğ¤ò
- * ºÆ³«¤µ¤»¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ RESUME: PAUSEã‚„TERMINATEã«ã‚ˆã£ã¦ä¸€æ™‚åœæ­¢ã—ãŸèªè­˜ã‚µãƒ¼ãƒã‚’
+ * å†é–‹ã•ã›ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Command "RESUME": tell server to restart recognition.
@@ -140,10 +140,10 @@ japi_resume_recog(int sd)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É INPUTONCHANGE: Ê¸Ë¡ÀÚ¤êÂØ¤¨»Ø¼¨»ş¤ËÇ§¼±Ãæ¤Ç¤¢¤Ã¤¿¾ì¹ç¤ÎÆ°ºî¤ò
- * »ØÄê¤¹¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ INPUTONCHANGE: æ–‡æ³•åˆ‡ã‚Šæ›¿ãˆæŒ‡ç¤ºæ™‚ã«èªè­˜ä¸­ã§ã‚ã£ãŸå ´åˆã®å‹•ä½œã‚’
+ * æŒ‡å®šã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * @param arg [in] "TERMINATE" for immediate rejection of current input,
  * "PAUSE" for immediate input segmentation followed by recognition, or
  * "WAIT" for waiting the input to be segmented.

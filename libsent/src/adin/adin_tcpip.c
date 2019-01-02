@@ -2,24 +2,24 @@
  * @file   adin_tcpip.c
  * 
  * <JA>
- * @brief  �ͥåȥ�����ϡ�adinnet ���饤����Ȥ���β�������
+ * @brief  ネットワーク入力：adinnet クライアントからの音声入力
  *
- * ���ϥ������Ȥ��� Julius �� adinnet ���饤����Ȥ���Ѥ������٥�ؿ��Ǥ���
+ * 入力ソースとして Julius の adinnet クライアントを使用する低レベル関数です．
  * 
- * adinnet �� �ͥåȥ����ǲ����ǡ������������� Julius �ȼ��������Ǥ���
- * �������Ϥ����Ф줿��硤Julius ��adinnet�����ФȤʤꡤ��ư����
- * ���饤����Ȥ���³���Ԥ��ޤ�������ץ��adinnet���饤����ȤȤ��ơ�
- * adintool �� Julius ����°���Ƥ��ޤ��Τǻ��ͤˤ��Ƥ���������
+ * adinnet は ネットワーク上で音声データを送信する Julius 独自の方式です．
+ * この入力が選ばれた場合，Julius はadinnetサーバとなり，起動時に
+ * クライアントの接続を待ちます．サンプルのadinnetクライアントとして，
+ * adintool が Julius に付属していますので参考にしてください．
  * 
- * Linux, Windows, ����¾���ݡ��Ȥ���Ƥ���ۤȤ�ɤ� OS ��ư��ޤ���
+ * Linux, Windows, その他サポートされているほとんどの OS で動作します．
  *
- * ¾�˥ͥåȥ����ǲ����ǡ�������Ȥꤹ����ˡ�Ȥ���, Linux �Ǥ�
- * EsounD ��Ȥ���ˡ������ޤ���adin_esd.c ��������������
+ * 他にネットワーク上で音声データをやりとりする方法として, Linux では
+ * EsounD を使う方法があります．adin_esd.c をご覧ください．
  *
- * @attention ������¦�ȥ��饤�����¦�ǥ���ץ�󥰥졼��
- * ���������פ�����ɬ�פ�����ޤ�����³����ξ�Դ֤ǥ����å��ϹԤ��ޤ���
+ * @attention サーバ側とクライアント側でサンプリングレート
+ * の設定を一致させる必要があります．接続時に両者間でチェックは行われません．
  *
- * @bug �ޥ���Х��ȥ��������ΰۤʤ�ޥ���Ʊ�Τ��������̿��Ǥ��ޤ���
+ * @bug マシンバイトオーダーの異なるマシン同士で正しく通信できません．
  * </JA>
  * <EN>
  * @brief  Audio input from adinnet client

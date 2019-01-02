@@ -2,7 +2,7 @@
  * @file   multi-gram.h
  * 
  * <JA>
- * @brief  ʣ����ʸˡ��Ʊ���˰�����������. 
+ * @brief  複数の文法を同時に扱うための定義. 
  * </JA>
  * 
  * <EN>

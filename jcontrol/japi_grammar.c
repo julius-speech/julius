@@ -2,7 +2,7 @@
  * @file   japi_grammar.c
  * 
  * <JA>
- * @brief  Ê¸Ë¡´ØÏ¢¤Î¥â¥¸¥å¡¼¥ë¥³¥Ş¥ó¥É¼ÂÁõ
+ * @brief  æ–‡æ³•é–¢é€£ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚³ãƒãƒ³ãƒ‰å®Ÿè£…
  * </JA>
  * 
  * <EN>
@@ -28,11 +28,11 @@ static char buf[MAXLINELEN];	///< Local work area for string operation
 
 /** 
  * <JA>
- * Í¿¤¨¤é¤ì¤¿¥×¥ì¥Õ¥£¥Ã¥¯¥¹¤ÎÊ¸Ë¡¥Õ¥¡¥¤¥ë¤¬Â¸ºß¤¹¤ë¤«¥Á¥§¥Ã¥¯¤¹¤ë¡¥
+ * ä¸ãˆã‚‰ã‚ŒãŸãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã®æ–‡æ³•ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹ï¼
  * 
- * @param prefix [in] Ê¸Ë¡¥Õ¥¡¥¤¥ë¤Î¥Ñ¥¹¤Î¥×¥ì¥Õ¥£¥Ã¥¯¥¹Ê¸»úÎó
+ * @param prefix [in] æ–‡æ³•ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã®ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹æ–‡å­—åˆ—
  * 
- * @return Â¸ºß¤¹¤ë¤È¤­ 0 , Â¸ºß¤·¤Ê¤¤¤È¤­ -1 ¤òÊÖ¤¹¡¥
+ * @return å­˜åœ¨ã™ã‚‹ã¨ã 0 , å­˜åœ¨ã—ãªã„ã¨ã -1 ã‚’è¿”ã™ï¼
  * </JA>
  * <EN>
  * Check if the grammar files exist on the given prefix.
@@ -70,12 +70,12 @@ check_grammar_path(char *prefix)
 
 /** 
  * <JA>
- * Ê¸Ë¡¥Õ¥¡¥¤¥ë(.dfa¤ª¤è¤Ó.dict)¤òÊ¸Ë¡¤È¤·¤Æ¥µ¡¼¥Ğ¤ËÁ÷¿®¤¹¤ë¡¥
+ * æ–‡æ³•ãƒ•ã‚¡ã‚¤ãƒ«(.dfaãŠã‚ˆã³.dict)ã‚’æ–‡æ³•ã¨ã—ã¦ã‚µãƒ¼ãƒã«é€ä¿¡ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param prefix [in] Ê¸Ë¡¥×¥ì¥Õ¥£¥Ã¥¯¥¹¥Ñ¥¹
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param prefix [in] æ–‡æ³•ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒ‘ã‚¹
  * 
- * @return À®¸ù»ş 0, ¼ºÇÔ»ş -1 ¤òÊÖ¤¹¡¥
+ * @return æˆåŠŸæ™‚ 0, å¤±æ•—æ™‚ -1 ã‚’è¿”ã™ï¼
  * </JA>
  * <EN>
  * Send a grammar (.dfa and .dict file) to server.
@@ -121,12 +121,12 @@ send_grammar(int sd, char *prefix)
 
 /** 
  * <JA>
- * "1,3,5" ¤Î·Á¼°¤ÇÍ¿¤¨¤é¤ì¤¿Ê¸Ë¡ID¤Î¥ê¥¹¥È¤òÁ÷¿®¤¹¤ë¡¥
+ * "1,3,5" ã®å½¢å¼ã§ä¸ãˆã‚‰ã‚ŒãŸæ–‡æ³•IDã®ãƒªã‚¹ãƒˆã‚’é€ä¿¡ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param idstr [in] ¥³¥ó¥Ş¶èÀÚ¤ê¤ÎÊ¸Ë¡IDÈÖ¹æ¥ê¥¹¥È¤ò³ÊÇ¼¤·¤¿Ê¸»úÎó
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param idstr [in] ã‚³ãƒ³ãƒåŒºåˆ‡ã‚Šã®æ–‡æ³•IDç•ªå·ãƒªã‚¹ãƒˆã‚’æ ¼ç´ã—ãŸæ–‡å­—åˆ—
  * 
- * @return 0 ¤ò¾ï¤ËÊÖ¤¹¡¥
+ * @return 0 ã‚’å¸¸ã«è¿”ã™ï¼
  * </JA>
  * <EN>
  * Send comma-separated grammar ID list (ex. "1,3,5").
@@ -158,10 +158,10 @@ send_idlist(int sd, char *idstr)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É CHANGEGRAM: ¥µ¡¼¥Ğ¤Ø»ØÄê¤µ¤ì¤¿Ê¸Ë¡¤òÁ÷¿®¤·¡¤Ê¸Ë¡¤òÆş¤ìÂØ¤¨¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ CHANGEGRAM: ã‚µãƒ¼ãƒã¸æŒ‡å®šã•ã‚ŒãŸæ–‡æ³•ã‚’é€ä¿¡ã—ï¼Œæ–‡æ³•ã‚’å…¥ã‚Œæ›¿ãˆã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param prefixpath [in] Ê¸Ë¡¥Õ¥¡¥¤¥ë¥Ñ¥¹¤Î¥×¥ì¥Õ¥£¥Ã¥¯¥¹
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param prefixpath [in] æ–‡æ³•ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹
  * </JA>
  * <EN>
  * Command "CHANGEGRAM": send specified grammar to server and swap grammar.
@@ -185,10 +185,10 @@ japi_change_grammar(int sd, char *prefixpath)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É ADDGRAM: ¥µ¡¼¥Ğ¤Ø»ØÄê¤µ¤ì¤¿Ê¸Ë¡¤òÁ÷¿®¤·¤ÆÄÉ²Ã¤¹¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ ADDGRAM: ã‚µãƒ¼ãƒã¸æŒ‡å®šã•ã‚ŒãŸæ–‡æ³•ã‚’é€ä¿¡ã—ã¦è¿½åŠ ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param prefixpath [in] Ê¸Ë¡¥Õ¥¡¥¤¥ë¥Ñ¥¹¤Î¥×¥ì¥Õ¥£¥Ã¥¯¥¹
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param prefixpath [in] æ–‡æ³•ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹
  * </JA>
  * <EN>
  * Command "ADDGRAM": send specified grammar to server and add it to the current
@@ -213,10 +213,10 @@ japi_add_grammar(int sd, char *prefixpath)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É DELGRAM: »ØÄê¤·¤¿ÈÖ¹æ¤ÎÊ¸Ë¡¤ò¥µ¡¼¥Ğ¾å¤«¤éºï½ü¤¹¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ DELGRAM: æŒ‡å®šã—ãŸç•ªå·ã®æ–‡æ³•ã‚’ã‚µãƒ¼ãƒä¸Šã‹ã‚‰å‰Šé™¤ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param idlist [in] ¥³¥ó¥Ş¶èÀÚ¤ê¤ÎÊ¸Ë¡IDÈÖ¹æ¥ê¥¹¥È¤ò³ÊÇ¼¤·¤¿Ê¸»úÎó
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param idlist [in] ã‚³ãƒ³ãƒåŒºåˆ‡ã‚Šã®æ–‡æ³•IDç•ªå·ãƒªã‚¹ãƒˆã‚’æ ¼ç´ã—ãŸæ–‡å­—åˆ—
  * </JA>
  * <EN>
  * Command "DELGRAM": delete grammars on the server specified by the ID.
@@ -234,10 +234,10 @@ japi_delete_grammar(int sd, char *idlist)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É ACTIVATEGRAM: »ØÄê¤·¤¿ÈÖ¹æ¤ÎÊ¸Ë¡¤ò¥µ¡¼¥Ğ¾å¤ÇÍ­¸ú¤Ë¤¹¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ ACTIVATEGRAM: æŒ‡å®šã—ãŸç•ªå·ã®æ–‡æ³•ã‚’ã‚µãƒ¼ãƒä¸Šã§æœ‰åŠ¹ã«ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param idlist [in] ¥³¥ó¥Ş¶èÀÚ¤ê¤ÎÊ¸Ë¡IDÈÖ¹æ¥ê¥¹¥È¤ò³ÊÇ¼¤·¤¿Ê¸»úÎó
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param idlist [in] ã‚³ãƒ³ãƒåŒºåˆ‡ã‚Šã®æ–‡æ³•IDç•ªå·ãƒªã‚¹ãƒˆã‚’æ ¼ç´ã—ãŸæ–‡å­—åˆ—
  * </JA>
  * <EN>
  * Command "ACTIVATEGRAM": activate grammars on the server specified by the ID.
@@ -255,10 +255,10 @@ japi_activate_grammar(int sd, char *idlist)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É DEACTIVATEGRAM: »ØÄê¤·¤¿ÈÖ¹æ¤ÎÊ¸Ë¡¤ò¥µ¡¼¥Ğ¾å¤Ç°ì»şÌµ¸ú¤Ë¤¹¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ DEACTIVATEGRAM: æŒ‡å®šã—ãŸç•ªå·ã®æ–‡æ³•ã‚’ã‚µãƒ¼ãƒä¸Šã§ä¸€æ™‚ç„¡åŠ¹ã«ã™ã‚‹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
- * @param idlist [in] ¥³¥ó¥Ş¶èÀÚ¤ê¤ÎÊ¸Ë¡IDÈÖ¹æ¥ê¥¹¥È¤ò³ÊÇ¼¤·¤¿Ê¸»úÎó
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
+ * @param idlist [in] ã‚³ãƒ³ãƒåŒºåˆ‡ã‚Šã®æ–‡æ³•IDç•ªå·ãƒªã‚¹ãƒˆã‚’æ ¼ç´ã—ãŸæ–‡å­—åˆ—
  * </JA>
  * <EN>
  * Command "DEACTIVATEGRAM": temporary de-activate grammars on the server
@@ -278,13 +278,13 @@ japi_deactivate_grammar(int sd, char *idlist)
 
 /** 
  * <JA>
- * ¥³¥Ş¥ó¥É SYNCGRAM: Ê¸Ë¡¤Î¹¹¿·¤ò¹Ô¤¦¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ SYNCGRAM: æ–‡æ³•ã®æ›´æ–°ã‚’è¡Œã†ï¼
  *
- * Ê¸Ë¡¤Î¹¹¿·¤ÏÄÌ¾ïÇ§¼±³«»ÏÄ¾Á°(resume¸å)¤Ë¹Ô¤ï¤ì¤ë¤¬¡¤Ê¸Ë¡¤¬Âç¤­¤¤¤È
- * Ç§¼±³«»Ï¤Ş¤Ç¤Ë¥Ç¥£¥ì¥¤¤¬À¸¤¸¤ë²ÄÇ½À­¤¬¤¢¤ë¡¥¤³¤Î¥³¥Ş¥ó¥É¤ò»È¤¦¤È
- * Â¨»ş¤ËÊ¸Ë¡¤Î¹¹¿·¤òÂ¥¤»¤ë¡¥resume¸å¤¹¤°¤ËÇ§¼±¤ò¹Ô¤¤¤¿¤¤¤È¤­¤ËÍ­¸ú¡¥
+ * æ–‡æ³•ã®æ›´æ–°ã¯é€šå¸¸èªè­˜é–‹å§‹ç›´å‰(resumeå¾Œ)ã«è¡Œã‚ã‚Œã‚‹ãŒï¼Œæ–‡æ³•ãŒå¤§ãã„ã¨
+ * èªè­˜é–‹å§‹ã¾ã§ã«ãƒ‡ã‚£ãƒ¬ã‚¤ãŒç”Ÿã˜ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ï¼ã“ã®ã‚³ãƒãƒ³ãƒ‰ã‚’ä½¿ã†ã¨
+ * å³æ™‚ã«æ–‡æ³•ã®æ›´æ–°ã‚’ä¿ƒã›ã‚‹ï¼resumeå¾Œã™ãã«èªè­˜ã‚’è¡Œã„ãŸã„ã¨ãã«æœ‰åŠ¹ï¼
  * 
- * @param sd [in] Á÷¿®¥½¥±¥Ã¥È
+ * @param sd [in] é€ä¿¡ã‚½ã‚±ãƒƒãƒˆ
  * </JA>
  * <EN>
  * Command "SYNCGRAM": tell Julian to update the grammar to ready for

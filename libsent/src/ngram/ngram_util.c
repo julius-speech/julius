@@ -2,7 +2,7 @@
  * @file   ngram_util.c
  * 
  * <JA>
- * @brief  N-gram�ξ����ƥ����Ƚ��Ϥ���
+ * @brief  N-gramの情報をテキスト出力する
  * </JA>
  * 
  * <EN>

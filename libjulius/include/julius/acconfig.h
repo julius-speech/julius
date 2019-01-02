@@ -2,12 +2,12 @@
  * @file   acconfig.h
  * 
  * <JA>
- * @brief  config.h.in �� configure.in �����������뤿��� autoconf �ѥإå�
+ * @brief  config.h.in を configure.in から生成するための autoconf 用ヘッダ
  *
- * ���Υե�����ϥ��������饤�󥯥롼�ɤ���뤳�ȤϤ���ޤ���. 
- * �ºݤˤϤ������Ƥ� config.h.in �������ޤ�Ƥ��ꡤ
- * configure �ˤ�ä� config.h.in �����������줿 config.h ��
- * �ץ������ˤ�äƻ��Ѥ���ޤ�. 
+ * このファイルはソースからインクルードされることはありません. 
+ * 実際にはこの内容は config.h.in に埋め込まれており，
+ * configure によって config.h.in から生成された config.h が
+ * プログラムによって使用されます. 
  *
  * @sa config.h, config.h.in, configure, configure.in
  * </JA>

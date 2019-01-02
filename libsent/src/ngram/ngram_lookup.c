@@ -2,7 +2,7 @@
  * @file   ngram_lookup.c
  * 
  * <JA>
- * @brief  N-gram¾å¤Î¸ì×Ã¥¨¥ó¥È¥ê¤Î¸¡º÷
+ * @brief  N-gramä¸Šã®èªå½™ã‚¨ãƒ³ãƒˆãƒªã®æ¤œç´¢
  * </JA>
  * 
  * <EN>

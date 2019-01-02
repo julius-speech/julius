@@ -6,7 +6,7 @@
  * </EN>
  * 
  * <JA>
- * @brief  ������Хå���Ȥ��ץ饰����Υ���ץ�
+ * @brief  コールバックを使うプラグインのサンプル
  * </JA>
  * 
  * @author Akinobu Lee
@@ -47,11 +47,11 @@
  * This function is OPTIONAL.
  * </EN>
  * <JA>
- * @brief  �ɤ߹��߻��ν������Ǥ�ա�
+ * @brief  読み込み時の初期化（任意）
  *
- * ��ư����Julius �����Υץ饰������ɤ߹���ݤ˺ǽ�˸ƤФ�롥
- * -1 ���֤��ȡ����Υץ饰�������Τ��ɤ߹��ޤ�ʤ��ʤ롥
- * �¹Բ�ǽ���Υ����å��˻Ȥ��롥
+ * 起動時，Julius がこのプラグインを読み込む際に最初に呼ばれる．
+ * -1 を返すと，このプラグイン全体が読み込まれなくなる．
+ * 実行可能性のチェックに使える．
  *
  * </JA>
  * 
@@ -85,19 +85,19 @@ initialize()
  * 
  * </EN>
  * <JA>
- * @brief  �ץ饰������������ɬ�ܡ�
+ * @brief  プラグイン情報取得（必須）
  *
- * ���Υץ饰����˴ؤ��������֤���Ϳ����줿 opcode �ˤ�ä�ư��롥
- *  - 0 �ξ�硤���Υץ饰����ե������̾�Τ�Ϳ����줿�Хåե��˳�Ǽ����
+ * このプラグインに関する情報を返す．与えられた opcode によって動作する．
+ *  - 0 の場合，このプラグインファイルの名称を与えられたバッファに格納する
  *
- * ���δؿ��ϡ�Julius �����Υץ饰������ɤ߹����ľ��˸ƤФ�롥
+ * この関数は，Julius がこのプラグインを読み込んだ直後に呼ばれる．
  * 
- * @param opcode [in] �׵�ư����� (���� 0 �Τ߼���)
- * @param buf [out] �ͤ��Ǽ����Хåե�
- * @param buflen [in] buf �κ���Ĺ
+ * @param opcode [in] 要求動作コード (現在 0 のみ実装)
+ * @param buf [out] 値を格納するバッファ
+ * @param buflen [in] buf の最大長
  * 
- * @return ���顼�� -1, ������ 0 ���֤������顼�Ȥ��� -1 ���֤�����硤
- * ���Υץ饰�������Τ��ɤ߹��ޤ�ʤ���
+ * @return エラー時 -1, 成功時 0 を返す．エラーとして -1 を返した場合，
+ * このプラグイン全体は読み込まれない．
  * </JA>
  * 
  */
@@ -122,10 +122,10 @@ get_plugin_info(int opcode, char *buf, int buflen)
  * @param dummy [in] callback argument (dummy)
  * </EN>
  * <JA>
- * RECREADY ����Ϥ��륳����Хå��Ѵؿ��ʥ���ץ��
+ * RECREADY を出力するコールバック用関数（サンプル）
  *
- * @param recog [in] ���󥸥󥤥󥹥���
- * @param dummy [in] ������Хå������ʥ��ߡ���
+ * @param recog [in] エンジンインスタンス
+ * @param dummy [in] コールバック引数（ダミー）
  * </JA>
  * 
  */
@@ -153,21 +153,21 @@ status_recready(Recog *recog, void *dummy)
  * @return 0 on success, -1 on error.  On error, Julius will exit immediately.
  * </EN>
  * <JA>
- * @brief  ǧ�����󥸥�ư��λ���˸ƤӽФ����ץ饰����ؿ�
+ * @brief  認識エンジン起動完了時に呼び出されるプラグイン関数
  *
- * ����̾���δؿ���������줿��硤���δؿ��ϡ�Julius �����Ƥν������
- * ��λ���Ƶ�ư�ץ������򽪤���ľ�塤�ºݤ˲������Ϥ򳫤���ǧ�����Ϥ�
- * �����˸ƤФ�ޤ���
+ * この名前の関数が定義された場合，その関数は，Julius が全ての初期化を
+ * 完了して起動プロセスを終えた直後，実際に音声入力を開いて認識が始ま
+ * る前に呼ばれます．
  *
- * �����Ǥϡ����δؿ���Ȥäơ��嵭�δؿ� status_recready() ��
- * CALLBACK_EVENT_SPEECH_READY ������Хå��Ȥ�����Ͽ���Ƥ��ޤ���
- * ���Υ�����Хå��� Julius �����ϥ��ȥ꡼�फ��μ��β��������Ԥ�
- * ���֤ˤʤä��Ȥ��˸ƤФ�ޤ���
+ * ここでは，この関数を使って，上記の関数 status_recready() を
+ * CALLBACK_EVENT_SPEECH_READY コールバックとして登録しています．
+ * このコールバックは Julius が入力ストリームからの次の音声入力待ち
+ * 状態になったときに呼ばれます．
  * 
- * @param data [in] �ǡ����ؤΥݥ��󥿡����Τϥ��󥸥󥤥󥹥��󥹤ؤ�
- * �ݥ��󥿤��Ϥ���롥
+ * @param data [in] データへのポインタ．実体はエンジンインスタンスへの
+ * ポインタが渡される．
  * 
- * @return ������ 0 �����顼�� -1 ���֤������顼�ξ�� Julius �ϰ۾ｪλ���롥
+ * @return 成功時 0 ，エラー時 -1 を返す．エラーの場合 Julius は異常終了する．
  * </JA>
  * 
  */

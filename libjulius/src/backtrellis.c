@@ -2,24 +2,24 @@
  * @file   backtrellis.c
  * 
  * <JA>
- * @brief  ñ��ȥ�ꥹ����¸������
+ * @brief  単語トレリスの保存・参照
  *
- * ��1�ѥ��η�̤�ñ��ȥ�ꥹ�Ȥ�����¸������2�ѥ��ǻ��Ȥ��뤿��δؿ���
- * �Ǥ�. Julius �Ǥϡ��裱�ѥ���õ����˽�ü�������ĤäƤ���ñ������ơ�
- * ���λϽ�ü�ե졼�ࡤ��ü������������٤����ñ������ȤȤ��
- * ��¸���졤�裲�ѥ��Ǥ��ν�����椫���õ�����Ԥ��ޤ�. 
- * �����裱�ѥ��ǥե졼�ऴ�Ȥ˻Ĥ����ñ�����Τ��Ȥ�֥ȥ�ꥹñ��ס�
- * �ȥ�ꥹñ��ν������Τ��ñ��ȥ�ꥹ�פȸƤӤޤ�. 
+ * 第1パスの結果を単語トレリスとして保存し，第2パスで参照するための関数群
+ * です. Julius では，第１パスで探索中に終端が生き残っていた単語は全て，
+ * その始終端フレーム，始端からの累積尤度および単語履歴とともに
+ * 保存され，第２パスでその集合の中から再探索が行われます. 
+ * この第１パスでフレームごとに残される単語情報のことを「トレリス単語」，
+ * トレリス単語の集合全体を「単語トレリス」と呼びます. 
  *
- * �ȥ�ꥹñ��ϡ��裱�ѥ���ǧ����˳ƥե졼�ऴ�Ȥ���¸����ޤ�. 
- * �裱�ѥ���λ�塤�ȥ�ꥹ���Τ������������֤ȥե졼�ऴ�ȤΥ���ǥå���
- * ��������ޤ�. 
+ * トレリス単語は，第１パスの認識中に各フレームごとに保存されます. 
+ * 第１パス終了後，トレリス全体の整形・再配置とフレームごとのインデックス
+ * を作成します. 
  *
- * �裲�ѥ��Ǥϡ�����ñ��ȥ�ꥹ�򻲾Ȥ���
- * �ƻ��֡����ϥե졼��ˤˤ�����Ÿ����ǽ�ʲ���Υꥹ�Ȥ�����ȤȤ�ˡ�
- * �����裱�ѥ��Ǥ�(���������)�������٤��裲�ѥ��ˤ����벾���̤Ÿ����ʬ��
- * ���ꥹ�����Ȥ����Ѥ��ޤ�. ���Τ����ߤ��顤ñ��ȥ�ꥹ�ϡ֥Хå��ȥ�ꥹ��
- * �Ȥ�ƤФ�Ƥ��ޤ�. 
+ * 第２パスでは，この単語トレリスを参照して
+ * 各時間（入力フレーム）における展開可能な仮説のリストを得るとともに，
+ * その第１パスでの(後ろ向きの)累積尤度を，第２パスにおける仮説の未展開部分の
+ * 推定スコアとして用います. このしくみから，単語トレリスは「バックトレリス」
+ * とも呼ばれています. 
  * </JA>
  * 
  * <EN>
@@ -60,9 +60,9 @@
 
 /** 
  * <JA>
- * ñ��ȥ�ꥹ���ݻ����� ñ��ȥ�ꥹ ��¤�Τ���������(��ư����1������¹�)
+ * 単語トレリスを保持する 単語トレリス 構造体を初期化する(起動時に1回だけ実行)
  * 
- * @param bt [in] ��������� ñ��ȥ�ꥹ ��¤�ΤؤΥݥ��� 
+ * @param bt [in] 初期化する 単語トレリス 構造体へのポインタ 
  * </JA>
  * <EN>
  * Initialize backtrellis that will hold the whole word trellis
@@ -86,9 +86,9 @@ bt_init(BACKTRELLIS *bt)
 
 /** 
  * <JA>
- * �����ǧ���Ѥ� ñ��ȥ�ꥹ ��¤�Τ�������� (ǧ�����ϻ����Ȥ˼¹�). 
+ * 次回の認識用に 単語トレリス 構造体を準備する (認識開始時ごとに実行). 
  * 
- * @param bt [in] �оݤȤ���ñ��ȥ�ꥹ��¤�ΤؤΥݥ���
+ * @param bt [in] 対象とする単語トレリス構造体へのポインタ
  * </JA>
  * <EN>
  * Prepare backtrellis for the next input (called at beginning of each
@@ -118,7 +118,7 @@ bt_prepare(BACKTRELLIS *bt)
  * Free memories of backtrellis.
  * </EN>
  * <JA>
- * ñ��ȥ�ꥹ�Υ����������. 
+ * 単語トレリスのメモリを開放する. 
  * </JA>
  * 
  * @param bt [out] pointer to the word trellis structure.
@@ -139,7 +139,7 @@ bt_free(BACKTRELLIS *bt)
  * Allocate a new trellis word atom.
  * </EN>
  * <JA>
- * �ȥ�ꥹñ��򿷤��˳���դ���. 
+ * トレリス単語を新たに割り付ける. 
  * </JA>
  * 
  * @param bt [out] pointer to the word trellis structure.
@@ -163,13 +163,13 @@ bt_new(BACKTRELLIS *bt)
 
 /** 
  * <JA>
- * ��1�ѥ��ǽи������ȥ�ꥹñ���ñ�콪ü�Υȥ�ꥹ����ˤ��Ǽ����. 
+ * 第1パスで出現したトレリス単語（単語終端のトレリス情報）を格納する. 
  *
- * �����Ǥϳ�Ǽ�����Ԥ�����1�ѥ���λ��� bt_relocate_rw() ��
- * �ե졼���˺����֤���. 
+ * ここでは格納だけ行い，第1パス終了後に bt_relocate_rw() で
+ * フレーム順に再配置する. 
  * 
- * @param bt [i/o] �ȥ�ꥹñ����Ǽ����Хå��ȥ�ꥹ��¤��
- * @param tatom [in] �и������ȥ�ꥹñ��ؤΥݥ���
+ * @param bt [i/o] トレリス単語を格納するバックトレリス構造体
+ * @param tatom [in] 出現したトレリス単語へのポインタ
  * </JA>
  * <EN>
  * Store a trellis word generated on the 1st pass for the 2nd pass.
@@ -199,9 +199,9 @@ bt_store(BACKTRELLIS *bt, TRELLIS_ATOM *tatom)
 
 /** 
  * <JA>
- * ��1�ѥ���λ��, ��Ǽ���줿ñ��ȥ�ꥹ�����ե졼���˺����֤���. 
+ * 第1パス終了後, 格納された単語トレリス情報をフレーム順に再配置する. 
  * 
- * @param bt [i/o] ñ��ȥ�ꥹ��¤��
+ * @param bt [i/o] 単語トレリス構造体
  * </JA>
  * <EN>
  * Re-locate the stored atom lists per frame (will be called after the
@@ -267,16 +267,16 @@ bt_relocate_rw(BACKTRELLIS *bt)
 }
 
 
-/* �ʲ��δؿ��� bt_relocate_rw �¹Ը�ˤΤ߻��Ѳ�ǽ�Ȥʤ�. */
+/* 以下の関数は bt_relocate_rw 実行後にのみ使用可能となる. */
 /* functions below this line should be called after bt_relocate_rw() */
 
 /** 
  * <JA>
- * �༡�ǥ����ǥ��󥰻�, �裱�ѥ���λ��ˡ�
- * ���ϥ������Ȥ�ξü�˻Ĥä�����ñ�첾�����Ф�, ������
- * ��2�ѥ��ˤ�������/�ǽ�����Ȥ��ƥ��åȤ���. 
+ * 逐次デコーディング時, 第１パス終了後に，
+ * 入力セグメントの両端に残った最尤単語仮説を取り出し, それらを
+ * 第2パスにおける初期/最終仮説としてセットする. 
  * 
- * @param r [in] ǧ���������󥹥���
+ * @param r [in] 認識処理インスタンス
  * </JA>
  * <EN>
  * When using progressive decoding with short pause segmentation,
@@ -338,14 +338,14 @@ set_terminal_words(RecogProcess *r)
 /* the outprob on the trellis connection point should be discounted */
 /** 
  * <JA>
- * ��1�ѥ���λ��, ��2�ѥ��ǤΥȥ�ꥹ����³�׻��Τ���ˡ�
- * �����֤��ϤäƳƥȥ�ꥹñ��ν�ü�κǽ����֤ν������٤�Ʒ׻���,
- * ��������Ѥ��麹�������Ƥ���. �裲�ѥ��Ǥϡ�������³���ˤ�
- * ��³������θ������³���ξ��֤����٤��Ʒ׻������. 
+ * 第1パス終了後, 第2パスでのトレリス再接続計算のために，
+ * 全時間に渡って各トレリス単語の終端の最終状態の出力尤度を再計算し,
+ * それを累積から差し引いておく. 第２パスでは，仮説接続時には
+ * 接続仮説を考慮して接続点の状態の尤度が再計算される. 
  * 
- * @param wchmm [in] �ڹ�¤������
- * @param bt [in] ñ��ȥ�ꥹ��¤��
- * @param param [in] ���ϥѥ�᡼������
+ * @param wchmm [in] 木構造化辞書
+ * @param bt [in] 単語トレリス構造体
+ * @param param [in] 入力パラメータ情報
  * </JA>
  * <EN>
  * Discount the output probabilities of the last state from the accumulated
@@ -388,7 +388,7 @@ bt_discount_pescore(WCHMM_INFO *wchmm, BACKTRELLIS *bt, HTK_Param *param)
  * Subtract 2-gram scores at each trellis word for the 2nd pass.
  * </EN>
  * <JA>
- * ��2�ѥ��Τ����2-gram��������ȥ�ꥹ���ñ�줫�麹������. 
+ * 第2パスのために2-gramスコアをトレリス上の単語から差し引く. 
  * </JA>
  * 
  * @param bt [in] word trellis
@@ -417,12 +417,12 @@ bt_discount_lm(BACKTRELLIS *bt)
 
 /** 
  * <JA>
- * bt_sort_rw()�Ѥ�qsort������Хå�. 
+ * bt_sort_rw()用のqsortコールバック. 
  * 
- * @param a [in] ���ǣ�
- * @param b [in] ���ǣ�
+ * @param a [in] 要素１
+ * @param b [in] 要素２
  * 
- * @return ���祽���Ȥ�ɬ�פ���
+ * @return 昇順ソートに必要な値
  * </JA>
  * <EN>
  * qsort callback for bt_sort_rw().
@@ -445,11 +445,11 @@ compare_wid(TRELLIS_ATOM **a, TRELLIS_ATOM **b)
 
 /** 
  * <JA>
- * bt_relocate_rw() ��λ��, ��®���������Τ����
- * �Хå��ȥ�ꥹ��¤����Υȥ�ꥹñ���ե졼�ऴ�Ȥ�
- * ñ��ID�ǥ����Ȥ��Ƥ���. 
+ * bt_relocate_rw() 終了後, 高速アクセスのために
+ * バックトレリス構造体内のトレリス単語をフレームごとに
+ * 単語IDでソートしておく. 
  * 
- * @param bt [i/o] ñ��ȥ�ꥹ��¤��
+ * @param bt [i/o] 単語トレリス構造体
  * 
  * </JA>
  * <EN>
@@ -477,19 +477,19 @@ bt_sort_rw(BACKTRELLIS *bt)
   }
 }
 
-/* �ʲ��δؿ��ϻ�����bt_sort_rw() ���ƤФ�Ƥ��뤳��(��2�ѥ���) */
+/* 以下の関数は事前にbt_sort_rw() が呼ばれていること(第2パス用) */
 /* functions below should be called after bt_sort_rw() */
 
 /** 
  * <JA>
- * ñ��ȥ�ꥹ��λ������ե졼���ˡ�����ñ��ν�ü�����뤫�ɤ�����
- * ��������. 
+ * 単語トレリス内の指定時刻フレーム上に，指定単語の終端があるかどうかを
+ * 検索する. 
  * 
- * @param bt [in] ñ��ȥ�ꥹ��¤��
- * @param t [in] �������뽪ü����ʥե졼���
- * @param wkey [in] ��������ñ���ñ��ɣ�
+ * @param bt [in] 単語トレリス構造体
+ * @param t [in] 検索する終端時刻（フレーム）
+ * @param wkey [in] 検索する単語の単語ＩＤ
  * 
- * @return ���Ĥ��ä���礽�Υȥ�ꥹñ��ؤΥݥ��󥿡����Ĥ���ʤ���� NULL. 
+ * @return 見つかった場合そのトレリス単語へのポインタ，見つからなければ NULL. 
  * </JA>
  * <EN>
  * Search a word on the specified frame in a word trellis data.

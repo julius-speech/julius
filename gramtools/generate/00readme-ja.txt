@@ -4,35 +4,35 @@ GENERATE(1)                                                        GENERATE(1)
 
 
 
-–¼‘O
+åå‰
            generate
-          - •¶–@‚©‚ç•¶‚ðƒ‰ƒ“ƒ_ƒ€¶¬‚·‚é
+          - æ–‡æ³•ã‹ã‚‰æ–‡ã‚’ãƒ©ãƒ³ãƒ€ãƒ ç”Ÿæˆã™ã‚‹
 
-ŠT—v
+æ¦‚è¦
        generate [-v] [-t] [-n num] [-s spname] {prefix}
 
 DESCRIPTION
-       generate ‚Í•¶–@‚É]‚Á‚Ä•¶‚ðƒ‰ƒ“ƒ_ƒ€‚É¶¬‚µ‚Ü‚·D
+       generate ã¯æ–‡æ³•ã«å¾“ã£ã¦æ–‡ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«ç”Ÿæˆã—ã¾ã™ï¼Ž
 
-       ŽÀs‚É‚Í .dfa, .dict, .term ‚ÌŠeƒtƒ@ƒCƒ‹‚ª•K—v‚Å‚·D ‚ ‚ç‚©‚¶‚ß
-       mkdfa.pl ‚Å¶¬‚µ‚Ä‚¨‚¢‚Ä‰º‚³‚¢D
+       å®Ÿè¡Œã«ã¯ .dfa, .dict, .term ã®å„ãƒ•ã‚¡ã‚¤ãƒ«ãŒå¿…è¦ã§ã™ï¼Ž ã‚ã‚‰ã‹ã˜ã‚
+       mkdfa.pl ã§ç”Ÿæˆã—ã¦ãŠã„ã¦ä¸‹ã•ã„ï¼Ž
 
 OPTIONS
         -t
-           ’PŒê‚Å‚Í‚È‚­ƒJƒeƒSƒŠ–¼‚Åo—Í‚·‚éD
+           å˜èªžã§ã¯ãªãã‚«ãƒ†ã‚´ãƒªåã§å‡ºåŠ›ã™ã‚‹ï¼Ž
 
         -n  num
-           ¶¬‚·‚é•¶‚Ì”‚ðŽw’è‚·‚é (default: 10)
+           ç”Ÿæˆã™ã‚‹æ–‡ã®æ•°ã‚’æŒ‡å®šã™ã‚‹ (default: 10)
 
         -s  spname
-           ¶¬‚É‚¨‚¢‚ÄƒXƒLƒbƒv‚·‚×‚«ƒVƒ‡[ƒgƒ|[ƒY’PŒê‚Ì–¼‘O‚ðŽw’è‚·‚éD
+           ç”Ÿæˆã«ãŠã„ã¦ã‚¹ã‚­ãƒƒãƒ—ã™ã¹ãã‚·ãƒ§ãƒ¼ãƒˆãƒãƒ¼ã‚ºå˜èªžã®åå‰ã‚’æŒ‡å®šã™ã‚‹ï¼Ž
            (default: "sp")
 
         -v
-           ƒfƒoƒbƒOo—ÍD
+           ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›ï¼Ž
 
 EXAMPLES
-       vfr (ƒtƒBƒbƒeƒBƒ“ƒOƒ^ƒXƒN—p•¶–@) ‚Å‚ÌŽÀs—áF
+       vfr (ãƒ•ã‚£ãƒƒãƒ†ã‚£ãƒ³ã‚°ã‚¿ã‚¹ã‚¯ç”¨æ–‡æ³•) ã§ã®å®Ÿè¡Œä¾‹ï¼š
 
            % generate vfr
            Reading in dictionary...done
@@ -42,16 +42,16 @@ EXAMPLES
            42 categories, 99 words
            DFA has 135 nodes and 198 arcs
             -----
-           silB ‚â‚ß‚Ü‚· silE
-           silB I—¹‚µ‚Ü‚· silE
-           silB ƒVƒƒƒc ‚ð ƒX[ƒc ‚Æ “ˆê‚µ‚Ä ‰º‚³‚¢ silE
-           silB ƒX[ƒc ‚ð ƒJƒbƒ^[ ‚Æ “¯‚¶ F ‚É “ˆê‚µ‚Ä ‰º‚³‚¢ silE
-           silB ŒðŠ·‚µ‚Ä ‰º‚³‚¢ silE
-           silB ‚±‚ê ‚ð Šo‚¦‚Ä‚¨‚¢‚Ä ‰º‚³‚¢ silE
-           silB Šo‚¦‚Ä‚¨‚¢‚Ä ‰º‚³‚¢ silE
-           silB –ß‚Á‚Ä ‰º‚³‚¢ silE
-           silB ƒX[ƒc ‚ð ƒVƒƒƒc ‚Æ “ˆê‚µ‚Ä ‰º‚³‚¢ silE
-           silB ã’… ‚ð žò ‚É ‚µ‚Ä ‰º‚³‚¢ silE
+           silB ã‚„ã‚ã¾ã™ silE
+           silB çµ‚äº†ã—ã¾ã™ silE
+           silB ã‚·ãƒ£ãƒ„ ã‚’ ã‚¹ãƒ¼ãƒ„ ã¨ çµ±ä¸€ã—ã¦ ä¸‹ã•ã„ silE
+           silB ã‚¹ãƒ¼ãƒ„ ã‚’ ã‚«ãƒƒã‚¿ãƒ¼ ã¨ åŒã˜ è‰² ã« çµ±ä¸€ã—ã¦ ä¸‹ã•ã„ silE
+           silB äº¤æ›ã—ã¦ ä¸‹ã•ã„ silE
+           silB ã“ã‚Œ ã‚’ è¦šãˆã¦ãŠã„ã¦ ä¸‹ã•ã„ silE
+           silB è¦šãˆã¦ãŠã„ã¦ ä¸‹ã•ã„ silE
+           silB æˆ»ã£ã¦ ä¸‹ã•ã„ silE
+           silB ã‚¹ãƒ¼ãƒ„ ã‚’ ã‚·ãƒ£ãƒ„ ã¨ çµ±ä¸€ã—ã¦ ä¸‹ã•ã„ silE
+           silB ä¸Šç€ ã‚’ æ©™ ã« ã—ã¦ ä¸‹ã•ã„ silE
 
 
 SEE ALSO
@@ -59,16 +59,16 @@ SEE ALSO
         generate-ngram ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ‹ž“s‘åŠw ‰ÍŒ´Œ¤‹†Žº
+       Copyright (c) 1991-2013 äº¬éƒ½å¤§å­¦ æ²³åŽŸç ”ç©¶å®¤
 
-       Copyright (c) 1997-2000 î•ñˆ—U‹»Ž–‹Æ‹¦‰ï(IPA)
+       Copyright (c) 1997-2000 æƒ…å ±å‡¦ç†æŒ¯èˆˆäº‹æ¥­å”ä¼š(IPA)
 
-       Copyright (c) 2000-2005 “Þ—Çæ’[‰ÈŠw‹Zp‘åŠw‰@‘åŠw Ž­–ìŒ¤‹†Žº
+       Copyright (c) 2000-2005 å¥ˆè‰¯å…ˆç«¯ç§‘å­¦æŠ€è¡“å¤§å­¦é™¢å¤§å­¦ é¹¿é‡Žç ”ç©¶å®¤
 
-       Copyright (c) 2005-2013 –¼ŒÃ‰®H‹Æ‘åŠw JuliusŠJ”­ƒ`[ƒ€
+       Copyright (c) 2005-2013 åå¤å±‹å·¥æ¥­å¤§å­¦ Juliusé–‹ç™ºãƒãƒ¼ãƒ 
 
 LICENSE
-       Julius ‚ÌŽg—p‹–‘ø‚É€‚¶‚Ü‚·D
+       Julius ã®ä½¿ç”¨è¨±è«¾ã«æº–ã˜ã¾ã™ï¼Ž
 
 
 

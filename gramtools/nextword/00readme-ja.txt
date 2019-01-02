@@ -4,40 +4,40 @@ NEXTWORD(1)                                                        NEXTWORD(1)
 
 
 
-���O
+名前
            nextword
-          - DFA ���@�Łi�t�����Ɂj���P���\������c�[��
+          - DFA 文法で（逆向きに）次単語を予測するツール
 
-�T�v
+概要
        nextword [-t] [-r] [-s spname] [-v] {prefix}
 
 DESCRIPTION
-       nextword �́Cmkdfa.pl �ɂ���ĕϊ����ꂽ DFA ���@ ��ŁC�^����ꂽ����
-       ���ɑ΂��Đڑ������鎟�P��̏W�����o�͂��܂��D
+       nextword は，mkdfa.pl によって変換された DFA 文法 上で，与えられた部分
+       文に対して接続しうる次単語の集合を出力します．
 
-       ���s�ɂ� .dfa, .dict, .term �̊e�t�@�C�����K�v�ł��D ���炩����
-       mkdfa.pl �Ő������Ă����ĉ������D
+       実行には .dfa, .dict, .term の各ファイルが必要です． あらかじめ
+       mkdfa.pl で生成しておいて下さい．
 
-       �I���ӁI mkdfa.pl �ŏo�͂���镶�@�́C���� ���@�ƈقȂ�C���̌�납��O
-       �Ɍ������t�����̕��@�ƂȂ��Ă��܂��D ����́CJulius �̑�2�p�X�Ō�����
-       �̒T�����s�����߂ł��D ���̂��߁Cnextword �ŗ^���镔�������t�����ƂȂ�
-       �܂��D
+       ！注意！ mkdfa.pl で出力される文法は，元の 文法と異なり，文の後ろから前
+       に向かう逆向きの文法となっています． これは，Julius の第2パスで後ろ向き
+       の探索を行うためです． このため，nextword で与える部分文も逆向きとなり
+       ます．
 
 OPTIONS
         -t
-           �P��ł͂Ȃ��J�e�S�����œ��́E�o�͂���D
+           単語ではなくカテゴリ名で入力・出力する．
 
         -r
-           �P����t���ɓ��͂���D
+           単語を逆順に入力する．
 
         -s  spname
-           �X�L�b�v���ׂ��V���[�g�|�[�Y�P��̖��O���w�肷��D (default: "sp")
+           スキップすべきショートポーズ単語の名前を指定する． (default: "sp")
 
         -v
-           �f�o�b�O�o�́D
+           デバッグ出力．
 
 EXAMPLES
-       vfr (�t�B�b�e�B���O�^�X�N�p���@) �ł̎��s��F
+       vfr (フィッティングタスク用文法) での実行例：
 
            % nextword vfr
            Reading in dictionary...done
@@ -47,18 +47,18 @@ EXAMPLES
            42 categories, 99 words
            DFA has 135 nodes and 198 arcs
            -----
-           wseq > �� ���� ������ silE
-           [wseq: �� ���� ������ silE]
+           wseq > に して 下さい silE
+           [wseq: に して 下さい silE]
            [cate: (NI|NI_AT) SURU_V KUDASAI_V NS_E]
            PREDICTED CATEGORIES/WORDS:
-                       KEIDOU_A (�h�� �n�� )
-                       BANGOU_N (�� )
-                         HUKU_N (�� ���� ���� )
-                      PATTERN_N (�`�F�b�N �c�� ���� ...)
-                         GARA_N (�� )
-                        KANZI_N (���� )
-                          IRO_N (�F )
-                        COLOR_N (�� �� �� ...)
+                       KEIDOU_A (派手 地味 )
+                       BANGOU_N (番 )
+                         HUKU_N (服 服装 服装 )
+                      PATTERN_N (チェック 縦縞 横縞 ...)
+                         GARA_N (柄 )
+                        KANZI_N (感じ )
+                          IRO_N (色 )
+                        COLOR_N (赤 橙 黄 ...)
            wseq >
 
 
@@ -68,16 +68,16 @@ SEE ALSO
         accept_check ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 

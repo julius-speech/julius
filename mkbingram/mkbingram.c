@@ -2,13 +2,13 @@
  * @file   mkbingram.c
  * 
  * <JA>
- * @brief  ARPAɸ�������N-gram���� Julius �ѤΥХ��ʥ�N-gram���Ѵ����롥
+ * @brief  ARPA標準形式のN-gramから Julius 用のバイナリN-gramに変換する．
  *
- * Julius �ǻȤ��� ARPA ɸ������� (������)2-gram �� �������
- * 3-gram ��ñ��ΥХ��ʥ�N-gram���Ѵ����롥
+ * Julius で使える ARPA 標準形式の (前向き)2-gram と 後ろ向き
+ * 3-gram を，単一のバイナリN-gramに変換する．
  *
- * �Х��ʥ�N-gram�η����Ϥޤ��Ť�����(3.4.2����)
- * �ΥХ��ʥ�N-gram�� 3.5 �ʹߤο������������Ѵ����뤳�Ȥ�Ǥ��롥
+ * バイナリN-gramの形式はまた古い形式(3.4.2以前)
+ * のバイナリN-gramを 3.5 以降の新しい形式に変換することもできる．
  * </JA>
  * 
  * <EN>

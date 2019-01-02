@@ -6,9 +6,9 @@ use IO::Select;
 my $host = "localhost";
 my $port = 10500;
 
-print STDERR "$host($port) ¤ËÀÜÂ³¤·¤Ş¤¹\n";
+print STDERR "$host($port) ã«æ¥ç¶šã—ã¾ã™\n";
 
-# Socket¤òÀ¸À®¤·¤ÆÀÜÂ³
+# Socketã‚’ç”Ÿæˆã—ã¦æ¥ç¶š
 my $socket;
 while(!$socket){
     $socket = IO::Socket::INET->new(PeerAddr => $host,
@@ -16,38 +16,38 @@ while(!$socket){
                                     Proto    => 'tcp',
                                     );
     if (!$socket){
-        printf STDERR "$host($port) ¤ÎÀÜÂ³¤Ë¼ºÇÔ¤·¤Ş¤·¤¿\n";
-        printf STDERR "ºÆÀÜÂ³¤ò»î¤ß¤Ş¤¹\n";
+        printf STDERR "$host($port) ã®æ¥ç¶šã«å¤±æ•—ã—ã¾ã—ãŸ\n";
+        printf STDERR "å†æ¥ç¶šã‚’è©¦ã¿ã¾ã™\n";
         sleep 10;
     }
 }
 
-print STDERR "$host($port) ¤ËÀÜÂ³¤·¤Ş¤·¤¿\n";
+print STDERR "$host($port) ã«æ¥ç¶šã—ã¾ã—ãŸ\n";
 
-# ¥Ğ¥Ã¥Õ¥¡¥ê¥ó¥°¤ò¤·¤Ê¤¤
+# ãƒãƒƒãƒ•ã‚¡ãƒªãƒ³ã‚°ã‚’ã—ãªã„
 $| = 1;
 my($old) = select($socket); $| = 1; select($old);
 
-# Selecter¤òÀ¸À®
+# Selecterã‚’ç”Ÿæˆ
 my $selecter = IO::Select->new;
 $selecter->add($socket);
 $selecter->add(\*STDIN);
 
-# ÆşÎÏÂÔ¤Á
+# å…¥åŠ›å¾…ã¡
 while(1){
     my ($active_socks) = IO::Select->select($selecter, undef, undef, undef);
 
     foreach my $sock (@{$active_socks}){
-        # Julius¤«¤é¤Î½ĞÎÏ¤òÉ½¼¨
+        # Juliusã‹ã‚‰ã®å‡ºåŠ›ã‚’è¡¨ç¤º
         if ($sock == $socket){
             while(<$socket>){
                 print;
                 last if(/^\./);
             }
-	    # É¸½àÆşÎÏ¤òJulius¤ËÁ÷¿®
+	    # æ¨™æº–å…¥åŠ›ã‚’Juliusã«é€ä¿¡
         }else{
             my $input = <STDIN>;
-            # ¾®Ê¸»ú¤òÂçÊ¸»ú¤ËÊÑ´¹
+            # å°æ–‡å­—ã‚’å¤§æ–‡å­—ã«å¤‰æ›
             $input =~ tr/a-z/A-Z/d;
 
             print $socket $input;

@@ -22,122 +22,122 @@
                                                 (Rev 2.0   1999/02/20)
                                                 (Rev 1.0   1998/02/20)
 
- Copyright (c) 1991-2019 ���s��w �͌�������
- Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
- Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
- Copyright (c) 2005-2019 ���É��H�Ƒ�w Julius�J���`�[��
+ Copyright (c) 1991-2019 京都大学 河原研究室
+ Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
+ Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
+ Copyright (c) 2005-2019 名古屋工業大学 Julius開発チーム
  All rights reserved
 ======================================================================
 
-Julius �ɂ���
+Julius について
 =================
 
-Julius �́C�����F���V�X�e���̊J���E�����̂��߂̃I�[�v���\�[�X�̍����\
-�Ȕėp���b�A�������F���G���W���ł��D������b�̘A�������F������ʂ�PC
-��łقڎ����ԂŎ��s�ł��܂��D�܂��C�����ėp���������C���������⌾�ꃂ
-�f���E�������f���Ȃǂ̉����F���̊e���W���[����g�ݑւ��邱�ƂŁC�l�X��
-���L���p�r�ɉ��p�ł��܂��D ����v���b�g�t�H�[���� Linux, Windows, iOS,
-Android, ���̑��̊��ł��D
+Julius は，音声認識システムの開発・研究のためのオープンソースの高性能
+な汎用大語彙連続音声認識エンジンです．数万語彙の連続音声認識を一般のPC
+上でほぼ実時間で実行できます．また，高い汎用性を持ち，発音辞書や言語モ
+デル・音響モデルなどの音声認識の各モジュールを組み替えることで，様々な
+幅広い用途に応用できます． 動作プラットフォームは Linux, Windows, iOS,
+Android, その他の環境です．
 
 
-GitHub �ւ̈ڍs�ɂ���
+GitHub への移行について
 ========================
 
-Julius��2016�N��� GitHub �ֈڍs���܂����D
-�ŐV�̃\�[�X�R�[�h�E�e����s�L�b�g�E�J�����̌��J�E���L�����
-�J���Ҍ����̃t�H�[�����^�c�� GitHub �ɂčs���Ă��܂��D
+Juliusは2016年より GitHub へ移行しました．
+最新のソースコード・各種実行キット・開発情報の公開・共有および
+開発者向けのフォーラム運営は GitHub にて行っています．
 
         Julius on GitHub
         https://github.com/julius-speech/julius
 
-���z�[���y�[�W�ɂ� 4.3.1 �ȑO�̏�񂪌f�ڂ���Ă��܂��D
-������������p�������D
+旧ホームページには 4.3.1 以前の情報が掲載されています．
+こちらもご活用下さい．
 
-        �� Julius Web �T�C�g
+        旧 Julius Web サイト
         http://julius.osdn.jp/
 
 
 What's new in Julius-4.5
 ==========================
 
-VAD�̋����̂��߂� WebRTC �x�[�X�� VAD �A���S���Y�����ǉ�����܂����B
-�������ꂽ�͈̂ȉ��̃R�[�h�ł��B
+VADの強化のために WebRTC ベースの VAD アルゴリズムが追加されました。
+統合されたのは以下のコードです。
 
   https://github.com/dpirch/libfvad
 
-4.5�ȍ~��Julius�ɂ�2��VAD���W���[��������܂��B�P�͏]�����炠��U
-���ƃ[���������x�[�X�̃��W���[���A�����ЂƂ�4.5�œ������ꂽ libfvad
-�i���f���x�[�X�j�B�����W���[���͓����I�[�f�B�I���͂ɑ΂��ĕ��񂵂ē���
-���A���񓮍쎞�́u�����W���[���Ƃ��g���K�����m�����Ƃ��v�������͂����m
-���܂��B�V���W���[���̓f�t�H���g�ł� OFF �ŁA�I�v�V���� "-fvad �l" ��
-�L���ɂȂ�܂��B
+4.5以降のJuliusには2つのVADモジュールがあります。１つは従来からある振
+幅とゼロ交差数ベースのモジュール、もうひとつは4.5で導入された libfvad
+（モデルベース）。両モジュールは同じオーディオ入力に対して並列して動作
+し、並列動作時は「両モジュールともトリガを検知したとき」音声入力を検知
+します。新モジュールはデフォルトでは OFF で、オプション "-fvad 値" で
+有効になります。
 
-DNN-HMM�̌v�Z��CPU�}���`�X���b�h���ǉ�����܂����B�}���`�X���b�h��L��
-�ɂ��邱�Ƃő�K�͂�DNN�ł̌v�Z���Ԃ������팸����܂��B�X���b�h����
-dnnconf ���� "num_threads" �Ŏw�肵�܂��B�f�t�H���g�l�� 2 �ł��B
+DNN-HMMの計算にCPUマルチスレッドが追加されました。マルチスレッドを有効
+にすることで大規模なDNNでの計算時間が多少削減されます。スレッド数は
+dnnconf 内の "num_threads" で指定します。デフォルト値は 2 です。
 
-���W���[�����[�h��XML�`���o�͂� XML special character �̃G�X�P�[�v��
-�s���悤�ɂȂ�܂����B�]���o�[�W�������� "<s>", "</s>" ���̏o�͂�
-"&lt;s&gt;" �̂悤�ɕς���Ă��܂��̂ł����ӂ��������B�]���̓����
-�߂������ꍇ�� "-noxmlescape" ���w�肵�ĉ������B
+モジュールモードのXML形式出力で XML special character のエスケープを
+行うようになりました。従来バージョンから "<s>", "</s>" 等の出力が
+"&lt;s&gt;" のように変わっていますのでご注意ください。従来の動作に
+戻したい場合は "-noxmlescape" を指定して下さい。
 
-�S�Ă̕ύX�_�Ǝg�����ɂ��Ă� Release-ja.txt ���������������B
+全ての変更点と使い方については Release-ja.txt をご覧ください。
 
 
-UTF-8�ւ̈ڍs�ɂ���
+UTF-8への移行について
 ======================
 
-�e�L�X�g�G���R�[�f�B���O�Ƃ��� SJIS�� EUC �����݂��Ă��܂������A
-�o�[�W����4.5����ȍ~�A�\�[�X�R�[�h�̃e�L�X�g�G���R�[�f�B���O��
-UTF-8�ɕϊ�����܂����B�ȍ~�̍X�V�� UTF-8 �x�[�X�ōs���܂��B
+テキストエンコーディングとして SJISや EUC が混在していましたが、
+バージョン4.5から以降、ソースコードのテキストエンコーディングは
+UTF-8に変換されました。以降の更新は UTF-8 ベースで行われます。
 
-�R�[�h�̕ύX��ǂ�����ȑO�̃o�[�W�����Ƃ̍������`�F�b�N���₷���悤�A
-�o�[�W����4.5�̎��_�ł̃e�L�X�g�G���R�[�h�ϊ��O�̃R�[�h��
-"master-4.5-legacy" �u�����`�ŕۑ����Ă���܂��B4.5 �����[�X�ȑO��
-�R�[�h���� 4.5 �܂ł̍���������ꍇ�͂�����̃u�����`�� checkout ����
-���������B
+コードの変更を追ったり以前のバージョンとの差分をチェックしやすいよう、
+バージョン4.5の時点でのテキストエンコード変換前のコードを
+"master-4.5-legacy" ブランチで保存してあります。4.5 リリース以前の
+コードから 4.5 までの差分を見る場合はそちらのブランチを checkout して
+ください。
 
 
-Julius-4.5�̃t�@�C���̍\��
+Julius-4.5のファイルの構成
 =============================
 
-	00readme-ja.txt		�ŏ��ɓǂޕ����i���̃t�@�C���j
-	LICENSE.txt		���C�Z���X����
-	Release-ja.txt		�����[�X�m�[�g/�ύX����
-	00readme-DNN.txt	DNN-HMM �̎g��������
-	configure		configure�X�N���v�g
+	00readme-ja.txt		最初に読む文書（このファイル）
+	LICENSE.txt		ライセンス条項
+	Release-ja.txt		リリースノート/変更履歴
+	00readme-DNN.txt	DNN-HMM の使い方説明
+	configure		configureスクリプト
 	configure.in		
-	Sample.jconf		jconf �ݒ�t�@�C���T���v��
-	Sample.dnnconf		DNN �ݒ�t�@�C���̃T���v��
-	julius/			Julius �\�[�X
-	libjulius/		JuliusLib �R�A�G���W�����C�u���� �\�[�X
-	libsent/		JuliusLib �ėp���C�u���� �\�[�X
-	adinrec/		�^���c�[�� adinrec
-	adintool/		�����^��/����M�c�[�� adintool
-	generate-ngram/		N-gram�������c�[��
-	gramtools/		���@�쐬�c�[���Q
-	jcontrol/		�T���v���l�b�g���[�N�N���C�A���g jcontrol
-	mkbingram/		�o�C�i��N-gram�쐬�c�[�� mkbingram
-	mkbinhmm/		�o�C�i��HMM�쐬�c�[�� mkbinhmm
-	mkgshmm/		GMS�p�������f���ϊ��c�[�� mkgshmm
-	mkss/			�m�C�Y���σX�y�N�g���Z�o�c�[�� mkss
-	support/		�J���p�X�N���v�g
+	Sample.jconf		jconf 設定ファイルサンプル
+	Sample.dnnconf		DNN 設定ファイルのサンプル
+	julius/			Julius ソース
+	libjulius/		JuliusLib コアエンジンライブラリ ソース
+	libsent/		JuliusLib 汎用ライブラリ ソース
+	adinrec/		録音ツール adinrec
+	adintool/		音声録音/送受信ツール adintool
+	generate-ngram/		N-gram文生成ツール
+	gramtools/		文法作成ツール群
+	jcontrol/		サンプルネットワーククライアント jcontrol
+	mkbingram/		バイナリN-gram作成ツール mkbingram
+	mkbinhmm/		バイナリHMM作成ツール mkbinhmm
+	mkgshmm/		GMS用音響モデル変換ツール mkgshmm
+	mkss/			ノイズ平均スペクトル算出ツール mkss
+	support/		開発用スクリプト
 	jclient-perl/		A simple perl version of module mode client
-	plugin/			�v���O�C���\�[�X�R�[�h�̃T���v���Ǝd�l����
-	man/			�}�j���A����
-	msvc/			Microsoft Visual Studio 2013 �p�t�@�C��
+	plugin/			プラグインソースコードのサンプルと仕様文書
+	man/			マニュアル類
+	msvc/			Microsoft Visual Studio 2013 用ファイル
 	dnntools/		Sample programs for dnn and vecnet client
-	binlm2arpa/		�o�C�i��N-gram����ARPA�ւ̕ϊ��c�[��
+	binlm2arpa/		バイナリN-gramからARPAへの変換ツール
 
 
-���C�Z���X
+ライセンス
 ===========
 
-Julius �̓I�[�v���\�[�X�\�t�g�E�F�A�ł��D
-�w�p�p�r�E���p���܂߁C���p�Ɋւ��ē��ɐ����͂���܂���D
-���p�����ɂ��ẮC�����̕��� "LICENSE.txt" �����ǂ݉������D
+Julius はオープンソースソフトウェアです．
+学術用途・商用を含め，利用に関して特に制限はありません．
+利用許諾については，同梱の文書 "LICENSE.txt" をお読み下さい．
 
-�܂��ȉ��̃t�@�C����f�B���N�g������ Copyright �����Q�Ɖ������B
+また以下のファイルやディレクトリ内の Copyright もご参照下さい。
 
   libjulius/libfvad/
   gramtools/gram2sapixml/gram2sapixml.pl.in
@@ -147,17 +147,17 @@ Julius �̓I�[�v���\�[�X�\�t�g�E�F�A�ł��D
   msvc/zlib/
 
 
-�A����
+連絡先
 ===========
 
-Julius �J���Ɋւ��邲����E���₢���킹�� GitHub �ŏ����Ă���܂��B
+Julius 開発に関するご質問・お問い合わせは GitHub で承っております。
 
         Julius on GitHub
         https://github.com/julius-speech/julius
 
-���邢�͉��L�̃��[���A�h���X�܂ł��₢���킹������
-('at' �� '@' �ɓǂݑւ��Ă�������)
+あるいは下記のメールアドレスまでお問い合わせ下さい
+('at' を '@' に読み替えてください)
 
 	julius-info at lists.sourceforge.jp
 
-�ȏ�
+以上

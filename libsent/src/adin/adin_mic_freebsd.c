@@ -2,21 +2,21 @@
  * @file   adin_mic_freebsd.c
  *
  * <JA>
- * @brief  �ޥ������� (FreeBSD)
+ * @brief  マイク入力 (FreeBSD)
  *
- * �ޥ������ϤΤ�������٥�ؿ��Ǥ���FreeBSD�Ǥ��Υե����뤬���Ѥ���ޤ���
+ * マイク入力のための低レベル関数です．FreeBSDでこのファイルが使用されます．
  *
- * ������ɥ����ɤ� 16bit ��Υ�� ��Ͽ���Ǥ��뤳�Ȥ�ɬ�ܤǤ���
+ * サウンドカードが 16bit モノラル で録音できることが必須です．
  * 
- * Julius��FreeBSD�ǥߥ������ǥХ������������ڹԤ��ޤ���Ͽ���ǥХ�����
- * ����ʥޥ���/�饤��ˤ�Ͽ���ܥ�塼���Ĵ���¾�Υġ����
- * �ԤʤäƲ�������
+ * JuliusはFreeBSDでミキサーデバイスの設定を一切行いません．録音デバイスの
+ * 選択（マイク/ライン）や録音ボリュームの調節は他のツールで
+ * 行なって下さい．
  *
- * �ǥե���ȤΥǥХ���̾�� "/dev/dsp" �Ǥ����Ķ��ѿ� AUDIODEV ��
- * �ǥХ���̾����ꤹ�뤳�Ȥǡ�¾�ΥǥХ���̾����ѤǤ��ޤ���
+ * デフォルトのデバイス名は "/dev/dsp" です．環境変数 AUDIODEV に
+ * デバイス名を指定することで，他のデバイス名を使用できます．
  *
- * ư���ǧ��FreeBSD 3.2-RELEASE �ǹԤʤ��ޤ�����������ɥɥ饤�Ф�
- * snd ����Ѥ��Ƥ��ޤ���
+ * 動作確認はFreeBSD 3.2-RELEASE で行なわれました．サウンドドライバは
+ * snd を使用しています．
  * </JA>
  * <EN>
  * @brief  Microphone input on FreeBSD

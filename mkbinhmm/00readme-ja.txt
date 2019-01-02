@@ -4,62 +4,62 @@ MKBINHMM(1)                                                        MKBINHMM(1)
 
 
 
-���O
+名前
            mkbinhmm
-          - �o�C�i�� HMM �ϊ�
+          - バイナリ HMM 変換
 
-�T�v
+概要
        mkbinhmm [-htkconf HTKConfigFile] {hmmdefs_file} {binhmm_file}
 
 DESCRIPTION
-       mkbinhmm �́CHTK�̃A�X�L�[�`����HMM��`�t�@�C�����CJulius�p�̃o�C�i ��
-       �`���֕ϊ����܂��D������g�����Ƃ� Julius�̋N�������������邱�Ƃ��ł���
-       ���D
+       mkbinhmm は，HTKのアスキー形式のHMM定義ファイルを，Julius用のバイナ リ
+       形式へ変換します．これを使うことで Juliusの起動を高速化することができま
+       す．
 
-       ���̉������f���̓������o�������o�̓t�@�C���̃w�b�_�ɖ��ߍ��ނ��Ƃ��ł�
-       �܂��D���ߍ��ނɂ́C�w�K���ɓ����ʒ��o�ɗp���� HTK Config �t�@�C����
-       "-htkconf" �Ŏw�肵�܂��D�w�b�_�ɒ��o�����𖄂ߍ��ނ��ƂŁC �F�����Ɏ�
-       ���I�ɕK�v�ȓ������o�p�����[�^���Z�b�g�����̂ŁC�֗��ł��D
+       この音響モデルの特徴抽出条件を出力ファイルのヘッダに埋め込むことができ
+       ます．埋め込むには，学習時に特徴量抽出に用いた HTK Config ファイルを
+       "-htkconf" で指定します．ヘッダに抽出条件を埋め込むことで， 認識時に自
+       動的に必要な特徴抽出パラメータがセットされるので，便利です．
 
-       ���͂Ƃ��āCHTK�A�X�L�[�`���̂ق��ɁC���ɕϊ��ς݂�Julius�p�o�C�i��HMM
-       ��^���邱�Ƃ��ł��܂��D-htkconf �ƕ��p����΁C �����̃o�C�i��HMM�ɓ���
-       �ʒ��o�����p�����[�^�𖄂ߍ��ނ��Ƃ��ł��܂��D
+       入力として，HTKアスキー形式のほかに，既に変換済みのJulius用バイナリHMM
+       を与えることもできます．-htkconf と併用すれば， 既存のバイナリHMMに特徴
+       量抽出条件パラメータを埋め込むことができます．
 
-       mkbinhmm �� gzip ���k���ꂽHMM��`�t�@�C�������̂܂ܓǂݍ��߂܂��D
+       mkbinhmm は gzip 圧縮されたHMM定義ファイルをそのまま読み込めます．
 
 OPTIONS
         -htkconf  HTKConfigFile
-           �w�K���ɓ����ʒ��o�Ɏg�p����HTK Config�t�@�C�����w�肷��D�w�肳 ��
-           ���ꍇ�C���̒��̐ݒ�l���o�̓t�@�C���̃w�b�_�ɖ��ߍ��܂��D ���͂�
-           ���Ƀw�b�_������ꍇ�㏑�������D
+           学習時に特徴量抽出に使用したHTK Configファイルを指定する．指定さ れ
+           た場合，その中の設定値が出力ファイルのヘッダに埋め込まれる． 入力に
+           既にヘッダがある場合上書きされる．
 
        hmmdefs_file
-           �ϊ����̉������f����`�t�@�C�� (MMF)�DHTK ASCII �`���C���邢��
-           Julius �o�C�i���`���D
+           変換元の音響モデル定義ファイル (MMF)．HTK ASCII 形式，あるいは
+           Julius バイナリ形式．
 
        hmmdefs_file
-           Julius�p�o�C�i���`���t�@�C���̏o�͐�D
+           Julius用バイナリ形式ファイルの出力先．
 
 EXAMPLES
-       HTK ASCII �`���� HMM ��`���o�C�i���`���ɕϊ�����F
-       HTK�̐ݒ�t�@�C�� Config �̓��e���w�b�_�ɏ�������ŏo�́F
-       �Â��o�C�i���`���t�@�C���Ƀw�b�_��񂾂��ǉ�����F
+       HTK ASCII 形式の HMM 定義をバイナリ形式に変換する：
+       HTKの設定ファイル Config の内容をヘッダに書き込んで出力：
+       古いバイナリ形式ファイルにヘッダ情報だけ追加する：
 
 SEE ALSO
         julius ( 1 ) ,
         mkbingram ( 1 )
 
 COPYRIGHT
-       Copyright (c) 1991-2013 ���s��w �͌�������
+       Copyright (c) 1991-2013 京都大学 河原研究室
 
-       Copyright (c) 1997-2000 ��񏈗��U�����Ƌ���(IPA)
+       Copyright (c) 1997-2000 情報処理振興事業協会(IPA)
 
-       Copyright (c) 2000-2005 �ޗǐ�[�Ȋw�Z�p��w�@��w ���쌤����
+       Copyright (c) 2000-2005 奈良先端科学技術大学院大学 鹿野研究室
 
-       Copyright (c) 2005-2013 ���É��H�Ƒ�w Julius�J���`�[��
+       Copyright (c) 2005-2013 名古屋工業大学 Julius開発チーム
 
 LICENSE
-       Julius �̎g�p�����ɏ����܂��D
+       Julius の使用許諾に準じます．
 
 
 
