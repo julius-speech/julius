@@ -56,6 +56,10 @@ Version 4.4 supports stand-alone DNN-HMM support, and several new
 tools and bug fixes are included.  See the "Release.txt" file for the
 full list of updates.  Run with "-help" to see full list of options.
 
+# Install
+
+Follow the instructions in [INSTALL.txt](https://github.com/julius-speech/julius/blob/master/INSTALL.txt).
+
 # Tools and Assets
 
 There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can get them fron the following Github pages:
@@ -99,12 +103,18 @@ If you have any language or acoustic model that can be distributed as a freeware
 
 # Documents
 
-- [Release Notes](https://github.com/julius-speech/julius/blob/master/Release.txt)
+Recent documents:
+
+- All options are listed in [Sample.jconf](https://github.com/julius-speech/julius/blob/master/Sample.jconf) and also be output when invoked "julius --help".
+- Full history and short descriptions are in [Release Notes](https://github.com/julius-speech/julius/blob/master/Release.txt) ([JP version](https://github.com/julius-speech/julius/blob/master/Release-ja.txt))
+- For DNN-HMM, take a look at [00readme-DNN.txt](https://github.com/julius-speech/julius/blob/master/00readme-HNN.txt) for how-to and [Sample.dnnconf](https://github.com/julius-speech/julius/blob/master/Sample.dnnconf) as example.
+
+Other, very old documents:
+
 - [The Juliusbook 3 (English) - fully translated from Japanese for 3.x](http://julius.sourceforge.jp/book/Julius-3.2-book-e.pdf)
 - [The Juliusbook 4 (English) - commands and options for 4.x](http://sourceforge.jp/projects/julius/downloads/47534/Juliusbook-4.1.5.pdf)
 - [The Juliusbook 4 (Japanese) - full documentation in Japanese](http://julius.osdn.jp/juliusbook/ja/)
 - [The grammar format of Julius](http://julius.sourceforge.jp/en_index.php?q=en_grammar.html)
-- How to run with DNN-HMM (preparing)
 
 # References
 
