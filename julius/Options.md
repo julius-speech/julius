@@ -5,33 +5,33 @@ Julius Options
 
 ## Basic rules
 
-- When specifies conflicting options or same option twice, the last one will overrides former ones.
-- "-C jconffile" will expand the content of the jconffile at there.
-- In jconf file, relative paths in are treated as relative to
+- IF options are conflicting or appears several times, the last one will overrides former ones.
+- The option "-C jconffile" will expand the content of the jconf file at the position.
+- In jconf file, relative path arguments are treated as relative to
 the *jconf file itself*, not the current working directory.
 
 ## Option groups
 
-All options are grouped into several groups:
+Options are categorized into one of the following groups:
 - APP
-- GLOBAL
 - LM
 - AM
 - SR
+- GLOBAL
 
-`APP` group is application-side option group just for "julius" command.  They can be specified at the command-line application `"julius"`, but not available when you directly integrate libjulius and libsent embedded in your application.
+`APP` group is application-side option group.  The options in the `APP` group can be specified for the command-line application `"julius"`, but not available at your application integrating libjulius and libsent.  They can be specified at any point of the option sequence.
 
-`GLOBAL` group contains ASR module independent options such as audio front-end and utility back-end. such as audio input, sound detection, GMM, plugin facility.
+`LM`, `AM` and `SR` are option groups for language model, acoustic model and search algorithm, respectively.
 
-`LM`, `AM` and `SR` are groups for language model, acoustic model and search algorithm, respectively.  
+`GLOBAL` group contains misc. options that are independent from models and algorithms. They contains options concerning audio front-end and utility back-end.
 
-If you just use Julius to perform single instance recognition, you do not need to care about the groups.  However, when you are going to set up Julius for multi-instance decoding, please take a look at the section below carefully.
+You do not need to care about the groups when you just use Julius with single recognition instance (1 AM, 1 LM).  If you are going to set up Julius to perform multi-instance decoding with multiple models, you should care about the groups and section declaration as described in the following section.
 
 ## Instance declaration for multi decoding
 
-Julius supports multi-model decoding with multiple LM and/or multiple AM, that runs each models simultaneously for an audio input within a single thread.
+Julius supports multi-instance decoding with multiple models.  The multi-instance decoding runs each models simultaneously for an audio input within a single thread and output multiple results at once.
 
-To perform multi-model decoding, you should define several model sets and then declare several ASR modules referring to the defined model sets to be used. Below is an example of jconf file for multi-model decoding:
+To perform multi-model decoding, you should define several model sets, and also define search instances using the options. To specify multiple models sets and instances, a special option `-AM`, `-LM` and `-SR` can be used to switch the mode.  Below is an example of jconf file for multi-model decoding:
 
 ```
 # Example of two ASR module, each has its original AM/LM
@@ -94,7 +94,7 @@ To perform multi-model decoding, you should define several model sets and then d
 (GLOBAL options)
 ```
 
-Note that for options in `GLOBAL` group, you should either place them before any instance declaration, or explicitly declare GLOBAL option by `-GLOBAL` option. `APP` options can be placed anywhere. 
+When using the switches, the `GLOBAL` options should be placed either at the top (before any instance declaration), or after `-GLOBAL` option.
 
 #### -AM name
 Create a new AM configuration set, and switch current to the new
@@ -134,8 +134,6 @@ instance declarataion. This is enabled by default. (Rev.4.1)
 
 
 # `APP` options
-
-Application options of Julius outside of JuliusLib. These option are specific to Julius, and cannot be used at applications using JuliusLib other than Julius.
 
 #### -outfile
 
