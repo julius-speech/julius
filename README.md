@@ -1,11 +1,9 @@
 (Moved from julius.osdn.jp since 2015/09, this is official)  
-(Please [make an issues](https://github.com/julius-speech/julius/issues) for questions and discussions about Julius)
-
-(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping
-the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)
+(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)
 
 Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 ==========================================================================
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2530396.svg)](https://doi.org/10.5281/zenodo.2530396)
 
 Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)  
 Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
