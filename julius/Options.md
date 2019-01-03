@@ -39,18 +39,18 @@ To perform multi-model decoding, you should define several model sets, and also 
 (GLOBAL options)
 ...
 -AM Mname1
-(AM options for name1)
+(AM options for Mname1)
 
 -AM Mname2
-(AM options for name2)
+(AM options for Mname2)
 ...
 
 -LM Lname1
-(LM options for name1L)
+(LM options for Lname1)
 ...
 
 -LM Lname2
-(LM options for name2L)
+(LM options for Lname2)
 ...
 
 -SR module1 Mname1 Lname1
@@ -72,14 +72,14 @@ To perform multi-model decoding, you should define several model sets, and also 
 (GLOBAL options)
 ...
 -AM name
-(AM options for name1)
+(AM options for name)
 
 -LM Lname1
-(LM options for name1L)
+(LM options for Lname1)
 ...
 
 -LM Lname2
-(LM options for name2L)
+(LM options for Lname2)
 ...
 
 -SR module1 name Lname1
