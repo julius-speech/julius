@@ -2,7 +2,7 @@
 
 An N-gram-to-text sentence generator
 
-## Synopsys
+## Synopsis
 
 ```shell
 % generate-ngram [options] binary_ngram_file

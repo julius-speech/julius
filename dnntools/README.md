@@ -2,20 +2,20 @@
 
 DNN-HMM related tiny tools for Julius
 
-## Synopsys
+## Synopsis
 
 ```shell
 % cc -o sendvec sendvec.c
-% ./sendvec paramfile hostname [portnum]
+% ./sendvec paramFile hostname [PortNum]
 ```
 
 ```shell
-% ./embed_sid.pl < source_hmmdefs > embedded_hmmders
+% ./embed_sid.pl < source_hmmdefs > embedded_hmmdefs
 ```
 
 ## Description
 
-`sendvec.c` is a sample stand-alone program that sends either feature vectors or output probability vectors to Julius via TCP/IP.  The `paramfile` should be a file in HTK parameter file format.  When compiled without definition of `OUTPROBVECTOR`, the `sendvec` will send the parameter as feature vector, which can be received by Julius running with `-input vecnet`.  When compiled with `OUTPROBVECTOR` defined, `sendvec` will send the parameter file as output probability vectors, that can be received by Julius with `-input outprob`.  Note that Julius will receive any vectors without checking the type and length of received vectors, so you should send the same type and size of the vector as assumed in Julius side.
+`sendvec.c` is a sample stand-alone program that sends either feature vectors or output probability vectors to Julius via TCP/IP.  The `paramFile` should be a file in HTK parameter file format.  When compiled without definition of `OUTPROBVECTOR`, the `sendvec` will send the parameter as feature vector, which can be received by Julius running with `-input vecnet`.  When compiled with `OUTPROBVECTOR` defined, `sendvec` will send the parameter file as output probability vectors, that can be received by Julius with `-input outprob`.  Note that Julius will receive any vectors without checking the type and length of received vectors, so you should send the same type and size of the vector as assumed in Julius side.
 
 `embed_sid.pl` is a perl script that can embed `<SID>` tags to HMM definition file.  The `<SID>` tag can be used to make exact correspondence for HMM state id, between frontend outprob calculator and Julius on server-client DNN-HMM recognition.  See "00readme-DNN.txt" in the top directory of Julius archive for details about HMM state id matching.
 
@@ -28,7 +28,7 @@ The tools in this directory will NOT be installed automatically when installing 
 Send feature vector file to Julius running with `-input vecnet` at localhost:
 
 ```shell
-% ./sendvec vecfile localhost
+% ./sendvec htkVectorFile localhost
 ```
 
 ## License

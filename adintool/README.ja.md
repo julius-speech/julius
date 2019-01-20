@@ -6,10 +6,10 @@
 
 マルチインプット・マルチアウトプットの音声波形データ検出・記録・分割・送受信ツール
 
-## Synopsys
+## Synopsis
 
 ```shell
-% adintool -in inputdev -out outputdev [options...]
+% adintool -in InputDevice -out OutputDevice [options...]
 ```
 
 GUI版
@@ -76,7 +76,7 @@ GUI版
 % adintool -in mic -out file -oneshot -filename test.wav
 ```
 
-音声ファイル "speech.wav" をVADで分割し、逐次Juliusに送付
+音声ファイル "speech.wav" をVADで分割し、逐次 Julius に送付
 
 ```shell
 % echo speech.wav | adintool -in file -out adinnet -server localhost
@@ -131,7 +131,7 @@ One-shot recording: will exit after the end of first speech segment was detected
 
 ## Options: I/O
 
-### -in inputdev
+### -in InputDevice
 
 (必須) 入力音声デバイスを指定
 
@@ -139,7 +139,7 @@ One-shot recording: will exit after the end of first speech segment was detected
 - `file`: ファイル入力（ファイル名は実行後にプロンプトで聞かれる）- `stdin`: 標準入力（raw形式を想定）
 - `adinnet`: adinnet サーバになり音声ストリームを adinnet クライアントから受け取る
 
-### -out outputdev
+### -out OutputDevice
 
 (必須) 出力先を指定
 
@@ -169,7 +169,7 @@ One-shot recording: will exit after the end of first speech segment was detected
 
 `-in adinnet` 指定時、listenするポート番号を変更する（デフォルト：5530）
 
-## Options: adinnet synchnization
+## Options: adinnet synchronization
 
 ### -autopause
 

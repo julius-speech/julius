@@ -6,10 +6,10 @@ English / [Japanese](README.ja.md)
 
 Multi-input / Multi-output audio tool to detect / record / split / send / receive audio streams.
 
-## Synopsys
+## Synopsis
 
 ```shell
-% adintool -in inputdev -out outputdev [options...]
+% adintool -in InputDevice -out OutputDevice [options...]
 ```
 
 GUI version:
@@ -38,7 +38,7 @@ Speech processing:
 
 Output waveform / feature vector:
 
-- wavfile
+- waveform file (.wav)
 - network socket (adinnet) audio to Julius
 - network socket (vecnet) feature vector to Julius
 - tty stdout
@@ -82,18 +82,18 @@ Split audio file "speech.wav" into segments and send to Julius spawned with `-in
 % echo speech.wav | adintool -in file -out adinnet -server localhost
 ```
 
-Receive wave data segments from adinnet and save to files "savexxxx.wav"
+Receive wave data segments from adinnet and save to files "wave_xxxx.wav"
 
 ```shell
-% adintool -in adinnet -out file -nosegment -filename save
+% adintool -in adinnet -out file -nosegment -filename wave_
 ```
 
 `adintool-gui` can be manipulated by key:
 
 - Press `Up/Down` to move trigger threshold
 - Press `c` to connect/disconnect with server (manual connect)
-- Press `Enter` to force speech downtrigger at that point
-- Press `m` to mute/unmute
+- Press `Enter` to force speech down-trigger at that point
+- Press `m` to mute/un-mute
 
 ## Options: audio property
 
@@ -113,7 +113,7 @@ Do not perform speech detection. Treat the whole input as a single valid segment
 
 ### -rewind msec
 
-With `-in mic` and `-out adinnet` or `-out vecnet`, recording back to the specified milliseconds at each adintool resume.  May be valid when the beginnning of segment is missing at resume.
+With `-in mic` and `-out adinnet` or `-out vecnet`, recording back to the specified milliseconds at each adintool resume.  May be valid when the beginning of segment is missing at resume.
 
 ### -oneshot
 
@@ -131,7 +131,7 @@ With `-out vecnet`, specify vector length in # dimensions.
 
 ## Options: I/O
 
-### -in inputdev
+### -in InputDevice
 
 (REQUIRED) Select audio input
 
@@ -140,7 +140,7 @@ With `-out vecnet`, specify vector length in # dimensions.
 - `stdin`: standard input (assume raw format)
 - `adinnet`: become adinnet server, receive from adinnet client
 
-### -out outputdev
+### -out OutputDevice
 
 (REQUIRED) Select output
 
@@ -170,7 +170,7 @@ With `-out adinnet`, specify port number to connect to.  (default:5530)
 
 With `-in adinnet`, specify port number to listen.  (default:5530)
 
-## Options: adinnet synchnization
+## Options: adinnet synchronization
 
 ### -autopause
 

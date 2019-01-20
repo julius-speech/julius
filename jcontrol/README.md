@@ -1,11 +1,11 @@
 # jcontrol
 
-a full-spec sample module client for Julius written in C
+A sample module client for Julius written in C
 
-## Synopsys
+## Synopsis
 
 ```shell
-% jcontol hostname [portnum]
+% jcontrol HostName [PortNum]
 ```
 
 ## Description
@@ -29,11 +29,11 @@ connecting to localhost:10500...done
 
 ## Options
 
-### `hostname`
+### `HostName`
 
 Host name where Julius is running in module mode.
 
-### `portnum`
+### `PortNum`
 
 Port number (default: 10500)
 
@@ -60,7 +60,7 @@ Restart Julius that has been paused or terminated.
 
 #### `inputparam arg`
 
-Configure how to deal with current speech input, in case grammar has been changed while recognition is running. `arg` shoule be one of `TERMINATE`, `PAUSE` or `WAIT`
+Configure how to deal with current speech input, in case grammar has been changed while recognition is running. `arg` should be one of `TERMINATE`, `PAUSE` or `WAIT`
 
 #### `version`
 
@@ -78,11 +78,11 @@ Request the current recognition process to return information about current gram
 
 #### `changegram prefix`
 
-Send the specified grammar to Julius, and request it to switch the whole grammar to the grammar.  The grammer can be specified by `prefix` which means `prefix.dfa` and `prefix.dict`.  Valid only when the current recognition process is grammar-mode or isolated-word-mode.  On isolated-word-mode, the argument should be the full name of the dictionary file `foobar.dict`, not the prefix.
+Send the specified grammar to Julius, and request it to switch the whole grammar to the grammar.  The grammar can be specified by `prefix` which means `prefix.dfa` and `prefix.dict`.  Valid only when the current recognition process is grammar-mode or isolated-word-mode.  On isolated-word-mode, the argument should be the full name of the dictionary file `foobar.dict`, not the prefix.
 
 #### `addgram prefix`
 
-Send the specified grammar to Julius, and request it to add the grammar as a new grammar.  The grammer files can be specified by `prefix`, which means `prefix.dfa` and `prefix.dict`.  On isolated-word-mode, the argument should be the full name of the dictionary file `foobar.dict`, not the prefix.
+Send the specified grammar to Julius, and request it to add the grammar as a new grammar.  The grammar files can be specified by `prefix`, which means `prefix.dfa` and `prefix.dict`.  On isolated-word-mode, the argument should be the full name of the dictionary file `foobar.dict`, not the prefix.
 
 #### `deletegram gramlist`
 

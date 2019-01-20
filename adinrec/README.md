@@ -6,7 +6,7 @@
 
 Record one utterance from audio device and save to a file.
 
-## Synopsys
+## Synopsis
 
 ```shell
 % adinrec [options...] file.wav
@@ -43,7 +43,7 @@ Record one utterance with 48kHz, 16bit mono format:
 % adinrec -freq 48000 test.wav
 ```
 
-Receive audio stream from adinnet audio client, detect speech, and save the first speech segement into a file.  Also activates libfvad-based VAD module.
+Receive audio stream from adinnet audio client, detect speech, and save the first speech segment into a file.  Also activates libfvad-based VAD module.
 
 ```shell
 % adinrec -input adinnet -fvad 3 test.wav
@@ -75,7 +75,7 @@ device name string for OSS (default: "/dev/dsp")
 
 ### PORTAUDIO_DEV
 
-With portaudio, index of capture device to use. The available devices will be listed at startup.
+With PortAudio, index of capture device to use. The available devices will be listed at startup.
 
 ### LATENCY_MSEC
 

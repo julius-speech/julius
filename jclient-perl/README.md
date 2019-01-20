@@ -2,7 +2,7 @@
 
 A minimal Julius client example in perl.
 
-## Synopsys
+## Synopsis
 
 ```shell
 % jclient.pl

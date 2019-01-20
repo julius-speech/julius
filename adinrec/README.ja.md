@@ -6,7 +6,7 @@
 
 １発話の音声入力データをファイルに記録する
 
-## Synopsys
+## Synopsis
 
 ```shell
 % adinrec [options...] file.wav
