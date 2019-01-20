@@ -1,13 +1,14 @@
+<!-- markdownlint-disable MD041 -->
+
 [English](README.md) / Japanese
 
-adinrec
-========
+# adinrec
 
 １発話の音声入力データをファイルに記録する
 
 ## Synopsys
 
-```
+```shell
 % adinrec [options...] file.wav
 ```
 
@@ -30,15 +31,20 @@ adinrec
 ## Usage
 
 16kHz, 16bit モノラルでファイルに記録：
-```
+
+```shell
 % adinrec test.wav
 ```
+
 48kHz で記録
-```
+
+```shell
 % adinrec -freq 48000 test.wav
 ```
+
 adinnet から音声ストリームを受信しながら音声検出と保存を行う。また libfvad ベースのVADモジュールを使用する。
-```
+
+```shell
 % adinrec -input adinnet -fvad 3 test.wav
 ```
 

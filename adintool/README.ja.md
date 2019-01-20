@@ -1,17 +1,20 @@
+<!-- markdownlint-disable MD041 -->
+
 [English](README.md) / Japanese
 
-adintool / adintool-gui
-========================
+# adintool / adintool-gui
 
 マルチインプット・マルチアウトプットの音声波形データ検出・記録・分割・送受信ツール
 
 ## Synopsys
 
+```shell
+% adintool -in inputdev -out outputdev [options...]
 ```
-% adintool -in inputde -out outputdev [options...]
-```
+
 GUI版
-```
+
+```shell
 % adintool-gui [options...]
 ```
 
@@ -20,18 +23,21 @@ GUI版
 `adintool` は音声入力から音声検出をリアルタイムに行い、セグメント化された音声を様々に出力することができます。
 
 音声波形入力ソース:
+
 - マイクロフォン
 - 音声ファイル
 - 標準入力
 - ネットワークソケット（adinnet）
 
 音声処理：
+
 - 音声区間検出
 - 音声区間分割
 - 特徴量抽出
 - 連続／単発
 
 出力先：音声波形もしくは特徴量ベクトル
+
 - wavファイル
 - ネットワークソケット（adinnet）  Julius 等へ
 - ネットワークソケット（vecnet） Julius等へ
@@ -50,32 +56,43 @@ GUI版
 
 ### Installing
 
-このツールはJuliusのインストール時に同時に同じ場所にインストールされます。
+このツールはJuliusのインストール時に同時に同じ場所にインストールされます。 `adintool-gui` をビルドするには SDL v2 ライブラリが必要です。ビルド時に SDL v2 ライブラリが見つからなければ `adintool-gui` はビルドされません。ビルドするには configure 前に以下を実行して下さい（Ubuntu）：
+
+```shell
+% sudo apt-get install libsdl2-dev
+```
 
 ## Usage
 
 マイク入力を音声区間ごとに "test0001.wav", "test0002.wav" と順次保存する
-```
+
+```shell
 % adintool -in mic -out file -filename test
 ```
+
 起動後マイクへの最初の1発話だけを test.wav へ保存して終了
-```
+
+```shell
 % adintool -in mic -out file -oneshot -filename test.wav
 ```
+
 音声ファイル "speech.wav" をVADで分割し、逐次Juliusに送付
-```
+
+```shell
 % echo speech.wav | adintool -in file -out adinnet -server localhost
 ```
-adinnet 経由で送られてきた音声データを受け取りつつ順次ファイルに保存する 
-```
+
+adinnet 経由で送られてきた音声データを受け取りつつ順次ファイルに保存する
+
+```shell
 % adintool -in adinnet -out file -nosegment -filename save
 ```
 
-
 `adintool-gui` はキーで以下の操作が行えます。
+
 - `Up/Down` キーで検出レベル閾値を上下
 - `c` キーでサーバへ接続・切断をトグル
--  `Enter` キーで音声区間検出を強制区切り
+- `Enter` キーで音声区間検出を強制区切り
 - `m` キーで入力のミュート・解除トグル
 
 ## Options: audio property
@@ -116,14 +133,16 @@ One-shot recording: will exit after the end of first speech segment was detected
 
 ### -in inputdev
 
-(REQUIRED) 入力音声デバイスを指定
+(必須) 入力音声デバイスを指定
+
 - `mic`: マイク入力を録音
 - `file`: ファイル入力（ファイル名は実行後にプロンプトで聞かれる）- `stdin`: 標準入力（raw形式を想定）
 - `adinnet`: adinnet サーバになり音声ストリームを adinnet クライアントから受け取る
 
 ### -out outputdev
 
-(REQUIRED) 出力先を指定
+(必須) 出力先を指定
+
 - `file`: wavファイルに保存（ファイル名は `-filename` で指定)
 - `stdout`: 標準出力（raw形式）
 - `adinnet`: adinnet クライアントになり音声ストリームを adinnet サーバへ送信する。送信先サーバ名は `-server` で指定
@@ -136,7 +155,7 @@ One-shot recording: will exit after the end of first speech segment was detected
 
 ### -startid number
 
-`-out file` と `-filename` 指定時の連番の初期値を変更する。デフォルトは 0 
+`-out file` と `-filename` 指定時の連番の初期値を変更する。デフォルトは 0
 
 ### -server host[,host,...]
 

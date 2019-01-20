@@ -1,0 +1,75 @@
+{
+	// Place your global snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+	"README template": {
+		"scope": "markdown",
+		"prefix": "readme",
+		"body": [
+			"<!-- markdownlint-disable MD041 -->",
+			"",
+			"English / [Japanese](README.ja.md)",
+			"",
+			"# ${1:Title}",
+			"",
+			"## Synopsys",
+			"",
+			"```shell",
+			"% ${1:Title} [options]",
+			"```",
+			"",
+			"## Description",
+			"",
+			"`${1:Title}` is ",
+			"",
+			"### Prerequisites",
+			"",
+			"### Installing",
+			"",
+			"## Usage",
+			"",
+			"Usage 1:",
+			"",
+			"```shell",
+			"% ${1:Title} ...",
+			"```",
+			"",
+			"Usage 2:",
+			"",
+			"```shell",
+			"% ${1:Title} ...",
+			"```",
+			"",
+			"## Options",
+			"",
+			"## Environment Variables",
+			"",
+			"## License",
+			""
+		],
+		"description": "README template"
+	},
+	"Options": {
+		"scope": "markdown",
+		"prefix": "options",
+		"body": [
+			"#### $1",
+			"",
+			"$2  (default: $3)"
+		],
+		"description": "README option"
+	}
+}

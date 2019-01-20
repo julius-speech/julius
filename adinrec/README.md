@@ -1,13 +1,14 @@
-English / [Japanese](README.ja.md)
+<!-- markdownlint-disable MD041 -->
 
-adinrec
-========
+[English / [Japanese](README.ja.md)]
+
+# adinrec
 
 Record one utterance from audio device and save to a file.
 
 ## Synopsys
 
-```
+```shell
 % adinrec [options...] file.wav
 ```
 
@@ -31,18 +32,22 @@ This tool will be installed together with Julius.
 ## Usage
 
 Record one utterance with 16kHz, 16bit mono format:
-```
+
+```shell
 % adinrec test.wav
 ```
+
 Record one utterance with 48kHz, 16bit mono format:
-```
+
+```shell
 % adinrec -freq 48000 test.wav
 ```
+
 Receive audio stream from adinnet audio client, detect speech, and save the first speech segement into a file.  Also activates libfvad-based VAD module.
-```
+
+```shell
 % adinrec -input adinnet -fvad 3 test.wav
 ```
-
 
 ## Options
 

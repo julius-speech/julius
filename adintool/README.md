@@ -1,17 +1,20 @@
+<!-- markdownlint-disable MD041 -->
+
 English / [Japanese](README.ja.md)
 
-adintool / adintool-gui
-========================
+# adintool / adintool-gui
 
 Multi-input / Multi-output audio tool to detect / record / split / send / receive audio streams.
 
 ## Synopsys
 
+```shell
+% adintool -in inputdev -out outputdev [options...]
 ```
-% adintool -in inputde -out outputdev [options...]
-```
+
 GUI version:
-```
+
+```shell
 % adintool-gui [options...]
 ```
 
@@ -20,18 +23,21 @@ GUI version:
 `adintool` analyzes speech input, detects speech segments skipping silence, and records the detected segments in various ways.
 
 Input waveform:
+
 - microphone
 - a speech file
 - tty stdin
 - network socket (adinnet)
 
 Speech processing:
+
 - speech detection
 - speech segmentation
 - feature vector extraction
 - one-shot / successive
 
 Output waveform / feature vector:
+
 - wavfile
 - network socket (adinnet) audio to Julius
 - network socket (vecnet) feature vector to Julius
@@ -50,28 +56,40 @@ If you are capturing from microphone device, you need one audio capture device o
 
 ### Installing
 
-This tools will be installed together with Julius.
+This tools will be installed together with Julius.  SDL v2 library is required to build `adintool-gui`, so it should be installed before build phase. On Ubuntu, do this before installation:
+
+```shell
+% sudo apt-get install libsdl2-dev
+```
 
 ## Usage
 
 Record utterances one by one, into file "test0001.wav", "test0002.wav", ...
-```
+
+```shell
 % adintool -in mic -out file -filename test
 ```
+
 Record only one utterance into "test.wav"
-```
+
+```shell
 % adintool -in mic -out file -oneshot -filename test.wav
 ```
+
 Split audio file "speech.wav" into segments and send to Julius spawned with `-input adinnet` at localhost
-```
+
+```shell
 % echo speech.wav | adintool -in file -out adinnet -server localhost
 ```
+
 Receive wave data segments from adinnet and save to files "savexxxx.wav"
-```
+
+```shell
 % adintool -in adinnet -out file -nosegment -filename save
 ```
 
 `adintool-gui` can be manipulated by key:
+
 - Press `Up/Down` to move trigger threshold
 - Press `c` to connect/disconnect with server (manual connect)
 - Press `Enter` to force speech downtrigger at that point
@@ -116,6 +134,7 @@ With `-out vecnet`, specify vector length in # dimensions.
 ### -in inputdev
 
 (REQUIRED) Select audio input
+
 - `mic`: capture via microphone input
 - `file`: audio file input (will be prompted for file name)
 - `stdin`: standard input (assume raw format)
@@ -124,6 +143,7 @@ With `-out vecnet`, specify vector length in # dimensions.
 ### -out outputdev
 
 (REQUIRED) Select output
+
 - `file`: save in .wav file (require `-filename`)
 - `stdout`: standard output (raw format)
 - `adinnet`: become adinnet client, send to adinnet server (require `-server`)
