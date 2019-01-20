@@ -83,4 +83,4 @@ Input latency of microphone input in milliseconds. Smaller value will shorten la
 
 ## License
 
-This tool is licensed under the same license with Julius - see the license term of Julius for defails.
+This tool is licensed under the same license with Julius.  See the license term of Julius for details.
