@@ -10,7 +10,8 @@ Convert Julius binary N-gram file back to ARPA format.
 
 ## Description
 
-`binlm2arpa` converts any binary N-gram file for Julius back to the original standard ARPA format.
+`binlm2arpa` converts any binary N-gram file for Julius back to the original
+standard ARPA format.
 
 ### Installing
 
@@ -18,7 +19,8 @@ This tools will be installed together with Julius.
 
 ## Usage
 
-Convert binlm file that contains forward 2-gram and backward 3-gram into ARPA files:
+Convert binlm file that contains forward 2-gram and backward 3-gram into ARPA
+files:
 
 ```shell
 % binlm2arpa xxx.binlm outputFile
@@ -46,4 +48,5 @@ No option.
 
 ## License
 
-This tool is licensed under the same license with Julius.  See the license term of Julius for details.
+This tool is licensed under the same license with Julius.  See the license term
+of Julius for details.

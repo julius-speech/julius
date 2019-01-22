@@ -4,7 +4,8 @@ English / [Japanese](README.ja.md)
 
 # adintool / adintool-gui
 
-Multi-input / Multi-output audio tool to detect / record / split / send / receive audio streams.
+Multi-input / Multi-output audio tool to detect / record / split / send /
+receive audio streams.
 
 ## Synopsis
 
@@ -20,7 +21,8 @@ GUI version:
 
 ## Description
 
-`adintool` analyzes speech input, detects speech segments skipping silence, and records the detected segments in various ways.
+`adintool` analyzes speech input, detects speech segments skipping silence, and
+records the detected segments in various ways.
 
 Input waveform:
 
@@ -44,19 +46,27 @@ Output waveform / feature vector:
 - tty stdout
 - none
 
-This tool uses Julius's internal VAD module for speech detection. The detection algorithm and parameters are the same as Julius.  
+This tool uses Julius's internal VAD module for speech detection. The detection
+algorithm and parameters are the same as Julius.  
 
 The default audio format is 16 bit, 1 channel in Microsoft WAV format.
 
-`adintool-gui` is a GUI version of adintool.  All the functions are as same as `adintool`, except that server connection will be established manually with pressing `c` key.  When executed with no argument, `adintool-gui` assumes `-in mic -out none`.
+`adintool-gui` is a GUI version of adintool.  All the functions are as same as
+`adintool`, except that server connection will be established manually with
+pressing `c` key.  When executed with no argument, `adintool-gui` assumes `-in
+mic -out none`.
 
 ### Prerequisites
 
-If you are capturing from microphone device, you need one audio capture device on your machine.  If several devices are available, the default one will be used.
+If you are capturing from microphone device, you need one audio capture device
+on your machine.  If several devices are available, the default one will be
+used.
 
 ### Installing
 
-This tools will be installed together with Julius.  SDL v2 library is required to build `adintool-gui`, so it should be installed before build phase. On Ubuntu, do this before installation:
+This tools will be installed together with Julius.  SDL v2 library is required
+to build `adintool-gui`, so it should be installed before build phase. On
+Ubuntu, do this before installation:
 
 ```shell
 % sudo apt-get install libsdl2-dev
@@ -76,7 +86,8 @@ Record only one utterance into "test.wav"
 % adintool -in mic -out file -oneshot -filename test.wav
 ```
 
-Split audio file "speech.wav" into segments and send to Julius spawned with `-input adinnet` at localhost
+Split audio file "speech.wav" into segments and send to Julius spawned with
+`-input adinnet` at localhost
 
 ```shell
 % echo speech.wav | adintool -in file -out adinnet -server localhost
@@ -113,17 +124,21 @@ Do not perform speech detection. Treat the whole input as a single valid segment
 
 ### -rewind msec
 
-With `-in mic` and `-out adinnet` or `-out vecnet`, recording back to the specified milliseconds at each adintool resume.  May be valid when the beginning of segment is missing at resume.
+With `-in mic` and `-out adinnet` or `-out vecnet`, recording back to the
+specified milliseconds at each adintool resume.  May be valid when the beginning
+of segment is missing at resume.
 
 ### -oneshot
 
-One-shot recording: will exit after the end of first speech segment was detected.  If not specified, `adintool` will perform successive detection.
+One-shot recording: will exit after the end of first speech segment was
+detected.  If not specified, `adintool` will perform successive detection.
 
 ## Options: feature vector extraction
 
 ### -paramtype parameter_type
 
-With `-out vecnet`, specify parameter type in HTK parameter description format like "MFCC_E_D_N_Z".
+With `-out vecnet`, specify parameter type in HTK parameter description format
+like "MFCC_E_D_N_Z".
 
 ### -veclen vector_length
 
@@ -152,7 +167,11 @@ With `-out vecnet`, specify vector length in # dimensions.
 
 ### -filename
 
-With `-out file`, specify output file name base.  When "foobar" is specified, the successive outputs will be saved to "foobar.0001.wav", "foobar.0002.wav" and so on.  The default initial number is 0001, but can be changed by `-startid`.  When `-oneshot` is specified together, the output will be saved to "file", as is.
+With `-out file`, specify output file name base.  When "foobar" is specified,
+the successive outputs will be saved to "foobar.0001.wav", "foobar.0002.wav" and
+so on.  The default initial number is 0001, but can be changed by `-startid`.
+When `-oneshot` is specified together, the output will be saved to "file", as
+is.
 
 ### -startid number
 
@@ -174,16 +193,24 @@ With `-in adinnet`, specify port number to listen.  (default:5530)
 
 ### -autopause
 
-With `-out adinnet`, specify this option to tell `adintool` automatically enter pause state after every speech segment detection.  It will blocks until a resume signal from adinnet server.
+With `-out adinnet`, specify this option to tell `adintool` automatically enter
+pause state after every speech segment detection.  It will blocks until a resume
+signal from adinnet server.
 
 ### -loosesync
 
-With `-out adinnet` and specify multiple servers in `-server`, this option specifies how to wait for resume from multiple servers.  By default, when `adintool` enters pause state, it resumes only after receiving resume commands from all servers.
-When this option is specified, `adintool` resumes immediately after one of the servers have emitted resume commands, not waiting for all servers.
+With `-out adinnet` and specify multiple servers in `-server`, this option
+specifies how to wait for resume from multiple servers.  By default, when
+`adintool` enters pause state, it resumes only after receiving resume commands
+from all servers. When this option is specified, `adintool` resumes immediately
+after one of the servers have emitted resume commands, not waiting for all
+servers.
 
 ### Other options (-input, -lv, ...)
 
-Julius's audio options are fully applicable to this tool.  You can choose input device, set level threshold, change head/tail silence margin, load Julius's jconf file and so on.  For the available options, see the options in Julius.
+Julius's audio options are fully applicable to this tool.  You can choose input
+device, set level threshold, change head/tail silence margin, load Julius's
+jconf file and so on.  For the available options, see the options in Julius.
 
 ## Environment Variables
 
@@ -197,12 +224,16 @@ device name string for OSS (default: "/dev/dsp")
 
 ### PORTAUDIO_DEV
 
-With portaudio, index of capture device to use. The available devices will be listed at startup.
+With portaudio, index of capture device to use. The available devices will be
+listed at startup.
 
 ### LATENCY_MSEC
 
-Input latency of microphone input in milliseconds. Smaller value will shorten latency but sometimes make process unstable. Default value will depend on the running OS.
+Input latency of microphone input in milliseconds. Smaller value will shorten
+latency but sometimes make process unstable. Default value will depend on the
+running OS.
 
 ## License
 
-This tool is licensed under the same license with Julius.  See the license term of Julius for details.
+This tool is licensed under the same license with Julius.  See the license term
+of Julius for details.

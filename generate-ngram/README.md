@@ -10,11 +10,14 @@ An N-gram-to-text sentence generator
 
 ## Description
 
-`generate-ngram` generates sentences randomly according to the given N-gram language model.  The N-gram file should be a binary N-gram file for Julius.  
+`generate-ngram` generates sentences randomly according to the given N-gram
+language model.  The N-gram file should be a binary N-gram file for Julius.  
 
 You can convert ARPA standard format LM to Julius binary N-gram by `mkbingram`.
 
-`generate-ngram` generates a sequence left-to-right, beginning with EOS `<s>` and stops when an EOS `</s>` was generated. It continues generation of sentences until unique N sentences has been generated (N=10 by default).
+`generate-ngram` generates a sequence left-to-right, beginning with EOS `<s>`
+and stops when an EOS `</s>` was generated. It continues generation of sentences
+until unique N sentences has been generated (N=10 by default).
 
 ### Installing
 
@@ -84,4 +87,5 @@ Debug output.
 
 ## License
 
-This tool is licensed under the same license with Julius.  See the license term of Julius for details.
+This tool is licensed under the same license with Julius.  See the license term
+of Julius for details.

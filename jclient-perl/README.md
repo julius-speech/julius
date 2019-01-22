@@ -16,7 +16,8 @@ A minimal Julius client example in perl.
 - receives recognition results and other event messages, and
 - send control commands to Julius
 
-You can learn by practice how to receive messages from Julius or send control message to Julius.
+You can learn by practice how to receive messages from Julius or send control
+message to Julius.
 
 ### Installing
 
@@ -33,10 +34,12 @@ Run test on local machine.  First, start Julius with module mode as other proces
 Then run `jclient.pl`.  It will connect to Julius on localhost.
 
 ```shell
-% jclient.pl 
+% jclient.pl
 ```
 
-Let's speak to Julius. `jclient.pl` will output all the received messages from Julius like this (The details of this example may differ by versions and option settings):
+Let's speak to Julius. `jclient.pl` will output all the received messages from
+Julius like this (The details of this example may differ by versions and option
+settings):
 
 ```xml:jclient.pl&nbsp;output
 <STARTPROC/>
@@ -61,7 +64,9 @@ Let's speak to Julius. `jclient.pl` will output all the received messages from J
 .
 ```
 
-`jclient.pl` sends any text given from stdin to Julius.  For example, sending a string "PAUSE" (type it and press `Enter` at jclient stdin) will tell Julius to stop audio input, pause recognition and enter waiting mode.
+`jclient.pl` sends any text given from stdin to Julius.  For example, sending a
+string "PAUSE" (type it and press `Enter` at jclient stdin) will tell Julius to
+stop audio input, pause recognition and enter waiting mode.
 
 ```shell:jclient.pl&nbsp;output
 PAUSE
@@ -79,4 +84,5 @@ Modify the header part of the script to change host or port.
 
 ## License
 
-`jclient.pl` was developed by Ryuichi Nishimura (nisimura@sys.wakayama-u.ac.jp) and contributed to Julius.
+`jclient.pl` was developed by Ryuichi Nishimura (nisimura@sys.wakayama-u.ac.jp)
+and contributed to Julius.
