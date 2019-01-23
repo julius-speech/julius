@@ -1,7 +1,7 @@
 # mkgshmm
 
-make mixture PDF definition file from monophone HMM for Gaussian mixture
-selection
+Make mixture PDF definition file from monophone HMM for Gaussian mixture
+selection.
 
 ## Synopsis
 

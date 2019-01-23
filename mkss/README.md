@@ -1,7 +1,7 @@
 # mkss
 
-calculate average spectrum of microphone input and save to file for spectral
-subtraction
+Calculate average spectrum of microphone input and save to file for spectral
+subtraction.
 
 ## Synopsis
 

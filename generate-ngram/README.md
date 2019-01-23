@@ -1,6 +1,6 @@
 # generate-ngram
 
-An N-gram-to-text sentence generator
+An N-gram-to-text sentence generator.
 
 ## Synopsis
 
@@ -11,7 +11,7 @@ An N-gram-to-text sentence generator
 ## Description
 
 `generate-ngram` generates sentences randomly according to the given N-gram
-language model.  The N-gram file should be a binary N-gram file for Julius.  
+language model.  The N-gram file should be a binary N-gram file for Julius.
 
 You can convert ARPA standard format LM to Julius binary N-gram by `mkbingram`.
 

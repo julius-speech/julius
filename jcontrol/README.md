@@ -1,6 +1,6 @@
 # jcontrol
 
-A sample module client for Julius written in C
+A sample module client for Julius written in C.
 
 ## Synopsis
 

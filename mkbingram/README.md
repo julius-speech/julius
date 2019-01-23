@@ -1,6 +1,6 @@
 # mkbingram
 
-make binary N-gram from ARPA N-gram file
+Make binary N-gram from ARPA N-gram file.
 
 ## Synopsis
 

@@ -1,6 +1,6 @@
 # mkbinhmm, mkbinhmmlist
 
-make binary HMM and binary HMM list
+Make binary HMM and binary HMM list.
 
 ## Synopsis
 

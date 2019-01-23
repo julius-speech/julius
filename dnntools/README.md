@@ -1,6 +1,6 @@
 # dnntools
 
-DNN-HMM related tiny tools for Julius
+DNN-HMM related tiny tools for Julius.
 
 ## Synopsis
 
