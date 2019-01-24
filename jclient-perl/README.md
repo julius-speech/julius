@@ -82,6 +82,11 @@ RESUME
 
 Modify the header part of the script to change host or port.
 
+## Related tools
+
+- "[jcontrol](https://github.com/julius-speech/julius/tree/master/jcontrol)" is
+  a C version of sample client for Julius.
+
 ## License
 
 `jclient.pl` was developed by Ryuichi Nishimura (nisimura@sys.wakayama-u.ac.jp)

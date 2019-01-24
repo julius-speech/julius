@@ -36,6 +36,11 @@ Determinizing a non-deterministic grammar automaton into deterministic form:
 
 Specify output file. (default: output to standard output)
 
+## Related tools
+
+- "[dfa_minimize](https://github.com/julius-speech/julius/tree/master/gramtools/dfa_minimize)"
+  can minimize DFA.
+
 ## License
 
 This tool is licensed under the same license with Julius.  See the license term

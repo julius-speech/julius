@@ -17,7 +17,7 @@ Record one utterance from audio device and save to a file.
 `adinrec` detects an utterance input and store it to a file.
 
 This tool uses Julius's internal VAD module for speech detection. The detection
-algorithm and parameters are the same as Julius.  
+algorithm and parameters are the same as Julius.
 
 The audio format is 16 bit, 1 channel in Microsoft WAV format. If the given
 filename already exists, it will be overridden.  When filename is "-" , the
@@ -89,6 +89,13 @@ listed at startup.
 Input latency of microphone input in milliseconds. Smaller value will shorten
 latency but sometimes make process unstable. Default value will depend on the
 running OS.
+
+## Related tools
+
+- "[adintool](https://github.com/julius-speech/julius/tree/master/adintool)" is
+  another recording software with rich functions.
+- "[julius](https://github.com/julius-speech/julius/)" uses the same audio
+  detection algorithm.
 
 ## License
 

@@ -85,6 +85,13 @@ Verbose output.
 
 Debug output.
 
+## Related tools
+
+- "[mkbingram](https://github.com/julius-speech/julius/tree/master/mkbingram)"
+  can convert ARPA files into binary N-gram.
+- "[binlm2arpa](https://github.com/julius-speech/julius/tree/master/binlm2arpa)"
+  is can revert binary N-gram into its original ARPA format.
+
 ## License
 
 This tool is licensed under the same license with Julius.  See the license term

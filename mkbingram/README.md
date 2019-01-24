@@ -106,8 +106,12 @@ Convert character code in binary N-gram.
 
 ## Related Tools
 
-[`binlm2arpa`](../binlm2arpa/) is a reversed version of `mkbingram`, de-convert
-the binary N-gram back to its original ARPA format.
+## Related tools
+
+- "[binlm2arpa](https://github.com/julius-speech/julius/tree/master/binlm2arpa)"
+  is can revert binary N-gram into its original ARPA format.
+- "[generate-ngram](https://github.com/julius-speech/julius/tree/master/generate-ngram)"
+  can generate random sentences from binary N-gram.
 
 ## License
 

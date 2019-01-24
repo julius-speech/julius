@@ -37,6 +37,14 @@ Minimize a dfa file:
 
 Specify output file. (default: output to standard output)
 
+## Related tools
+
+- "[mkdfa.pl](https://github.com/julius-speech/julius/tree/master/gramtools/mkdfa)"
+  is the grammar compiler for Julius.  `dfa_minimize` is called within this
+  script.
+- "[dfa_determinize](https://github.com/julius-speech/julius/tree/master/gramtools/dfa_determinize)"
+  can determinize DFA.
+
 ## License
 
 This tool is licensed under the same license with Julius.  See the license term

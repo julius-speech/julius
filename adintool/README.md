@@ -47,7 +47,7 @@ Output waveform / feature vector:
 - none
 
 This tool uses Julius's internal VAD module for speech detection. The detection
-algorithm and parameters are the same as Julius.  
+algorithm and parameters are the same as Julius.
 
 The default audio format is 16 bit, 1 channel in Microsoft WAV format.
 
@@ -232,6 +232,13 @@ listed at startup.
 Input latency of microphone input in milliseconds. Smaller value will shorten
 latency but sometimes make process unstable. Default value will depend on the
 running OS.
+
+## Related tools
+
+- "[adinrec](https://github.com/julius-speech/julius/tree/master/adinrec)" is a
+  simplified version recording only the first audio segment.
+- "[julius](https://github.com/julius-speech/julius/)" uses the same audio
+  detection algorithm, and can receive data from `adintool`.
 
 ## License
 

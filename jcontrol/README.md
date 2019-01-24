@@ -177,6 +177,11 @@ process will not be executed for the input until activated again.
 
 Request Julius to activate the temporarily stopped process.
 
+## Related tools
+
+- "[jclient.pl](https://github.com/julius-speech/julius/tree/master/jclient-perl)"
+  is a perl version of sample client for Julius.
+
 ## License
 
 This tool is licensed under the same license with Julius.  See the license term

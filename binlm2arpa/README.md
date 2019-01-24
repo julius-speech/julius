@@ -42,9 +42,12 @@ Convert forward 5-gram binlm into ARPA file:
 writing forward 5-gram to "outputFile.ngram.arpa"
 ```
 
-## Options
+## Related tools
 
-No option.
+- "[mkbingram](https://github.com/julius-speech/julius/tree/master/mkbingram)"
+  can convert ARPA files into binary N-gram.
+- "[generate-ngram](https://github.com/julius-speech/julius/tree/master/generate-ngram)"
+  can generate random sentences from binary N-gram.
 
 ## License
 

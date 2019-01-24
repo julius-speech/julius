@@ -66,6 +66,17 @@ Short-pause word name to be skipped. (default: "sp")
 
 Debug output.
 
+## Related tools
+
+- "[nextword](https://github.com/julius-speech/julius/tree/master/gramtools/nextword)"
+  can show word prediction of a grammar at given context for debug.
+- "[generate](https://github.com/julius-speech/julius/tree/master/gramtools/generate)"
+  can generate sentences randomly according to the grammar.
+- "[mkdfa.pl](https://github.com/julius-speech/julius/tree/master/gramtools/mkdfa)"
+  is the grammar compiler for Julius.
+- "[yomi2voca.pl](https://github.com/julius-speech/julius/tree/master/gramtools/yomi2voca)"
+  can convert Japanese Hiragana to phoneme for making recognition dictionary.
+
 ## License
 
 This tool is licensed under the same license with Julius.  See the license term
