@@ -32,8 +32,14 @@ specifying "--prefix=..." to configure script.
 Linux  (tested on Ubuntu-14.04)
 
   % sudo apt-get install build-essential zlib1g-dev libsdl2-dev
-  % sudo apt-get libasound2-dev (or libpulse-dev, whichever you like)
+  % sudo apt-get libasound2-dev (or libpulse-dev, whichever you want to enable)
   % ./configure
+  % make
+  % (optional) make install
+
+If you want only one audio interface, use `--with-mictype=xxx`.
+
+  % ./configure --with-mictype=pulseaudio
   % make
   % (optional) make install
 
@@ -47,7 +53,7 @@ cannot be build on Ubuntu.
   % sudo apt-get install libz-mingw-w64-dev
   % ./configure --host=x86_64-w64-mingw32 --disable-sdl
   % make
-      
+
 -----------------------------------------------
 Cygwin
 
@@ -115,5 +121,5 @@ your own compiler flags via "CFLAGS" environment value, like this:
     % make
 
 (tested on cross-compilation on Ubuntu)
-  
+
 -----------------------------------------------

@@ -256,7 +256,7 @@ On some OS, instead of `mic`, you can explicitly specify available audio API (al
 (With -input rawfile|mfcfile|outprob) perform recognition on
 all files listed in the file. The file should contain input
 file per line. Engine will end when all of the files are
-processed.
+processed.  See also `-outfile` for per-input result output.
 
 ### -48
 
@@ -320,7 +320,7 @@ Silence margin at the start of speech segment in milliseconds.
 Silence margin at the end of speech segment in milliseconds.
 (default: 400)
 
-### -chunk_size
+### -chunk_size size
 
 Buffer length of the audio input can be set with number of
 samples (default number is 1000). If you set small number, you
