@@ -398,8 +398,7 @@ HMMs.
 Number of Gaussian components to be computed per frame on GMM
 calculation. Only the N-best Gaussians will be computed for
 rapid calculation. The default is 10 and specifying smaller
-value will speed up GMM calculation, but too small value (1 or
-1) may cause degradation of identification performance.
+value will speed up GMM calculation, but too small value may cause degradation of identification performance.
 
 ### -gmmreject string
 
