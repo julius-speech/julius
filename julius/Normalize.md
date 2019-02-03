@@ -89,6 +89,7 @@ starts with a pre-set "generic mean/variance", and it updates the current mean
 at every frame by smearing the generic value with the mean of recently processed
 frames.  The algorithm  is as follows:
 
+<!--
 - Load generic mean and variance ($\bm{\mu_g}$ and $\bm{\sigma_g^2}$).
 - At each speech input,
   - Set initial values:  $\bm{\hat{\mu}} = \bm{\mu_g}$, $\bm{\hat{\sigma^2}} = \bm{\sigma_g^2}$.
@@ -99,6 +100,9 @@ frames.  The algorithm  is as follows:
 $$
 \bm{\hat{\mu}} = \frac{w \cdot \mu_g +  \sum_{i=1}^t\bm{O}(i)}{w + t}
 $$
+-->
+
+![MAP-CMN algorithm](doc-image/map-cmn.png)
 
 The weight $w$ can be changed by option
 [-cmnmapweight](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cmnmapweight-float).

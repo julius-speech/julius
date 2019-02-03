@@ -1,6 +1,8 @@
 
 # Specifications
 
+(Updating WIP)
+
 ## Audio input
 
 [Audio.md](Audio.md).
