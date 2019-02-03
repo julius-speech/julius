@@ -29,7 +29,7 @@ When using context dependent phones (triphones), inter-word contexts are taken
 into consideration. For tied-mixture and phonetic tied-mixture models,
 high-speed acoustic likelihood calculation is possible using gaussian pruning.
 
-For more details, see the related documents.
+For more details, see the documents in [doc/](https://github.com/julius-speech/julius/blob/master/doc/).
 
 ### Prerequisites
 
@@ -47,7 +47,6 @@ detailed instruction.
 
 A brief summary of models to be used with Julius is described here.  Standard
 models for some languages are also provided as "dictation kit" on Julius site.
-See the [Spec.md](Spec.md) for detailed specifications.
 
 ### Acoustic model
 
@@ -112,7 +111,7 @@ Start recognition with a config file:
 
 ## Options
 
-See [Options.md](Options.md).
+See [Options.md](../doc/Options.md).
 
 ## Environment Variables
 
