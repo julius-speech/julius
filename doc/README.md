@@ -1,5 +1,5 @@
 
-# Specifications
+# JuliusDoc
 
 (Updating WIP)
 

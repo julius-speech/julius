@@ -102,7 +102,7 @@ $$
 $$
 -->
 
-![MAP-CMN algorithm](doc-image/map-cmn.png)
+![MAP-CMN algorithm](image/map-cmn.png)
 
 The weight $w$ can be changed by option
 [-cmnmapweight](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cmnmapweight-float).

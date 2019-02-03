@@ -21,7 +21,7 @@ the static GMM detector and decoder-based detector runs after those, only
 processing the audio samples that have been passed by the former two detectors.
 The block diagram of detection modules are as follows:
 
-![Block diagram of VAD modules](doc-image/vad-module.png)
+![Block diagram of VAD modules](image/vad-module.png)
 
 All VAD detector is disabled by default for buffered processing.  For stream
 processing, the level and zero cross threshold detector is enabled by default.
@@ -47,7 +47,7 @@ options.  The
 and
 [-tailmargin](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-tailmargin-msec)
 options specifies the margin before / after the detected segment, as illustrated
-below: ![VAD by level threshold](doc-image/vad_lvzc.png)
+below: ![VAD by level threshold](image/vad_lvzc.png)
 
 This detector is enabled by default for stream processing (live audio and
 network input), and disabled for buffered processing (file input).  Set
