@@ -438,17 +438,9 @@ This option will be valid only if compiled with
 
 ### -realtime, -norealtime
 
-Explicitly switch on / off real-time (pipe-line) processing on
-the first pass. The default is off for file input, and on for
-microphone, adinnet and NetAudio input. This option relates to
-the way CMN and energy normalization is performed: if off, they
-will be done using average features of whole input. If on,
-MAP-CMN and energy normalization to do real-time processing.
+Explicitly switch between "stream processing" and "buffered processing".  "-realtime" sets mode to stream processing, and "-norealtime" sets mode to buffered processing.
 
-Real-time processing means concurrent processing of MFCC
-computation 1st pass decoding. By default, real-time processing on
-the pass is on for microphone / adinnet / netaudio input, and for
-others.
+Default is buffer processing for files, and stream processing for microphone and network input.  Setting "-realtime" to a file input can simulate the recognition process as if it were input from microphone.
 
 ### -C jconffile
 
@@ -940,7 +932,7 @@ The cepstral mean will be estimated in different way according to
 the input type. On file input, the mean will be computed from the
 whole input. On live input such as microphone and network input,
 the cepstral mean of the input is unknown at the start. So MAP-CMN
-will be used. On MAP-CMN, an initial mean vector will be applied at
+will be used. On MAP-CMN, a generic mean vector will be applied at
 the beginning, and the mean vector will be smeared to the mean of
 the incrementing input vector as input goes. Options below can
 control the behavior of MAP-CMN.
@@ -950,7 +942,9 @@ control the behavior of MAP-CMN.
 Enable cepstral variance normalization. At file input, the
 variance of whole input will be calculated and then applied. At
 live microphone input, variance of the last input will be
-applied. CVN is only supported for an audio input.
+applied. CVN is only supported for an audio input.  When specified,
+the save/load of the CMN file by "-cmnload" and "-cmnsave"
+also contains variance information to give its initial generic values.
 
 ### -vtln alpha lowCut hiCut
 
@@ -961,11 +955,11 @@ Config values, `WARPFREQ`, `WARPHCUTOFF` and `WARPLCUTOFF`.
 
 ### -cmnload file
 
-Load initial cepstral mean vector from file on startup. The
-file should be one saved by `-cmnsave`. Loading an initial
+Load generic cepstral mean vector (and variance when invoked with -cvn) from file on startup. The
+file should be one saved by `-cmnsave`. Loading an generic
 cepstral mean enables Julius to better recognize the first
-utterance on a real-time input. When used together with
--cmnnoupdate, this initial value will be used for all input.
+utterance on a real-time input.  It is also required to specifgy this option when using `-cmnstatic`. When used together with
+-cmnnoupdate, the value in the file will be used for all input.
 
 ### -cmnsave file
 
@@ -975,10 +969,13 @@ already exists, it will be overridden.
 
 ### -cmnupdate, -cmnnoupdate
 
-Control whether to update the cepstral mean at each input on
-real-time input. Disabling this and specifying `-cmnload` will
-make engine to always use the loaded static initial cepstral
-mean.
+Control whether to update the generic cepstral mean on
+real-time input.  The update is enabled by default, the stored cepstral
+mean will be updated using the last 5 seconds of last input, and the
+updated mean will be used as the initial value on the next input for MAP-CMN.  Disabling the update
+by `-cmnnoupdate` causes Julius to always start its MAP-CMN
+at every input from the initial generic value, either 0 or the one given
+by `-cmnload`. Enabled by default.
 
 ### -cmnmapweight float
 
@@ -986,6 +983,14 @@ Specify the weight of initial cepstral mean for MAP-CMN.
 Specify larger value to retain the initial cepstral mean for a
 longer period, and smaller value to make the cepstral mean rely
 more on the current input. (default: 100.0)
+
+### -cmnstatic
+
+Totally disables MAP-CMN on real-time input.  When specified,
+Julius always use the generic mean and variance for all input and all frames, does not perform MAP-CMN. Thus
+the initially loaded generic cepstral mean (and variance) are always kept static.
+This option also requires the static mean and variance to be
+specified by "-cmnload".
 
 ## Front-end processing options (category `-AM` / `-AM_GMM`)
 

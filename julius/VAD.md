@@ -23,6 +23,10 @@ The block diagram of detection modules are as follows:
 
 ![Block diagram of VAD modules](doc-image/vad-module.png)
 
+All VAD detector is disabled by default for buffered processing.  For stream
+processing, the level and zero cross threshold detector is enabled by default.
+Other detectors should be set up and enabled by options.
+
 ## Level and zero cross threshold detector
 
 A basic VAD module based on signal level and zero-cross threshold.  Audio signal
@@ -45,10 +49,10 @@ and
 options specifies the margin before / after the detected segment, as illustrated
 below: ![VAD by level threshold](doc-image/vad_lvzc.png)
 
-This detector is enabled by default for live audio and network input, and
-disabled for file input.  Set
+This detector is enabled by default for stream processing (live audio and
+network input), and disabled for buffered processing (file input).  Set
 [-cutsilence](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cutsilence--nocutsilence)
-to force enable, and
+to force enable this detector, and
 [-nocutsilence](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cutsilence--nocutsilence)
 to disable.
 
