@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsent", "libsent\libsent2013.vcxproj", "{0867DE93-30F0-4D6E-AB7D-7E4545E5F24F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D815C100-00D4-4AB9-8ADC-AA698BB70AA0} = {D815C100-00D4-4AB9-8ADC-AA698BB70AA0}
+		{71B22837-5E20-4E97-9029-E7AD1FF399C7} = {71B22837-5E20-4E97-9029-E7AD1FF399C7}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjulius", "libjulius\libjulius2013.vcxproj", "{4F9DC42E-E874-4885-819E-5C901F4E6079}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "julius", "julius\julius2013.vcxproj", "{C8E5508A-BEF2-4010-B99F-09C14CF5B89D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleApp", "SampleApp\SampleApp2013.vcxproj", "{667FC1EB-6D97-4040-8ECE-A7B0E62B289B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "adintool", "adintool\adintool2013.vcxproj", "{1FB96643-FE5D-4618-B622-2F9CF66AD848}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library_PortAudio", "Library_PortAudio\Library_PortAudio2013.vcxproj", "{71B22837-5E20-4E97-9029-E7AD1FF399C7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library_zlib", "Library_zlib\Library_zlib2013.vcxproj", "{D815C100-00D4-4AB9-8ADC-AA698BB70AA0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0867DE93-30F0-4D6E-AB7D-7E4545E5F24F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0867DE93-30F0-4D6E-AB7D-7E4545E5F24F}.Debug|Win32.Build.0 = Debug|Win32
+		{0867DE93-30F0-4D6E-AB7D-7E4545E5F24F}.Release|Win32.ActiveCfg = Release|Win32
+		{0867DE93-30F0-4D6E-AB7D-7E4545E5F24F}.Release|Win32.Build.0 = Release|Win32
+		{4F9DC42E-E874-4885-819E-5C901F4E6079}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4F9DC42E-E874-4885-819E-5C901F4E6079}.Debug|Win32.Build.0 = Debug|Win32
+		{4F9DC42E-E874-4885-819E-5C901F4E6079}.Release|Win32.ActiveCfg = Release|Win32
+		{4F9DC42E-E874-4885-819E-5C901F4E6079}.Release|Win32.Build.0 = Release|Win32
+		{C8E5508A-BEF2-4010-B99F-09C14CF5B89D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8E5508A-BEF2-4010-B99F-09C14CF5B89D}.Debug|Win32.Build.0 = Debug|Win32
+		{C8E5508A-BEF2-4010-B99F-09C14CF5B89D}.Release|Win32.ActiveCfg = Release|Win32
+		{C8E5508A-BEF2-4010-B99F-09C14CF5B89D}.Release|Win32.Build.0 = Release|Win32
+		{667FC1EB-6D97-4040-8ECE-A7B0E62B289B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{667FC1EB-6D97-4040-8ECE-A7B0E62B289B}.Debug|Win32.Build.0 = Debug|Win32
+		{667FC1EB-6D97-4040-8ECE-A7B0E62B289B}.Release|Win32.ActiveCfg = Release|Win32
+		{667FC1EB-6D97-4040-8ECE-A7B0E62B289B}.Release|Win32.Build.0 = Release|Win32
+		{1FB96643-FE5D-4618-B622-2F9CF66AD848}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1FB96643-FE5D-4618-B622-2F9CF66AD848}.Debug|Win32.Build.0 = Debug|Win32
+		{1FB96643-FE5D-4618-B622-2F9CF66AD848}.Release|Win32.ActiveCfg = Release|Win32
+		{1FB96643-FE5D-4618-B622-2F9CF66AD848}.Release|Win32.Build.0 = Release|Win32
+		{71B22837-5E20-4E97-9029-E7AD1FF399C7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{71B22837-5E20-4E97-9029-E7AD1FF399C7}.Debug|Win32.Build.0 = Debug|Win32
+		{71B22837-5E20-4E97-9029-E7AD1FF399C7}.Release|Win32.ActiveCfg = Release|Win32
+		{71B22837-5E20-4E97-9029-E7AD1FF399C7}.Release|Win32.Build.0 = Release|Win32
+		{D815C100-00D4-4AB9-8ADC-AA698BB70AA0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D815C100-00D4-4AB9-8ADC-AA698BB70AA0}.Debug|Win32.Build.0 = Debug|Win32
+		{D815C100-00D4-4AB9-8ADC-AA698BB70AA0}.Release|Win32.ActiveCfg = Release|Win32
+		{D815C100-00D4-4AB9-8ADC-AA698BB70AA0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

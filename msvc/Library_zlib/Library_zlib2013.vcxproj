@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -11,65 +11,57 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\src\common\pa_allocation.c" />
-    <ClCompile Include="src\src\common\pa_converters.c" />
-    <ClCompile Include="src\src\common\pa_cpuload.c" />
-    <ClCompile Include="src\src\common\pa_debugprint.c" />
-    <ClCompile Include="src\src\common\pa_dither.c" />
-    <ClCompile Include="src\src\common\pa_front.c" />
-    <ClCompile Include="src\src\common\pa_process.c" />
-    <ClCompile Include="src\src\common\pa_ringbuffer.c" />
-    <ClCompile Include="src\src\common\pa_stream.c" />
-    <ClCompile Include="src\src\common\pa_trace.c" />
-    <ClCompile Include="src\src\hostapi\dsound\pa_win_ds.c" />
-    <ClCompile Include="src\src\hostapi\dsound\pa_win_ds_dynlink.c" />
-    <ClCompile Include="src\src\hostapi\wmme\pa_win_wmme.c" />
-    <ClCompile Include="src\src\os\win\pa_win_coinitialize.c" />
-    <ClCompile Include="src\src\os\win\pa_win_hostapis.c" />
-    <ClCompile Include="src\src\os\win\pa_win_util.c" />
-    <ClCompile Include="src\src\os\win\pa_win_waveformat.c" />
-    <ClCompile Include="src\src\os\win\pa_win_wdmks_utils.c" />
-    <ClCompile Include="src\src\os\win\pa_x86_plain_converters.c" />
+    <ClCompile Include="src\adler32.c" />
+    <ClCompile Include="src\compress.c" />
+    <ClCompile Include="src\contrib\minizip\ioapi.c" />
+    <ClCompile Include="src\contrib\minizip\unzip.c" />
+    <ClCompile Include="src\crc32.c" />
+    <ClCompile Include="src\deflate.c" />
+    <ClCompile Include="src\gzclose.c" />
+    <ClCompile Include="src\gzlib.c" />
+    <ClCompile Include="src\gzread.c" />
+    <ClCompile Include="src\gzwrite.c" />
+    <ClCompile Include="src\infback.c" />
+    <ClCompile Include="src\inffast.c" />
+    <ClCompile Include="src\inflate.c" />
+    <ClCompile Include="src\inftrees.c" />
+    <ClCompile Include="src\trees.c" />
+    <ClCompile Include="src\uncompr.c" />
+    <ClCompile Include="src\zutil.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\src\common\pa_allocation.h" />
-    <ClInclude Include="src\src\common\pa_converters.h" />
-    <ClInclude Include="src\src\common\pa_cpuload.h" />
-    <ClInclude Include="src\src\common\pa_debugprint.h" />
-    <ClInclude Include="src\src\common\pa_dither.h" />
-    <ClInclude Include="src\src\common\pa_endianness.h" />
-    <ClInclude Include="src\src\common\pa_hostapi.h" />
-    <ClInclude Include="src\src\common\pa_memorybarrier.h" />
-    <ClInclude Include="src\src\common\pa_process.h" />
-    <ClInclude Include="src\src\common\pa_ringbuffer.h" />
-    <ClInclude Include="src\src\common\pa_stream.h" />
-    <ClInclude Include="src\src\common\pa_trace.h" />
-    <ClInclude Include="src\src\common\pa_types.h" />
-    <ClInclude Include="src\src\common\pa_util.h" />
-    <ClInclude Include="src\src\hostapi\dsound\pa_win_ds_dynlink.h" />
-    <ClInclude Include="src\src\os\win\pa_win_coinitialize.h" />
-    <ClInclude Include="src\src\os\win\pa_win_wdmks_utils.h" />
-    <ClInclude Include="src\src\os\win\pa_x86_plain_converters.h" />
+    <ClInclude Include="src\contrib\minizip\ioapi.h" />
+    <ClInclude Include="src\contrib\minizip\unzip.h" />
+    <ClInclude Include="src\crc32.h" />
+    <ClInclude Include="src\deflate.h" />
+    <ClInclude Include="src\gzguts.h" />
+    <ClInclude Include="src\inffast.h" />
+    <ClInclude Include="src\inffixed.h" />
+    <ClInclude Include="src\inflate.h" />
+    <ClInclude Include="src\inftrees.h" />
+    <ClInclude Include="src\trees.h" />
+    <ClInclude Include="src\zconf.h" />
+    <ClInclude Include="src\zlib.h" />
+    <ClInclude Include="src\zutil.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{71B22837-5E20-4E97-9029-E7AD1FF399C7}</ProjectGuid>
+    <ProjectGuid>{D815C100-00D4-4AB9-8ADC-AA698BB70AA0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Library_PortAudio</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <RootNamespace>Library_zlib</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -87,19 +79,20 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;PA_USE_DS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\src\common;src\include;src\src\os\win;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>src;src\contrib\minizip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <OutputFile>lib\PortAudio_D.lib</OutputFile>
+      <OutputFile>lib\zlib_D.lib</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>copy src\include\*.h include</Command>
+      <Command>copy src\*.h include</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -109,13 +102,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;PA_USE_DS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src\src\common;src\include;src\src\os\win;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>src;src\contrib\minizip;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,10 +118,10 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <OutputFile>lib\PortAudio.lib</OutputFile>
+      <OutputFile>lib\zlib.lib</OutputFile>
     </Lib>
     <PreBuildEvent>
-      <Command>copy src\include\*.h include</Command>
+      <Command>copy src\*.h include</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
