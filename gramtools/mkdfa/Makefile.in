@@ -9,7 +9,7 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 INSTALL=@INSTALL@
 
-TARGET=mkdfa.pl
+TARGET=mkdfa.pl mkdfa.py
 SUBDIR=mkfa-1.44-flex
 
 all:
