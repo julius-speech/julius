@@ -19,7 +19,9 @@
 
 [Normalize.md](Normalize.md)
 
-## Feature input
+## Vector input
+
+[VectorInput.md](VectorInput.md)
 
 HTK Parameter file, sending vectors from adintool.
 
