@@ -64,7 +64,7 @@ Follow the instructions in [INSTALL.txt](https://github.com/julius-speech/julius
 
 # Tools and Assets
 
-There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can get them fron the following Github pages:
+There are also toolkit and assets to run Julius.  They are maintained by the Julius development team.  You can get them from the following Github pages:
 
 ## [Japanese Dictation Kit](https://github.com/julius-speech/dictation-kit)
 
