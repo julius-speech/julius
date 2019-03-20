@@ -153,6 +153,11 @@ given mean and variance for all frames.  In this case the initial mean and
 variance should be given with
 [-cmnload](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cmnload-file).
 
+Note that 
+[-cmnstatic](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cmnstatic)
+is only valid for live input (and file input with `-realtime` option) and has no effect on
+buffered input.
+
 ## Frequency warping
 
 Option
