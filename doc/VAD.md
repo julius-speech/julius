@@ -37,23 +37,23 @@ threshold will be treated as speech segment.
  condition.
 
 Parameters can be specified by
-[-lv](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-lv-threshold),
-[-zc](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-zc-thresold),
-[-headmargin](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-headmargin-msec)
+[-lv](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-lv-threshold),
+[-zc](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-zc-thresold),
+[-headmargin](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-headmargin-msec)
 and
-[-tailmargin](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-tailmargin-msec)
+[-tailmargin](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-tailmargin-msec)
 options.  The
-[-headmargin](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-headmargin-msec)
+[-headmargin](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-headmargin-msec)
 and
-[-tailmargin](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-tailmargin-msec)
+[-tailmargin](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-tailmargin-msec)
 options specifies the margin before / after the detected segment, as illustrated
 below: ![VAD by level threshold](image/vad_lvzc.png)
 
 This detector is enabled by default for stream processing (live audio and
 network input), and disabled for buffered processing (file input).  Set
-[-cutsilence](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cutsilence--nocutsilence)
+[-cutsilence](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-cutsilence--nocutsilence)
 to force enable this detector, and
-[-nocutsilence](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cutsilence--nocutsilence)
+[-nocutsilence](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-cutsilence--nocutsilence)
 to disable.
 
 ## WebRTC detector
@@ -68,9 +68,9 @@ integrates its forked version "[libfvad: voice activity detection (VAD)
 library](https://github.com/dpirch/libfvad)".
 
 This detector is disabled by default.  Set mode from 0 to 3 with
-[-fvad](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-fvad-mode)
+[-fvad](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-fvad-mode)
 option to enable.  You can also tease parameters with
-[-fvad_param](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-fvad_param-nframe-threshold).
+[-fvad_param](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-fvad_param-nframe-threshold).
 
 Note that, for internal reason, *this WebRTC detector will not work when the
 level and zero cross threshold detector is totally disabled* (for file input, or
@@ -97,19 +97,19 @@ state), which has pdf as diagonal gaussian mixtures.  Several models can be
 defined.
 
 At runtime, specify the GMM definition file with option
-[-gmm](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-gmm-hmmdefs_file),
+[-gmm](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-gmm-hmmdefs_file),
 and list of noise HMM names to be rejected by
-[-gmmreject](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-gmmreject-string).
+[-gmmreject](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-gmmreject-string).
 You can tease detection margin and up/down trigger sensitivity by
-[-gmmmargin](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-gmmmargin-frames),
-[-gmmup](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-gmmup-value)
+[-gmmmargin](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-gmmmargin-frames),
+[-gmmup](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-gmmup-value)
 and
-[-gmmdown](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-gmmdown-value)
+[-gmmdown](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-gmmdown-value)
 options.
 
 If acoustic feature of the GMM is different from the main acoustic model for
 recognition, you should specify the GMM's feature extraction parameters using
-[-AM_GMM](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-am_gmm)
+[-AM_GMM](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-am_gmm)
 section.
 
 ## Decoder-based detector
@@ -126,8 +126,8 @@ or punctuation words.
 
 This detector is disabled by default.  To test it, set configure option
 `--enable-decoder-vad` at build time and set option
-[-spsegment](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-spsegment)
+[-spsegment](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-spsegment)
 at run time.  To determine the silence words, the name of silence models should
 be passed to
-[-pausemodels](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-pausemodels-string)
+[-pausemodels](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-pausemodels-string)
 options.

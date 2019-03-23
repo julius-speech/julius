@@ -45,7 +45,7 @@ at run time, so unlike HTK, you need not to set them manually.
 
 Instead of using options directly, Julius can read in a HTK format config file
 by option
-[-htkconf](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-htkconf-file).
+[-htkconf](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-htkconf-file).
 When specified, the parameters in the given HTK conig file will be translated to
 corresponding values while reading within Julius.  At the translation, values
 not explicitly specified in the HTK config file will be assumed to be the HTK's

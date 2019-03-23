@@ -2,7 +2,7 @@
 
 Julius can recognize audio data via file, live audio device and tcp-ip network.
 A single source is chosen by option
-[-input](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-input-micfilerawfilemfcfileoutprobadinnetvecnetstdinnetaudioalsaossesdpulseaudio).
+[-input](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-input-micfilerawfilemfcfileoutprobadinnetvecnetstdinnetaudioalsaossesdpulseaudio).
 Data should be in 16 bit (signed short), monaural (1 channel).
 
 Note that **sampling rate of input should be set to the same as the training
@@ -13,9 +13,9 @@ no down-sampling or up-sampling scheme in it.
 Julius assumes the default sampling rate to 16 kHz, so when using acoustic model
 trained with other sampling rate, the rate should be given explicitly by option,
 either
-[-smpPediod](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-smpperiod-period)
+[-smpPediod](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-smpperiod-period)
 or
-[-smpFreq](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-smpfreq-hz),
+[-smpFreq](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-smpfreq-hz),
 
 ## Processing mode
 
@@ -30,7 +30,7 @@ and then feature extraction and decoding will be processed in turn.  Also
 audio will be processed per short chunk and recognition process will be run
 concurrently in parallel with the incoming input.  They can be switched by
 [-realtime and
--norealtime](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-realtime--norealtime)
+-norealtime](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-realtime--norealtime)
 options.
 
 ## File Input
@@ -52,11 +52,11 @@ Notes on RAW format:
 Buffered processing is the default processing mode for file input. Voice
 activity detection is disabled by default. Each file is assumed as a single
 utterance speech. VAD can be enabled by option
-[-cutsilence](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cutsilence--nocutsilence)
+[-cutsilence](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-cutsilence--nocutsilence)
 to perform voice part detection, just as the same as live audio capture.
 
 When a list of input files by option
-[-filelist](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-filelist-filename),
+[-filelist](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-filelist-filename),
 all the listed files will be recognized by turn.
 
 ## Capture Live Audio
@@ -80,7 +80,7 @@ Julius.  See the Installation instruction how to enable them.
 When `-input mic` is specified, live audio capturing is chosen.  All the enabled
 APIs are searched by the order of the list above, and the first one found will
 be used.  You can also specify which audio API to use by
-"[`-input`](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-input-micfilerawfilemfcfileoutprobadinnetvecnetstdinnetaudioalsaossesdpulseaudio)
+"[`-input`](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-input-micfilerawfilemfcfileoutprobadinnetvecnetstdinnetaudioalsaossesdpulseaudio)
 `apiname`".  For example, `-input pulseaudio` will choose PulseAudio.
 
 Choosing audio devices:
@@ -144,5 +144,5 @@ the same audio module as Julius, thus "what they record is what Julius listens".
 
 You can also snoop what Julius listens by logging the audio inputs to files.
 Option
-[-record](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-record-dir)
+[-record](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-record-dir)
 records all segmented input into files to a specified directory.
