@@ -239,6 +239,11 @@ j_jconf_finalize(Jconf *jconf)
       jlog("ERROR: m_chkparam: with \"-cmnstatic\", the static cepstral mean (and variance) should be given by \"-cmnload\"\n");
       ok_p = FALSE;
     }
+    if (am->analysis.cmn_static_cvn_only == TRUE && am->analysis.cmnload_filename == NULL) {
+      /* cvnstatic, no cmnload : error */
+      jlog("ERROR: m_chkparam: with \"-cvnstatic\", the static cepstral variance (and mean) should be given by \"-cmnload\"\n");
+      ok_p = FALSE;
+    }
     if (jconf->decodeopt.realtime_flag == FALSE) {
       if (am->analysis.map_cmn == TRUE && am->analysis.cmnload_filename != NULL) {
 	/* no cmnstatic, cmnload on buffered input : assume cmnstatic */

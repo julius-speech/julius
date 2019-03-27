@@ -176,6 +176,10 @@ typedef struct __jconf_am__ {
      * CMN: MAP weight for initial cepstral mean on (-cmnmapweight)
      */
     float cmn_map_weight;
+    /**
+     * CMN: TRUE if static CMN/CVN only applies CVN at file input
+     */
+    boolean cmn_static_cvn_only;
 
   } analysis;
 

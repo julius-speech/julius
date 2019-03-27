@@ -71,6 +71,7 @@ j_mfcccalc_new(JCONF_AM *amconf)
     mfcc->cmn.update = amconf->analysis.cmn_update;
     mfcc->cmn.save_filename = amconf->analysis.cmnsave_filename;
     mfcc->cmn.map_weight = amconf->analysis.cmn_map_weight;
+    mfcc->cmn.static_cvn_only = amconf->analysis.cmn_static_cvn_only;
     mfcc->frontend.ss_alpha = amconf->frontend.ss_alpha;
     mfcc->frontend.ss_floor = amconf->frontend.ss_floor;
     mfcc->frontend.sscalc = amconf->frontend.sscalc;

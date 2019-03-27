@@ -1152,6 +1152,11 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
       if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
       jconf->amnow->analysis.map_cmn = FALSE;
       jconf->amnow->analysis.cmn_update = FALSE;
+      jconf->amnow->analysis.cmn_static_cvn_only = FALSE;
+      continue;
+    } else if (strmatch(argv[i],"-cvnstatic")) { /* static variance but left mean dynamic on buffered input  */
+      if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
+      jconf->amnow->analysis.cmn_static_cvn_only = TRUE;
       continue;
     } else if (strmatch(argv[i],"-cmnmapweight")) { /* CMN weight for MAP */
       if (!check_section(jconf, argv[i], JCONF_OPT_AM)) return FALSE; 
