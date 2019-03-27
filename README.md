@@ -113,8 +113,10 @@ Recent documents:
     [Options](https://github.com/julius-speech/julius/blob/master/doc/Options.md),
     [Audio](https://github.com/julius-speech/julius/blob/master/doc/Audio.md),
     [Feature](https://github.com/julius-speech/julius/blob/master/doc/Feature.md),
-    [Audio](https://github.com/julius-speech/julius/blob/master/doc/Audio.md)
-    [VAD](https://github.com/julius-speech/julius/blob/master/doc/VAD.md).
+    [Vector Input](https://github.com/julius-speech/julius/blob/master/doc/VectorInput.md),
+    [VAD](https://github.com/julius-speech/julius/blob/master/doc/VAD.md),
+    [Normalization](https://github.com/julius-speech/julius/blob/master/doc/Normalize.md),
+    [Input Rejection](https://github.com/julius-speech/julius/blob/master/doc/Rejection.md).
 - All options are listed in [Sample.jconf](https://github.com/julius-speech/julius/blob/master/Sample.jconf) and also be output when invoked "julius --help".
 - Full history and short descriptions are in [Release Notes](https://github.com/julius-speech/julius/blob/master/Release.txt) ([JP version](https://github.com/julius-speech/julius/blob/master/Release-ja.txt))
 - For DNN-HMM, take a look at [00readme-DNN.txt](https://github.com/julius-speech/julius/blob/master/00readme-HNN.txt) for how-to and [Sample.dnnconf](https://github.com/julius-speech/julius/blob/master/Sample.dnnconf) as example.
