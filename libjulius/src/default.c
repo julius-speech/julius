@@ -154,6 +154,7 @@ jconf_set_default_values_am(JCONF_AM *j)
   j->analysis.cmn_update		= TRUE;
   j->analysis.cmnsave_filename		= NULL;
   j->analysis.cmn_map_weight		= 100.0;
+  j->analysis.cmn_static_cvn_only	= FALSE;
   j->frontend.ss_alpha			= DEF_SSALPHA;
   j->frontend.ss_floor			= DEF_SSFLOOR;
   j->frontend.sscalc			= FALSE;

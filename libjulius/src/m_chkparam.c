@@ -233,14 +233,30 @@ j_jconf_finalize(Jconf *jconf)
   }
 
   /* check for cmn */
-  if (jconf->decodeopt.realtime_flag) {
-    for(am = jconf->am_root; am; am = am->next) {
-      if (am->analysis.cmn_update == FALSE && am->analysis.cmnload_filename == NULL) {
-	jlog("ERROR: m_chkparam: when \"-cmnnoupdate\", initial cepstral normalisation data should be given by \"-cmnload\"\n");
-	ok_p = FALSE;
+  for(am = jconf->am_root; am; am = am->next) {
+    if (am->analysis.map_cmn == FALSE && am->analysis.cmnload_filename == NULL) {
+      /* cmnstatic, no cmnload : error */
+      jlog("ERROR: m_chkparam: with \"-cmnstatic\", the static cepstral mean (and variance) should be given by \"-cmnload\"\n");
+      ok_p = FALSE;
+    }
+    if (am->analysis.cmn_static_cvn_only == TRUE && am->analysis.cmnload_filename == NULL) {
+      /* cvnstatic, no cmnload : error */
+      jlog("ERROR: m_chkparam: with \"-cvnstatic\", the static cepstral variance (and mean) should be given by \"-cmnload\"\n");
+      ok_p = FALSE;
+    }
+    if (jconf->decodeopt.realtime_flag == FALSE) {
+      if (am->analysis.map_cmn == TRUE && am->analysis.cmnload_filename != NULL) {
+	/* no cmnstatic, cmnload on buffered input : assume cmnstatic */
+	jlog("WARNING: m_chkparam: \"-cmnstatic\" was automatically enabled because you have specified \"-cmnload\" at buffered input.  To avoid confusion in the future release, please explicitly set \"-cmnstatic\" for static CMN.\n");
       }
-      if (am->analysis.map_cmn == FALSE && am->analysis.cmnload_filename == NULL) {
-	jlog("ERROR: m_chkparam: with \"-cmnstatic\", the static cepstral mean (and variance) should be given by \"-cmnload\"\n");
+      if (am->analysis.map_cmn == TRUE && am->analysis.cmn_update == FALSE) {
+	/* cmnnoupdate on buffered input : no operation */
+	jlog("WARNING: m_chkparam: CMN updates will not occur on buffered input, \"-cmnnoupdate\" is ignored\n");
+      }
+    } else {
+      if (am->analysis.map_cmn == TRUE && am->analysis.cmn_update == FALSE && am->analysis.cmnload_filename == NULL) {
+	/* cmnnoupdate without cmnload on stream input : error */
+	jlog("ERROR: m_chkparam: when \"-cmnnoupdate\", initial cepstral normalisation data should be given by \"-cmnload\"\n");
 	ok_p = FALSE;
       }
     }

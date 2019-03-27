@@ -259,10 +259,17 @@ void MVN(float **mfcc, int frame_num, Value *para, CMNWork *c)
   float *mfcc_mean, *mfcc_sd;
   float x;
   int basedim;
+  boolean static_cvn_only_flag;
 
   basedim = para->mfcc_dim + (para->c0 ? 1 : 0);
 
-  if (c != NULL && c->cmean_init_set) {
+  if (c != NULL && c->cmean_init_set && c->static_cvn_only == TRUE) {
+    static_cvn_only_flag = TRUE;
+  } else {
+    static_cvn_only_flag = FALSE;
+  }
+
+  if (c != NULL && c->cmean_init_set && static_cvn_only_flag == FALSE) {
     /* has initial param, use it permanently */
     for(t = 0; t < frame_num; t++){
       if (para->cmn) {
@@ -277,8 +284,9 @@ void MVN(float **mfcc, int frame_num, Value *para, CMNWork *c)
     return;
   }
 
+
   mfcc_mean = (float *)mycalloc(para->veclen, sizeof(float));
-  if (para->cvn) mfcc_sd = (float *)mycalloc(para->veclen, sizeof(float));
+  if (para->cvn && static_cvn_only_flag == FALSE) mfcc_sd = (float *)mycalloc(para->veclen, sizeof(float));
 
   /* get mean */
   for(i = 0; i < para->veclen; i++){
@@ -287,7 +295,7 @@ void MVN(float **mfcc, int frame_num, Value *para, CMNWork *c)
       mfcc_mean[i] += mfcc[t][i];
     mfcc_mean[i] /= (float)frame_num;
   }
-  if (para->cvn) {
+  if (para->cvn && static_cvn_only_flag == FALSE) {
     /* get standard deviation */
     for(i = 0; i < para->veclen; i++){
       mfcc_sd[i] = 0.0;
@@ -304,11 +312,16 @@ void MVN(float **mfcc, int frame_num, Value *para, CMNWork *c)
       for(i = 0; i < basedim; i++) mfcc[t][i] -= mfcc_mean[i];
     }
     if (para->cvn) {
-      /* variance normalization (full MFCC) */
-      for(i = 0; i < para->veclen; i++) mfcc[t][i] /= mfcc_sd[i];
+      if (static_cvn_only_flag == TRUE) {
+	/* variance normalization (full MFCC, static) */
+	for(i = 0; i < para->veclen; i++) mfcc[t][i] /= sqrt(c->cvar_init[i]);
+      } else {
+	/* variance normalization (full MFCC) */
+	for(i = 0; i < para->veclen; i++) mfcc[t][i] /= mfcc_sd[i];
+      } 
     }
   }
 
-  if (para->cvn) free(mfcc_sd);
+  if (para->cvn && static_cvn_only_flag == FALSE) free(mfcc_sd);
   free(mfcc_mean);
 }

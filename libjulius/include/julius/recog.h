@@ -586,6 +586,12 @@ typedef struct __mfcc_calc__ {
      */
     CMNWork *wrk;
 
+    /**
+     * TRUE if static CMN/CVN only applies CVN at file input
+     *
+     */
+    boolean static_cvn_only;
+
   } cmn;
 
   /**

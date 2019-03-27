@@ -278,6 +278,7 @@ CMN_realtime_new(Value *para, float weight, boolean map)
   c->loaded_from_file = FALSE;
 
   c->do_map = map;
+  c->static_cvn_only = FALSE;
 
   if (c->var) {
     for(i = 0; i < c->veclen; i++) c->all.mfcc_var[i] = 0.0;

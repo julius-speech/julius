@@ -199,6 +199,7 @@ typedef struct {
   CMEAN all;		///< Work area to hold all cepstral mean and variance
   boolean loaded_from_file;	///< TRUE if loaded from file
   boolean do_map;		///< TRUE when perform MAP-CMN
+  boolean static_cvn_only;      ///< TRUE when perform static CVN only on buffered input
 } CMNWork;
 
 /**

@@ -188,7 +188,7 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
 	jlog("   beginning data weight = %6.2f\n", mfcc->cmn.map_weight);
       }
     } else {
-      if (mfcc->cmn.loaded) {
+      if (mfcc->cmn.loaded && mfcc->cmn.static_cvn_only == FALSE) {
 	jlog("with a static mean\n");
 	jlog("   static mean from file = %s\n", mfcc->cmn.load_filename);
       } else {

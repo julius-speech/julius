@@ -206,9 +206,10 @@ j_output_argument_help(FILE *fp)
   fprintf(fp, "    [-ssfloor value]    spectral floor for SS                 (%f)\n", jconf->am_root->frontend.ss_floor);
   fprintf(fp, "    [-zmeanframe/-nozmeanframe] frame-wise DC removal like HTK(OFF)\n");
   fprintf(fp, "    [-usepower/-nousepower] use power in fbank analysis       (OFF)\n");
-  fprintf(fp, "    [-cmnload file]     load initial CMN param from file on startup\n");
-  fprintf(fp, "    [-cmnsave file]     save CMN param to file after each input\n");
-  fprintf(fp, "    [-cmnstatic]        no MAP, use static CMN (use with -cmnload)\n");
+  fprintf(fp, "    [-cmnload file]     load initial CMN/CVN param from file on startup\n");
+  fprintf(fp, "    [-cmnsave file]     save CMN/CVN param to file after each input\n");
+  fprintf(fp, "    [-cmnstatic]        no MAP, use static CMN/CVN (use with -cmnload)\n");
+  fprintf(fp, "    [-cvnstatic]        use static CVN only (use with -cmnload)\n");
   fprintf(fp, "    [-cmnnoupdate]      not update initial param while recog. (use with -cmnload)\n");
   fprintf(fp, "    [-cmnmapweight]     weight value of initial cm for MAP-CMN (%6.2f)\n", jconf->am_root->analysis.cmn_map_weight);
   fprintf(fp, "    [-cvn]              cepstral variance normalisation       (%s)\n", jconf->amnow->analysis.para.cvn ? "on" : "off");
