@@ -19,13 +19,13 @@
 
 [Normalize.md](Normalize.md)
 
-## Feature input
+## Vector input
 
-HTK Parameter file, sending vectors from adintool.
+[VectorInput.md](VectorInput.md)
 
 ## Input Rejection
 
-GMM input rejection
+[Rejection.md](Rejection.md)
 
 ## Acoustic Model
 

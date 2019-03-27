@@ -958,7 +958,7 @@ Config values, `WARPFREQ`, `WARPHCUTOFF` and `WARPLCUTOFF`.
 Load generic cepstral mean vector (and variance when invoked with -cvn) from file on startup. The
 file should be one saved by `-cmnsave`. Loading an generic
 cepstral mean enables Julius to better recognize the first
-utterance on a real-time input.  It is also required to specifgy this option when using `-cmnstatic`. When used together with
+utterance on a real-time input.  It is also required to specify this option when using `-cmnstatic` or `-cvnstatic`. When used together with
 -cmnnoupdate, the value in the file will be used for all input.
 
 ### -cmnsave file
@@ -986,11 +986,12 @@ more on the current input. (default: 100.0)
 
 ### -cmnstatic
 
-Totally disables MAP-CMN on real-time input.  When specified,
-Julius always use the generic mean and variance for all input and all frames, does not perform MAP-CMN. Thus
-the initially loaded generic cepstral mean (and variance) are always kept static.
-This option also requires the static mean and variance to be
-specified by "-cmnload".
+Perform static mean and variance normalization.  When specified, Julius always use the loaded mean and variance for all input and all frames.  This option works for both buffered input and stream input.  Requires the static mean and variance to be
+loaded by `-cmnload`.
+
+### -cvnstatic
+
+Perform static variance normalization only.  Like `-cmnstatic` but only variance is static and mean will be computed as normal.  Requires the static variance to be loaded by `-cmnload`.  If static mean exists in the loaded file, it will be ignored.
 
 ## Front-end processing options (category `-AM` / `-AM_GMM`)
 
