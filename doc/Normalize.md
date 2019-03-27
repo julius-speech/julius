@@ -179,11 +179,6 @@ With `-cvn`:
 |-cmnload, -cmnstatic |static mean CMN / static var CVN|static mean CMN / static var CVN |
 |-cmnload, -cvnstatic |self mean CMN / static var CVN|MAP-CMN, loaded init, update / static var CVN |
 
-Note that 
-[-cmnstatic](https://github.com/julius-speech/julius/blob/master/julius/Options.md#-cmnstatic)
-is only valid for live input (and file input with `-realtime` option) and has no effect on
-buffered input.
-
 ## Frequency warping
 
 Option
