@@ -23,11 +23,9 @@
 
 [VectorInput.md](VectorInput.md)
 
-HTK Parameter file, sending vectors from adintool.
-
 ## Input Rejection
 
-GMM input rejection
+[Rejection.md](Rejection.md)
 
 ## Acoustic Model
 

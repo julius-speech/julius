@@ -148,7 +148,7 @@ If you do not want to update the mean and variance while recognition and keep th
 ### Using static mean/variance
 
 You may want to use a static mean and variance unchanged for
-all frames. The static CMN can be peformed by setting option
+all frames. The static CMN can be performed by setting option
 [-cmnstatic](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-cmnstatic) together with [-cmnload](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-cmnload-file).  In that case, at both stream processing and buffered processing, the given mean and variance will be applied for all input frames.
 
 ## Frequency warping
