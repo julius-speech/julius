@@ -422,6 +422,6 @@
 ####
 #### misc.
 ####
--outprobout filename		# save computed outprob vectors to HTK file (for debug)
+#-outprobout filename		# save computed outprob vectors to HTK file (for debug)
 
 ################################################################# end of file
