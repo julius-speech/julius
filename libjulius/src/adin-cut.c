@@ -157,6 +157,7 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
     adin->adin_cut_on = adin->silence_cut_default;
   }
   adin->strip_flag = jconf->preprocess.strip_zero_sample;
+  if (verbose_flag == FALSE) set_strip_zero_warning(FALSE);
   adin->thres = jconf->detect.level_thres;
 #ifdef HAVE_PTHREAD
   if (adin->enable_thread && jconf->decodeopt.segment) {
@@ -283,7 +284,7 @@ fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
     ret = fvad_process(a->fvad, &(a->fvad_speech[i]), a->fvad_framesize);
     if (ret < 0) {
       /* error */
-      jlog("ERROR: fvad_proceed: internal error occured at fvad_process()\n");
+      jlog("ERROR: fvad_proceed: internal error occurred at fvad_process()\n");
       break;
     }
     a->fvad_lastresult[a->fvad_lastp] = ret;
@@ -317,29 +318,43 @@ static int fvad_cont_count = 0;    /* continuous count of status keep */
 static int fvad_last_result = 0;   /* keeps last fvad result */
 static int fvad_level_max = 0;     /* maximum input level in cycle buffer */
 static int fvad_first_time = 0;    /* flag to detect the first speech */
+static float fvad_first_rate;
 
 /* defines for auto gain control */
 #define FVAD_AGC_CAP 30000  /* upper cap */
-#define FVAD_AGC_INC_COEF 1.2  /* scale increase coef */
-#define FVAD_AGC_DEC_COEF 0.8  /* scale decrease coef */
+#define FVAD_AGC_INC_COEF 1.5  /* scale increase coef */
+#define FVAD_AGC_DEC_COEF 0.6  /* scale decrease coef */
+#define FVAD_AGC_MAX_COEF 32.0 /* maximum scale */
+#define FVAD_AGC_DEC_OVERFLOW 0.6  /* scale decrease coef at overflow */
+#define FVAD_AGC_FIRST_BOOST_SCALE 3.0 /* additional scale for first adjustment */
+#define FVAD_AGC_UPDATE_MAX_RATE 3.0  /* maximum rate of current/first */
 
 /* change scale and update cycle buffer */
 static int
-update_audio_scale(Recog *recog, float scale) {
+update_audio_scale(Recog *recog, float scale, int totallen) {
   ADIn *a = recog->adin;
   int i, len;
   int zc;
+  float totalsec;
+  int hour, minutes;
+  float second;
+
+  totalsec = (float)totallen / (float)recog->jconf->input.sfreq;
+  hour = (int)totalsec / 3600;
+  minutes = (int)((totalsec - hour * 3600) / 60);
+  second = totalsec - hour * 3600 - minutes * 60;
 
   zc_copy_buffer(&(a->zc), a->cbuf, &len);
   for(i = 0; i < len; i++) a->cbuf[i] = a->cbuf[i] * scale / a->level_coef;
   reset_count_zc_e(&(a->zc), a->thres, a->c_length, a->c_offset);
   zc = count_zc_e(&(a->zc), a->cbuf, len);
-  jlog("INFO: audio scale adjusted from %f to %f toward threshold %d\n", recog->adin->level_coef, scale, a->thres);
+  if (verbose_flag) jlog("STAT: AGC: %.2f to %.2f at %02d:%02d:%02.2f\n", recog->adin->level_coef, scale, hour, minutes, second);
   recog->adin->level_coef = scale;
   recog->jconf->preprocess.level_coef = scale;
 
   return zc;
 }
+
 #endif /* HAVE_LIBFVAD */
 
 /**
@@ -696,9 +711,9 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 
 	/* get voice/noise status from fvad */
 	fv = fvad_proceed(a, &(a->buffer[i]), wstep);
-	if (a->fvad) {
+	if (a->fvad && recog->jconf->detect.auto_gain_control_flag) {
 	  float scale;
-
+	  int total_processed_len = a->total_captured_len - a->current_len + i + wstep - a->zc.valid_len;
 	  /* check if voice/noise status has been kept for the entire cycle buffer */
 	  if (fvad_last_result == fv) {
 	    fvad_cont_count += wstep;
@@ -712,44 +727,58 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 
 	  if (a->zc.level > FVAD_AGC_CAP && fvad_cont_count > a->c_length) {
 	    /* detect input overflow at last chunk, immediately reduce the scale under the cap */
-	    zc = update_audio_scale(recog, (float)FVAD_AGC_CAP / a->zc.level);
-	    /* reset detection */
-	    fvad_cont_count = 0;
+	    if (verbose_flag) jlog("STAT: AGC: too loud (>%d)\n", FVAD_AGC_CAP);
+	    zc = update_audio_scale(recog, (float)recog->adin->level_coef * FVAD_AGC_DEC_OVERFLOW, total_processed_len);
+	    /* update max after scaling */
+	    fvad_level_max *= FVAD_AGC_DEC_OVERFLOW;
+	    /* does not reset detection, continues */
 	  }
 	  if (fv == 1 && fvad_cont_count > a->c_length) {
 	    /* voice segment of a certain length found */
 	    if (fvad_first_time == 0) {
 	      fvad_first_time = 1;
 	      /* this is first time: if amplitude is below level threshold, immediately raise the scale to go over the threshold */
-	      scale = 2.0 * a->thres / fvad_level_max;
+	      scale = FVAD_AGC_FIRST_BOOST_SCALE * a->thres / fvad_level_max;
 	      if (scale > 1.0f) {
 	        /* set new scale */
-	        zc = update_audio_scale(recog, scale);
-	        printf("first scale=%f to %f, level=%d to %d, thres=%d\n", recog->adin->level_coef, scale, fvad_level_max, a->zc.level, a->thres);
+	        if (verbose_flag) jlog("STAT: AGC: first speech segment, force adjustment\n");
+		if (scale > FVAD_AGC_MAX_COEF) scale = FVAD_AGC_MAX_COEF;
+	        fvad_first_rate = scale;
+	        zc = update_audio_scale(recog, scale, total_processed_len);
 	        /* update max after scaling */
 	        if (fvad_level_max < a->zc.level) fvad_level_max = a->zc.level;
 	      }
 	      /* reset detection */
 	      fvad_cont_count = 0;
-	    } else if (fvad_level_max < a->thres * 2.0) {
+	    } else if (fvad_level_max < a->thres) {
 	      /* too low amplitude of the voice part, increase scale gradually */
-	      scale = recog->adin->level_coef * FVAD_AGC_INC_COEF;
-	      zc = update_audio_scale(recog, scale);
-	      printf("up scale=%f to %f, level=%d to %d, thres=%d\n", recog->adin->level_coef, scale, fvad_level_max, a->zc.level, a->thres);
-	      /* update max after scaling */
-	      if (fvad_level_max < a->zc.level) fvad_level_max = a->zc.level;
-	      /* does not reset detection, continues */
+	      if (fvad_first_time == 1 && recog->adin->level_coef >= fvad_first_rate * FVAD_AGC_UPDATE_MAX_RATE) {
+	        fvad_cont_count = 0;
+	      } else {
+	        scale = recog->adin->level_coef * FVAD_AGC_INC_COEF;
+	        if (scale > FVAD_AGC_MAX_COEF) scale = FVAD_AGC_MAX_COEF;
+	        if (fvad_first_time == 1 && scale > fvad_first_rate * FVAD_AGC_UPDATE_MAX_RATE) {
+	          scale = fvad_first_rate * FVAD_AGC_UPDATE_MAX_RATE;
+	        }
+	        zc = update_audio_scale(recog, scale, total_processed_len);
+	        /* update max after scaling */
+	        if (fvad_level_max < a->zc.level) fvad_level_max = a->zc.level;
+	        /* does not reset detection, continues */
+	      }
 	    }
 	  }
 	  if (fv == 0 && fvad_cont_count > a->c_length) {
 	    /* noise segment of a certain length found */
-	    if (fvad_level_max > a->thres * 2.0) {
+	    if (fvad_level_max > a->thres) {
 	      /* mis-detecting long noise as speech, decrease scale gradually */
 	      scale = recog->adin->level_coef * FVAD_AGC_DEC_COEF;
-	      zc = update_audio_scale(recog, scale);
-	      /* update max after scaling */
-	      fvad_level_max *= FVAD_AGC_DEC_COEF;
-	      printf("down scale=%f\n", recog->adin->level_coef);
+	      if (scale <= 0.0) {
+	        if (verbose_flag) jlog("STAT: AGC: too small scale %f, ignored\n", scale);
+	      } else {
+	        zc = update_audio_scale(recog, scale, total_processed_len);
+	        /* update max after scaling */
+	        fvad_level_max *= FVAD_AGC_DEC_COEF;
+	      }
 	    }
 	  }
 	}
