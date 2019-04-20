@@ -115,7 +115,8 @@ FILE *wrwav_open(char *filename, int sfreq);
 boolean wrwav_data(FILE *fp, SP16 *buf, int len);
 boolean wrwav_close(FILE *fp);
 
-/* for an;z/strip.c */
+/* for anlz/strip.c */
+void set_strip_zero_warning(boolean flag);
 int strip_zero(SP16 a[], int len);
 
 #ifdef __cplusplus
