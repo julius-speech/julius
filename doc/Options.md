@@ -329,11 +329,11 @@ small.
 
 ### -fvad mode
 
-Set libfvad-based VAD mode. `mode` is an integer value from -1 to 3, specify -1 to disable, 0 for moderate detection, 3 for most aggressive detection (more likely to drop speech-like noises).  Default value is -1 (disabled)
+Enable WebRTC VAD (libfvad-based VAD) mode.  Setting `mode` to 0, 1, 2 or 3 enables WebRTC based VAD.  `mode` is an integer value from -1 to 3, specify -1 to disable, 0 for weakest noise rejection (accepts all speech, but often wrongly accept noises), 3 for most aggressive noise rejection.  Default value is -1 (disabled)
 
 ### -fvad_param nFrame threshold
 
-Set libfvad detailed parameter.  `nFrame` is the number of smoothing frame. `threshold` is the threshold to detect speech trigger [0.0-1.0]. Default values are 5 and 0.5 respectively.
+Set WebRTC VAD's detailed parameters.  `nFrame` is the length of smoothing frame. `threshold` is the threshold to detect speech trigger [0.0-1.0]. Default values are 5 and 0.5, respectively.
 
 ## Input rejection options (category `GLOBAL`)
 
