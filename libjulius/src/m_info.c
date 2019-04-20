@@ -630,7 +630,7 @@ print_engine_info(Recog *recog)
 #endif
     jlog("\t(-n)search candidate num= %d\n", r->config->pass2.nbest);
     jlog("\t(-s)  search stack size = %d\n", r->config->pass2.stack_size);
-    jlog("\t(-m)    search overflow = after %d hypothesis poped\n", r->config->pass2.hypo_overflow);
+    jlog("\t(-m)    search overflow = after %d hypothesis popped\n", r->config->pass2.hypo_overflow);
     jlog("\t        2nd pass method = ");
     if (r->config->graph.enabled) {
 #ifdef GRAPHOUT_DYNAMIC
@@ -954,6 +954,11 @@ print_engine_info(Recog *recog)
 	jlog("\tWebRTC VAD operating mode = %d (0-3, larger value rejects noises aggressively)\n", jconf->detect.fvad_mode);
 	jlog("\tWebRTC VAD  smoothing len = %d (%dms)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_smoothnum * 10);
 	jlog("\tWebRTC VAD   active thres = %.2f\n", jconf->detect.fvad_thres);
+	if (jconf->detect.auto_gain_control_flag) {
+	  jlog("\t      Auto Gain Control = enabled\n");
+	} else {
+	  jlog("\t      Auto Gain Control = disabled\n");
+	}
       }
 #endif /* HAVE_LIBFVAD */
     } else {

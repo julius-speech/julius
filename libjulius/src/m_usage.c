@@ -143,6 +143,7 @@ j_output_argument_help(FILE *fp)
 #ifdef HAVE_LIBFVAD
   fprintf(fp, "    [-fvad mode]        enable WebRTC VAD (0-3, larger value rejects noises aggressively) (%d)\n", jconf->detect.fvad_mode);
   fprintf(fp, "    [-fvad_param i f]   WebRTC VAD parameters (smoothing duration (frames), thres([0-1]))  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(fp, "    [-agc][-noagc]        enable/disable additional AGC on WebRTC VAD\n");
 #endif /* HAVE_LIBFVAD */
 
   fprintf(fp, "\n GMM utterance verification:\n");

@@ -1363,6 +1363,14 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
       GET_TMPARG;
       jconf->detect.fvad_thres = (float)atof(tmparg);
       continue;
+    } else if (strmatch(argv[i],"-agc")) { /* enable agc */
+      if (!check_section(jconf, argv[i], JCONF_OPT_GLOBAL)) return FALSE;
+      jconf->detect.auto_gain_control_flag = TRUE;
+      continue;
+    } else if (strmatch(argv[i],"-noagc")) { /* disable agc */
+      if (!check_section(jconf, argv[i], JCONF_OPT_GLOBAL)) return FALSE;
+      jconf->detect.auto_gain_control_flag = FALSE;
+      continue;
 #endif /* HAVE_LIBFVAD */
     }
     if (argv[i][0] == '-' && strlen(argv[i]) == 2) {

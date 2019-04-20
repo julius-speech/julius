@@ -104,6 +104,8 @@
 #-fvad 2            # enable WebRTC VAD on mode 2 (aggressive to filtering out non-speech)
 #-fvad 3            # enable WebRTC VAD on mode 3 (very aggressive to filtering out non-speech)
 #-fvad_param 5 0.5  # optional parameter: smoothing frames, trigger threshold
+#-agc               # enable auto gain control.  Should be specified with -fvad. 
+#-noagc             # disable auto gain control.
 
 ####
 #### Input rejection by average power (EXPERIMENTAL)

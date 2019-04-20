@@ -23,9 +23,10 @@ The block diagram of detection modules are as follows:
 
 ![Block diagram of VAD modules](image/vad-module.png)
 
-All VAD detector is disabled by default for buffered processing.  For stream
-processing, the level and zero cross threshold detector is enabled by default.
-Other detectors should be set up and enabled by options.
+For stream processing, the level and zero cross threshold detector is enabled by default.
+Other detectors like WebRTC detecter can be enabled by options.
+
+For buffered processing, All VAD detectors are disabled by default.  You can enable the detectors for buffered d input by specifying option [-cutsilence](https://github.com/julius-speech/julius/blob/master/doc/Options.md#-cutsilence--nocutsilence).
 
 ## Level and zero cross threshold detector
 
@@ -79,6 +80,8 @@ and zero cross threshold detector and run WebRTC detector only, leave it enabled
 (set `-cutsilence` for file input) and set a minimum value to the threshold,
 i.e. "`-lv 1`" to enforce the threshold detector to always pass through the
 input.
+
+After 2019/4/20, you can also test an experimental AGC (auto gain control) feature.  When `-agc` is specified together with the WebRTC VAD detector, an additional auto gain control will be activated together with the WebRTC VAD.  This feature is highly experimental, not tested well, so use with care.
 
 ## Static GMM based detector
 

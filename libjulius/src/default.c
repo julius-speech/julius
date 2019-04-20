@@ -87,6 +87,7 @@ jconf_set_default_values(Jconf *j)
   j->detect.fvad_mode                   = -1;
   j->detect.fvad_smoothnum              = 5;
   j->detect.fvad_thres                  = 0.5;
+  j->detect.auto_gain_control_flag      = FALSE;
 #endif /* HAVE_LIBFVAD */
 
   j->preprocess.strip_zero_sample	= TRUE;

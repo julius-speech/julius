@@ -335,6 +335,10 @@ Enable WebRTC VAD (libfvad-based VAD) mode.  Setting `mode` to 0, 1, 2 or 3 enab
 
 Set WebRTC VAD's detailed parameters.  `nFrame` is the length of smoothing frame. `threshold` is the threshold to detect speech trigger [0.0-1.0]. Default values are 5 and 0.5, respectively.
 
+### -agc, -noagc
+
+Enable / disable auto gain control (AGC).  This function depends on WebRTC VAD module, so WebRTC VAD should always enabled when using AGC, for example, `-fvad 2 -agc`. This feature is highly experimental, not tested well so use with care.  Default is disabled. (From 2019/4/20)
+
 ## Input rejection options (category `GLOBAL`)
 
 Two simple front-end input rejection methods are implemented, based

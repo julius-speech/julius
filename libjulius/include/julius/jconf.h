@@ -1011,6 +1011,11 @@ typedef struct __Jconf__ {
      * value is 0.5. 
      */
     float fvad_thres;
+
+    /**
+     * (LIBFVAD) switch AGC 
+     */
+    boolean auto_gain_control_flag;
 #endif /* HAVE_LIBFVAD */
     
   } detect;

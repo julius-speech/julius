@@ -55,6 +55,7 @@ opt_help(Jconf *jconf, char *arg[], int argnum)
 #ifdef HAVE_LIBFVAD
   fprintf(stderr, "    [-fvad mode]          enable WebRTC VAD (0-3, larger value rejects noises aggressively) (%d)\n", jconf->detect.fvad_mode);
   fprintf(stderr, "    [-fvad_param i f]     WebRTC VAD parameters (smoothing duration (frames), thres([0-1]))  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(stderr, "    [-agc][-noagc]        enable/disable additional AGC on WebRTC VAD\n");
 #endif /* HAVE_LIBFVAD */
   fprintf(stderr, "    [-nostrip]            not strip off zero samples\n");
   fprintf(stderr, "    [-zmean]              remove DC by zero mean\n");
