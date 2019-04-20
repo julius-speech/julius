@@ -1098,7 +1098,7 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 #endif /* AUTO_ADJUST_THRESHOLD */
 
   // clear screen
-  if (recog->jconf->preprocess.level_coef == 1.0f) {
+  if (recog->jconf->preprocess.level_coef != 0.0f) {
     // fill black
     SDL_SetRenderDrawColor(s->renderer, 0, 0, 0, 0xFF);
   } else {
@@ -1224,6 +1224,10 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 
 }
 
+
+// keep audio scale
+static float stored_scale;
+
 // check events on SDL
 static int
 sdl_check_command()
@@ -1267,10 +1271,11 @@ sdl_check_command()
       case SDLK_m:
 	// 'm' -> input mute
 	if (event.key.state != SDL_PRESSED || event.key.repeat != 0) break;
-	if (recog->jconf->preprocess.level_coef == 1.0f) {
-	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = 0.00f;
+	if (recog->jconf->preprocess.level_coef != 0.0f) {
+	  stored_scale = recog->jconf->preprocess.level_coef;
+	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = 0.0f;
 	} else {
-	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = 1.0f;
+	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = stored_scale;
 	}
 	break;
       case SDLK_c:
