@@ -956,6 +956,13 @@ print_engine_info(Recog *recog)
 	jlog("\tWebRTC VAD   active thres = %.2f\n", jconf->detect.fvad_thres);
 	if (jconf->detect.auto_gain_control_flag) {
 	  jlog("\t      Auto Gain Control = enabled\n");
+	  jlog("\t        AGC signal overflow threshold = %d\n", jconf->detect.agc.overflow_thres);
+	  jlog("\t        AGC maximum allowed scale = %.2f\n", jconf->detect.agc.scale_max);
+	  jlog("\t        AGC maximum allowed scale, relative to first-utterance scale) = %.2f\n", jconf->detect.agc.scale_max_relative_first);
+	  jlog("\t        AGC target level threshold factor for first-utterance scaling = %.2f\n", jconf->detect.agc.level_factor_first);
+	  jlog("\t        AGC rate when moving scale up = %.2f\n", jconf->detect.agc.scale_up_rate);
+	  jlog("\t        AGC rate when moving scale down = %.2f\n", jconf->detect.agc.scale_down_rate); 
+	  jlog("\t        AGC rate when moving scale down at overflow = %.2f\n", jconf->detect.agc.scale_down_overflow_rate);
 	} else {
 	  jlog("\t      Auto Gain Control = disabled\n");
 	}
