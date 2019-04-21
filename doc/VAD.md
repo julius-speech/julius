@@ -81,7 +81,7 @@ and zero cross threshold detector and run WebRTC detector only, leave it enabled
 i.e. "`-lv 1`" to enforce the threshold detector to always pass through the
 input.
 
-After 2019/4/20, you can also test an experimental AGC (auto gain control) feature.  When `-agc` is specified together with the WebRTC VAD detector, an additional auto gain control will be activated together with the WebRTC VAD.  This feature is highly experimental, not tested well, so use with care.
+After 2019/4/20, you can also test an experimental AGC (auto gain control) feature.  When `-agc` is specified together with the WebRTC VAD detector, an additional auto gain control will be activated together with the WebRTC VAD.  This is soft AGC that scales audio after capturing, so no change will be made to the hardware volume. This feature is highly experimental and not tested well.  You can tune the parameters by `-agc_param` options.
 
 ## Static GMM based detector
 

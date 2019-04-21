@@ -337,7 +337,11 @@ Set WebRTC VAD's detailed parameters.  `nFrame` is the length of smoothing frame
 
 ### -agc, -noagc
 
-Enable / disable auto gain control (AGC).  This function depends on WebRTC VAD module, so WebRTC VAD should always enabled when using AGC, for example, `-fvad 2 -agc`. This feature is highly experimental, not tested well so use with care.  Default is disabled. (From 2019/4/20)
+Enable / disable supplemental auto gain control (AGC). This feature scales up captured audio automatically by looking at the input level and results of WebRTC VAD.  This is soft AGC, applying no change to the hardware volume of the capture device.  Requires WebRTC VAD to be enabled together, so use with `-fvad 2` or `-fvad 3`.  This feature is highly experimental and not tested well.  Default is disabled. (Added 2019/4/20)
+
+### -agc_param i1 p1 p2 p3 p4 p5 p6
+
+Set AGC parameters.  `i1` is a level threshold value to detect signal overflow, `p1` is the maximum allowed scale factor, `p2` is the maximum allowed scale, relative to first-utterance scale.  `p3` is target level magnifying factor for first-utterance scaling, `p4` is the magnifying rate when moving the scale up, `p5` is the magnifying rate when moving scale down, `p6` is the special scaling down factor applied when detecting signal overflow.
 
 ## Input rejection options (category `GLOBAL`)
 
