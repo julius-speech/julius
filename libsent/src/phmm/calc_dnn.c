@@ -461,12 +461,12 @@ void dnn_clear(DNNData *dnn)
   int i;
 
   if (dnn->h) {
-    dnn_layer_clear(&(dnn->o));
     for (i = 0; i < dnn->hnum; i++) {
       dnn_layer_clear(&(dnn->h[i]));
     }
     free(dnn->h);
   }
+  dnn_layer_clear(&(dnn->o));
   if (dnn->state_prior) free(dnn->state_prior);
   for (i = 0; i < dnn->hnum; i++) {
     if (dnn->work[i]) {
@@ -513,7 +513,7 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
 /************************************************************************/
 
 /* initialize dnn */
-boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, int batchsize, int num_threads)
+boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, boolean state_prior_log10nize, int batchsize, int num_threads)
 {
   int i;
 
@@ -601,8 +601,10 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 	return FALSE;
       }
       dnn->state_prior[id] = val * prior_factor;
-      // log10-nize prior
-      dnn->state_prior[id] = log10(dnn->state_prior[id]);
+      if (state_prior_log10nize) {
+	// log10-nize prior
+	dnn->state_prior[id] = log10(dnn->state_prior[id]);
+      }
     }
     fclose(fp);
     jlog("Stat: dnn_init: state prior loaded: %s\n", priorfile);

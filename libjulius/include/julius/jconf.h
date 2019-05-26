@@ -241,6 +241,7 @@ typedef struct __jconf_am__ {
     char *output_bfile;		/* b vector file for output layer */
     char *priorfile;		/* state prior file */
     float prior_factor;		/* state prior factor */
+    boolean prior_factor_log10nize; /* TRUE when requires log10nize state priors */
     int batchsize;		/* batch size */
     int num_threads;		/* number of threads */
   } dnn;
