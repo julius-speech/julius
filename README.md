@@ -49,6 +49,107 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
   - (Rev. 4) User-defined LM function embedding
 - DNN-based decoding, using front-end module for frame-wise state probability calculation for flexibility.
 
+# Quick Run
+
+How to run Julius with English DNN model.  The procedures below are for Linux but almost the same for other OS.
+
+## 1. Build latest Julius
+
+```shell
+% sudo apt-get install build-essential zlib1g-dev libsdl2-dev libasound2-dev
+% git clone https://github.com/julius-speech/julius.git
+% cd julius
+% ./configure --enable-words-int
+% make -j4
+% ls -l julius/julius
+-rwxr-xr-x 1 ri lab 746056 May 26 13:01 julius/julius
+```
+
+## 2. Get English DNN model
+
+Go to [JuliusModel](https://sourceforge.net/projects/juliusmodels/files/) page and download the English model(LM+DNN-HMM) named "`ENVR-v5.4.Dnn.Bin.zip`".  Unzip it and cd to there.
+
+```shell
+% cd ..
+% unzip /some/where/ENVR-v5.4.Dnn.Bin.zip
+% cd ENVR-5.4.Dnn.Bin
+```
+
+## 3. Modify config file
+
+Edit the `dnn.jconf` file in the unzipped folder to fit the latest version of Julius:
+
+```text
+(edit dnn.jconf)
+@@ -1,5 +1,5 @@
+ feature_type MFCC_E_D_A_Z
+-feature_options -htkconf wav_config -cvn -cmnload ENVR-v5.3.norm -cmnstatic
++feature_options -htkconf wav_config -cvn -cmnload ENVR-v5.3.norm -cvnstatic
+ num_threads 1
+ feature_len 48
+ context_len 11
+@@ -21,3 +21,4 @@
+ output_B ENVR-v5.3.layerout_bias.npy
+ state_prior_factor 1.0
+ state_prior ENVR-v5.3.prior
++state_prior_log10nize false
+```
+
+## 4. Recognize audio file
+
+Recognize "`mozilla.wav`" included in the zip file.
+
+```shell
+% ../julius/julius/julius -C julius.jconf -dnnconf dnn.jconf
+```
+
+You'll get tons of messages, but the final result of the first speech part will be output like this:
+
+```
+sentence1: <s> without the data said the article was useless </s>
+wseq1: <s> without the data said the article was useless </s>
+phseq1: sil | w ih dh aw t | dh ax | d ae t ah | s eh d | dh iy | aa r t ah k ah l | w ax z | y uw s l ah s | sil
+cmscore1: 0.785 0.892 0.318 0.284 0.669 0.701 0.818 0.103 0.528 1.000
+score1: 261.947144
+```
+
+"`test.dbl`" contains list of audio files to be recognized.  Edit the file and run again to test with another files.
+
+## 5. Run with live microphone input
+
+To run Julius on live microphone input, save the following text as "`mic.jconf`".
+
+```text
+-input mic
+-htkconf wav_config
+-h ENVR-v5.3.am
+-hlist ENVR-v5.3.phn
+-d ENVR-v5.3.lm
+-v ENVR-v5.3.dct
+-b 4000
+-lmp 12 -6
+-lmp2 12 -6
+-fallback1pass
+-multipath
+-iwsp
+-iwcd1 max
+-spmodel sp
+-no_ccd
+-sepnum 150
+-b2 360
+-n 40
+-s 2000
+-m 8000
+-lookuprange 5
+-sb 80
+-forcedict
+```
+
+and run Julius with the mic.jconf instead of julius.jconf
+```shell
+% ../julius/julius/julius -C mic.jconf -dnnconf dnn.jconf
+```
+
 # Download Julius
 
 The latest release version is [4.5](https://github.com/julius-speech/julius/releases), released on Janualy 2, 2019.
