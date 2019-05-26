@@ -175,6 +175,7 @@ jconf_set_default_values_am(JCONF_AM *j)
   j->dnn.output_bfile                   = NULL;
   j->dnn.priorfile                      = NULL;
   j->dnn.prior_factor                   = 1.0;
+  j->dnn.prior_factor_log10nize         = TRUE;
   j->dnn.batchsize                      = 1;
   j->dnn.num_threads                    = 2;
 }

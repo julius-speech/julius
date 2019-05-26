@@ -407,6 +407,11 @@ print_engine_info(Recog *recog)
       jlog("      # of hidden layers = %d\n", am->dnn->hnum);
       jlog("       hidden layer dim. = %d\n", am->dnn->hiddennodenum);
       jlog("      state prior factor = %f\n", am->dnn->prior_factor);
+      if (am->config->dnn.prior_factor_log10nize) {
+	jlog("   state prior log10nize = on\n");
+      } else {
+	jlog("   state prior log10nize = off\n");
+      }
       jlog("              batch size = %d\n", am->dnn->batch_size);
       jlog("       number of threads = %d\n", am->dnn->num_threads);
     }

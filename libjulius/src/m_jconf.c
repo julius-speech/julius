@@ -669,7 +669,18 @@ dnn_config_file_parse(char *filename, JCONF_AM *am, Jconf *jconf)
     else if (strmatch(pp, "output_B")) am->dnn.output_bfile = filepath(v, cdir);
     else if (strmatch(pp, "state_prior")) am->dnn.priorfile = filepath(v, cdir);
     else if (strmatch(pp, "state_prior_factor")) am->dnn.prior_factor = atof(v);
-    else if (strmatch(pp, "batch_size")) am->dnn.batchsize = atoi(v);
+    else if (strmatch(pp, "state_prior_log10nize")) {
+      if (strmatch(v, "yes") || strmatch(v, "true")) {
+	am->dnn.prior_factor_log10nize = TRUE;
+      } else if (strmatch(v, "no") || strmatch(v, "false")) {
+	am->dnn.prior_factor_log10nize = FALSE;
+      } else {
+	jlog("ERROR: dnn_config_file_parse: value of state_prior_log10nize must be \"true\" or \"false\"\n");
+	if (cdir) free(cdir);
+	fclose(fp);
+	return FALSE;
+      }
+    } else if (strmatch(pp, "batch_size")) am->dnn.batchsize = atoi(v);
     else if (strmatch(pp, "num_threads")) am->dnn.num_threads = atoi(v);
     else {
       jlog("ERROR: dnn_config_file_parse: unknown spec: %s %s\n", pp, v);
