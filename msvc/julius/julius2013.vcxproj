@@ -115,7 +115,7 @@
     <ClInclude Include="..\..\julius\charconv.h" />
     <ClInclude Include="..\..\julius\libjcode\jlib.h" />
     <ClInclude Include="..\..\julius\libjcode\jlibconfig.h" />
-    <ClInclude Include="..\config\config-msvc-julius.h" />
+    <ClInclude Include="..\..\julius\config-msvc-julius.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libjulius\libjulius.vcxproj">
