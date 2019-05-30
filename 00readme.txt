@@ -89,7 +89,7 @@ We are going to move to UTF-8.
 
 The master branch after the release of 4.5 (2019/1/2) has codes
 converted to UTF-8.  All files were converted to UTF-8, and future
-update will be commited also in UTF-8.
+update will be committed also in UTF-8.
 
 For backward compatibility and log visibility, we are keeping the old
 encoding codes at branch "master-4.5-legacy".  The branch keeps legacy
@@ -109,7 +109,7 @@ Contents of Julius-4.5
 	00readme-DNN.txt	DNN-HMM related issues
 	README.md		description about Julius for GitHub
 	configure		configure script
-	configure.in		
+	configure.in
 	Sample.jconf		Sample configuration file
 	Sample.dnnconf		Sample DNN configuration file
 	julius/			Julius sources
@@ -119,7 +119,7 @@ Contents of Julius-4.5
 	adintool/		Record/split/send/receive speech data (GUI)
 	generate-ngram/		Tool to generate random sentences from N-gram
 	gramtools/		Tools to build and test recognition grammar
-	jcontrol/		A sample network client module 
+	jcontrol/		A sample network client module
 	mkbingram/		Convert N-gram to binary format
 	mkbinhmm/		Convert ascii hmmdefs to binary format
 	mkgshmm/		Model conversion for Gaussian Mixture Selection
@@ -133,21 +133,31 @@ Contents of Julius-4.5
 	binlm2arpa/		Convert binary N-gram to ARPA format
 
 
-License
-========
+License and Citation
+=====================
 
-Julius is an open-source software provided as is.  For more
-information about the license, please refer to the "LICENSE.txt" file
-included in this archive.
+This code is made available under the modified BSD License (BSD-3-Clause License).
 
-Also see the copyrights in the files:
+Over and above the legal restrictions imposed by this license, when you publish
+or present results by using this software, we would highly appreciate if you
+mention the use of "Large Vocabulary Continuous Speech Recognition Engine Julius"
+and provide proper reference or citation to it. This would help boost the visibility
+of Julius and then further enhance Julius and the related software.
 
-  libjulius/libfvad/
-  gramtools/gram2sapixml/gram2sapixml.pl.in
-  libsent/src/wav2mfcc/wav2mfcc-*.c
-  libsent/src/adin/pa/
-  msvc/portaudio/
-  msvc/zlib/
+Citation to this software can be a paper that describes it,
+
+  A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large
+  Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+
+  A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition
+  Engine Julius" Asia-Pacific Signal and Information Processing Association Annual
+  Summit and Conference (APSIPA ASC), 2009.
+
+or a direct citation to this software,
+
+  A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
+
+or both.
 
 
 Contact Us
