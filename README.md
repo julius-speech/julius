@@ -1,14 +1,14 @@
-(Moved from julius.osdn.jp since 2015/09, this is official)  
-(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)  
+(Moved from julius.osdn.jp since 2015/09, this is official)
+(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)
 
 Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 ==========================================================================
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2530396.svg)](https://doi.org/10.5281/zenodo.2530396)
 
-Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)  
-Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
-Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan  
-Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology  
+Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)
+Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)
+Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
+Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
 
 # About Julius
 
@@ -255,14 +255,15 @@ branch.
 
 This code is made available under the modified BSD License (BSD-3-Clause License).
 
-Over and above the legal restrictions imposed by this license, if you publish or present results by using this software, we would highly appreciate if you mention the use of "Large Vocabulary Continuous Speech Recognition Engine Julius" and provide proper reference or citation in it. This would help boost the visibility of Julius and then further enhance Julius and the related software.
+Over and above the legal restrictions imposed by this license, when you publish or present results by using this software, we would highly appreciate if you mention the use of "Large Vocabulary Continuous Speech Recognition Engine Julius" and provide proper reference or citation to it. This would help boost the visibility of Julius and then further enhance Julius and the related software.
 
-Citation to this software can be directly,
-
-> A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
-
-or to the paper that describes it,
+Citation to this software can be a paper that describes it,
 
 > A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+> A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
+
+or a direct citation to this software,
+
+> A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
 
 or both.

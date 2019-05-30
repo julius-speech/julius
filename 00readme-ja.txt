@@ -60,28 +60,28 @@ Julius のコード開発は2016年より GitHub へ移行しました．開発�
 What's new in Julius-4.5
 ==========================
 
-VADの強化のために WebRTC ベースの VAD アルゴリズムが追加されました。
-統合されたのは以下のコードです。
+VADの強化のために WebRTC ベースの VAD アルゴリズムが追加されました．
+統合されたのは以下のコードです．
 
   https://github.com/dpirch/libfvad
 
-4.5以降のJuliusには2つのVADモジュールがあります。１つは従来からある振
+4.5以降のJuliusには2つのVADモジュールがあります．１つは従来からある振
 幅とゼロ交差数ベースのモジュール、もうひとつは4.5で導入された libfvad
-（モデルベース）。両モジュールは同じオーディオ入力に対して並列して動作
+（モデルベース）．両モジュールは同じオーディオ入力に対して並列して動作
 し、並列動作時は「両モジュールともトリガを検知したとき」音声入力を検知
-します。新モジュールはデフォルトでは OFF で、オプション "-fvad 値" で
-有効になります。
+します．新モジュールはデフォルトでは OFF で、オプション "-fvad 値" で
+有効になります．
 
-DNN-HMMの計算にCPUマルチスレッドが追加されました。マルチスレッドを有効
-にすることで大規模なDNNでの計算時間が多少削減されます。スレッド数は
-dnnconf 内の "num_threads" で指定します。デフォルト値は 2 です。
+DNN-HMMの計算にCPUマルチスレッドが追加されました．マルチスレッドを有効
+にすることで大規模なDNNでの計算時間が多少削減されます．スレッド数は
+dnnconf 内の "num_threads" で指定します．デフォルト値は 2 です．
 
 モジュールモードのXML形式出力で XML special character のエスケープを
-行うようになりました。従来バージョンから "<s>", "</s>" 等の出力が
-"&lt;s&gt;" のように変わっていますのでご注意ください。従来の動作に
-戻したい場合は "-noxmlescape" を指定して下さい。
+行うようになりました．従来バージョンから "<s>", "</s>" 等の出力が
+"&lt;s&gt;" のように変わっていますのでご注意ください．従来の動作に
+戻したい場合は "-noxmlescape" を指定して下さい．
 
-全ての変更点と使い方については Release-ja.txt をご覧ください。
+全ての変更点と使い方については Release-ja.txt をご覧ください．
 
 
 UTF-8への移行について
@@ -89,13 +89,13 @@ UTF-8への移行について
 
 テキストエンコーディングとして SJISや EUC が混在していましたが、
 バージョン4.5から以降、ソースコードのテキストエンコーディングは
-UTF-8に変換されました。以降の更新は UTF-8 ベースで行われます。
+UTF-8に変換されました．以降の更新は UTF-8 ベースで行われます．
 
 コードの変更を追ったり以前のバージョンとの差分をチェックしやすいよう、
 バージョン4.5の時点でのテキストエンコード変換前のコードを
-"master-4.5-legacy" ブランチで保存してあります。4.5 リリース以前の
+"master-4.5-legacy" ブランチで保存してあります．4.5 リリース以前の
 コードから 4.5 までの差分を見る場合はそちらのブランチを checkout して
-ください。
+ください．
 
 
 Julius-4.5のファイルの構成
@@ -133,29 +133,30 @@ Julius-4.5のファイルの構成
 ライセンス
 ===========
 
-Juliusのコードは modified BSD License (BSD-3-Clause License) のもとで公開されています。
+Juliusのコードは modified BSD License (BSD-3-Clause License) のもとで公開されています．
 
 上記ライセンスによる利用条件のほか、本ソフトウェアを利用して得られた知見に関して発表を行な
 う際には、「大語彙連続音声認識エンジン Julius」を利用したことを明記し、可能であれば
-適切な参照あるいは引用を示すことを強くお勧めします。このようにしていただくことで、
-Julius の利用様態の可視化が促進され、Juliusおよび関連ソフトウェアの今後の開発・拡張につながります。
+適切な参照あるいは引用を示すことを強くお勧めします．このようにしていただくことで、
+Julius の利用様態の可視化が促進され、Juliusおよび関連ソフトウェアの今後の開発・拡張につながります．
 参照は、Juliusのホームページ（https://julius.osdn.jp) あるいは GitHub のページ
-（https://github.com/julius-speech/julius) へリンクしてください。文献における引用は、
-下記の要領でこのソフトウェアを直接引用いただくか、
+（https://github.com/julius-speech/julius) へリンクしてください．
+文献における引用は、下記のJulius に関する論文を引用いただくか、
+
+> A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+> A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
+
+あるいはこのソフトウェアを直接下記の要領で引用いただくか
 
 > A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
 
-あるいは Julius に関する論文を引用いただくか、
-
-> A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
-
-あるいは両方をご使用ください。
+あるいは両方をご使用ください．
 
 
 連絡先
 ===========
 
-Julius 開発に関するご質問・お問い合わせは主に GitHub 上で承っております。
+Julius 開発に関するご質問・お問い合わせは主に GitHub 上で承っております．
 
         Julius on GitHub
         https://github.com/julius-speech/julius
