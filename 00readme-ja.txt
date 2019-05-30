@@ -130,8 +130,8 @@ Julius-4.5のファイルの構成
 	binlm2arpa/		バイナリN-gramからARPAへの変換ツール
 
 
-ライセンス
-===========
+ライセンスおよび引用
+=====================
 
 Juliusのコードは modified BSD License (BSD-3-Clause License) のもとで公開されています．
 
@@ -143,12 +143,16 @@ Julius の利用様態の可視化が促進され、Juliusおよび関連ソフ�
 （https://github.com/julius-speech/julius) へリンクしてください．
 文献における引用は、下記のJulius に関する論文を引用いただくか、
 
-> A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
-> A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
+    A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary
+    Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+
+    A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius"
+    Asia-Pacific Signal and Information Processing Association Annual Summit and Conference
+    (APSIPA ASC), 2009.
 
 あるいはこのソフトウェアを直接下記の要領で引用いただくか
 
-> A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
+    A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
 
 あるいは両方をご使用ください．
 

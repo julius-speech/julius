@@ -251,7 +251,7 @@ encoding version of version 4.5.  If you want to inspect the code
 progress before the release of 4.5 (2019/1/2), please checkout the
 branch.
 
-# License
+# License and Citation
 
 This code is made available under the modified BSD License (BSD-3-Clause License).
 

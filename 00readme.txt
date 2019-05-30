@@ -133,8 +133,8 @@ Contents of Julius-4.5
 	binlm2arpa/		Convert binary N-gram to ARPA format
 
 
-License
-========
+License and Citation
+=====================
 
 This code is made available under the modified BSD License (BSD-3-Clause License).
 
@@ -146,12 +146,16 @@ of Julius and then further enhance Julius and the related software.
 
 Citation to this software can be a paper that describes it,
 
-> A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
-> A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
+  A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large
+  Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+
+  A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition
+  Engine Julius" Asia-Pacific Signal and Information Processing Association Annual
+  Summit and Conference (APSIPA ASC), 2009.
 
 or a direct citation to this software,
 
-> A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
+  A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
 
 or both.
 
