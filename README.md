@@ -1,14 +1,14 @@
-(Moved from julius.osdn.jp since 2015/09, this is official)
-(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)
+(Moved from julius.osdn.jp since 2015/09, this is official)  
+(Since 2019/1/2, master has UTF-8-purified codes. We are still keeping the snap of old encoding at 4.5 release at branch "master-4.5-legacy".)  
 
 Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 ==========================================================================
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2530396.svg)](https://doi.org/10.5281/zenodo.2530396)
 
-Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)
-Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)
-Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
-Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)  
+Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
+Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan  
+Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology  
 
 # About Julius
 
@@ -260,6 +260,7 @@ Over and above the legal restrictions imposed by this license, when you publish 
 Citation to this software can be a paper that describes it,
 
 > A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+
 > A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius" Asia-Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC), 2009.
 
 or a direct citation to this software,
