@@ -43,15 +43,15 @@ Android, その他の環境です．
 GitHub への移行について
 ========================
 
-Juliusは2016年より GitHub へ移行しました．
+Julius のコード開発は2016年より GitHub へ移行しました．開発者向けの
 最新のソースコード・各種実行キット・開発情報の公開・共有および
-開発者向けのフォーラム運営は GitHub にて行っています．
+フォーラム運営は GitHub にて行っています．
 
         Julius on GitHub
         https://github.com/julius-speech/julius
 
-旧ホームページには 4.3.1 以前の情報が掲載されています．
-こちらもご活用下さい．
+ホームページには一般向けのお知らせやキットのリンク、日本語の情報等が
+掲載されます．こちらもご活用下さい．
 
         旧 Julius Web サイト
         http://julius.osdn.jp/
@@ -106,7 +106,7 @@ Julius-4.5のファイルの構成
 	Release-ja.txt		リリースノート/変更履歴
 	00readme-DNN.txt	DNN-HMM の使い方説明
 	configure		configureスクリプト
-	configure.in		
+	configure.in
 	Sample.jconf		jconf 設定ファイルサンプル
 	Sample.dnnconf		DNN 設定ファイルのサンプル
 	julius/			Julius ソース
@@ -133,24 +133,29 @@ Julius-4.5のファイルの構成
 ライセンス
 ===========
 
-Julius はオープンソースソフトウェアです．
-学術用途・商用を含め，利用に関して特に制限はありません．
-利用許諾については，同梱の文書 "LICENSE.txt" をお読み下さい．
+Juliusのコードは modified BSD License (BSD-3-Clause License) のもとで公開されています。
 
-また以下のファイルやディレクトリ内の Copyright もご参照下さい。
+上記ライセンスによる利用条件のほか、本ソフトウェアを利用して得られた知見に関して発表を行な
+う際には、「大語彙連続音声認識エンジン Julius」を利用したことを明記し、可能であれば
+適切な参照あるいは引用を示すことを強くお勧めします。このようにしていただくことで、
+Julius の利用様態の可視化が促進され、Juliusおよび関連ソフトウェアの今後の開発・拡張につながります。
+参照は、Juliusのホームページ（https://julius.osdn.jp) あるいは GitHub のページ
+（https://github.com/julius-speech/julius) へリンクしてください。文献における引用は、
+下記の要領でこのソフトウェアを直接引用いただくか、
 
-  libjulius/libfvad/
-  gramtools/gram2sapixml/gram2sapixml.pl.in
-  libsent/src/wav2mfcc/wav2mfcc-*.c
-  libsent/src/adin/pa/
-  msvc/portaudio/
-  msvc/zlib/
+> A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
+
+あるいは Julius に関する論文を引用いただくか、
+
+> A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+
+あるいは両方をご使用ください。
 
 
 連絡先
 ===========
 
-Julius 開発に関するご質問・お問い合わせは GitHub で承っております。
+Julius 開発に関するご質問・お問い合わせは主に GitHub 上で承っております。
 
         Julius on GitHub
         https://github.com/julius-speech/julius

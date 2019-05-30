@@ -237,7 +237,6 @@ Other, old documents:
   - A. Lee, T. Kawahara and K. Shikano. "Julius --- an open source real-time large vocabulary recognition engine." In Proc. European Conference on Speech Communication and Technology (EUROSPEECH), pp. 1691--1694, 2001.
   - T. Kawahara, A. Lee, T. Kobayashi, K. Takeda, N. Minematsu, S. Sagayama, K. Itou, A. Ito, M. Yamamoto, A. Yamada, T. Utsuro and K. Shikano. "Free software toolkit for Japanese large vocabulary continuous speech recognition." In Proc. Int'l Conf. on Spoken Language Processing (ICSLP) , Vol. 4, pp. 476--479, 2000.
 
-
 # Moving to UTF-8
 
 We are going to move to UTF-8.
@@ -251,3 +250,19 @@ encoding codes at branch "master-4.5-legacy".  The branch keeps legacy
 encoding version of version 4.5.  If you want to inspect the code
 progress before the release of 4.5 (2019/1/2), please checkout the
 branch.
+
+# License
+
+This code is made available under the modified BSD License (BSD-3-Clause License).
+
+Over and above the legal restrictions imposed by this license, if you publish or present results by using this software, we would highly appreciate if you mention the use of "Large Vocabulary Continuous Speech Recognition Engine Julius" and provide proper reference or citation in it. This would help boost the visibility of Julius and then further enhance Julius and the related software.
+
+Citation to this software can be directly,
+
+> A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
+
+or to the paper that describes it,
+
+> A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
+
+or both.
