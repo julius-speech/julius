@@ -2,10 +2,10 @@ Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 ==========================================================================
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2530396.svg)](https://doi.org/10.5281/zenodo.2530396)
 
-Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)
-Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)
-Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
-Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)  
+Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
+Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan  
+Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology  
 
 # About Julius
 
@@ -48,7 +48,9 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 
 # Quick Run
 
-How to run Julius with English DNN model.  The procedures below are for Linux but almost the same for other OS.
+How to test English dictation with Julius and English DNN model.  The procedure is for Linux but almost the same for other OS.
+
+(For Japanese dictation, Use [dictation kit](https://github.com/julius-speech/julius#japanese-dictation-kit))
 
 ## 1. Build latest Julius
 
@@ -147,7 +149,7 @@ and run Julius with the mic.jconf instead of julius.jconf
 % ../julius/julius/julius -C mic.jconf -dnnconf dnn.jconf
 ```
 
-# Download Julius
+# Download
 
 The latest release version is [4.5](https://github.com/julius-speech/julius/releases), released on Janualy 2, 2019.
 You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
@@ -156,7 +158,7 @@ Version 4.4 supports stand-alone DNN-HMM support, and several new
 tools and bug fixes are included.  See the "Release.txt" file for the
 full list of updates.  Run with "-help" to see full list of options.
 
-# Install
+# Install / Build Julius
 
 Follow the instructions in [INSTALL.txt](https://github.com/julius-speech/julius/blob/master/INSTALL.txt).
 
