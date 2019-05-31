@@ -141,7 +141,8 @@ This code is made available under the modified BSD License (BSD-3-Clause License
 Over and above the legal restrictions imposed by this license, when you publish
 or present results by using this software, we would highly appreciate if you
 mention the use of "Large Vocabulary Continuous Speech Recognition Engine Julius"
-and provide proper reference or citation to it. This would help boost the visibility
+and provide proper reference or citation so that readers can easily access
+the information of the software. This would help boost the visibility
 of Julius and then further enhance Julius and the related software.
 
 Citation to this software can be a paper that describes it,
