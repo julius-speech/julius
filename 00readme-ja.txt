@@ -143,7 +143,7 @@ Julius の利用様態の可視化が促進され、Juliusおよび関連ソフ�
 （https://github.com/julius-speech/julius) へリンクしてください．
 文献における引用は、下記のJulius に関する論文を引用いただくか、
 
-    A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary
+    A. Lee, T. Kawahara and K. Shikano. "Julius --- An Open Source Real-Time Large Vocabulary
     Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
 
     A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition Engine Julius"

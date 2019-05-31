@@ -146,7 +146,7 @@ of Julius and then further enhance Julius and the related software.
 
 Citation to this software can be a paper that describes it,
 
-  A. Lee, T. Kawahara ans K. Shikano. "Julius --- An Open Source Real-Time Large
+  A. Lee, T. Kawahara and K. Shikano. "Julius --- An Open Source Real-Time Large
   Vocabulary Recognition Engine".  In Proc. EUROSPEECH, pp.1691--1694, 2001.
 
   A. Lee and T. Kawahara. "Recent Development of Open-Source Speech Recognition
