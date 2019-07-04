@@ -71,7 +71,7 @@ Go to [JuliusModel](https://sourceforge.net/projects/juliusmodels/files/) page a
 ```shell
 % cd ..
 % unzip /some/where/ENVR-v5.4.Dnn.Bin.zip
-% cd ENVR-5.4.Dnn.Bin
+% cd ENVR-v5.4.Dnn.Bin
 ```
 
 ## 3. Modify config file
