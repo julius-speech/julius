@@ -9,7 +9,7 @@ SHELL=/bin/sh
 .SUFFIXES:
 .SUFFIXES: .c .o .a
 .c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $< -fPIC
 
 CC=@CC@
 CFLAGS=@CFLAGS@ @OPENMP_CFLAGS@
