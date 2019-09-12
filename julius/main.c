@@ -133,7 +133,7 @@ main(int argc, char *argv[])
   /* Fixate jconf parameters: it checks whether the jconf parameters
      are suitable for recognition or not, and set some internal
      parameters according to the values for recognition.  Modifying
-     a value in jconf after this function may be errorous.
+     a value in jconf after this function may be erroneous.
   */
   if (j_jconf_finalize(jconf) == FALSE) {
     if (logfile) fclose(fp);
