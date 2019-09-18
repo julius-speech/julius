@@ -355,6 +355,16 @@ dnl AC_CHECK_FUNCS(strdup strstr)
 dnl AC_CHECK_FUNC(gethostbyname,,AC_CHECK_LIB(nsl,gethostbyname))
 dnl AC_CHECK_FUNC(connect,,AC_CHECK_LIB(socket, connect))
 
+dnl Checks whether fPIC compiler option is accepted
+AC_MSG_CHECKING(whether fPIC compiler option is accepted)
+xxxCFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -fPIC -Werror"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [return 0;])],
+    [AC_MSG_RESULT(yes)
+         CFLAGS="$xxxCFLAGS -fPIC"],
+	     [AC_MSG_RESULT(no)
+	          CFLAGS="$xxxCFLAGS"])
+
 dnl check for POSIX thread support
 if test "$want_pthread" = yes; then
   case "$host_os" in

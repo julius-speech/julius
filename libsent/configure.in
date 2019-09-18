@@ -133,6 +133,16 @@ dnl Checks for compiler.
 AC_PROG_CC
 AC_PROG_CPP
 
+dnl Checks whether fPIC compiler option is accepted
+AC_MSG_CHECKING(whether fPIC compiler option is accepted)
+xxxCFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -fPIC -Werror"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [return 0;])],
+    [AC_MSG_RESULT(yes)
+         CFLAGS="$xxxCFLAGS -fPIC"],
+	     [AC_MSG_RESULT(no)
+	          CFLAGS="$xxxCFLAGS"])
+
 dnl Checks for SIMD capability
 case "$host_cpu" in
   arm*)

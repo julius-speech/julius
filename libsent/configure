@@ -3358,6 +3358,33 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether fPIC compiler option is accepted" >&5
+$as_echo_n "checking whether fPIC compiler option is accepted... " >&6; }
+xxxCFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -fPIC -Werror"
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+         CFLAGS="$xxxCFLAGS -fPIC"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	          CFLAGS="$xxxCFLAGS"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 case "$host_cpu" in
   arm*)
     use_intel_simd=no
@@ -3373,8 +3400,7 @@ if test "$use_intel_simd" = yes; then
   xxxxFMA=no
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SIMD FMA instruction" >&5
 $as_echo_n "checking for SIMD FMA instruction... " >&6; }
-
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <immintrin.h>
 
