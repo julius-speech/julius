@@ -20,7 +20,7 @@ The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
 
 # Features
 
-- An open-source LVCSR software (see [terms and conditions of license](https://github.com/julius-speech/julius/blob/master/LICENSE.txt).)
+- An open-source LVCSR software (BSD 3-clause license).
 - Real-time, hi-speed, accurate recognition based on 2-pass strategy.
 - Low memory requirement: less than 32MBytes required for work area (<64MBytes for 20k-word dictation with on-memory 3-gram LM).
 - Supports LM of N-gram with arbitrary N.  Also supports rule-based grammar, and word list for isolated word recognition.
