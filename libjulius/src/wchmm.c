@@ -75,6 +75,7 @@ wchmm_new()
   w->lmvar  = LM_UNDEF;
   w->ngram = NULL;
   w->dfa = NULL;
+  w->dfa_forward = NULL;
   w->winfo = NULL;
   w->malloc_root = NULL;
 #ifdef PASS1_IWCD

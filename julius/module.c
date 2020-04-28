@@ -280,7 +280,7 @@ msock_exec_command(char *command, Recog *recog)
 	/* delete all existing grammars */
 	multigram_delete_all(cur->lm);
 	/* register the new grammar to multi-gram tree */
-	multigram_add(new_dfa, new_winfo, p, cur->lm);
+	multigram_add(new_dfa, new_winfo, p, cur->lm, NULL);
 	/* need to rebuild the global lexicon */
 	/* tell engine to update at requested timing */
 	schedule_grammar_update(recog);
@@ -312,7 +312,7 @@ msock_exec_command(char *command, Recog *recog)
     } else {
       if (cur->lmtype == LM_DFA) {
 	/* add it to multi-gram tree */
-	multigram_add(new_dfa, new_winfo, p, cur->lm);
+	multigram_add(new_dfa, new_winfo, p, cur->lm, NULL);
 	/* need to rebuild the global lexicon */
 	/* make sure this process will be activated */
 	cur->active = 1;

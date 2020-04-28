@@ -243,6 +243,7 @@ j_process_lm_free(PROCESS_LM *lm)
   if (lm->ngram) ngram_info_free(lm->ngram);
   if (lm->grammars) multigram_free_all(lm->grammars);
   if (lm->dfa) dfa_info_free(lm->dfa);
+  if (lm->dfa_forward) dfa_info_free(lm->dfa_forward);
   /* not free lm->jconf  */
   free(lm);
 }

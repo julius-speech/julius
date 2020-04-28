@@ -865,6 +865,12 @@ typedef struct __process_lm__ {
   DFA_INFO *dfa;
 
   /**
+   * Global Forward DFA for recognition.  This will be generated from @a grammars,
+   * concatinating each forward DFA into one.
+   */
+  DFA_INFO *dfa_forward;
+
+  /**
    * TRUE if modified in multigram_update()
    * 
    */

@@ -249,7 +249,7 @@ void jconf_set_default_values_search(JCONF_SEARCH *j);
 
 
 /* multi-gram.c */
-int multigram_add(DFA_INFO *dfa, WORD_INFO *winfo, char *name, PROCESS_LM *lm);
+int multigram_add(DFA_INFO *dfa, WORD_INFO *winfo, char *name, PROCESS_LM *lm, DFA_INFO *dfa_forward);
 boolean multigram_delete(int gid, PROCESS_LM *lm);
 void multigram_delete_all(PROCESS_LM *lm);
 boolean multigram_update(PROCESS_LM *lm);

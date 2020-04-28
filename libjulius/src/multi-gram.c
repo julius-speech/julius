@@ -102,6 +102,7 @@ multigram_rebuild_wchmm(RecogProcess *r)
   r->wchmm->hmmwrk = &(r->am->hmmwrk);
   /* assign models */
   r->wchmm->dfa = r->lm->dfa;
+  r->wchmm->dfa_forward = r->lm->dfa_forward;
   r->wchmm->winfo = r->lm->winfo;
   r->wchmm->hmminfo = r->am->hmminfo;
   if (r->wchmm->category_tree) {
@@ -208,17 +209,20 @@ multigram_build(RecogProcess *r)
  * </EN>
  */
 static boolean
-multigram_append_to_global(DFA_INFO *gdfa, WORD_INFO *gwinfo, MULTIGRAM *m)
+multigram_append_to_global(DFA_INFO *gdfa, WORD_INFO *gwinfo, DFA_INFO *gdfa_forward, MULTIGRAM *m)
 {
   /* the new grammar 'm' will be appended to the last of gdfa and gwinfo */
   m->state_begin = gdfa->state_num;	/* initial state ID */
   m->cate_begin = gdfa->term_num;	/* initial terminal ID */
   m->word_begin = gwinfo->num;	/* initial word ID */
+  m->state_begin_forward = gdfa_forward->state_num;
   
   /* append category ID and node number of src DFA */
   /* Julius allow multiple initial states: connect each initial node
      is not necesarry. */
   dfa_append(gdfa, m->dfa, m->state_begin, m->cate_begin);
+  if (m->dfa_forward != NULL)
+    dfa_append(gdfa_forward, m->dfa_forward, m->state_begin_forward, m->cate_begin);
   /* append words of src vocabulary to global winfo */
   if (voca_append(gwinfo, m->winfo, m->cate_begin, m->word_begin) == FALSE) {
     return FALSE;
@@ -274,7 +278,7 @@ multigram_append_to_global(DFA_INFO *gdfa, WORD_INFO *gwinfo, MULTIGRAM *m)
  * @ingroup grammar
  */
 int
-multigram_add(DFA_INFO *dfa, WORD_INFO *winfo, char *name, PROCESS_LM *lm)
+multigram_add(DFA_INFO *dfa, WORD_INFO *winfo, char *name, PROCESS_LM *lm, DFA_INFO *dfa_forward)
 {
   MULTIGRAM *new;
 
@@ -288,6 +292,7 @@ multigram_add(DFA_INFO *dfa, WORD_INFO *winfo, char *name, PROCESS_LM *lm)
 
   new->id = lm->gram_maxid;
   new->dfa = dfa;
+  new->dfa_forward = dfa_forward;
   new->winfo = winfo;
   /* will be setup and activated after multigram_update() is called once */
   new->hook = MULTIGRAM_DEFAULT | MULTIGRAM_ACTIVATE;
@@ -402,6 +407,7 @@ multigram_exec_delete(PROCESS_LM *lm)
       /* if any grammar is deleted, we need to rebuild lexicons etc. */
       /* so tell it to the caller */
       if (! m->newbie) ret_flag = TRUE;
+      if (m->dfa_forward) dfa_info_free(m->dfa_forward);
       if (m->dfa) dfa_info_free(m->dfa);
       word_info_free(m->winfo);
       jlog("STAT: Gram #%d %s: purged\n", m->id, m->name);
@@ -673,6 +679,10 @@ multigram_update(PROCESS_LM *lm)
       dfa_info_free(lm->dfa);
       lm->dfa = NULL;
     }
+    if (lm->dfa_forward != NULL) {
+      dfa_info_free(lm->dfa_forward);
+      lm->dfa_forward = NULL;
+    }
     if (lm->winfo != NULL) {
       word_info_free(lm->winfo);
       lm->winfo = NULL;
@@ -682,6 +692,10 @@ multigram_update(PROCESS_LM *lm)
       if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa == NULL) {
 	lm->dfa = dfa_info_new();
 	dfa_state_init(lm->dfa);
+      }
+      if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa_forward == NULL) {
+	lm->dfa_forward = dfa_info_new();
+	dfa_state_init(lm->dfa_forward);
       }
       if (lm->winfo == NULL) {
 	lm->winfo = word_info_new();
@@ -697,7 +711,7 @@ multigram_update(PROCESS_LM *lm)
 	  m->hook |= MULTIGRAM_DELETE;
 	}
       } else {
-	if (multigram_append_to_global(lm->dfa, lm->winfo, m) == FALSE) {
+	if (multigram_append_to_global(lm->dfa, lm->winfo, lm->dfa_forward, m) == FALSE) {
 	  jlog("ERROR: multi-gram: failed to add grammar #%d to recognition network\n", m->id);
 	  /* mark as delete */
 	  m->hook |= MULTIGRAM_DELETE;
@@ -717,6 +731,10 @@ multigram_update(PROCESS_LM *lm)
 	  lm->dfa = dfa_info_new();
 	  dfa_state_init(lm->dfa);
 	}
+	if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa_forward == NULL) {
+	  lm->dfa_forward = dfa_info_new();
+	  dfa_state_init(lm->dfa_forward);
+	}
 	if (lm->winfo == NULL) {
 	  lm->winfo = word_info_new();
 	  winfo_init(lm->winfo);
@@ -731,7 +749,7 @@ multigram_update(PROCESS_LM *lm)
 	    m->hook |= MULTIGRAM_DELETE;
 	  }
 	} else {
-	  if (multigram_append_to_global(lm->dfa, lm->winfo, m) == FALSE) {
+	  if (multigram_append_to_global(lm->dfa, lm->winfo, lm->dfa_forward, m) == FALSE) {
 	    jlog("ERROR: multi-gram: failed to add grammar #%d to recognition network\n", m->id);
 	    /* mark as delete */
 	    m->hook |= MULTIGRAM_DELETE;
@@ -753,6 +771,10 @@ multigram_update(PROCESS_LM *lm)
 	if (lm->dfa != NULL) {
 	  dfa_info_free(lm->dfa);
 	  lm->dfa = NULL;
+	}
+	if (lm->dfa_forward != NULL) {
+	  dfa_info_free(lm->dfa_forward);
+	  lm->dfa_forward = NULL;
 	}
 	if (lm->winfo != NULL) {
 	  word_info_free(lm->winfo);
@@ -793,6 +815,7 @@ multigram_read_file_and_add(char *dfa_file, char *dict_file, PROCESS_LM *lm)
 {
   WORD_INFO *new_winfo;
   DFA_INFO *new_dfa;
+  DFA_INFO *new_dfa_forward;
   char buf[MAXGRAMNAMELEN], *p, *q;
   boolean ret;
 
@@ -841,6 +864,18 @@ multigram_read_file_and_add(char *dfa_file, char *dict_file, PROCESS_LM *lm)
       dfa_info_free(new_dfa);
       return FALSE;
     }
+    /* read additional forward dfa if exists */
+    p = mymalloc(strlen(dfa_file) + 9);
+    strcpy(p, dfa_file);
+    strcat(p, ".forward");
+    new_dfa_forward = dfa_info_new();
+    if (init_dfa(new_dfa_forward, p) == TRUE) {
+      jlog("STAT: reading additional forward dfa [%s]\n", p);
+    } else {
+      dfa_info_free(new_dfa_forward);
+      new_dfa_forward = NULL;
+    }
+    free(p);
   }
 
   jlog("STAT: done\n");
@@ -860,7 +895,7 @@ multigram_read_file_and_add(char *dfa_file, char *dict_file, PROCESS_LM *lm)
   buf[p-q] = '\0';
   
   /* register the new grammar to multi-gram tree */
-  multigram_add(new_dfa, new_winfo, buf, lm);
+  multigram_add(new_dfa, new_winfo, buf, lm, new_dfa_forward);
 
   return TRUE;
 
