@@ -453,6 +453,10 @@ print_engine_info(Recog *recog)
 	    print_dfa_cp(fp, lm->dfa);
 	    jlog("\n");
 	  }
+	  if (lm->dfa_forward) {
+	    jlog(" additional forward");
+	    print_dfa_info(fp, lm->dfa_forward); jlog("\n");
+	  }
 	}
       } else if (lm->lmvar == LM_DFA_WORD) {
 	jlog(" type=word\n\n");

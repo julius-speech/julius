@@ -1581,6 +1581,7 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
   }
 
   d->bos.begintime = d->bos.endtime = -1;
+  d->bos.dfa_state = 0;
 
   /* ノード・トークンを初期化 */
   /* clear tree lexicon nodes and tokens */
@@ -1718,6 +1719,17 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
 	      } else {
 		new->score = outprob_style(wchmm, node, d->bos.wid, 0, param) + new->last_lscore;
 	      }
+
+	      new->to_state = -1;
+	      if (wchmm->dfa_forward) {
+		for (DFA_ARC *ac = wchmm->dfa_forward->st[new->last_tre->dfa_state].arc; ac; ac = ac->next) {
+		  if (ac->label == t) {
+		    new->to_state = ac->to_state;
+		    break;
+		  }
+		}
+	      }
+	      
 	      node_assign_token(d, node, newid);
 	    }
 	  }
@@ -1912,7 +1924,7 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
  * 
  */
 static void
-propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last_tre, WORD_ID last_cword, LOGPROB last_lscore)
+propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last_tre, WORD_ID last_cword, LOGPROB last_lscore, int to_state)
 {
   TOKEN2 *tknext;
   TOKENID tknextid;
@@ -1931,6 +1943,7 @@ propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last
       tknext->last_cword = last_cword; /* propagate last context word info */
       tknext->last_lscore = last_lscore; /* set new LM score */
       tknext->score = next_score; /* set new score */
+      tknext->to_state = to_state;
     }
   } else {
     /* 遷移先ノードは未伝搬: 新規トークンを作って割り付ける */
@@ -1940,6 +1953,7 @@ propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last
     tknext->last_tre = last_tre; /* propagate last word info */
     tknext->last_cword = last_cword; /* propagate last context word info */
     tknext->last_lscore = last_lscore;
+    tknext->to_state = to_state;
     tknext->score = next_score; /* set new score */
     node_assign_token(d, next_node, tknextid); /* assign this new token to the next node */
   }
@@ -2085,7 +2099,7 @@ beam_intra_word_core(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, int j, int n
   /****************************************/
   
   if (ngram_score_cache == LOG_ZERO) ngram_score_cache = tk->last_lscore;
-  propagate_token(d, next_node, tmpsum, tk->last_tre, tk->last_cword, ngram_score_cache);
+  propagate_token(d, next_node, tmpsum, tk->last_tre, tk->last_cword, ngram_score_cache, tk->to_state);
   
   if (d->expanded) {
     /* if work area has been expanded at 'create_token()' above,
@@ -2196,6 +2210,7 @@ save_trellis(BACKTRELLIS *bt, WCHMM_INFO *wchmm, TOKEN2 *tk, int t, boolean fina
   tre->endtime   = t-1;	/* word end frame */
   tre->last_tre  = tk->last_tre; /* link to previous trellis word */
   tre->lscore    = tk->last_lscore;	/* log LM score  */
+  tre->dfa_state = tk->to_state;
   bt_store(bt, tre); /* save to backtrellis */
 #ifdef WORD_GRAPH
   if (tre->last_tre != NULL) {
@@ -2249,6 +2264,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
   LOGPROB tmpprob, tmpsum, ngram_score_cache;
   int k;
   WORD_ID last_word;
+  int next_state = -1;
 
   tk = *tk_ret;
  
@@ -2374,6 +2390,18 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 	 do not allow transition if the category connection is not allowed
 	 (with category tree, constraint can be determined on top node) */
       if (dfa_cp(wchmm->dfa, wchmm->winfo->wton[sword], wchmm->winfo->wton[wchmm->start2wid[stid]]) == FALSE) continue;
+
+      if (wchmm->dfa_forward) {
+	next_state = -1;
+	for (DFA_ARC *ac = wchmm->dfa_forward->st[tk->to_state].arc; ac; ac = ac->next) {
+	  if (ac->label == wchmm->winfo->wton[wchmm->start2wid[stid]]) {
+	    next_state = ac->to_state;
+	    break;
+	  }
+	}
+	if (next_state == -1) continue;
+      }
+      
     }
 
     /*******************************************************************/
@@ -2420,7 +2448,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
     if (wchmm->hmminfo->multipath) {
       /* since top node has no ouput, we should go one more step further */
       if (wchmm->self_a[next_node] != LOG_ZERO) {
-	propagate_token(d, next_node, tmpsum + wchmm->self_a[next_node], tre, last_word, ngram_score_cache);
+	propagate_token(d, next_node, tmpsum + wchmm->self_a[next_node], tre, last_word, ngram_score_cache, next_state);
 	if (d->expanded) {
 	  /* if work area has been expanded at 'create_token()' above,
 	     the inside 'realloc()' will destroy the pointers.
@@ -2430,7 +2458,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 	}
       }
       if (wchmm->next_a[next_node] != LOG_ZERO) {
-	propagate_token(d, next_node+1, tmpsum + wchmm->next_a[next_node], tre, last_word, ngram_score_cache);
+	propagate_token(d, next_node+1, tmpsum + wchmm->next_a[next_node], tre, last_word, ngram_score_cache, next_state);
 	if (d->expanded) {
 	  /* if work area has been expanded at 'create_token()' above,
 	     the inside 'realloc()' will destroy the pointers.
@@ -2441,7 +2469,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
       }
       for(ac=wchmm->ac[next_node];ac;ac=ac->next) {
 	for(k=0;k<ac->n;k++) {
-	  propagate_token(d, ac->arc[k], tmpsum + ac->a[k], tre, last_word, ngram_score_cache);
+	  propagate_token(d, ac->arc[k], tmpsum + ac->a[k], tre, last_word, ngram_score_cache, next_state);
 	  if (d->expanded) {
 	    /* if work area has been expanded at 'create_token()' above,
 	       the inside 'realloc()' will destroy the pointers.
@@ -2452,7 +2480,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 	}
       }
     } else {
-      propagate_token(d, next_node, tmpsum, tre, last_word, ngram_score_cache);
+      propagate_token(d, next_node, tmpsum, tre, last_word, ngram_score_cache, next_state);
       if (d->expanded) {
 	/* if work area has been expanded at 'create_token()' above,
 	   the inside 'realloc()' will destroy the pointers.
@@ -2538,20 +2566,20 @@ beam_inter_word_factoring(WCHMM_INFO *wchmm, FSBeam *d)
     if (wchmm->hmminfo->multipath) {
       /* since top node has no ouput, we should go one more step further */
       if (wchmm->self_a[next_node] != LOG_ZERO) {
-	propagate_token(d, next_node, tmpsum + wchmm->self_a[next_node], d->wordend_best_tre, last_word, ngram_score_cache);
+	propagate_token(d, next_node, tmpsum + wchmm->self_a[next_node], d->wordend_best_tre, last_word, ngram_score_cache, -1);
 	if (d->expanded) {
 	  d->expanded = FALSE;
 	}
       }
       if (wchmm->next_a[next_node] != LOG_ZERO) {
-	propagate_token(d, next_node+1, tmpsum + wchmm->next_a[next_node], d->wordend_best_tre, last_word, ngram_score_cache);
+	propagate_token(d, next_node+1, tmpsum + wchmm->next_a[next_node], d->wordend_best_tre, last_word, ngram_score_cache, -1);
 	if (d->expanded) {
 	  d->expanded = FALSE;
 	}
       }
       for(ac=wchmm->ac[next_node];ac;ac=ac->next) {
 	for(j=0;j<ac->n;j++) {
-	  propagate_token(d, ac->arc[j], tmpsum + ac->a[j], d->wordend_best_tre, last_word, ngram_score_cache);
+	  propagate_token(d, ac->arc[j], tmpsum + ac->a[j], d->wordend_best_tre, last_word, ngram_score_cache, -1);
 	  if (d->expanded) {
 	    d->expanded = FALSE;
 	  }
@@ -2559,7 +2587,7 @@ beam_inter_word_factoring(WCHMM_INFO *wchmm, FSBeam *d)
       }
       
     } else {
-      propagate_token(d, next_node, tmpsum, d->wordend_best_tre, last_word, ngram_score_cache);
+      propagate_token(d, next_node, tmpsum, d->wordend_best_tre, last_word, ngram_score_cache, -1);
       if (d->expanded) {
 	d->expanded = FALSE;
       }

@@ -31,6 +31,7 @@ typedef struct __trellis_atom__ {
   WORD_ID wid;			///< Word ID
   short begintime;		///< Beginning frame
   short endtime;		///< End frame
+  int dfa_state;                ///< DFA state id
 #ifdef WORD_GRAPH
   boolean within_wordgraph;	///< TRUE if within word graph
   boolean within_context;	///< TRUE if any of its following word was once survived in beam while search

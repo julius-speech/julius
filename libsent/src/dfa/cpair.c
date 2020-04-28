@@ -274,6 +274,14 @@ void
 init_dfa_cp(DFA_INFO *dfa)
 {
   dfa->cp = NULL;
+  dfa->cplen = NULL;
+  dfa->cpalloclen = NULL;
+  dfa->cp_begin = NULL;
+  dfa->cp_begin_len = 0;
+  dfa->cp_begin_alloclen = 0;
+  dfa->cp_end = NULL;
+  dfa->cp_end_len = 0;
+  dfa->cp_end_alloclen = 0;
 }
 
 /** 
@@ -413,6 +421,8 @@ dfa_cp_output_rawdata(FILE *fp, DFA_INFO *dfa)
 {
   int i, j;
 
+  if (dfa->cp == NULL) return;
+
   for(i=0;i<dfa->term_num;i++) {
     fprintf(fp, "%d:", i);
     for(j=0;j<dfa->cplen[i];j++) {
@@ -437,6 +447,12 @@ dfa_cp_count_size(DFA_INFO *dfa, unsigned long *size_ret, unsigned long *allocsi
 {
   int i;
   unsigned long size, allocsize;
+
+  if (dfa->cp == NULL) {
+    *size_ret = 0;
+    *allocsize_ret = 0;
+    return;
+  }
 
   size = 0;
   allocsize = 0;
