@@ -57,6 +57,7 @@ def extract_vocafile(src, catefile, termfile):
 
     with codecs.open(src, "r", 'utf-8') as fin:
         for line in fin:
+            line = re.sub('#.*$', "", line)
             if len(line.strip()) == 0:
                 continue
             if line.find('%') == 0:
@@ -83,6 +84,7 @@ def vocafile2dictfile(vocafile, dictfile):
         with codecs.open(dictfile, "w", 'utf-8') as fout:
             id = -1
             for line in fin:
+                line = re.sub('#.*$', "", line)
                 line = line.strip()
                 if len(line) == 0:
                     continue
@@ -138,6 +140,7 @@ if __name__ == '__main__':
     dfafile  = corename + ".dfa"
     dictfile = corename + ".dict"
     termfile = corename + ".term"
+    fdfafile = corename + ".dfa.forward"
 
     tmpprefix   = tempfile.gettempdir() + "/_julius_mkdfa_tmp_"
     tmpvocafile = tmpprefix + ".voca"
@@ -151,12 +154,16 @@ if __name__ == '__main__':
 
     print('---')
 
+    # call mkfa to generate .dfa from reversed grammar (and minimize) 
     call_mkfa(rgramfile, tmpvocafile, dfafile, tmpprefix)
+    
+    # call mkfa to generate .dfa_forward from original grammar (and minimize) 
+    call_mkfa(gramfile, tmpvocafile, fdfafile, tmpprefix)
 
     vocafile2dictfile(vocafile, dictfile)
 
     print('---')
-    print("generated %s %s %s" % (dfafile, termfile, dictfile))
+    print("generated %s %s %s %s" % (dfafile, termfile, dictfile, fdfafile))
 
     os.unlink(tmpvocafile)
     os.unlink(rgramfile)

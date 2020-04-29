@@ -200,13 +200,15 @@ if ($make_dict == 1) {
     close(DICT);
 }
 
-$gene = "$dfafile $fdfafile";
+$gene = "$dfafile";
 if ($make_term == 1) {
     $gene .= " $termfile";
 }
 if ($make_dict == 1) {
     $gene .= " $dictfile";
 }
+$gene .= " $fdfafile";
+
 print "generated: $gene\n";
 
 sub usage {

@@ -221,6 +221,7 @@ multigram_append_to_global(DFA_INFO *gdfa, WORD_INFO *gwinfo, DFA_INFO *gdfa_for
   /* Julius allow multiple initial states: connect each initial node
      is not necesarry. */
   dfa_append(gdfa, m->dfa, m->state_begin, m->cate_begin);
+  /* if forward DFA is given, also append DFA states to global forward DFA, offsetting the same category ID as normal DFA */
   if (m->dfa_forward != NULL)
     dfa_append(gdfa_forward, m->dfa_forward, m->state_begin_forward, m->cate_begin);
   /* append words of src vocabulary to global winfo */

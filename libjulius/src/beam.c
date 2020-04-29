@@ -1581,7 +1581,6 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
   }
 
   d->bos.begintime = d->bos.endtime = -1;
-  d->bos.dfa_state = 0;
 
   /* ノード・トークンを初期化 */
   /* clear tree lexicon nodes and tokens */
@@ -1678,11 +1677,27 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
     WORD_ID iw;
     boolean flag;
     DFA_INFO *gdfa;
-
+    int gram_id;
+    
     gdfa = r->lm->dfa;
+
+    /* prepare bos list per grammar, since initial state may differ on forward DFA */
+    if (d->boslist) free(d->boslist);
+    gram_id = 0;
+    for(m = r->lm->grammars; m; m = m->next) gram_id++;
+    d->boslist = (TRELLIS_ATOM *)mymalloc(sizeof(TRELLIS_ATOM) * gram_id);
+    gram_id = 0;
+    for(m = r->lm->grammars; m; m = m->next) {
+      d->boslist[gram_id].wid = WORD_INVALID;
+      d->boslist[gram_id].begintime = d->boslist[gram_id].endtime = -1;
+      /* assume initial state id is 0 for each grammar */
+      d->boslist[gram_id].dfa_state = m->state_begin;
+      gram_id++;
+    }
 
     flag = FALSE;
     /* for all active grammar */
+    gram_id = 0;
     for(m = r->lm->grammars; m; m = m->next) {
       if (m->active) {
 	tb = m->cate_begin;
@@ -1701,10 +1716,10 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
 		node = wchmm->offset[i][0];
 	      }
 	      /* in tree lexicon, words in the same category may share the same root node, so skip it if the node has already existed */
-	      if (node_exist_token(d, d->tn, node, d->bos.wid) != TOKENID_UNDEFINED) continue;
+	      if (node_exist_token(d, d->tn, node, d->boslist[gram_id].wid) != TOKENID_UNDEFINED) continue;
 	      newid = create_token(d);
 	      new = &(d->tlist[d->tn][newid]);
-	      new->last_tre = &(d->bos);
+	      new->last_tre = &(d->boslist[gram_id]);
 #ifdef FIX_PENALTY
 	      new->last_lscore = 0.0;
 #else
@@ -1717,9 +1732,10 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
 	      if (wchmm->hmminfo->multipath) {
 		new->score = new->last_lscore;
 	      } else {
-		new->score = outprob_style(wchmm, node, d->bos.wid, 0, param) + new->last_lscore;
+		new->score = outprob_style(wchmm, node, d->boslist[gram_id].wid, 0, param) + new->last_lscore;
 	      }
 
+	      /* if forward dfa is given, assign next DFA state id */
 	      new->to_state = -1;
 	      if (wchmm->dfa_forward) {
 		for (DFA_ARC *ac = wchmm->dfa_forward->st[new->last_tre->dfa_state].arc; ac; ac = ac->next) {
@@ -1735,6 +1751,7 @@ init_nodescore(HTK_Param *param, RecogProcess *r)
 	  }
 	}
       }
+      gram_id++;
     }
     if (!flag) {
       jlog("ERROR: init_nodescore: no initial state found in active DFA grammar\n");
@@ -1921,6 +1938,7 @@ get_back_trellis_init(HTK_Param *param,	RecogProcess *r)
  * @param last_tre [in] previous word context for the next node
  * @param last_cword [in] previous context-valid word for the next node
  * @param last_lscore [in] LM score to be propagated
+ * @param to_state [in] next state id of forward DFA when forward DFA is given
  * 
  */
 static void
@@ -1943,7 +1961,7 @@ propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last
       tknext->last_cword = last_cword; /* propagate last context word info */
       tknext->last_lscore = last_lscore; /* set new LM score */
       tknext->score = next_score; /* set new score */
-      tknext->to_state = to_state;
+      tknext->to_state = to_state; /* set next state id of forward DFA */
     }
   } else {
     /* 遷移先ノードは未伝搬: 新規トークンを作って割り付ける */
@@ -1953,7 +1971,7 @@ propagate_token(FSBeam *d, int next_node, LOGPROB next_score, TRELLIS_ATOM *last
     tknext->last_tre = last_tre; /* propagate last word info */
     tknext->last_cword = last_cword; /* propagate last context word info */
     tknext->last_lscore = last_lscore;
-    tknext->to_state = to_state;
+    tknext->to_state = to_state; /* set next state id of forward DFA */
     tknext->score = next_score; /* set new score */
     node_assign_token(d, next_node, tknextid); /* assign this new token to the next node */
   }
@@ -2210,7 +2228,7 @@ save_trellis(BACKTRELLIS *bt, WCHMM_INFO *wchmm, TOKEN2 *tk, int t, boolean fina
   tre->endtime   = t-1;	/* word end frame */
   tre->last_tre  = tk->last_tre; /* link to previous trellis word */
   tre->lscore    = tk->last_lscore;	/* log LM score  */
-  tre->dfa_state = tk->to_state;
+  tre->dfa_state = tk->to_state; /* hold last state in forward DFA */
   bt_store(bt, tre); /* save to backtrellis */
 #ifdef WORD_GRAPH
   if (tre->last_tre != NULL) {
@@ -2391,6 +2409,7 @@ beam_inter_word(WCHMM_INFO *wchmm, FSBeam *d, TOKEN2 **tk_ret, TRELLIS_ATOM *tre
 	 (with category tree, constraint can be determined on top node) */
       if (dfa_cp(wchmm->dfa, wchmm->winfo->wton[sword], wchmm->winfo->wton[wchmm->start2wid[stid]]) == FALSE) continue;
 
+      /* if forward dfa is given, assign next DFA state id */
       if (wchmm->dfa_forward) {
 	next_state = -1;
 	for (DFA_ARC *ac = wchmm->dfa_forward->st[tk->to_state].arc; ac; ac = ac->next) {
@@ -3163,6 +3182,9 @@ fsbeam_free(FSBeam *d)
   if (d->pausemodelnames != NULL) {
     free(d->pausemodelnames);
     free(d->pausemodel);
+  }
+  if (d->boslist != NULL) {
+    free(d->boslist);
   }
 }
 
