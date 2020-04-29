@@ -38,6 +38,7 @@ typedef struct {
   LOGPROB last_lscore;		///< Currently assigned word-internal LM score for factoring for N-gram
   LOGPROB score;		///< Current accumulated score (AM+LM)
   int node;			///< Lexicon node ID to which this token is assigned
+  int to_state;                 ///< Forward DFA state id to which this token goes
 #ifdef WPAIR
   TOKENID next;			///< ID pointer to next token at same node, for word-pair approx.
 #endif

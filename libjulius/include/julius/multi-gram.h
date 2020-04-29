@@ -33,6 +33,7 @@ typedef struct __multi_gram__ {
   char name[MAXGRAMNAMELEN];	///< Unique name given by user
   unsigned short id;		///< Unique ID 
   DFA_INFO *dfa;		///< DFA describing syntax of this grammar
+  DFA_INFO *dfa_forward;	///< additional forward DFA
   WORD_INFO *winfo;		///< Dictionary of this grammar
   int hook;			///< Work area to store command hook
   boolean newbie;		///< TRUE if just read and not yet configured
@@ -41,6 +42,7 @@ typedef struct __multi_gram__ {
   int state_begin;		///< Location of DFA states in the global grammar
   int cate_begin;		///< Location of category entries in the global grammar
   int word_begin;		///< Location of words in the dictionary of global grammar
+  int state_begin_forward;      ///< Location of forward DFA states in the global forward grammar
   struct __multi_gram__ *next;	///< Link to the next grammar entry
 } MULTIGRAM;
 

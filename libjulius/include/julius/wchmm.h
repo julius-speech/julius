@@ -215,6 +215,7 @@ typedef struct wchmm_info {
   HTK_HMM_INFO *hmminfo;	///< HMM definitions used to construct this lexicon
   NGRAM_INFO *ngram;		///< N-gram used to construct this lexicon
   DFA_INFO *dfa;		///< Grammar used to construct this lexicon
+  DFA_INFO *dfa_forward;	///< Additional forward grammar for dynamic constraints
   WORD_INFO *winfo;		///< Word dictionary used to construct this lexicon
   boolean ccd_flag;		///< TRUE if handling context dependency
   int	maxwcn;			///< Memory assigned maximum number of nodes

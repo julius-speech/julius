@@ -142,6 +142,7 @@ typedef struct __FSBeam__ {
 
   int totalnodenum;     ///< Allocated number of nodes in @a token
   TRELLIS_ATOM bos;     ///< Special token for beginning-of-sentence
+  TRELLIS_ATOM *boslist; ///< List of BOS for multi-grammar forward DFA
   boolean nodes_malloced; ///< Flag to check if tokens already allocated
   LOGPROB lm_weight;           ///< Language score weight (local copy)
   LOGPROB lm_penalty;          ///< Word insertion penalty (local copy)
@@ -863,6 +864,12 @@ typedef struct __process_lm__ {
    * concatinating each DFA into one.
    */
   DFA_INFO *dfa;
+
+  /**
+   * Global Forward DFA for recognition.  This will be generated from @a grammars,
+   * concatinating each forward DFA into one.
+   */
+  DFA_INFO *dfa_forward;
 
   /**
    * TRUE if modified in multigram_update()
