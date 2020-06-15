@@ -63,8 +63,23 @@ $fdfafile  = "$ARGV[$#ARGV].dfa.forward";
 $dictfile = "$ARGV[$#ARGV].dict";
 $termfile = "$ARGV[$#ARGV].term";
 $tmpprefix = "$tmpdir/g$$";
+$tmpgramfile = "${tmpprefix}.grammar";
 $tmpvocafile = "${tmpprefix}.voca";
-$rgramfile = "${tmpprefix}.grammar";
+$rgramfile = "${tmpprefix}-rev.grammar";
+
+# sanitize grammar file
+open(GRAM,"< $gramfile") || die "cannot open \"$gramfile\"";
+open(SGRAM,"> $tmpgramfile") || die "cannot open \"$tmpgramfile\"";
+while (<GRAM>) {
+    chomp;
+    $CRLF = 1 if /\r$/;
+    s/\r+$//g;
+    s/#.*//g;
+    if (/^[ \t]*$/) {next;}
+    print SGRAM "$_\n";
+}
+close(SGRAM);
+close(GRAM);
 
 # generate reverse grammar file
 open(GRAM,"< $gramfile") || die "cannot open \"$gramfile\"";
@@ -141,27 +156,28 @@ if (! -x $minimizebin) {
     print "Warning: no minimization performed\n";
     if ($tmpprefix =~ /cygdrive/) {
 	$status = system("$mkfabin -e1 -fg `cygpath -w $rgramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w $dfafile` -fh `cygpath -w ${tmpprefix}.h`");
-	$status = system("$mkfabin -e1 -fg `cygpath -w $gramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w $fdfafile` -fh `cygpath -w ${tmpprefix}.h`");
+	$status = system("$mkfabin -e1 -fg `cygpath -w $tmpgramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w $fdfafile` -fh `cygpath -w ${tmpprefix}.h`");
     } else {
 	$status = system("$mkfabin -e1 -fg $rgramfile -fv $tmpvocafile -fo $dfafile -fh ${tmpprefix}.h");
-	$status = system("$mkfabin -e1 -fg $gramfile -fv $tmpvocafile -fo $fdfafile -fh ${tmpprefix}.h");
+	$status = system("$mkfabin -e1 -fg $tmpgramfile -fv $tmpvocafile -fo $fdfafile -fh ${tmpprefix}.h");
     }
 } else {
     # minimize DFA after generation
     if ($tmpprefix =~ /cygdrive/) {
 	$status = system("$mkfabin -e1 -fg `cygpath -w $rgramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w ${dfafile}.tmp` -fh `cygpath -w ${tmpprefix}.h`");
 	system("$minimizebin `cygpath -w ${dfafile}.tmp` -o `cygpath -w $dfafile`");
-	$status = system("$mkfabin -e1 -fg `cygpath -w $gramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w ${dfafile}.tmp` -fh `cygpath -w ${tmpprefix}.h`");
+	$status = system("$mkfabin -e1 -fg `cygpath -w $tmpgramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w ${dfafile}.tmp` -fh `cygpath -w ${tmpprefix}.h`");
 	system("$minimizebin `cygpath -w ${dfafile}.tmp` -o `cygpath -w $fdfafile`");
     } else {
 	$status = system("$mkfabin -e1 -fg $rgramfile -fv $tmpvocafile -fo ${dfafile}.tmp -fh ${tmpprefix}.h");
 	system("$minimizebin ${dfafile}.tmp -o $dfafile");
-	$status = system("$mkfabin -e1 -fg $gramfile -fv $tmpvocafile -fo ${dfafile}.tmp -fh ${tmpprefix}.h");
+	$status = system("$mkfabin -e1 -fg $tmpgramfile -fv $tmpvocafile -fo ${dfafile}.tmp -fh ${tmpprefix}.h");
 	system("$minimizebin ${dfafile}.tmp -o $fdfafile");
     }
     unlink("${dfafile}.tmp");
 }
 
+unlink("$tmpgramfile");
 unlink("$rgramfile");
 unlink("$tmpvocafile");
 unlink("${tmpprefix}.h");
