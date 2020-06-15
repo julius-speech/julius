@@ -215,7 +215,7 @@ multigram_append_to_global(DFA_INFO *gdfa, WORD_INFO *gwinfo, DFA_INFO *gdfa_for
   m->state_begin = gdfa->state_num;	/* initial state ID */
   m->cate_begin = gdfa->term_num;	/* initial terminal ID */
   m->word_begin = gwinfo->num;	/* initial word ID */
-  m->state_begin_forward = gdfa_forward->state_num;
+  m->state_begin_forward = gdfa_forward ? gdfa_forward->state_num : 0;
   
   /* append category ID and node number of src DFA */
   /* Julius allow multiple initial states: connect each initial node
@@ -688,13 +688,13 @@ multigram_update(PROCESS_LM *lm)
       word_info_free(lm->winfo);
       lm->winfo = NULL;
     }
+    if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa == NULL) {
+      lm->dfa = dfa_info_new();
+      dfa_state_init(lm->dfa);
+    }
     /* concatinate all existing grammars to global */
     for(m=lm->grammars;m;m=m->next) {
-      if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa == NULL) {
-	lm->dfa = dfa_info_new();
-	dfa_state_init(lm->dfa);
-      }
-      if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa_forward == NULL) {
+      if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa_forward == NULL && m->dfa_forward != NULL) {
 	lm->dfa_forward = dfa_info_new();
 	dfa_state_init(lm->dfa_forward);
       }
@@ -732,7 +732,7 @@ multigram_update(PROCESS_LM *lm)
 	  lm->dfa = dfa_info_new();
 	  dfa_state_init(lm->dfa);
 	}
-	if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa_forward == NULL) {
+	if (lm->lmvar == LM_DFA_GRAMMAR && lm->dfa_forward == NULL && m->dfa_forward != NULL) {
 	  lm->dfa_forward = dfa_info_new();
 	  dfa_state_init(lm->dfa_forward);
 	}
