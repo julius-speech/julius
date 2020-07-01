@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#include "config.h"
 #include "charconv.h"
 
 static NGRAM_INFO *ngram;
