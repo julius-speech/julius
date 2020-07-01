@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
+
 #define strmatch !strcmp
 
 #if defined(HAVE_WINNLS)
