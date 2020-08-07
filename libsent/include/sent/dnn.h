@@ -22,9 +22,21 @@
 
 typedef void (*DNN_FUNC_VOID)();
 
+#ifdef USE_CUDA
+typedef struct {
+  int stride;
+  float *elements_src;
+  float *elements_dst;
+} CMatrix;
+#endif /* USE_CUDA */
+
 typedef struct {
   float *w;			/* w [out * in]*/
   float *b;			/* b [out] */
+#ifdef USE_CUDA
+  float *dw;
+  float *db;
+#endif /* USE_CUDA */
   int in;
   int out;
 #ifdef _OPENMP
@@ -55,6 +67,14 @@ typedef struct {
   float *invec;		    /* input vector holder (32byte aligned) */
   float **work;		    /* working buffer for ff computation */
   float *accum;		    /* working buffer for accumulation */
+#ifdef USE_CUDA
+  boolean use_cuda;
+  boolean use_cuda_shared;
+  float *dstate_prior;
+  float *dinvec;
+  float **ddst;
+  float *dout;
+#endif /* USE_CUDA */
 
   DNN_FUNC_VOID subfunc;	/* sub function for DNN computation */
   
