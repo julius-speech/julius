@@ -22,14 +22,6 @@
 
 typedef void (*DNN_FUNC_VOID)();
 
-#ifdef USE_CUDA
-typedef struct {
-  int stride;
-  float *elements_src;
-  float *elements_dst;
-} CMatrix;
-#endif /* USE_CUDA */
-
 typedef struct {
   float *w;			/* w [out * in]*/
   float *b;			/* b [out] */

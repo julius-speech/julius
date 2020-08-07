@@ -23,6 +23,12 @@
 #define BLOCK_SIZE_X 16   /// Block size X in shared mode
 #define BLOCK_SIZE_Y 8    /// Block size Y in shared mode
 
+typedef struct {
+  int stride;
+  float *elements_src;
+  float *elements_dst;
+} Matrix;
+
 /***********************************************************************/
 /* should be same value as calc_dnn.c */
 #define LOGISTIC_TABLE_FACTOR 20000
