@@ -661,6 +661,7 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 
 #ifdef HAVE_CUDA
   if (dnn->use_cuda) cuda_dnn_setup(dnn);
+    }
 #endif /* HAVE_CUDA */
   
   /* choose sub function */
