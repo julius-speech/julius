@@ -17,6 +17,8 @@ CC=@CC@
 CFLAGS=@CFLAGS@
 CPPFLAGS=-I. -I$(LIBJULIUS)/include -I$(LIBSENT)/include @CPPFLAGS@ `$(LIBSENT)/libsent-config --cflags` `$(LIBJULIUS)/libjulius-config --cflags`
 LDFLAGS=@LDFLAGS@ -L$(LIBJULIUS) `$(LIBJULIUS)/libjulius-config --libs` -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`
+CCLINK=`$(LIBSENT)/libsent-config --linker`
+LINKFLAGS=`$(LIBSENT)/libsent-config --linkflags`
 RM=@RM@ -f
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -28,8 +30,8 @@ TARGET=adinrec@EXEEXT@
 
 all: $(TARGET)
 
-$(TARGET): adinrec.c $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ adinrec.c $(LDFLAGS)
+$(TARGET): adinrec.o $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
+	$(CCLINK) $(LINKFLAGS) -o $@ adinrec.o $(LDFLAGS)
 
 ############################################################
 

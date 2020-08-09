@@ -628,6 +628,7 @@ EXTRALIB
 EXTRAOBJ
 LIBSENT_MINOR_VERSION
 LIBSENT_MAJOR_VERSION
+use_cuda
 gzdesc
 use_fork
 use_class_ngram
@@ -638,6 +639,7 @@ adinlist
 aldesc
 altype
 LIBSENT_VERSION
+CC_LINKFLAGS
 GZIP
 EGREP
 GREP
@@ -648,15 +650,16 @@ RM
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
-OPENMP_CFLAGS
 SIMD_NEON_CFLAGS
 SIMD_NEONV2_CFLAGS
 SIMD_SSE_CFLAGS
 SIMD_AVX_CFLAGS
 SIMD_FMA_CFLAGS
+CC_LINKER
 CUDA_LDFLAGS
 CUDA_CFLAGS
 NVCC
+OPENMP_CFLAGS
 CPP
 OBJEXT
 EXEEXT
@@ -3399,8 +3402,75 @@ $as_echo "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
-if test "$cuda_prefix" == "yes"; then
-    if test "$withval" == "yes"; then
+
+  OPENMP_CFLAGS=
+  # Check whether --enable-openmp was given.
+if test "${enable_openmp+set}" = set; then :
+  enableval=$enable_openmp;
+fi
+
+  if test "$enable_openmp" != no; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CC option to support OpenMP" >&5
+$as_echo_n "checking for $CC option to support OpenMP... " >&6; }
+if ${ac_cv_prog_c_openmp+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifndef _OPENMP
+ choke me
+#endif
+#include <omp.h>
+int main () { return omp_get_num_threads (); }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_prog_c_openmp='none needed'
+else
+  ac_cv_prog_c_openmp='unsupported'
+	  	  	  	  	  	  	                                	  	  	  	  	  	  for ac_option in -fopenmp -xopenmp -openmp -mp -omp -qsmp=omp -homp \
+                           -Popenmp --openmp; do
+	    ac_save_CFLAGS=$CFLAGS
+	    CFLAGS="$CFLAGS $ac_option"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifndef _OPENMP
+ choke me
+#endif
+#include <omp.h>
+int main () { return omp_get_num_threads (); }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_prog_c_openmp=$ac_option
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	    CFLAGS=$ac_save_CFLAGS
+	    if test "$ac_cv_prog_c_openmp" != unsupported; then
+	      break
+	    fi
+	  done
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_c_openmp" >&5
+$as_echo "$ac_cv_prog_c_openmp" >&6; }
+    case $ac_cv_prog_c_openmp in #(
+      "none needed" | unsupported)
+	;; #(
+      *)
+	OPENMP_CFLAGS=$ac_cv_prog_c_openmp ;;
+    esac
+  fi
+
+
+
+if test "$cuda_prefix" = "yes"; then
+    if test "$withval" = "yes"; then
         cuda_prefix="/usr/local/cuda"
     fi
 fi
@@ -3414,9 +3484,11 @@ $as_echo "found" >&6; }
     NVCC="$cuda_prefix/bin/nvcc"
     $as_echo "#define HAVE_CUDA 1" >>confdefs.h
 
-    CUDA_CFLAGS="-I$cuda_prefix/include"
+    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
     CUDA_LDFLAGS="-L$cuda_prefix/lib"
     CUDAOBJ="src/phmm/calc_dnn_cuda.o"
+    use_cuda="built-in: $cuda_prefix"
+    CC_LINKER="$NVCC"
 else
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found, disable CUDA support" >&5
 $as_echo "not found, disable CUDA support" >&6; }
@@ -3424,12 +3496,15 @@ $as_echo "not found, disable CUDA support" >&6; }
     CUDA_CFLAGS=""
     CUDA_LDFLAGS=""
     CUDAOBJ=""
+    use_cuda=no
+    CC_LINKER="$CC"
 fi
 
 
 
 EXTRAOBJ="$EXTRAOBJ $CUDAOBJ"
 EXTRALIB="$EXTRALIB $CUDA_LDFLAGS"
+
 
 case "$host_cpu" in
   arm*)
@@ -3754,73 +3829,6 @@ fi
 
 
 
-
-
-
-
-  OPENMP_CFLAGS=
-  # Check whether --enable-openmp was given.
-if test "${enable_openmp+set}" = set; then :
-  enableval=$enable_openmp;
-fi
-
-  if test "$enable_openmp" != no; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CC option to support OpenMP" >&5
-$as_echo_n "checking for $CC option to support OpenMP... " >&6; }
-if ${ac_cv_prog_c_openmp+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#ifndef _OPENMP
- choke me
-#endif
-#include <omp.h>
-int main () { return omp_get_num_threads (); }
-
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_prog_c_openmp='none needed'
-else
-  ac_cv_prog_c_openmp='unsupported'
-	  	  	  	  	  	  	                                	  	  	  	  	  	  for ac_option in -fopenmp -xopenmp -openmp -mp -omp -qsmp=omp -homp \
-                           -Popenmp --openmp; do
-	    ac_save_CFLAGS=$CFLAGS
-	    CFLAGS="$CFLAGS $ac_option"
-	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#ifndef _OPENMP
- choke me
-#endif
-#include <omp.h>
-int main () { return omp_get_num_threads (); }
-
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_prog_c_openmp=$ac_option
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-	    CFLAGS=$ac_save_CFLAGS
-	    if test "$ac_cv_prog_c_openmp" != unsupported; then
-	      break
-	    fi
-	  done
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_c_openmp" >&5
-$as_echo "$ac_cv_prog_c_openmp" >&6; }
-    case $ac_cv_prog_c_openmp in #(
-      "none needed" | unsupported)
-	;; #(
-      *)
-	OPENMP_CFLAGS=$ac_cv_prog_c_openmp ;;
-    esac
-  fi
 
 
 
@@ -5952,6 +5960,17 @@ case "$host_os" in
     EXTRALIB="$EXTRALIB -liconv"
     ;;
 esac
+
+if test "$use_cuda" = no; then
+   CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
+else
+   if test -z "$OPENMP_CFLAGS"; then
+      CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
+   else
+      CC_LINKFLAGS="-Xcompiler $OPENMP_CFLAGS"
+   fi
+fi
+
 
 
 

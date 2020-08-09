@@ -146,9 +146,12 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [return 0;])],
 	     [AC_MSG_RESULT(no)
 	          CFLAGS="$xxxCFLAGS"])
 
+dnl Check for OPENMP availability
+AC_OPENMP()
+
 dnl Check for CUDA
-if test "$cuda_prefix" == "yes"; then
-    if test "$withval" == "yes"; then
+if test "$cuda_prefix" = "yes"; then
+    if test "$withval" = "yes"; then
         cuda_prefix="/usr/local/cuda"
     fi
 fi
@@ -159,21 +162,26 @@ if test -x "$cuda_prefix/bin/nvcc"; then
     AC_MSG_RESULT([found])
     NVCC="$cuda_prefix/bin/nvcc"
     AC_DEFINE(HAVE_CUDA)
-    CUDA_CFLAGS="-I$cuda_prefix/include"
+    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
     CUDA_LDFLAGS="-L$cuda_prefix/lib"
     CUDAOBJ="src/phmm/calc_dnn_cuda.o"
+    use_cuda="built-in: $cuda_prefix"
+    CC_LINKER="$NVCC"
 else
     AC_MSG_RESULT([not found, disable CUDA support])
     NVCC=""
     CUDA_CFLAGS=""
     CUDA_LDFLAGS=""
     CUDAOBJ=""
+    use_cuda=no
+    CC_LINKER="$CC"
 fi
 AC_SUBST(NVCC)
 AC_SUBST(CUDA_CFLAGS)
 AC_SUBST(CUDA_LDFLAGS)
 EXTRAOBJ="$EXTRAOBJ $CUDAOBJ"
 EXTRALIB="$EXTRALIB $CUDA_LDFLAGS"
+AC_SUBST(CC_LINKER)
 
 dnl Checks for SIMD capability
 case "$host_cpu" in
@@ -331,9 +339,6 @@ AC_SUBST(SIMD_AVX_CFLAGS)
 AC_SUBST(SIMD_SSE_CFLAGS)
 AC_SUBST(SIMD_NEONV2_CFLAGS)
 AC_SUBST(SIMD_NEON_CFLAGS)
-
-dnl Check for OPENMP availability
-AC_OPENMP()
 
 dnl Checks for programs.
 AC_PROG_INSTALL
@@ -829,6 +834,16 @@ case "$host_os" in
 esac
 
 dnl substitute some definitions in libsent-config
+if test "$use_cuda" = no; then
+   CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
+else
+   if test -z "$OPENMP_CFLAGS"; then
+      CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
+   else
+      CC_LINKFLAGS="-Xcompiler $OPENMP_CFLAGS"
+   fi
+fi
+AC_SUBST(CC_LINKFLAGS)
 AC_SUBST(LIBSENT_VERSION)
 AC_SUBST(altype)
 AC_SUBST(aldesc)
@@ -839,6 +854,7 @@ AC_SUBST(wavefile_support)
 AC_SUBST(use_class_ngram)
 AC_SUBST(use_fork)
 AC_SUBST(gzdesc)
+AC_SUBST(use_cuda)
 
 dnl define configuration descriptions
 AC_DEFINE_UNQUOTED(LIBSENT_VERSION, "$LIBSENT_VERSION")

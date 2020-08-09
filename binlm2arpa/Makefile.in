@@ -14,6 +14,8 @@ CC=@CC@
 CFLAGS=@CFLAGS@
 CPPFLAGS=-I$(LIBSENT)/include @CPPFLAGS@ @DEFS@ `$(LIBSENT)/libsent-config --cflags`
 LDFLAGS=@LDFLAGS@ -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`
+CCLINK=`$(LIBSENT)/libsent-config --linker`
+LINKFLAGS=`$(LIBSENT)/libsent-config --linkflags`
 RM=@RM@ -f
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -25,7 +27,7 @@ TARGET=binlm2arpa@EXEEXT@
 all: $(TARGET)
 
 $(TARGET): $(OBJ) $(LIBSENT)/libsent.a
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+	$(CCLINK) $(LINKFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 install: install.bin
 

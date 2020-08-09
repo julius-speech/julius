@@ -17,6 +17,8 @@ CC=@CC@
 CFLAGS=@CFLAGS@
 CPPFLAGS=-I. -I$(LIBJULIUS)/include -I$(LIBSENT)/include @CPPFLAGS@ `$(LIBSENT)/libsent-config --cflags` `$(LIBJULIUS)/libjulius-config --cflags`
 LDFLAGS=@LDFLAGS@ -L$(LIBJULIUS) `$(LIBJULIUS)/libjulius-config --libs` -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`
+CCLINK=`$(LIBSENT)/libsent-config --linker`
+LINKFLAGS=`$(LIBSENT)/libsent-config --linkflags`
 RM=@RM@ -f
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -38,10 +40,10 @@ TARGET=adintool@EXEEXT@ $(GUITARGET)
 all: $(TARGET)
 
 adintool@EXEEXT@: $(OBJ) $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+	$(CCLINK) $(LINKFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 adintool-gui@EXEEXT@: $(GUIOBJ) $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(SDL_CFLAGS) -o $@ $(GUIOBJ) $(LDFLAGS) $(SDL_LDFLAGS)
+	$(CCLINK) $(LINKFLAGS) $(SDL_CFLAGS) -o $@ $(GUIOBJ) $(LDFLAGS) $(SDL_LDFLAGS)
 
 install: install.bin
 
