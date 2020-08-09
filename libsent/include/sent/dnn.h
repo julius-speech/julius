@@ -62,7 +62,6 @@ typedef struct {
 #ifdef USE_CUDA
   boolean use_cuda;
   boolean use_cuda_shared;
-  float *dstate_prior;
   float *dinvec;
   float **ddst;
   float *dout;

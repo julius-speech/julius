@@ -68,7 +68,6 @@ void cuda_dnn_clear(DNNData *dnn)
 {
   int i;
   
-  if (dnn->dstate_prior) CHECK(cudaFree(dnn->dstate_prior));
   if (dnn->ddst) {
     for (i = 0; i < dnn->hnum; i++) {
       if (dnn->ddst[i]) {
@@ -86,10 +85,6 @@ void cuda_dnn_setup(DNNData *dnn)
 {
   int i;
   
-  // NOTE: NOT YET IMPLEMENTED state_prior computation on GPU
-  //CHECK(cudaMalloc((void **)&dnn->dstate_prior, sizeof(float) * dnn->state_prior_num));
-  //CHECK(cudaMemcpy(dnn->dstate_prior, dnn->state_prior, sizeof(float) * dnn->state_prior_num, cudaMemcpyHostToDevice));
-
   dnn->ddst = (float **)mymalloc(sizeof(float *) * dnn->hnum);
   for (i = 0; i < dnn->hnum; i++) {
     CHECK(cudaMalloc((void **)&dnn->ddst[i], sizeof(float) * dnn->hiddennodenum));
