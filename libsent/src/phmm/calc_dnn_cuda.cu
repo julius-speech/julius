@@ -48,7 +48,7 @@ void cuda_copy_logistic_table(float *table, int len)
 
 /***********************************************************************/
 // allocate GPU memory per DNN layer
-void cuda_layer_malloc(DNNLayer *l)
+void cuda_layer_load(DNNLayer *l)
 {
   CHECK(cudaMalloc((void **)&l->dw, sizeof(float) * l->out * l->in));
   CHECK(cudaMemcpy(l->dw, l->w, sizeof(float) * l->out * l->in, cudaMemcpyHostToDevice));

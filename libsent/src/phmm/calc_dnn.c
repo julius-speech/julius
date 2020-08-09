@@ -387,7 +387,7 @@ static void dnn_layer_init(DNNLayer *l)
 }
 
 /* load dnn layer parameter from files */
-static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *bfile, int thread_num, boolean cuda_enabled)
+static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *bfile, int thread_num)
 {
   l->in = in;
   l->out = out;
@@ -410,11 +410,6 @@ static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *b
   jlog("Stat: dnn_layer_load: loaded %s\n", wfile);
   if (! load_npy(l->b, bfile, l->out, 1)) return FALSE;
   jlog("Stat: dnn_layer_load: loaded %s\n", bfile);
-
-#ifdef HAVE_CUDA
-  // load DNN layer definitions to GPU
-  if (cuda_enabled) cuda_layer_malloc(l);
-#endif /* HAVE_CUDA */
 
 #ifdef _OPENMP
   /* divide into thread chunks */
@@ -599,11 +594,21 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn_layer_init(&(dnn->o));
 
   /* load layer parameters */
-  if (dnn_layer_load(&(dnn->h[0]), inputnodes, hiddennodes, wfile[0], bfile[0], dnn->num_threads, dnn->use_cuda) == FALSE) return FALSE;
+  if (dnn_layer_load(&(dnn->h[0]), inputnodes, hiddennodes, wfile[0], bfile[0], dnn->num_threads) == FALSE) return FALSE;
   for (i = 1; i < dnn->hnum; i++) {
-    if (dnn_layer_load(&(dnn->h[i]), hiddennodes, hiddennodes, wfile[i], bfile[i], dnn->num_threads, dnn->use_cuda) == FALSE) return FALSE;
+    if (dnn_layer_load(&(dnn->h[i]), hiddennodes, hiddennodes, wfile[i], bfile[i], dnn->num_threads) == FALSE) return FALSE;
   }
-  if (dnn_layer_load(&(dnn->o), hiddennodes, outputnodes, output_wfile, output_bfile, dnn->num_threads, dnn->use_cuda) == FALSE) return FALSE;
+  if (dnn_layer_load(&(dnn->o), hiddennodes, outputnodes, output_wfile, output_bfile, dnn->num_threads) == FALSE) return FALSE;
+
+#ifdef HAVE_CUDA
+  // load DNN layer definitions to GPU
+  if (dnn->use_cuda) {
+    for (i = 0; i < dnn->hnum; i++) {
+      cuda_layer_load(&(dnn->h[i]));
+    }
+    cuda_layer_load(&(dnn->o));
+  }
+#endif /* HAVE_CUDA */
 
   /* load state prior */
   {
