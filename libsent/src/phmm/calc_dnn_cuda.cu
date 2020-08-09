@@ -6,7 +6,7 @@
  * All rights reserved
  */
 
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
 
 /* define this to test disabling expsum computation at softmax */
 #undef NO_SUM_COMPUTATION
@@ -284,4 +284,4 @@ void cuda_calc_outprob(HMMWork *wrk)
 #endif /* NO_SUM_COMPUTATION */
 }
 
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */

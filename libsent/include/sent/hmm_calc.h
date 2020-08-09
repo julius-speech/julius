@@ -245,14 +245,14 @@ void calc_dnn_sse(float *dst, float *src, float *w, float *b, int out, int in, f
 void calc_dnn_neonv2(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
 void calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
 
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
 void cuda_copy_logistic_table(float *table, int len);
 void cuda_layer_malloc(DNNLayer *l);
 void cuda_layer_free(DNNLayer *l);
 void cuda_dnn_clear(DNNData *dnn);
 void cuda_dnn_setup(DNNData *dnn);
 void cuda_calc_outprob(HMMWork *wrk);
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
 
 #ifdef __cplusplus
 }

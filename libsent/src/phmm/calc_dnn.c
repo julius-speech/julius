@@ -379,10 +379,10 @@ static void dnn_layer_init(DNNLayer *l)
   l->begin = NULL;
   l->end = NULL;
 #endif /* _OPENMP */
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   l->dw = NULL;
   l->db = NULL;
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
   
 }
 
@@ -411,10 +411,10 @@ static boolean dnn_layer_load(DNNLayer *l, int in, int out, char *wfile, char *b
   if (! load_npy(l->b, bfile, l->out, 1)) return FALSE;
   jlog("Stat: dnn_layer_load: loaded %s\n", bfile);
 
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   // load DNN layer definitions to GPU
   if (cuda_enabled) cuda_layer_malloc(l);
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
 
 #ifdef _OPENMP
   /* divide into thread chunks */
@@ -452,9 +452,9 @@ static void dnn_layer_clear(DNNLayer *l)
   if (l->begin != NULL) free(l->begin);
   if (l->end != NULL) free(l->end);
 #endif /* _OPENMP */
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   cuda_layer_free(l);
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
   dnn_layer_init(l);
 }
 
@@ -473,9 +473,9 @@ void dnn_clear(DNNData *dnn)
 {
   int i;
 
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   cuda_dnn_clear(dnn);
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
 
   if (dnn->h) {
     for (i = 0; i < dnn->hnum; i++) {
@@ -556,11 +556,11 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn->outputnodenum = outputnodes;
   dnn->prior_factor = prior_factor;
   dnn->num_threads = num_threads;
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   // testing, should be given from arguments
   dnn->use_cuda = true;
   dnn->use_cuda_shared = false;
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
 #ifdef _OPENMP
   /* set number of threads */
   int max_num_threads = omp_get_max_threads();
@@ -571,10 +571,10 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   jlog("Stat: dnn_init: use %d threads for DNN computation (max %d cores)\n", dnn->num_threads, max_num_threads);
 #endif /* OPENMP */
 
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   // copy logistic_table to GPU
   if (dnn->use_cuda) cuda_copy_logistic_table(logistic_table, LOGISTIC_TABLE_MAX + 1);
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
 
   /* check for input length */
   {
@@ -654,9 +654,9 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 #endif /* OPENMP */
 #endif
 
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   if (dnn->use_cuda) cuda_dnn_setup(dnn);
-#endif /* USE_CUDA */
+#endif /* HAVE_CUDA */
   
   /* choose sub function */
 #ifdef SIMD_ENABLED
@@ -701,7 +701,7 @@ void dnn_calc_outprob(HMMWork *wrk)
   DNNLayer *h;
 #endif
 
-#ifdef USE_CUDA
+#ifdef HAVE_CUDA
   if (dnn->use_cuda) {
     cuda_calc_outprob(wrk);
     return;
