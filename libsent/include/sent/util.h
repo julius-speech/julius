@@ -106,6 +106,8 @@ char  *mystrtok_quotation(char *str, char *delim, int left_paren, int right_pare
 char *mystrtok_quote(char *str, char *delim);
 char *mystrtok(char *str, char *delim);
 char *mystrtok_movetonext(char *str, char *delim);
+char *mystrtok_quotation_safe(char *str, char *delim, int left_paren, int right_paren, int mode, char **save);
+char *mystrtok_safe(char *str, char *delim, char **save);
 
 /* confout.c */
 void confout(FILE *strm);
