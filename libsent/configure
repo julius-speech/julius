@@ -654,6 +654,9 @@ SIMD_NEONV2_CFLAGS
 SIMD_SSE_CFLAGS
 SIMD_AVX_CFLAGS
 SIMD_FMA_CFLAGS
+CUDA_LDFLAGS
+CUDA_CFLAGS
+NVCC
 CPP
 OBJEXT
 EXEEXT
@@ -712,6 +715,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_cuda
 with_mictype
 with_netaudio_dir
 enable_addarray
@@ -1372,6 +1376,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-cuda=PREFIX      Prefix of your CUDA installation
   --with-mictype=TYPE     specify mic I/O (oss|alsa|freebsd|coreaudio|sol2|sun4|irix|esd|sp|portaudio|pa-oss|pa-alsa|pa-winmm|pa-dsound|pulseaudio)
   --with-netaudio-dir=DIR DatLink/NetAudio include/lib are in DIR
   --without-sndfile       does not link libsndfile library
@@ -2200,6 +2205,15 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 LIBSENT_MAJOR_VERSION=4
 LIBSENT_MINOR_VERSION=5
 LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
+
+
+# Check whether --with-cuda was given.
+if test "${with_cuda+set}" = set; then :
+  withval=$with_cuda; cuda_prefix=$withval
+else
+  cuda_prefix="/usr/local/cuda"
+fi
+
 
 # specify mic type
 
@@ -3384,6 +3398,38 @@ $as_echo "no" >&6; }
 	          CFLAGS="$xxxCFLAGS"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+if test "$cuda_prefix" == "yes"; then
+    if test "$withval" == "yes"; then
+        cuda_prefix="/usr/local/cuda"
+    fi
+fi
+
+# Checking for nvcc
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking nvcc in $cuda_prefix/bin" >&5
+$as_echo_n "checking nvcc in $cuda_prefix/bin... " >&6; }
+if test -x "$cuda_prefix/bin/nvcc"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
+$as_echo "found" >&6; }
+    NVCC="$cuda_prefix/bin/nvcc"
+    $as_echo "#define HAVE_CUDA 1" >>confdefs.h
+
+    CUDA_CFLAGS="-I$cuda_prefix/include"
+    CUDA_LDFLAGS="-L$cuda_prefix/lib"
+    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found, disable CUDA support" >&5
+$as_echo "not found, disable CUDA support" >&6; }
+    NVCC=""
+    CUDA_CFLAGS=""
+    CUDA_LDFLAGS=""
+    CUDAOBJ=""
+fi
+
+
+
+EXTRAOBJ="$EXTRAOBJ $CUDAOBJ"
+EXTRALIB="$EXTRALIB $CUDA_LDFLAGS"
 
 case "$host_cpu" in
   arm*)

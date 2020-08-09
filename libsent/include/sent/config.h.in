@@ -175,3 +175,6 @@
 
 /* Define if include SIMDv2 NEON instruction set */
 #undef HAS_SIMD_NEONV2
+
+/* Define if CUDA toolkit exists */
+#undef HAVE_CUDA

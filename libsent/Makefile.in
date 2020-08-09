@@ -7,11 +7,14 @@
 SHELL=/bin/sh
 
 .SUFFIXES:
-.SUFFIXES: .c .o .a
+.SUFFIXES: .c .o .a .cu
 .c.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+.cu.o:
+	$(NVCC) $(CFLAGS) $(CPPFLAGS) $(CUDA_CFLAGS) -o $@ -c $<
 
 CC=@CC@
+NVCC=@NVCC@
 CFLAGS=@CFLAGS@ @OPENMP_CFLAGS@
 CPPFLAGS=-Iinclude @CPPFLAGS@ @SOUNDINC@ @DEFS@
 # LDFLAGS=@LDFLAGS@ @LIBS@
@@ -161,6 +164,8 @@ src/phmm/calc_dnn_neonv2.o: src/phmm/calc_dnn_neonv2.c
 
 src/phmm/calc_dnn_neon.o: src/phmm/calc_dnn_neon.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_NEON_CFLAGS@ -o $@ -c $<
+
+$(CUDAOBJ): 
 
 
 ############################################################

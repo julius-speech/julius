@@ -13,6 +13,9 @@ LIBSENT_MAJOR_VERSION=4
 LIBSENT_MINOR_VERSION=5
 LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
 
+dnl Check for CUDA
+AC_ARG_WITH(cuda, [  --with-cuda=PREFIX      Prefix of your CUDA installation], [cuda_prefix=$withval], [cuda_prefix="/usr/local/cuda"])
+
 dnl Checks for options
 # specify mic type
 AC_ARG_WITH(mictype,
@@ -142,6 +145,35 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [return 0;])],
          CFLAGS="$xxxCFLAGS -fPIC"],
 	     [AC_MSG_RESULT(no)
 	          CFLAGS="$xxxCFLAGS"])
+
+dnl Check for CUDA
+if test "$cuda_prefix" == "yes"; then
+    if test "$withval" == "yes"; then
+        cuda_prefix="/usr/local/cuda"
+    fi
+fi
+
+# Checking for nvcc
+AC_MSG_CHECKING([nvcc in $cuda_prefix/bin])
+if test -x "$cuda_prefix/bin/nvcc"; then
+    AC_MSG_RESULT([found])
+    NVCC="$cuda_prefix/bin/nvcc"
+    AC_DEFINE(HAVE_CUDA)
+    CUDA_CFLAGS="-I$cuda_prefix/include"
+    CUDA_LDFLAGS="-L$cuda_prefix/lib"
+    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
+else
+    AC_MSG_RESULT([not found, disable CUDA support])
+    NVCC=""
+    CUDA_CFLAGS=""
+    CUDA_LDFLAGS=""
+    CUDAOBJ=""
+fi
+AC_SUBST(NVCC)
+AC_SUBST(CUDA_CFLAGS)
+AC_SUBST(CUDA_LDFLAGS)
+EXTRAOBJ="$EXTRAOBJ $CUDAOBJ"
+EXTRALIB="$EXTRALIB $CUDA_LDFLAGS"
 
 dnl Checks for SIMD capability
 case "$host_cpu" in
