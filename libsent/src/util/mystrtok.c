@@ -136,3 +136,76 @@ mystrtok_movetonext(char *str, char *delim)
 {
   return(mystrtok_quotation(str, delim, -1, -1, 1));
 }
+
+/** 
+ * Thread-safer version of mystrtok_quotation.
+ * 
+ * @param str [i/o] source string, or NULL when this is a continuous call from previous call.  Will be truncated in this function.
+ * @param delim [in] string to specify the delimiters.
+ * @param left_paren [in] left brace
+ * @param right_paren [in] right brace
+ * @param mode [in] if 1, just move to the beginning of next token
+ * @param save [i/o] save stgring position for next call
+ * 
+ * @return pointer to the next extracted token, or NULL when no token found.
+ */
+char *
+mystrtok_quotation_safe(char *str, char *delim, int left_paren, int right_paren, int mode, char **save)
+{
+  static char *buf;		/* target string buffer */
+  char *p;
+  char *from;
+  int c;
+
+  if (str != NULL) {
+    *save = buf = str;
+  }
+
+  /* find start point */
+  p = *save;
+  while (*p != '\0' && ISTOKEN(*p)) p++;
+  if (*p == '\0') return NULL;	/* no token left */
+
+  /* if mode == 1, exit here */
+  if (mode == 1) {
+    *save = p;
+    return p;
+  }
+  
+  /* copy to ret_buf until end point is found */
+  c = *p;
+  if (c == left_paren) {
+    p++;
+    if (*p == '\0') return NULL;
+    from = p;
+    while ((c = *p) != '\0' && 
+	   ((c != right_paren) || (*(p+1) != '\0' && !ISTOKEN(*(p+1))))) p++;
+	
+    /* if quotation not terminated, allow the rest as one token */
+    /* if (*p == '\0') return NULL; */
+  } else {
+    from = p;
+    while ((c = *p) != '\0' && (!ISTOKEN(c))) p++;
+  }
+  if (*p != '\0') {
+    *p = '\0';
+    p++;
+  }
+  *save = p;
+  return from;
+}
+
+/** 
+ * Thread-safer version of mystrtok.
+ * 
+ * @param str [i/o] source string, will be truncated.
+ * @param delim [in] string of all token delimiters
+ * @param save [i/o] save stgring position for next call
+ * 
+ * @return pointer to the next extracted token, or NULL when no token found.
+ */
+char  *
+mystrtok_safe(char *str, char *delim, char **save)
+{
+  return(mystrtok_quotation_safe(str, delim, -1, -1, 0, save));
+}
