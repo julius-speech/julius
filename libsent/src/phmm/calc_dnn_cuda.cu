@@ -114,6 +114,19 @@ void cuda_dnn_setup(DNNData *dnn)
   }
   CHECK(cudaMalloc((void **)&dnn->dout, sizeof(float) * dnn->outputnodenum));
   CHECK(cudaMalloc((void **)&dnn->dinvec, sizeof(float) * dnn->inputnodenum));
+
+  if (dnn->use_cuda_shared == FALSE) {
+    if (dnn->blocksize1 == 0) {
+      dnn->blocksize1 = BLOCK_SIZE;
+    }
+  } else {
+    if (dnn->blocksize1 == 0) {
+      dnn->blocksize1 = BLOCK_SIZE_X;
+    }
+    if (dnn->blocksize2 == 0) {
+      dnn->blocksize2 = BLOCK_SIZE_Y;
+    }
+  }
 }
 
 /***********************************************************************/
@@ -155,11 +168,11 @@ static void local_calc_outprob_global(HMMWork *wrk)
   DNNLayer *h;
 
   // define <grid, block> for layer computation
-  dim3 block(BLOCK_SIZE);
+  dim3 block(dnn->blocksize1);
   dim3 grid((dnn->hiddennodenum + block.x - 1) / block.x);
 
   // define <grid2, block2> for output layer computation
-  dim3 block2(BLOCK_SIZE);
+  dim3 block2(dnn->blocksize1);
   dim3 grid2((dnn->outputnodenum + block2.x - 1) / block2.x);
 
   // transfer input vectors to GPU

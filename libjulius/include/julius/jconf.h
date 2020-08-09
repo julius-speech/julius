@@ -244,6 +244,7 @@ typedef struct __jconf_am__ {
     boolean prior_factor_log10nize; /* TRUE when requires log10nize state priors */
     int batchsize;		/* batch size */
     int num_threads;		/* number of threads */
+    char *cuda_mode; /* mode string of CUDA */
   } dnn;
 
   /* pointer to next instance */

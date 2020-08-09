@@ -178,6 +178,7 @@ jconf_set_default_values_am(JCONF_AM *j)
   j->dnn.prior_factor_log10nize         = TRUE;
   j->dnn.batchsize                      = 1;
   j->dnn.num_threads                    = 2;
+  j->dnn.cuda_mode                      = NULL;
 }
 
 /** 

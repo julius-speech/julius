@@ -525,7 +525,7 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
 /************************************************************************/
 
 /* initialize dnn */
-boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, boolean state_prior_log10nize, int batchsize, int num_threads)
+boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, boolean state_prior_log10nize, int batchsize, int num_threads, char *cuda_mode)
 {
   int i;
 
@@ -552,9 +552,68 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn->prior_factor = prior_factor;
   dnn->num_threads = num_threads;
 #ifdef HAVE_CUDA
-  // testing, should be given from arguments
-  dnn->use_cuda = TRUE;
-  dnn->use_cuda_shared = FALSE;
+  dnn->blocksize1 = 0;
+  dnn->blocksize2 = 0;
+  if (cuda_mode == NULL) {
+    dnn->use_cuda = TRUE;
+    dnn->use_cuda_shared = FALSE;
+  } else if (strmatch(cuda_mode, "disable")) {
+    dnn->use_cuda = FALSE;
+    dnn->use_cuda_shared = FALSE;
+  } else if (strnmatch(cuda_mode, "global", 6)) {
+    dnn->use_cuda = TRUE;
+    dnn->use_cuda_shared = FALSE;
+    if (strlen(cuda_mode) > 6) {
+      char *buf = strdup(cuda_mode + 6);
+      char *p, *save;
+      int n = 0;
+      for (p = mystrtok_safe(buf, ",", &save); p; p = mystrtok_safe(NULL, ",", &save)) {
+        switch(n) {
+        case 0:
+          dnn->blocksize1 = atoi(p);
+          break;
+        default:
+          jlog("Error: dnn_init: too many CUDA mode parameter: %s\n", cuda_mode);
+          return FALSE;
+        }
+        n++;
+      }
+      free(buf);
+    }
+  } else if (strnmatch(cuda_mode, "shared", 6)) {
+    dnn->use_cuda = TRUE;
+    dnn->use_cuda_shared = TRUE;
+    if (strlen(cuda_mode) > 6) {
+#if 1
+      jlog("Error: dnn_init: CUDA shared mode block parameters are fixed to 16x8, remove the parameters: %s\n", cuda_mode);
+      return FALSE;
+#else
+      char *buf = strdup(cuda_mode + 6);
+      char *p, *save;
+      int n = 0;
+      for (p = mystrtok_safe(buf, ",", &save); p; p = mystrtok_safe(NULL, ",", &save)) {
+        switch(n) {
+        case 0:
+          dnn->blocksize1 = atoi(p);
+          break;
+        case 1:
+          dnn->blocksize2 = atoi(p);
+          break;
+        default:
+          jlog("Error: dnn_init: too many CUDA mode parameter: %s\n", cuda_mode);
+          return FALSE;
+        }
+        n++;
+      }
+      free(buf);
+#endif
+    }
+  }
+#else
+  if (cuda_mode != NULL && strmatch(cuda_mode, "disable") == FALSE) {
+    jlog("Error: dnn_init: CUDA mode specified as \"%s\" but no CUDA support is built-in\n", cuda_mode);
+    return FALSE;
+  }  
 #endif /* HAVE_CUDA */
 #ifdef _OPENMP
   /* set number of threads */
@@ -661,7 +720,17 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 
 #ifdef HAVE_CUDA
   if (dnn->use_cuda) cuda_dnn_setup(dnn);
+  if (dnn->use_cuda) {
+    if (dnn->use_cuda_shared) {
+      jlog("Stat: dnn_init: CUDA mode: shared, block size = %d x %d\n", dnn->blocksize1, dnn->blocksize2);
+    } else {
+      jlog("Stat: dnn_init: CUDA mode: global, block size = %d\n", dnn->blocksize1);
     }
+  } else {
+    jlog("Stat: dnn_init: disabled CUDA support for DNN computation\n");
+  }
+#else
+  jlog("Stat: dnn_init: no CUDA support is built in, CUDA will not be used\n");
 #endif /* HAVE_CUDA */
   
   /* choose sub function */

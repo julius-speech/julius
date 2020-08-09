@@ -62,6 +62,8 @@ typedef struct {
 #ifdef HAVE_CUDA
   boolean use_cuda;
   boolean use_cuda_shared;
+  int blocksize1;
+  int blocksize2;
   float *dinvec;
   float **ddst;
   float *dout;
