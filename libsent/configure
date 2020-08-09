@@ -2212,9 +2212,9 @@ LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
 
 # Check whether --with-cuda was given.
 if test "${with_cuda+set}" = set; then :
-  withval=$with_cuda; cuda_prefix=$withval
+  withval=$with_cuda; cuda_arg=$withval
 else
-  cuda_prefix="/usr/local/cuda"
+  cuda_arg="auto"
 fi
 
 
@@ -3469,35 +3469,53 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
 
 
 
-if test "$cuda_prefix" = "yes"; then
-    if test "$withval" = "yes"; then
-        cuda_prefix="/usr/local/cuda"
+if test "$cuda_arg" = "no"; then
+    use_cuda=no
+elif test "$cuda_arg" = "auto"; then
+    use_cuda=yes
+    cuda_prefix="/usr/local/cuda"
+    force_cuda=no
+elif test "$cuda_arg" = "yes"; then
+    use_cuda=yes
+    cuda_prefix="/usr/local/cuda"
+    force_cuda=yes
+else
+    use_cuda=yes
+    cuda_prefix="$cuda_arg"
+    force_cuda=yes
+fi
+if test "$use_cuda" != no; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking nvcc in $cuda_prefix/bin" >&5
+$as_echo_n "checking nvcc in $cuda_prefix/bin... " >&6; }
+    if test -x "$cuda_prefix/bin/nvcc"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
+$as_echo "found" >&6; }
+        use_cuda="built-in: $cuda_prefix"
+    else
+        if test "$force_cuda" = "yes"; then
+           as_fn_error $? "not found" "$LINENO" 5
+        else
+           { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found, disable CUDA support" >&5
+$as_echo "not found, disable CUDA support" >&6; }
+           use_cuda=no
+        fi
     fi
 fi
-
-# Checking for nvcc
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking nvcc in $cuda_prefix/bin" >&5
-$as_echo_n "checking nvcc in $cuda_prefix/bin... " >&6; }
-if test -x "$cuda_prefix/bin/nvcc"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-    NVCC="$cuda_prefix/bin/nvcc"
-    $as_echo "#define HAVE_CUDA 1" >>confdefs.h
-
-    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
-    CUDA_LDFLAGS="-L$cuda_prefix/lib"
-    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
-    use_cuda="built-in: $cuda_prefix"
-    CC_LINKER="$NVCC"
-else
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found, disable CUDA support" >&5
-$as_echo "not found, disable CUDA support" >&6; }
+if test "$use_cuda" = no; then
     NVCC=""
     CUDA_CFLAGS=""
     CUDA_LDFLAGS=""
     CUDAOBJ=""
     use_cuda=no
     CC_LINKER="$CC"
+else
+    $as_echo "#define HAVE_CUDA 1" >>confdefs.h
+
+    NVCC="$cuda_prefix/bin/nvcc"
+    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
+    CUDA_LDFLAGS="-L$cuda_prefix/lib"
+    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
+    CC_LINKER="$NVCC"
 fi
 
 

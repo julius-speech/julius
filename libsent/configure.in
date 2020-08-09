@@ -14,7 +14,7 @@ LIBSENT_MINOR_VERSION=5
 LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
 
 dnl Check for CUDA
-AC_ARG_WITH(cuda, [  --with-cuda=PREFIX      Prefix of your CUDA installation], [cuda_prefix=$withval], [cuda_prefix="/usr/local/cuda"])
+AC_ARG_WITH(cuda, [  --with-cuda=PREFIX      Prefix of your CUDA installation], [cuda_arg=$withval], [cuda_arg="auto"])
 
 dnl Checks for options
 # specify mic type
@@ -150,31 +150,49 @@ dnl Check for OPENMP availability
 AC_OPENMP()
 
 dnl Check for CUDA
-if test "$cuda_prefix" = "yes"; then
-    if test "$withval" = "yes"; then
-        cuda_prefix="/usr/local/cuda"
+if test "$cuda_arg" = "no"; then
+    use_cuda=no
+elif test "$cuda_arg" = "auto"; then
+    use_cuda=yes
+    cuda_prefix="/usr/local/cuda"
+    force_cuda=no
+elif test "$cuda_arg" = "yes"; then
+    use_cuda=yes
+    cuda_prefix="/usr/local/cuda"
+    force_cuda=yes
+else
+    use_cuda=yes
+    cuda_prefix="$cuda_arg"
+    force_cuda=yes
+fi
+if test "$use_cuda" != no; then
+    AC_MSG_CHECKING([nvcc in $cuda_prefix/bin])
+    if test -x "$cuda_prefix/bin/nvcc"; then
+        AC_MSG_RESULT([found])
+        use_cuda="built-in: $cuda_prefix"
+    else
+        if test "$force_cuda" = "yes"; then
+           AC_MSG_ERROR([not found])
+        else
+           AC_MSG_RESULT([not found, disable CUDA support])
+           use_cuda=no
+        fi
     fi
 fi
-
-# Checking for nvcc
-AC_MSG_CHECKING([nvcc in $cuda_prefix/bin])
-if test -x "$cuda_prefix/bin/nvcc"; then
-    AC_MSG_RESULT([found])
-    NVCC="$cuda_prefix/bin/nvcc"
-    AC_DEFINE(HAVE_CUDA)
-    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
-    CUDA_LDFLAGS="-L$cuda_prefix/lib"
-    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
-    use_cuda="built-in: $cuda_prefix"
-    CC_LINKER="$NVCC"
-else
-    AC_MSG_RESULT([not found, disable CUDA support])
+if test "$use_cuda" = no; then
     NVCC=""
     CUDA_CFLAGS=""
     CUDA_LDFLAGS=""
     CUDAOBJ=""
     use_cuda=no
     CC_LINKER="$CC"
+else
+    AC_DEFINE(HAVE_CUDA)
+    NVCC="$cuda_prefix/bin/nvcc"
+    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
+    CUDA_LDFLAGS="-L$cuda_prefix/lib"
+    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
+    CC_LINKER="$NVCC"
 fi
 AC_SUBST(NVCC)
 AC_SUBST(CUDA_CFLAGS)
