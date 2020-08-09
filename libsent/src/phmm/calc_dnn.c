@@ -553,8 +553,8 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn->num_threads = num_threads;
 #ifdef HAVE_CUDA
   // testing, should be given from arguments
-  dnn->use_cuda = true;
-  dnn->use_cuda_shared = false;
+  dnn->use_cuda = TRUE;
+  dnn->use_cuda_shared = FALSE;
 #endif /* HAVE_CUDA */
 #ifdef _OPENMP
   /* set number of threads */

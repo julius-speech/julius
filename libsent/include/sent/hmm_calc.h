@@ -247,7 +247,7 @@ void calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, 
 
 #ifdef HAVE_CUDA
 void cuda_copy_logistic_table(float *table, int len);
-void cuda_layer_malloc(DNNLayer *l);
+void cuda_layer_load(DNNLayer *l);
 void cuda_layer_free(DNNLayer *l);
 void cuda_dnn_clear(DNNData *dnn);
 void cuda_dnn_setup(DNNData *dnn);

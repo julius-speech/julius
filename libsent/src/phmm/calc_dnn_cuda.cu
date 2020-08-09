@@ -6,7 +6,30 @@
  * All rights reserved
  */
 
+#include <sent/stddefs.h>
+#include <sent/htk_hmm.h>
+#include <sent/htk_param.h>
+#include <sent/hmm.h>
+#include <sent/hmm_calc.h>
+
 #ifdef HAVE_CUDA
+
+#include <cuda_runtime.h>
+
+// from common.h
+#include <sys/time.h>
+
+#define CHECK(call)                                                            \
+{                                                                              \
+    const cudaError_t error = call;                                            \
+    if (error != cudaSuccess)                                                  \
+    {                                                                          \
+        fprintf(stderr, "Error: %s:%d, ", __FILE__, __LINE__);                 \
+        fprintf(stderr, "code: %d, reason: %s\n", error,                       \
+                cudaGetErrorString(error));                                    \
+        exit(1);                                                               \
+    }                                                                          \
+}
 
 /* define this to test disabling expsum computation at softmax */
 #undef NO_SUM_COMPUTATION
