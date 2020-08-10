@@ -160,6 +160,7 @@ AC_TRY_COMPILE([#include <stdio.h>
 if test "$NVCC" != no; then
     EXTRAOBJ="$EXTRAOBJ src/phmm/calc_dnn_cuda.o"
 fi
+AC_SUBST(NVCC)
 
 dnl Check for OPENMP availability
 if test "$NVCC" != no; then

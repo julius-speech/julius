@@ -654,6 +654,7 @@ SIMD_SSE_CFLAGS
 SIMD_AVX_CFLAGS
 SIMD_FMA_CFLAGS
 OPENMP_CFLAGS
+NVCC
 CPP
 OBJEXT
 EXEEXT
@@ -3418,6 +3419,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 if test "$NVCC" != no; then
     EXTRAOBJ="$EXTRAOBJ src/phmm/calc_dnn_cuda.o"
 fi
+
 
 if test "$NVCC" != no; then
     xxxxCFLAGS="$CFLAGS"
