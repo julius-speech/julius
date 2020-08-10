@@ -40,7 +40,7 @@
  *   - GPRUNE_SEL_HEURISTIC: heuristic pruning
  *   - GPRUNE_SEL_BEAM: beam pruning
  *   - GPRUNE_SEL_USER: user-defined function
- * 
+ *
  */
 enum{GPRUNE_SEL_UNDEF, GPRUNE_SEL_NONE, GPRUNE_SEL_SAFE, GPRUNE_SEL_HEURISTIC, GPRUNE_SEL_BEAM, GPRUNE_SEL_USER};
 
@@ -49,7 +49,7 @@ enum{GPRUNE_SEL_UNDEF, GPRUNE_SEL_NONE, GPRUNE_SEL_SAFE, GPRUNE_SEL_HEURISTIC, G
  *
  * Larger value may ease pruning error, but processing may become slower.
  * Smaller value can speed up the acoustic computation, but may cause error.
- * 
+ *
  */
 #define TMBEAMWIDTH 5.0
 
@@ -61,7 +61,7 @@ typedef struct {
 
 /**
  * Work area and cache for %HMM computation
- * 
+ *
  */
 typedef struct __hmmwork__{
 
@@ -245,14 +245,14 @@ void calc_dnn_sse(float *dst, float *src, float *w, float *b, int out, int in, f
 void calc_dnn_neonv2(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
 void calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
 
-#ifdef HAVE_CUDA
+#ifdef __NVCC__
 void cuda_copy_logistic_table(float *table, int len);
 void cuda_layer_load(DNNLayer *l);
 void cuda_layer_free(DNNLayer *l);
 void cuda_dnn_clear(DNNData *dnn);
 void cuda_dnn_setup(DNNData *dnn);
 void cuda_calc_outprob(HMMWork *wrk);
-#endif /* HAVE_CUDA */
+#endif /* __NVCC__ */
 
 #ifdef __cplusplus
 }

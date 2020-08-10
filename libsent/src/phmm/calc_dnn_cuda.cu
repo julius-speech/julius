@@ -12,7 +12,7 @@
 #include <sent/hmm.h>
 #include <sent/hmm_calc.h>
 
-#ifdef HAVE_CUDA
+#ifdef __NVCC__
 
 #include <cuda_runtime.h>
 
@@ -90,7 +90,7 @@ void cuda_layer_free(DNNLayer *l)
 void cuda_dnn_clear(DNNData *dnn)
 {
   int i;
-  
+
   if (dnn->ddst) {
     for (i = 0; i < dnn->hnum; i++) {
       if (dnn->ddst[i]) {
@@ -107,10 +107,10 @@ void cuda_dnn_clear(DNNData *dnn)
 void cuda_dnn_setup(DNNData *dnn)
 {
   int i;
-  
+
   dnn->ddst = (float **)mymalloc(sizeof(float *) * dnn->hnum);
   for (i = 0; i < dnn->hnum; i++) {
-    CHECK(cudaMalloc((void **)&dnn->ddst[i], sizeof(float) * dnn->hiddennodenum));
+    CHECK(cudaMalloc((void **)&(dnn->ddst[i]), sizeof(float) * dnn->hiddennodenum));
   }
   CHECK(cudaMalloc((void **)&dnn->dout, sizeof(float) * dnn->outputnodenum));
   CHECK(cudaMalloc((void **)&dnn->dinvec, sizeof(float) * dnn->inputnodenum));
@@ -220,27 +220,27 @@ __global__ void _cuda_calc_dnn_shared(float *src, float *dst, float *w, float *b
 
   int trow = threadIdx.y; /* 0 ... BLOCK_SIZE_Y-1 */
   int tcol = threadIdx.x; /* 0 ... BKOCK_SIZE_X-1 */
-  
+
   /* check if this is my part */
   if (bcol * BLOCK_SIZE_Y + trow < out) {
-    
+
     /* take partial matrix */
     Matrix dst_sub = GetSubMatrix(dst, brow, bcol, in);
-    
+
     /* MA loop */
     float x = 0.0f;
     for (int l = 0; l * BLOCK_SIZE_X + tcol < in; ++l) {
       /* get partial matrix of src and W */
       Matrix src_sub = GetSubMatrix(src, brow, l, in);
       Matrix W_sub = GetSubMatrix(w, bcol, l, in);
-      
+
       /* put them to shared memory */
       __shared__ float srcs[BLOCK_SIZE_X];
       __shared__ float Ws[BLOCK_SIZE_Y][BLOCK_SIZE_X];
       srcs[tcol] = src_sub.elements_src[tcol];
       Ws[trow][tcol] = W_sub.elements_src[trow*in+tcol];
       __syncthreads();
-      
+
       /* do matrix computation */
       for (int k = 0; k < BLOCK_SIZE_X; ++k) {
 	x += srcs[k] * Ws[trow][k];
@@ -320,4 +320,4 @@ void cuda_calc_outprob(HMMWork *wrk)
 #endif /* NO_SUM_COMPUTATION */
 }
 
-#endif /* HAVE_CUDA */
+#endif /* __NVCC__ */
