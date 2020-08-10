@@ -1,4 +1,4 @@
-# Copyright (c) 2003-2013 Kawahara Lab., Kyoto University 
+# Copyright (c) 2003-2013 Kawahara Lab., Kyoto University
 # Copyright (c) 2003-2005 Shikano Lab., Nara Institute of Science and Technology
 # Copyright (c) 2005-2013 Julius project team, Nagoya Institute of Technology
 # All rights reserved
@@ -16,8 +16,6 @@ CC=@CC@
 CFLAGS=@CFLAGS@
 CPPFLAGS=-I$(LIBSENT)/include @CPPFLAGS@ @DEFS@ `$(LIBSENT)/libsent-config --cflags`
 LDFLAGS=@LDFLAGS@ -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`
-CCLINK=`$(LIBSENT)/libsent-config --linker`
-LINKFLAGS=`$(LIBSENT)/libsent-config --linkflags`
 RM=@RM@ -f
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -26,10 +24,10 @@ INSTALL=@INSTALL@
 all: mkbinhmm@EXEEXT@ mkbinhmmlist@EXEEXT@
 
 mkbinhmm@EXEEXT@: mkbinhmm.o $(LIBSENT)/libsent.a
-	$(CCLINK) $(LINKFLAGS) -o $@ mkbinhmm.o $(LDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ mkbinhmm.o $(LDFLAGS)
 
 mkbinhmmlist@EXEEXT@: mkbinhmmlist.o $(LIBSENT)/libsent.a
-	$(CCLINK) $(LINKFLAGS) -o $@ mkbinhmmlist.o $(LDFLAGS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ mkbinhmmlist.o $(LDFLAGS)
 
 install: install.bin
 

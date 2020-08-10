@@ -65,7 +65,7 @@ while test $# -gt 0; do
 
     case $1 in
 	--cflags)
-	    echo $sound_inc
+	    echo -I@includedir@ $sound_inc
 	    ;;
 	--libs)
 	    echo -L@libdir@ -lsent $sound_libs @LIBS@ -lm

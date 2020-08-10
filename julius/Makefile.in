@@ -18,7 +18,6 @@ LIBJULIUS=../libjulius
 CC=@CC@
 CFLAGS=@CFLAGS@
 CPPFLAGS=-I. -I$(LIBJULIUS)/include -I$(LIBSENT)/include @CPPFLAGS@ `$(LIBSENT)/libsent-config --cflags` `$(LIBJULIUS)/libjulius-config --cflags`
-LINKFLAGS=`$(LIBSENT)/libsent-config --linkflags`
 LDFLAGS=@LDFLAGS@ -L$(LIBJULIUS) `$(LIBJULIUS)/libjulius-config --libs` -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs` @LIBICONV@
 GTK_CFLAGS=@GTK_CFLAGS@
 GTK_LIBS=@GTK_LIBS@
