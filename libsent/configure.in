@@ -13,9 +13,6 @@ LIBSENT_MAJOR_VERSION=4
 LIBSENT_MINOR_VERSION=5
 LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
 
-dnl Check for CUDA
-AC_ARG_WITH(cuda, [  --with-cuda=PREFIX      Prefix of your CUDA installation], [cuda_arg=$withval], [cuda_arg="auto"])
-
 dnl Checks for options
 # specify mic type
 AC_ARG_WITH(mictype,
@@ -146,60 +143,36 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [return 0;])],
 	     [AC_MSG_RESULT(no)
 	          CFLAGS="$xxxCFLAGS"])
 
-dnl Check for OPENMP availability
-AC_OPENMP()
-
 dnl Check for CUDA
-if test "$cuda_arg" = "no"; then
-    use_cuda=no
-elif test "$cuda_arg" = "auto"; then
-    use_cuda=yes
-    cuda_prefix="/usr/local/cuda"
-    force_cuda=no
-elif test "$cuda_arg" = "yes"; then
-    use_cuda=yes
-    cuda_prefix="/usr/local/cuda"
-    force_cuda=yes
-else
-    use_cuda=yes
-    cuda_prefix="$cuda_arg"
-    force_cuda=yes
+
+NVCC=no
+AC_MSG_CHECKING([if compiler is NVIDIA nvcc])
+AC_TRY_COMPILE([#include <stdio.h>
+    ],[#ifdef __NVCC__
+    return 0;
+    #else
+    aaa;
+    #endif],
+    AC_MSG_RESULT([[yes, this is NVIDIA compiler!]])
+    NVCC=yes,
+    AC_MSG_RESULT([no])
+  )
+if test "$NVCC" != no; then
+    EXTRAOBJ="$EXTRAOBJ src/phmm/calc_dnn_cuda.o"
 fi
-if test "$use_cuda" != no; then
-    AC_MSG_CHECKING([nvcc in $cuda_prefix/bin])
-    if test -x "$cuda_prefix/bin/nvcc"; then
-        AC_MSG_RESULT([found])
-        use_cuda="built-in: $cuda_prefix"
-    else
-        if test "$force_cuda" = "yes"; then
-           AC_MSG_ERROR([not found])
-        else
-           AC_MSG_RESULT([not found, disable CUDA support])
-           use_cuda=no
-        fi
+
+dnl Check for OPENMP availability
+if test "$NVCC" != no; then
+    xxxxCFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -Xcompiler"
+    AC_OPENMP()
+    if test -n "$OPENMP_CFLAGS"; then
+      OPENMP_CFLAGS="-Xcompiler $OPENMP_CFLAGS"
     fi
-fi
-if test "$use_cuda" = no; then
-    NVCC=""
-    CUDA_CFLAGS=""
-    CUDA_LDFLAGS=""
-    CUDAOBJ=""
-    use_cuda=no
-    CC_LINKER="$CC"
+    CFLAGS="$xxxxCFLAGS"
 else
-    AC_DEFINE(HAVE_CUDA)
-    NVCC="$cuda_prefix/bin/nvcc"
-    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
-    CUDA_LDFLAGS="-L$cuda_prefix/lib"
-    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
-    CC_LINKER="$NVCC"
+    AC_OPENMP()
 fi
-AC_SUBST(NVCC)
-AC_SUBST(CUDA_CFLAGS)
-AC_SUBST(CUDA_LDFLAGS)
-EXTRAOBJ="$EXTRAOBJ $CUDAOBJ"
-EXTRALIB="$EXTRALIB $CUDA_LDFLAGS"
-AC_SUBST(CC_LINKER)
 
 dnl Checks for SIMD capability
 case "$host_cpu" in
@@ -850,18 +823,6 @@ case "$host_os" in
     EXTRALIB="$EXTRALIB -liconv"
     ;;
 esac
-
-dnl substitute some definitions in libsent-config
-if test "$use_cuda" = no; then
-   CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
-else
-   if test -z "$OPENMP_CFLAGS"; then
-      CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
-   else
-      CC_LINKFLAGS="-Xcompiler $OPENMP_CFLAGS"
-   fi
-fi
-AC_SUBST(CC_LINKFLAGS)
 AC_SUBST(LIBSENT_VERSION)
 AC_SUBST(altype)
 AC_SUBST(aldesc)
@@ -872,7 +833,6 @@ AC_SUBST(wavefile_support)
 AC_SUBST(use_class_ngram)
 AC_SUBST(use_fork)
 AC_SUBST(gzdesc)
-AC_SUBST(use_cuda)
 
 dnl define configuration descriptions
 AC_DEFINE_UNQUOTED(LIBSENT_VERSION, "$LIBSENT_VERSION")

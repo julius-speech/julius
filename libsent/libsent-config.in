@@ -19,8 +19,6 @@
 # @configure_input@
 #
 
-linker="@CC_LINKER@"
-linkflags="@CC_LINKFLAGS@"
 sound_inc="@SOUNDINC@ @OPENMP_CFLAGS@"
 sound_libs="@SOUNDLIB@ @EXTRALIB@"
 version="\
@@ -40,18 +38,14 @@ Julius/Julian libsent library rev.@LIBSENT_VERSION@:
     file decompression by    : @gzdesc@
 - Process management
     fork on adinnet input    : @use_fork@
-- CUDA
-    built-in cuda support    : @use_cuda@
- 
+
   Note: compilation time flags are now stored in \"libsent-config\".
-        If you link this library, use compiler as output of 
-        \"libsent-config --linker\", apply linker flags obtained by
-        \"libsent-config --linkflags\", add output of
+        If you link this library, add output of
         \"libsent-config --cflags\" to CFLAGS, and
         \"libsent-config --libs\" to LIBS.
 ****************************************************************"
 usage="\
-Usage: libsent-config [--linker] [--linkflags] [--libs] [--cflags] [--info] [--version]"
+Usage: libsent-config [--clags] [--libs] [--info] [--version]"
 
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"
@@ -68,12 +62,6 @@ while test $# -gt 0; do
     esac
 
     case $1 in
-	--linker)
-	    echo $linker
-	    ;;
-	--linkflags)
-	    echo $linkflags
-	    ;;
 	--cflags)
 	    echo $sound_inc
 	    ;;

@@ -628,7 +628,6 @@ EXTRALIB
 EXTRAOBJ
 LIBSENT_MINOR_VERSION
 LIBSENT_MAJOR_VERSION
-use_cuda
 gzdesc
 use_fork
 use_class_ngram
@@ -639,7 +638,6 @@ adinlist
 aldesc
 altype
 LIBSENT_VERSION
-CC_LINKFLAGS
 GZIP
 EGREP
 GREP
@@ -655,10 +653,6 @@ SIMD_NEONV2_CFLAGS
 SIMD_SSE_CFLAGS
 SIMD_AVX_CFLAGS
 SIMD_FMA_CFLAGS
-CC_LINKER
-CUDA_LDFLAGS
-CUDA_CFLAGS
-NVCC
 OPENMP_CFLAGS
 CPP
 OBJEXT
@@ -718,7 +712,6 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
-with_cuda
 with_mictype
 with_netaudio_dir
 enable_addarray
@@ -1379,7 +1372,6 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-cuda=PREFIX      Prefix of your CUDA installation
   --with-mictype=TYPE     specify mic I/O (oss|alsa|freebsd|coreaudio|sol2|sun4|irix|esd|sp|portaudio|pa-oss|pa-alsa|pa-winmm|pa-dsound|pulseaudio)
   --with-netaudio-dir=DIR DatLink/NetAudio include/lib are in DIR
   --without-sndfile       does not link libsndfile library
@@ -2208,15 +2200,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 LIBSENT_MAJOR_VERSION=4
 LIBSENT_MINOR_VERSION=5
 LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
-
-
-# Check whether --with-cuda was given.
-if test "${with_cuda+set}" = set; then :
-  withval=$with_cuda; cuda_arg=$withval
-else
-  cuda_arg="auto"
-fi
-
 
 # specify mic type
 
@@ -3403,6 +3386,43 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
 
+NVCC=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if compiler is NVIDIA nvcc" >&5
+$as_echo_n "checking if compiler is NVIDIA nvcc... " >&6; }
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <stdio.h>
+
+int
+main ()
+{
+#ifdef __NVCC__
+    return 0;
+    #else
+    aaa;
+    #endif
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes, this is NVIDIA compiler!" >&5
+$as_echo "yes, this is NVIDIA compiler!" >&6; }
+    NVCC=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+if test "$NVCC" != no; then
+    EXTRAOBJ="$EXTRAOBJ src/phmm/calc_dnn_cuda.o"
+fi
+
+if test "$NVCC" != no; then
+    xxxxCFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -Xcompiler"
+
   OPENMP_CFLAGS=
   # Check whether --enable-openmp was given.
 if test "${enable_openmp+set}" = set; then :
@@ -3468,61 +3488,78 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
   fi
 
 
-
-if test "$cuda_arg" = "no"; then
-    use_cuda=no
-elif test "$cuda_arg" = "auto"; then
-    use_cuda=yes
-    cuda_prefix="/usr/local/cuda"
-    force_cuda=no
-elif test "$cuda_arg" = "yes"; then
-    use_cuda=yes
-    cuda_prefix="/usr/local/cuda"
-    force_cuda=yes
-else
-    use_cuda=yes
-    cuda_prefix="$cuda_arg"
-    force_cuda=yes
-fi
-if test "$use_cuda" != no; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking nvcc in $cuda_prefix/bin" >&5
-$as_echo_n "checking nvcc in $cuda_prefix/bin... " >&6; }
-    if test -x "$cuda_prefix/bin/nvcc"; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: found" >&5
-$as_echo "found" >&6; }
-        use_cuda="built-in: $cuda_prefix"
-    else
-        if test "$force_cuda" = "yes"; then
-           as_fn_error $? "not found" "$LINENO" 5
-        else
-           { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found, disable CUDA support" >&5
-$as_echo "not found, disable CUDA support" >&6; }
-           use_cuda=no
-        fi
+    if test -n "$OPENMP_CFLAGS"; then
+      OPENMP_CFLAGS="-Xcompiler $OPENMP_CFLAGS"
     fi
-fi
-if test "$use_cuda" = no; then
-    NVCC=""
-    CUDA_CFLAGS=""
-    CUDA_LDFLAGS=""
-    CUDAOBJ=""
-    use_cuda=no
-    CC_LINKER="$CC"
+    CFLAGS="$xxxxCFLAGS"
 else
-    $as_echo "#define HAVE_CUDA 1" >>confdefs.h
 
-    NVCC="$cuda_prefix/bin/nvcc"
-    CUDA_CFLAGS="-O3 -I$cuda_prefix/include"
-    CUDA_LDFLAGS="-L$cuda_prefix/lib"
-    CUDAOBJ="src/phmm/calc_dnn_cuda.o"
-    CC_LINKER="$NVCC"
+  OPENMP_CFLAGS=
+  # Check whether --enable-openmp was given.
+if test "${enable_openmp+set}" = set; then :
+  enableval=$enable_openmp;
 fi
 
+  if test "$enable_openmp" != no; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CC option to support OpenMP" >&5
+$as_echo_n "checking for $CC option to support OpenMP... " >&6; }
+if ${ac_cv_prog_c_openmp+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifndef _OPENMP
+ choke me
+#endif
+#include <omp.h>
+int main () { return omp_get_num_threads (); }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_prog_c_openmp='none needed'
+else
+  ac_cv_prog_c_openmp='unsupported'
+	  	  	  	  	  	  	                                	  	  	  	  	  	  for ac_option in -fopenmp -xopenmp -openmp -mp -omp -qsmp=omp -homp \
+                           -Popenmp --openmp; do
+	    ac_save_CFLAGS=$CFLAGS
+	    CFLAGS="$CFLAGS $ac_option"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifndef _OPENMP
+ choke me
+#endif
+#include <omp.h>
+int main () { return omp_get_num_threads (); }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_prog_c_openmp=$ac_option
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	    CFLAGS=$ac_save_CFLAGS
+	    if test "$ac_cv_prog_c_openmp" != unsupported; then
+	      break
+	    fi
+	  done
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_c_openmp" >&5
+$as_echo "$ac_cv_prog_c_openmp" >&6; }
+    case $ac_cv_prog_c_openmp in #(
+      "none needed" | unsupported)
+	;; #(
+      *)
+	OPENMP_CFLAGS=$ac_cv_prog_c_openmp ;;
+    esac
+  fi
 
 
-EXTRAOBJ="$EXTRAOBJ $CUDAOBJ"
-EXTRALIB="$EXTRALIB $CUDA_LDFLAGS"
-
+fi
 
 case "$host_cpu" in
   arm*)
@@ -5978,18 +6015,6 @@ case "$host_os" in
     EXTRALIB="$EXTRALIB -liconv"
     ;;
 esac
-
-if test "$use_cuda" = no; then
-   CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
-else
-   if test -z "$OPENMP_CFLAGS"; then
-      CC_LINKFLAGS="$CFLAGS $CPPFLAGS $OPENMP_CFLAGS"
-   else
-      CC_LINKFLAGS="-Xcompiler $OPENMP_CFLAGS"
-   fi
-fi
-
-
 
 
 

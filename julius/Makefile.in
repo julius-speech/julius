@@ -16,7 +16,6 @@ SHELL=/bin/sh
 LIBSENT=../libsent
 LIBJULIUS=../libjulius
 CC=@CC@
-CCLINK=`$(LIBSENT)/libsent-config --linker`
 CFLAGS=@CFLAGS@
 CPPFLAGS=-I. -I$(LIBJULIUS)/include -I$(LIBSENT)/include @CPPFLAGS@ `$(LIBSENT)/libsent-config --cflags` `$(LIBJULIUS)/libjulius-config --cflags`
 LINKFLAGS=`$(LIBSENT)/libsent-config --linkflags`
@@ -56,7 +55,7 @@ record.o \
 all: $(TARGET)
 
 $(TARGET): $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a $(OBJ)
-	$(CCLINK) $(LINKFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(GTK_LIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(GTK_LIBS)
 
 ############################################################
 
