@@ -4,9 +4,10 @@
 
                                 Julius
 
-						(Rev 4.5   2019/01/02)
-						(Rev 4.4.2 2016/09/12)
-						(Rev 4.4   2016/08/30)
+                                                (Rev 4.6   2020/09/02)
+                                                (Rev 4.5   2019/01/02)
+                                                (Rev 4.4.2 2016/09/12)
+                                                (Rev 4.4   2016/08/30)
                                                 (Rev 4.3.1 2014/01/15)
                                                 (Rev 4.3   2013/12/25)
                                                 (Rev 4.2.3 2013/06/30)
@@ -101,33 +102,33 @@ UTF-8に変換されました．以降の更新は UTF-8 ベースで行われ�
 Julius-4.5のファイルの構成
 =============================
 
-	00readme-ja.txt		最初に読む文書（このファイル）
-	LICENSE.txt		ライセンス条項
-	Release-ja.txt		リリースノート/変更履歴
-	00readme-DNN.txt	DNN-HMM の使い方説明
-	configure		configureスクリプト
-	configure.in
-	Sample.jconf		jconf 設定ファイルサンプル
-	Sample.dnnconf		DNN 設定ファイルのサンプル
-	julius/			Julius ソース
-	libjulius/		JuliusLib コアエンジンライブラリ ソース
-	libsent/		JuliusLib 汎用ライブラリ ソース
-	adinrec/		録音ツール adinrec
-	adintool/		音声録音/送受信ツール adintool
-	generate-ngram/		N-gram文生成ツール
-	gramtools/		文法作成ツール群
-	jcontrol/		サンプルネットワーククライアント jcontrol
-	mkbingram/		バイナリN-gram作成ツール mkbingram
-	mkbinhmm/		バイナリHMM作成ツール mkbinhmm
-	mkgshmm/		GMS用音響モデル変換ツール mkgshmm
-	mkss/			ノイズ平均スペクトル算出ツール mkss
-	support/		開発用スクリプト
-	jclient-perl/		A simple perl version of module mode client
-	plugin/			プラグインソースコードのサンプルと仕様文書
-	man/			マニュアル類
-	msvc/			Microsoft Visual Studio 2013 用ファイル
-	dnntools/		Sample programs for dnn and vecnet client
-	binlm2arpa/		バイナリN-gramからARPAへの変換ツール
+        00readme-ja.txt		最初に読む文書（このファイル）
+        LICENSE.txt		ライセンス条項
+        Release-ja.txt		リリースノート/変更履歴
+        00readme-DNN.txt	DNN-HMM の使い方説明
+        configure		configureスクリプト
+        configure.in
+        Sample.jconf		jconf 設定ファイルサンプル
+        Sample.dnnconf		DNN 設定ファイルのサンプル
+        julius/			Julius ソース
+        libjulius/		JuliusLib コアエンジンライブラリ ソース
+        libsent/		JuliusLib 汎用ライブラリ ソース
+        adinrec/		録音ツール adinrec
+        adintool/		音声録音/送受信ツール adintool
+        generate-ngram/		N-gram文生成ツール
+        gramtools/		文法作成ツール群
+        jcontrol/		サンプルネットワーククライアント jcontrol
+        mkbingram/		バイナリN-gram作成ツール mkbingram
+        mkbinhmm/		バイナリHMM作成ツール mkbinhmm
+        mkgshmm/		GMS用音響モデル変換ツール mkgshmm
+        mkss/			ノイズ平均スペクトル算出ツール mkss
+        support/		開発用スクリプト
+        jclient-perl/		A simple perl version of module mode client
+        plugin/			プラグインソースコードのサンプルと仕様文書
+        man/			マニュアル類
+        msvc/			Microsoft Visual Studio 2013 用ファイル
+        dnntools/		Sample programs for dnn and vecnet client
+        binlm2arpa/		バイナリN-gramからARPAへの変換ツール
 
 
 ライセンスおよび引用
@@ -169,6 +170,6 @@ Julius 開発に関するご質問・お問い合わせは主に GitHub 上で�
 あるいは下記のメールアドレスまでお問い合わせ下さい
 ('at' を '@' に読み替えてください)
 
-	julius-info at lists.sourceforge.jp
+        julius-info at lists.sourceforge.jp
 
 以上

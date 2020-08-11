@@ -135,6 +135,3 @@ ipch/
 *.vsp
 *.vspx
 *.sap
-
-# Visual Studio Code files
-.vscode/*

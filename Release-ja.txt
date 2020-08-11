@@ -1,3 +1,29 @@
+4.6 (2020.09.02)
+=================
+○新機能
+- GPU サポート（DNN-HMM計算部）
+  - CUDA toolkit をインストールし nvcc でビルドすることで有効化 詳しくは INSTALL.txt の対応する項目を。
+  - .dnnconf で "cuda_mode=..." で詳細なパラメータを設定可能 詳しくは Sample.dnnconf の末尾を。
+  - 動作確認： Linux のみ
+- 1パス文法認識の実装
+  - 第1パスからフルの文法制約を適用することで、1パス文法認識を行うモードを新規追加
+  - モードのON/OFFは文法単位：".dfa.forward" ファイルが存在する文法はこの機能が有効になり、なければ従来バージョン通り（単語対制約のみ）
+  - ".dfa.forward" は前向き文法ファイルで、これ以降のバージョンの "mkdfa" で自動生成される。
+- DNN-HMM で出力が log10 化されている/いないモデルに両対応
+  - .dnnconf で "state_prior_log10nize=yes/no" で指定する
+- 新たな特徴量正規化モードを追加：平均は入力自身、分散は固定値を使うモード
+  - 新たなオプション "-cvnstatic" で指定可能
+  - 新モードを含めた全体的な動作の説明が "doc/Normalize.md" にまとめられた
+○更新
+- 修正BSDライセンスへ移行
+- Python バージョンの文法コンパイラ "mkdfa.py" を gramtools/mkdfa に追加
+- .vcproj を Visual Studio 2017 に更新。それ以前のバージョンでは "JuliusLib_vs2013_v120.sln" を使うこと
+- 最新版に合わせたドキュメントを markdown 形式で doc/ 以下に執筆中（フロントエンドまで記述）
+- GitHubで見やすいよう各ディレクトリに README.md を置き、*.txt を廃止
+○バグ修正
+- "mkbingram" で文字コード変換を指定しても無視される不具合を修正
+- その他の軽微な修正
+
 4.5 (2019.01.02)
 =================
 ○新機能
@@ -13,7 +39,7 @@
   化。値は 0 から 3 で大きいほどアグレッシブな VAD を行う。(WebRTCの仕
   様のまま）
   - 新VAD と関連オプションは julius, adinrec, adintool にて使用可能
-  - 使い方の例: 
+  - 使い方の例:
       - "-fvad -1" で旧モジュールのみ使用（以前のバージョンと等価）
       - "-fvad 3 -lv 1" で新モジュールのみ使用。 "-lv 1" とすることで
       旧モジュールを常にトリガ状態にすることで、VAD結果が新モジュール
@@ -37,7 +63,7 @@
   [-fvad mode]  libfvadベースVADの有効/無効およびモードの設定。 mode
   が -1 だと無効化、0 から 3 だと有効化。0 以上の値は強度を表し、値が
   大きいほどアグレッシブなVADになる(= speech-like noise でも落とそうと
-  する）。デフォルト値は -1 （無効）  
+  する）。デフォルト値は -1 （無効）
 
   [-fvad_param nFrame thres]  libfvad ベースVADの詳細パラメータを変更
   する。nFrame はスムージングフレーム数、thres は音声トリガ検知閾値で
@@ -120,7 +146,7 @@
 
 ○新機能
 - 辞書のリロード: j_reload_adddict()
-- 音声入力の振幅のスケーリング："-lvscale factor" および 
+- 音声入力の振幅のスケーリング："-lvscale factor" および
   "j_adin_change_input_scaling_factor()"
 - 長い入力の棄却："-rejectlong msec"
 - バイナリN-gramの文字コード変換をサポート: "mkbingram"
@@ -280,7 +306,7 @@
 ○新規
  - 新たな MSVC サポート："msvc/00README.txt" を読んでください。
  - 任意長の N-gram をサポート
- - システムに portaudio ライブラリとヘッダがあれば、Julius 内蔵の 
+ - システムに portaudio ライブラリとヘッダがあれば、Julius 内蔵の
    portaudio の代わりにそれを使用するようになった。外部ライブラリは
    V19 にも対応する。その場合、録音デバイスを PORTAUDIO_DEV で指定可能。
    書式は起動時のログを見ること。
@@ -377,7 +403,7 @@
   - MSD-HMM のサポート（HTS ツールキットで学習したモデルを使用可能）
   - CVN サポート
   - VTLN 用 frequency warping （パラメータ推定は無し）
-  - "-input alsa", "-input oss" および "-input esd" 
+  - "-input alsa", "-input oss" および "-input esd"
   - モジュールモード用クライアントの perl 版 "jclient-perl" の同梱
 
 ■仕様変更：
@@ -568,7 +594,7 @@
   - 任意の次元数に対応
       - 抽出される特徴量のタイプおよび次元数は，音響モデルのヘッダから自動判断
   - 細かい特徴量抽出のパラメータを指定可能になった：
-      -preemph, -fbank, -ceplif, -rawe / -norawe, 
+      -preemph, -fbank, -ceplif, -rawe / -norawe,
       -enormal / -noenormal, -escale, -silfloor
   - 新オプション "-zmeanframe": フレームごとの DC offset 除去 (HTK互換)
 
@@ -779,7 +805,7 @@
    - ALSA-0.9.x に対応．
      自動検出では OSS が優先されるので，使用するには configure 時に
      "--with-mictype=alsa" を明示的に指定すること．
- 
+
 3.3p2 (2002.11.18)
 ===================
 - [マルチパス版] モデルスキップ遷移に対応した．音響モデルの初期状態か
