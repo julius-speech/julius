@@ -1445,7 +1445,7 @@ char *getNewClassName( char *keyname )
 
     sprintf( classname, "%s#%d", keyname , tmpClassNo++ );
     if( !SW_SemiQuiet ){
-	fprintf( stderr, "\rNow modifying grammar to minimize states[%d]", GramModifyNum );
+	fprintf( stderr, "\rNow modifying grammar to reduce states[%d]", GramModifyNum );
 	NoNewLine = 1;
     }
     GramModifyNum++;
@@ -1474,7 +1474,7 @@ void setGram( void )
     if( !SW_Quiet ) fputs( "Now parsing grammar file\n", stderr );
     yyparse();
     if( !SW_Quiet ){
-	fprintf( stderr, "\rNow modifying grammar to minimize states[%d]\n", GramModifyNum - 1 );
+	fprintf( stderr, "\rNow modifying grammar to reduce states[%d]\n", GramModifyNum - 1 );
 	NoNewLine = 0;
     }
     if( StartSymbol == NULL ) StartSymbol = ClassList;
@@ -1515,7 +1515,7 @@ char *chkNoInstantClass( void )
 
 int yyerror( char *mes )
 {
-    errMes(mes );
+    errMes("%s: Line %d: %s", GramFile, yylineno, mes);
     ErrParse++;
     return( 0 );
 }

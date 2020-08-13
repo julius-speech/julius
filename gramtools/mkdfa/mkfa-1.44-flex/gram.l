@@ -1,3 +1,5 @@
+%option yylineno
+%option noyywrap
 %%
 "@"[a-zA-Z0-9_]+ {
 		yylval = yytext + 1;

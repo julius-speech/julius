@@ -204,7 +204,7 @@ void errMes( char *fmt, ... )
     va_start( argp, fmt );
     vsprintf( Clipboard, fmt, argp );
     va_end( argp );
-    fprintf( stderr, "Error:       %s\n", Clipboard );
+    fprintf( stderr, "\nError in mkfa: %s\n", Clipboard );
     exit( 1 );
 }
 
