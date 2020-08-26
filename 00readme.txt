@@ -60,7 +60,7 @@ What's new in Julius-4.6
 
 Julius-4.6 is a minor release with a few new features and many fixes.
 
-- New CUDA support for DNN computation
+- New CUDA support for DNN computation (tested on Linux)
 - New 1-pass grammar recognition
 - Support non-log10nized state priors in DNN model
 - Feature normalization pattern added: mean = input self, variance = static
