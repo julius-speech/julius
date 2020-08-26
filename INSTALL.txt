@@ -36,28 +36,18 @@ Linux  (tested on Ubuntu-14.04 and later)
   % make
   % (optional) make install
 
-If you want only one audio interface, use `--with-mictype=xxx`.
+If you want to explicitly choose an audio interface, use `--with-mictype=xxx`.
 
   % ./configure --with-mictype=pulseaudio
   % make
   % (optional) make install
 
------------------------------------------------
-Linux with CUDA support (tested on Ubuntu-16.04 and CUDA-9.0, but later should work)
-
-Just compile with nvcc, by giving CC and CFLAGS like this for configure script:
+(4.6 and later) For CUDA support, compile with nvcc:
 
   % CC=/usr/local/cuda-x.x/bin/nvcc CFLAGS=-O3 ./configure
 
-"configure" will automatically detects using nvcc and enables specific CUDA codes.
-Then will build julius and other tools with CUDA runtime.
-
-Whole process: after installing CUDA toolkit under /usr/local/cuda-x.x,
-  % sudo apt-get install build-essential zlib1g-dev libsdl2-dev
-  % sudo apt-get libasound2-dev (or libpulse-dev, whichever you want to enable)
-  % CC=/usr/local/cuda-x.x/bin/nvcc CFLAGS=-O3 ./configure
-  % make
-  % (optional) make install
+where "/usr/local/cuda-x.x/" is the location of the CUDA sdk toolkit.
+ (tested on Ubuntu-16.04 and CUDA-9.0, but later should work)
 
 -----------------------------------------------
 Mingw on Ubuntu (tested on 16.04)

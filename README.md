@@ -2,10 +2,10 @@ Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 ==========================================================================
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2530396.svg)](https://doi.org/10.5281/zenodo.2530396)
 
-Copyright (c) 1991-2019 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)  
-Copyright (c) 2005-2019 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)  
-Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan  
-Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology  
+Copyright (c) 1991-2020 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)
+Copyright (c) 2005-2020 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)
+Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
+Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
 
 # About Julius
 
@@ -16,7 +16,6 @@ The main platform is Linux and other Unix-based system, as well as Windows, Mac,
 Julius has been developed as a research software for Japanese LVCSR since 1997, and the work was continued under IPA Japanese dictation toolkit project (1997-2000), Continuous Speech Recognition Consortium, Japan (CSRC) (2000-2003) and Interactive Speech Technology Consortium (ISTC).
 
 The main developer / maintainer is Akinobu Lee (ri@nitech.ac.jp).
-
 
 # Features
 
@@ -145,6 +144,7 @@ To run Julius on live microphone input, save the following text as "`mic.jconf`"
 ```
 
 and run Julius with the mic.jconf instead of julius.jconf
+
 ```shell
 % ../julius/julius/julius -C mic.jconf -dnnconf dnn.jconf
 ```
@@ -236,7 +236,7 @@ Other, old documents:
   - A. Lee, T. Kawahara and K. Shikano. "Julius --- an open source real-time large vocabulary recognition engine." In Proc. European Conference on Speech Communication and Technology (EUROSPEECH), pp. 1691--1694, 2001.
   - T. Kawahara, A. Lee, T. Kobayashi, K. Takeda, N. Minematsu, S. Sagayama, K. Itou, A. Ito, M. Yamamoto, A. Yamada, T. Utsuro and K. Shikano. "Free software toolkit for Japanese large vocabulary continuous speech recognition." In Proc. Int'l Conf. on Spoken Language Processing (ICSLP) , Vol. 4, pp. 476--479, 2000.
 
-# Moving to UTF-8
+# Moved to UTF-8
 
 We are going to move to UTF-8.
 
