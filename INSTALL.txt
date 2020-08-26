@@ -52,13 +52,22 @@ where "/usr/local/cuda-x.x/" is the location of the CUDA sdk toolkit.
 -----------------------------------------------
 Mingw on Ubuntu (tested on 16.04)
 
-"mingw-sdl2" is not supported on Ubuntu, so adintool-gui for mingw
-cannot be build on Ubuntu.
+Install SDL2 dev lib for mingw:
+ - Find "SDL2-devel-2.x.x-mingw.tar.gz" in SDL site and download it.
+   https://www.libsdl.org/download-2.0.php
+ - unpack it, enter the dir
+ - "sudo make cross" to install 32bit/64bit pre-compiled binaries into /usr/local.
 
   % sudo apt-get install mingw-w64 mingw-w64-tools
   % sudo apt-get install libz-mingw-w64-dev
-  % ./configure --host=x86_64-w64-mingw32 --disable-sdl
+  % ./configure --host=x86_64-w64-mingw32
   % make
+
+In case you failed to compile "adintool-gui", edit adintool/Makefile:
+
+  SDL_LDFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl2-config --static-libs`
+
+and do make again!
 
 -----------------------------------------------
 Cygwin
