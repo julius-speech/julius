@@ -1,4 +1,4 @@
-#define LIBSENT_VERSION "4.5"
+#define LIBSENT_VERSION "4.6"
 #define AUDIO_API_NAME ""
 #define AUDIO_API_DESC ""
 #define AUDIO_FORMAT_DESC ""

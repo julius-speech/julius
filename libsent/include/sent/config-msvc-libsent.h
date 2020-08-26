@@ -1,5 +1,5 @@
 /* Version string */
-#define LIBSENT_VERSION "4.5"
+#define LIBSENT_VERSION "4.6"
 
 /* Audio API name */
 #define AUDIO_API_NAME "pa-dsound"

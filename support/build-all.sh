@@ -6,7 +6,7 @@
 #
 # argument: any configure options except "--enable-setup=..." is allowed.
 # 
-JULIUS_VERSION=4.5
+JULIUS_VERSION=4.6
 
 ######################################################################
 
