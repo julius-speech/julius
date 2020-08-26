@@ -7,8 +7,10 @@
 SHELL=/bin/sh
 
 .SUFFIXES:
-.SUFFIXES: .c .o .a
+.SUFFIXES: .c .o .a .cu
 .c.o:
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
+.cu.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
 
 CC=@CC@
@@ -162,7 +164,6 @@ src/phmm/calc_dnn_neonv2.o: src/phmm/calc_dnn_neonv2.c
 src/phmm/calc_dnn_neon.o: src/phmm/calc_dnn_neon.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) @SIMD_NEON_CFLAGS@ -o $@ -c $<
 
-
 ############################################################
 
 install: install.lib install.include install.bin
@@ -182,11 +183,11 @@ install.bin: libsent-config-dist
 	${INSTALL_PROGRAM} libsent-config-dist ${bindir}/libsent-config
 
 clean:
-	$(RM) *~ src/*/*~ src/*/*.o src/*/*/*.o src/*/*/*/*.o src/*/*/*/*/*.o include/sent/*~ 
+	$(RM) *~ src/*/*~ src/*/*.o src/*/*/*.o src/*/*/*/*.o src/*/*/*/*/*.o include/sent/*~
 	$(RM) config.log config.cache
 
 distclean:
-	$(RM) *~ src/*/*~ src/*/*.o src/*/*/*.o src/*/*/*/*.o src/*/*/*/*/*.o include/sent/*~ 
+	$(RM) *~ src/*/*~ src/*/*.o src/*/*/*.o src/*/*/*/*.o src/*/*/*/*/*.o include/sent/*~
 	$(RM) config.log config.cache
 	$(RM) libsent-config libsent-config-dist
 	$(RM) config.status include/sent/config.h

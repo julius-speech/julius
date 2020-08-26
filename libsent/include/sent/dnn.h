@@ -25,6 +25,10 @@ typedef void (*DNN_FUNC_VOID)();
 typedef struct {
   float *w;			/* w [out * in]*/
   float *b;			/* b [out] */
+#ifdef __NVCC__
+  float *dw;
+  float *db;
+#endif /* __NVCC__ */
   int in;
   int out;
 #ifdef _OPENMP
@@ -44,10 +48,10 @@ typedef struct {
 
   int batch_size;		/* batch size */
   int num_threads;              /* number of threads */
-  
+
   int veclen;		  /* input vector length (before expansion) */
   int contextlen;	  /* context length */
-  
+
   int inputnodenum;		/* input layer node number */
   int hiddennodenum;		/* hidden layer node number */
   int outputnodenum;		/* output layer node number */
@@ -55,9 +59,18 @@ typedef struct {
   float *invec;		    /* input vector holder (32byte aligned) */
   float **work;		    /* working buffer for ff computation */
   float *accum;		    /* working buffer for accumulation */
+#ifdef __NVCC__
+  boolean use_cuda;
+  boolean use_cuda_shared;
+  int blocksize1;
+  int blocksize2;
+  float *dinvec;
+  float **ddst;
+  float *dout;
+#endif /* __NVCC__ */
 
   DNN_FUNC_VOID subfunc;	/* sub function for DNN computation */
-  
+
 } DNNData;
 
 #endif /* __SENT_DNN_H__ */

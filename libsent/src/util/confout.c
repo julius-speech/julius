@@ -1,19 +1,19 @@
-/**
+ /**
  * @file   confout.c
- * 
+ *
  * <JA>
  * @brief  コンパイル時の設定をテキスト出力する
  * </JA>
- * 
+ *
  * <EN>
  * @brief  Output compilation time configurations strings.
  * </EN>
- * 
+ *
  * @author Akinobu LEE
  * @date   Thu Feb 17 15:34:39 2005
  *
  * $Revision: 1.13 $
- * 
+ *
  */
 /*
  * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
@@ -29,9 +29,9 @@
 #include <sent/adin.h>
 #include <sent/hmm_calc.h>
 
-/** 
+/**
  * Output version of this libsent library.
- * 
+ *
  * @param strm [in] file pointer to output
  */
 void
@@ -40,9 +40,9 @@ confout_version(FILE *strm)
   fprintf(strm, "version %s\n", LIBSENT_VERSION);
 }
 
-/** 
+/**
  * Output audio configuration of this libsent library.
- * 
+ *
  * @param strm [in] file pointer to output
  */
 void
@@ -75,9 +75,9 @@ confout_audio(FILE *strm)
   fprintf(strm, "    max. length of an input : %d samples, %d words\n", MAXSPEECHLEN, MAXSEQNUM);
 }
 
-/** 
+/**
  * Output language model configuration of this libsent library.
- * 
+ *
  * @param strm [in] file pointer to output
  */
 void
@@ -101,16 +101,16 @@ confout_lm(FILE *strm)
 #endif
 }
 
-/** 
+/**
  * Output acoustic model configuration of this libsent library.
- * 
+ *
  * @param strm [in] file pointer to output
  */
 void
 confout_am(FILE *strm)
 {
   fprintf(strm, " - Acoustic Model\n");
-/* 
+/*
  * #ifdef MULTIPATH_VERSION
  *   fprintf(strm, "	multi-path HMM handling : yes\n");
  * #else
@@ -123,9 +123,9 @@ confout_am(FILE *strm)
 #endif
 }
 
-/** 
+/**
  * Output about linked libraries of this libsent library.
- * 
+ *
  * @param strm [in] file pointer to output
  */
 void
@@ -135,9 +135,9 @@ confout_lib(FILE *strm)
   fprintf(strm, "    file decompression by   : %s\n", GZIP_READING_DESC);
 }
 
-/** 
+/**
  * Output about process handling of this libsent library.
- * 
+ *
  * @param strm [in] file pointer to output
  */
 void
@@ -182,10 +182,19 @@ confout_simd(FILE *strm)
 
 }
 
+void
+confout_cuda(FILE *strm)
+{
+#ifdef __NVCC__
+  fprintf(strm, " - built-in CUDA support: yes\n");
+#else
+  fprintf(strm, " - built-in CUDA support: no\n");
+#endif /* __NVCC__ */
+}
 
-/** 
+/**
  * Output all information of this libsent library.
- * 
+ *
  * @param strm [in] file pointer to output
  */
 void
@@ -198,4 +207,5 @@ confout(FILE *strm)
   confout_lib(strm);
   confout_process(strm);
   confout_simd(strm);
+  confout_cuda(strm);
 }

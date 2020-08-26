@@ -40,7 +40,7 @@
  *   - GPRUNE_SEL_HEURISTIC: heuristic pruning
  *   - GPRUNE_SEL_BEAM: beam pruning
  *   - GPRUNE_SEL_USER: user-defined function
- * 
+ *
  */
 enum{GPRUNE_SEL_UNDEF, GPRUNE_SEL_NONE, GPRUNE_SEL_SAFE, GPRUNE_SEL_HEURISTIC, GPRUNE_SEL_BEAM, GPRUNE_SEL_USER};
 
@@ -49,7 +49,7 @@ enum{GPRUNE_SEL_UNDEF, GPRUNE_SEL_NONE, GPRUNE_SEL_SAFE, GPRUNE_SEL_HEURISTIC, G
  *
  * Larger value may ease pruning error, but processing may become slower.
  * Smaller value can speed up the acoustic computation, but may cause error.
- * 
+ *
  */
 #define TMBEAMWIDTH 5.0
 
@@ -61,7 +61,7 @@ typedef struct {
 
 /**
  * Work area and cache for %HMM computation
- * 
+ *
  */
 typedef struct __hmmwork__{
 
@@ -235,7 +235,7 @@ int check_avail_simd();
 DNNData *dnn_new();
 void dnn_clear(DNNData *dnn);
 void dnn_free(DNNData *dnn);
-boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, boolean state_prior_log10nize, int batchsize, int num_threads);
+boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, boolean state_prior_log10nize, int batchsize, int num_threads, char *cuda_mode);
 void dnn_calc_outprob(HMMWork *wrk);
 
 /* calc_dnn_*.c */
@@ -244,6 +244,15 @@ void calc_dnn_avx(float *dst, float *src, float *w, float *b, int out, int in, f
 void calc_dnn_sse(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
 void calc_dnn_neonv2(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
 void calc_dnn_neon(float *dst, float *src, float *w, float *b, int out, int in, float *fstore);
+
+#ifdef __NVCC__
+void cuda_copy_logistic_table(float *table, int len);
+void cuda_layer_load(DNNLayer *l);
+void cuda_layer_free(DNNLayer *l);
+void cuda_dnn_clear(DNNData *dnn);
+void cuda_dnn_setup(DNNData *dnn);
+void cuda_calc_outprob(HMMWork *wrk);
+#endif /* __NVCC__ */
 
 #ifdef __cplusplus
 }

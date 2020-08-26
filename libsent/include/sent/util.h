@@ -22,7 +22,7 @@
  * @date   Sat Feb 12 12:30:40 2005
  *
  * $Revision: 1.10 $
- * 
+ *
  */
 /*
  * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
@@ -35,7 +35,7 @@
 #define __SENT_UTIL_H__
 
 /*
- *  
+ *
  */
 /**
  * @brief Memory block size in bytes for mybmalloc()
@@ -45,7 +45,7 @@
  * Smaller value may leads to finer granularity, but overhead may increase.
  * Larger value may result in reduction of overhead, but too much memory
  * can be allocated for a small memory requirement.
- * 
+ *
  */
 #define MYBMALLOC_BLOCK_SIZE 10000
 
@@ -106,6 +106,8 @@ char  *mystrtok_quotation(char *str, char *delim, int left_paren, int right_pare
 char *mystrtok_quote(char *str, char *delim);
 char *mystrtok(char *str, char *delim);
 char *mystrtok_movetonext(char *str, char *delim);
+char *mystrtok_quotation_safe(char *str, char *delim, int left_paren, int right_paren, int mode, char **save);
+char *mystrtok_safe(char *str, char *delim, char **save);
 
 /* confout.c */
 void confout(FILE *strm);
@@ -116,6 +118,7 @@ void confout_am(FILE *strm);
 void confout_lib(FILE *strm);
 void confout_process(FILE *strm);
 void confout_simd(FILE *strm);
+void confout_cuda(FILE *strm);
 
 /* qsort.c */
 void qsort_reentrant(void *base, int count, int size, int (*compare)(const void *, const void *, void *), void *pointer);

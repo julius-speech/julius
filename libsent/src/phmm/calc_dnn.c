@@ -285,7 +285,7 @@ static boolean load_npy(float *array, char *filename, int x, int y)
   }
 #ifdef WORDS_BIGENDIAN
   swap_bytes(&header_len, 2, 1);
-#endif  
+#endif
   header = (char *)mymalloc(header_len + 1);
   if ((len = myfread(header, 1, header_len, fp)) < header_len) {
     jlog("Error: load_npy: failed to read header (%d bytes): %s\n", header_len, filename);
@@ -352,7 +352,7 @@ static void logistic_table_build()
   int i;
   double d;
   double x;
-  
+
   for (i = 0; i <= LOGISTIC_TABLE_MAX; i++) {
     x = (double)i / (double)LOGISTIC_TABLE_FACTOR - 8.0;
     d = 1.0 / (1.0 + exp(-x));
@@ -379,6 +379,11 @@ static void dnn_layer_init(DNNLayer *l)
   l->begin = NULL;
   l->end = NULL;
 #endif /* _OPENMP */
+#ifdef __NVCC__
+  l->dw = NULL;
+  l->db = NULL;
+#endif /* __NVCC__ */
+
 }
 
 /* load dnn layer parameter from files */
@@ -442,6 +447,9 @@ static void dnn_layer_clear(DNNLayer *l)
   if (l->begin != NULL) free(l->begin);
   if (l->end != NULL) free(l->end);
 #endif /* _OPENMP */
+#ifdef __NVCC__
+  cuda_layer_free(l);
+#endif /* __NVCC__ */
   dnn_layer_init(l);
 }
 
@@ -459,6 +467,10 @@ DNNData *dnn_new()
 void dnn_clear(DNNData *dnn)
 {
   int i;
+
+#ifdef __NVCC__
+  cuda_dnn_clear(dnn);
+#endif /* __NVCC__ */
 
   if (dnn->h) {
     for (i = 0; i < dnn->hnum; i++) {
@@ -513,7 +525,7 @@ sub1(float *dst, float *src, float *w, float *b, int out, int in, float *fstore)
 /************************************************************************/
 
 /* initialize dnn */
-boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, boolean state_prior_log10nize, int batchsize, int num_threads)
+boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int outputnodes, int hiddennodes, int hiddenlayernum, char **wfile, char **bfile, char *output_wfile, char *output_bfile, char *priorfile, float prior_factor, boolean state_prior_log10nize, int batchsize, int num_threads, char *cuda_mode)
 {
   int i;
 
@@ -539,7 +551,70 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   dnn->outputnodenum = outputnodes;
   dnn->prior_factor = prior_factor;
   dnn->num_threads = num_threads;
-
+#ifdef __NVCC__
+  dnn->blocksize1 = 0;
+  dnn->blocksize2 = 0;
+  if (cuda_mode == NULL) {
+    dnn->use_cuda = TRUE;
+    dnn->use_cuda_shared = FALSE;
+  } else if (strmatch(cuda_mode, "disable")) {
+    dnn->use_cuda = FALSE;
+    dnn->use_cuda_shared = FALSE;
+  } else if (strnmatch(cuda_mode, "global", 6)) {
+    dnn->use_cuda = TRUE;
+    dnn->use_cuda_shared = FALSE;
+    if (strlen(cuda_mode) > 6) {
+      char *buf = strdup(cuda_mode + 6);
+      char *p, *save;
+      int n = 0;
+      for (p = mystrtok_safe(buf, ",", &save); p; p = mystrtok_safe(NULL, ",", &save)) {
+        switch(n) {
+        case 0:
+          dnn->blocksize1 = atoi(p);
+          break;
+        default:
+          jlog("Error: dnn_init: too many CUDA mode parameter: %s\n", cuda_mode);
+          return FALSE;
+        }
+        n++;
+      }
+      free(buf);
+    }
+  } else if (strnmatch(cuda_mode, "shared", 6)) {
+    dnn->use_cuda = TRUE;
+    dnn->use_cuda_shared = TRUE;
+    if (strlen(cuda_mode) > 6) {
+#if 1
+      jlog("Error: dnn_init: CUDA shared mode block parameters are fixed to 16x8, remove the parameters: %s\n", cuda_mode);
+      return FALSE;
+#else
+      char *buf = strdup(cuda_mode + 6);
+      char *p, *save;
+      int n = 0;
+      for (p = mystrtok_safe(buf, ",", &save); p; p = mystrtok_safe(NULL, ",", &save)) {
+        switch(n) {
+        case 0:
+          dnn->blocksize1 = atoi(p);
+          break;
+        case 1:
+          dnn->blocksize2 = atoi(p);
+          break;
+        default:
+          jlog("Error: dnn_init: too many CUDA mode parameter: %s\n", cuda_mode);
+          return FALSE;
+        }
+        n++;
+      }
+      free(buf);
+#endif
+    }
+  }
+#else
+  if (cuda_mode != NULL && strmatch(cuda_mode, "disable") == FALSE) {
+    jlog("Error: dnn_init: CUDA mode specified as \"%s\" but no CUDA support is built-in\n", cuda_mode);
+    return FALSE;
+  }
+#endif /* __NVCC__ */
 #ifdef _OPENMP
   /* set number of threads */
   int max_num_threads = omp_get_max_threads();
@@ -550,6 +625,15 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
   jlog("Stat: dnn_init: use %d threads for DNN computation (max %d cores)\n", dnn->num_threads, max_num_threads);
 #endif /* OPENMP */
 
+#ifdef __NVCC__
+  // copy logistic_table to GPU
+  if (dnn->use_cuda) {
+    cuda_copy_logistic_table(logistic_table, LOGISTIC_TABLE_MAX + 1);
+    jlog("Stat: dnn_init: logistic table copied to GPU\n");
+  }
+
+#endif /* __NVCC__ */
+
   /* check for input length */
   {
     int inputlen = veclen * contextlen;
@@ -557,7 +641,7 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
       jlog("Error: dnn_init: veclen(%d) * contextlen(%d) != inputnodes(%d)\n", veclen, contextlen, inputnodes);
       return FALSE;
     }
-    
+
     jlog("Stat: dnn_init: input: vec %d * context %d = %d dim\n", veclen, contextlen, inputlen);
     jlog("Stat: dnn_init: input layer: %d dim\n", inputnodes);
     jlog("Stat: dnn_init: %d hidden layer(s): %d dim\n", hiddenlayernum, hiddennodes);
@@ -578,6 +662,18 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
     if (dnn_layer_load(&(dnn->h[i]), hiddennodes, hiddennodes, wfile[i], bfile[i], dnn->num_threads) == FALSE) return FALSE;
   }
   if (dnn_layer_load(&(dnn->o), hiddennodes, outputnodes, output_wfile, output_bfile, dnn->num_threads) == FALSE) return FALSE;
+
+#ifdef __NVCC__
+  // load DNN layer definitions to GPU
+  if (dnn->use_cuda) {
+    for (i = 0; i < dnn->hnum; i++) {
+      cuda_layer_load(&(dnn->h[i]));
+      jlog("Stat: dnn_init: layer #%d loaded to GPU\n", i);
+    }
+    cuda_layer_load(&(dnn->o));
+    jlog("Stat: dnn_init: output layer loaded to GPU\n");
+  }
+#endif /* __NVCC__ */
 
   /* load state prior */
   {
@@ -628,6 +724,21 @@ boolean dnn_setup(DNNData *dnn, int veclen, int contextlen, int inputnodes, int 
 #endif /* OPENMP */
 #endif
 
+#ifdef __NVCC__
+  if (dnn->use_cuda) cuda_dnn_setup(dnn);
+  if (dnn->use_cuda) {
+    if (dnn->use_cuda_shared) {
+      jlog("Stat: dnn_init: CUDA mode: shared, block size = %d x %d\n", dnn->blocksize1, dnn->blocksize2);
+    } else {
+      jlog("Stat: dnn_init: CUDA mode: global, block size = %d\n", dnn->blocksize1);
+    }
+  } else {
+    jlog("Stat: dnn_init: disabled CUDA support for DNN computation\n");
+  }
+#else
+  jlog("Stat: dnn_init: no CUDA support is built in, CUDA will not be used\n");
+#endif /* __NVCC__ */
+
   /* choose sub function */
 #ifdef SIMD_ENABLED
   switch(use_simd) {
@@ -669,6 +780,13 @@ void dnn_calc_outprob(HMMWork *wrk)
   int hidx, i;
   float *dst;
   DNNLayer *h;
+#endif
+
+#ifdef __NVCC__
+  if (dnn->use_cuda) {
+    cuda_calc_outprob(wrk);
+    return;
+  }
 #endif
 
   /* frame = wrk->OP_time */
@@ -730,9 +848,9 @@ void dnn_calc_outprob(HMMWork *wrk)
   }
   /* compute output layer */
   (*dnn->subfunc)(wrk->last_cache, src, dnn->o.w, dnn->o.b, dnn->o.out, dnn->o.in, dnn->accum);
-#endif /* _OPENMP */  
+#endif /* _OPENMP */
 
-  
+
   /* do softmax */
   /* INV_LOG_TEN * (x - addlogarray(x)) - log10(state_prior)) */
 #ifdef NO_SUM_COMPUTATION
@@ -749,5 +867,5 @@ void dnn_calc_outprob(HMMWork *wrk)
       wrk->last_cache[i] = INV_LOG_TEN * (wrk->last_cache[i] - logprob) - dnn->state_prior[i];
     }
   }
+#endif /* NO_SUM_COMPUTATION */
 }
-#endif

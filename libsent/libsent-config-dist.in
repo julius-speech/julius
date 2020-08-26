@@ -27,6 +27,10 @@ info="\
 ****************************************************************
 Julius/Julian libsent library rev.@LIBSENT_VERSION@:
 
+- Built on:
+    compiler (CC)            : @CC@
+    cflags (CFLAGS)          : @CFLAGS@ @OPENMP_CFLAGS@
+    cppflags (CPPFLAGS)      : @CPPFLAGS@ @SOUNDINC@ @DEFS@
 - Audio I/O
     primary mic device API   : @altype@ (@aldesc@)
     available mic device API :@adinlist@
@@ -38,14 +42,16 @@ Julius/Julian libsent library rev.@LIBSENT_VERSION@:
     file decompression by    : @gzdesc@
 - Process management
     fork on adinnet input    : @use_fork@
- 
+- CUDA
+    built-in CUDA support    : @NVCC@
+
   Note: compilation time flags are now stored in \"libsent-config\".
-        If you link this library, please add output of
-        \"libsent-config --cflags\" to CFLAGS and
+        If you link this library, add output of
+        \"libsent-config --cflags\" to CFLAGS, and
         \"libsent-config --libs\" to LIBS.
 ****************************************************************"
 usage="\
-Usage: libsent-config [--libs] [--cflags] [--info] [--version]"
+Usage: libsent-config [--clags] [--libs] [--info] [--version]"
 
 prefix="@prefix@"
 exec_prefix="@exec_prefix@"

@@ -20,7 +20,7 @@ feature_type FBANK_D_A_Z
 # the specified string will be expanded inline at the point where this
 # dnnconf file is specified by "-dnnconf", and passed to Julius.
 # As the same as other options in Julius, the later option will override
-# former. Please check the start-up messages to check if the 
+# former. Please check the start-up messages to check if the
 # feature extraction are correctly set up.
 #
 feature_options -htkconf model/dnn/config.lmfb.40ch.jnas -cvn -cmnload model/dnn/norm.jnas -cmnstatic
@@ -75,3 +75,18 @@ batch_size 64
 
 # number of threads (>=4.5)
 num_threads 2
+
+# set CUDA mode ("disable", "global" or "shared")
+# optinally can append block size parameters (value1,value,...)
+# shared mode block size can not be changed, fixed to 16x8 now
+#
+#  Ex.
+#    cuda_mode disable
+#    cuda_mode global
+#    cuda_mode global,128
+#    cuda_mode shared
+#    (cuda_mode shared,16,8 --- not implemneted now)
+#
+# default is "global,128" when enabled, "disable" when not compiled with CUDA
+
+#cuda_mode global,128

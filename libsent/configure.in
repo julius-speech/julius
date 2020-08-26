@@ -10,7 +10,7 @@ AC_CONFIG_HEADER(include/sent/config.h)
 AC_CONFIG_AUX_DIR(../support)
 
 LIBSENT_MAJOR_VERSION=4
-LIBSENT_MINOR_VERSION=5
+LIBSENT_MINOR_VERSION=6
 LIBSENT_VERSION=$LIBSENT_MAJOR_VERSION.$LIBSENT_MINOR_VERSION
 
 dnl Checks for options
@@ -142,6 +142,38 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [return 0;])],
          CFLAGS="$xxxCFLAGS -fPIC"],
 	     [AC_MSG_RESULT(no)
 	          CFLAGS="$xxxCFLAGS"])
+
+dnl Check for CUDA
+
+NVCC=no
+AC_MSG_CHECKING([if compiler is NVIDIA nvcc])
+AC_TRY_COMPILE([#include <stdio.h>
+    ],[#ifdef __NVCC__
+    return 0;
+    #else
+    aaa;
+    #endif],
+    AC_MSG_RESULT([[yes, this is NVIDIA compiler!]])
+    NVCC=yes,
+    AC_MSG_RESULT([no])
+  )
+if test "$NVCC" != no; then
+    EXTRAOBJ="$EXTRAOBJ src/phmm/calc_dnn_cuda.o"
+fi
+AC_SUBST(NVCC)
+
+dnl Check for OPENMP availability
+if test "$NVCC" != no; then
+    xxxxCFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -Xcompiler"
+    AC_OPENMP()
+    if test -n "$OPENMP_CFLAGS"; then
+      OPENMP_CFLAGS="-Xcompiler $OPENMP_CFLAGS"
+    fi
+    CFLAGS="$xxxxCFLAGS"
+else
+    AC_OPENMP()
+fi
 
 dnl Checks for SIMD capability
 case "$host_cpu" in
@@ -299,9 +331,6 @@ AC_SUBST(SIMD_AVX_CFLAGS)
 AC_SUBST(SIMD_SSE_CFLAGS)
 AC_SUBST(SIMD_NEONV2_CFLAGS)
 AC_SUBST(SIMD_NEON_CFLAGS)
-
-dnl Check for OPENMP availability
-AC_OPENMP()
 
 dnl Checks for programs.
 AC_PROG_INSTALL
@@ -795,8 +824,6 @@ case "$host_os" in
     EXTRALIB="$EXTRALIB -liconv"
     ;;
 esac
-
-dnl substitute some definitions in libsent-config
 AC_SUBST(LIBSENT_VERSION)
 AC_SUBST(altype)
 AC_SUBST(aldesc)

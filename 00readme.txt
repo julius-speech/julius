@@ -4,9 +4,10 @@
 
                                 Julius
 
-						(Rev 4.5   2019/01/02)
-						(Rev 4.4.2 2016/09/12)
-						(Rev 4.4   2016/08/30)
+                                                (Rev 4.6   2020/09/02)
+                                                (Rev 4.5   2019/01/02)
+                                                (Rev 4.4.2 2016/09/12)
+                                                (Rev 4.4   2016/08/30)
                                                 (Rev 4.3.1 2014/01/15)
                                                 (Rev 4.3   2013/12/25)
                                                 (Rev 4.2.3 2013/06/30)
@@ -22,10 +23,10 @@
                                                 (Rev 2.0   1999/02/20)
                                                 (Rev 1.0   1998/02/20)
 
- Copyright (c) 1991-2019 Kawahara Lab., Kyoto University
+ Copyright (c) 1991-2020 Kawahara Lab., Kyoto University
  Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
  Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
- Copyright (c) 2005-2019 Julius project team, Nagoya Institute of Technology
+ Copyright (c) 2005-2020 Julius project team, Nagoya Institute of Technology
  All rights reserved
 ======================================================================
 
@@ -54,83 +55,53 @@ on Windows, MacOS, iOS, Android and other OS. Julius is distributed
 with open license together with source codes.
 
 
-What's new in Julius-4.5
+What's new in Julius-4.6
 ==========================
 
-A WebRTC-based voice activity detection (VAD) was newly added into
-Julius for robust voice detection.
+Julius-4.6 is a minor release with a few new features and many fixes.
 
-  https://github.com/dpirch/libfvad
-
-Now Julius has two VAD modules: old module (input level and zero-cross
-based) and new module (libfvad = model based), and both of them runs
-concurrently in parallel for an audio input.  When enabled, Julius
-will detect speech trigger only if *both of them are signaled as
-speech*.
-
-DNN-HMM computation now supports CPU multi-threading.  Multi-threading
-may speed up DNN-HMM computation to some extent.  The number of
-threads can be specified by "num_threads" in dnnconf.  This feature is
-enabled by default, and the default number of threads is 2.
-
-Notice for module-mode users: in order to make module output
-XML-compiliant, the XML special characters are now escaped their
-escaped form, ex. '>' to '&gt;'.  A backward option "-noxmlescape" is
-still available to inhibit escaping and output as the same as previous
-versions.
+- New CUDA support for DNN computation (tested on Linux)
+- New 1-pass grammar recognition
+- Support non-log10nized state priors in DNN model
+- Feature normalization pattern added: mean = input self, variance = static
+- Now delivered under simplified BSD License
 
 See Release.txt for full changes and usage example.
 
 
-Moving to UTF-8
-================
-
-We are going to move to UTF-8.
-
-The master branch after the release of 4.5 (2019/1/2) has codes
-converted to UTF-8.  All files were converted to UTF-8, and future
-update will be committed also in UTF-8.
-
-For backward compatibility and log visibility, we are keeping the old
-encoding codes at branch "master-4.5-legacy".  The branch keeps legacy
-encoding version of version 4.5.  If you want to inspect the code
-progress before the release of 4.5 (2019/1/2), please checkout the
-branch.
-
-
-Contents of Julius-4.5
+Contents of Julius-4.6
 =======================
 
-	(Documents with suffix "ja" are written in Japanese)
+        (Documents with suffix "ja" are written in Japanese)
 
-	00readme.txt		ReadMe (This file)
-	LICENSE.txt		Terms and conditions of use
-	Release.txt		Release note / ChangeLog
-	00readme-DNN.txt	DNN-HMM related issues
-	README.md		description about Julius for GitHub
-	configure		configure script
-	configure.in
-	Sample.jconf		Sample configuration file
-	Sample.dnnconf		Sample DNN configuration file
-	julius/			Julius sources
-	libjulius/		JuliusLib core engine library sources
-	libsent/		JuliusLib low-level library sources
-	adinrec/		Record one sentence utterance to a file
-	adintool/		Record/split/send/receive speech data (GUI)
-	generate-ngram/		Tool to generate random sentences from N-gram
-	gramtools/		Tools to build and test recognition grammar
-	jcontrol/		A sample network client module
-	mkbingram/		Convert N-gram to binary format
-	mkbinhmm/		Convert ascii hmmdefs to binary format
-	mkgshmm/		Model conversion for Gaussian Mixture Selection
-	mkss/			Estimate noise spectrum from mic input
-	support/		some tools to compile from source
-	jclient-perl/		A simple perl version of module mode client
-	plugin/			Several plugin source codes and documentation
-	man/			Unix online manuals
-	msvc/			Files to compile on Microsoft VC++ 2013
-	dnntools/		Sample programs for dnn and vecnet client
-	binlm2arpa/		Convert binary N-gram to ARPA format
+        00readme.txt		ReadMe (This file)
+        LICENSE.txt		Terms and conditions of use
+        Release.txt		Release note / ChangeLog
+        00readme-DNN.txt	DNN-HMM related issues
+        README.md		description about Julius for GitHub
+        configure		configure script
+        configure.in
+        Sample.jconf		Sample configuration file
+        Sample.dnnconf		Sample DNN configuration file
+        julius/			Julius sources
+        libjulius/		JuliusLib core engine library sources
+        libsent/		JuliusLib low-level library sources
+        adinrec/		Record one sentence utterance to a file
+        adintool/		Record/split/send/receive speech data (GUI)
+        generate-ngram/		Tool to generate random sentences from N-gram
+        gramtools/		Tools to build and test recognition grammar
+        jcontrol/		A sample network client module
+        mkbingram/		Convert N-gram to binary format
+        mkbinhmm/		Convert ascii hmmdefs to binary format
+        mkgshmm/		Model conversion for Gaussian Mixture Selection
+        mkss/			Estimate noise spectrum from mic input
+        support/		some tools to compile from source
+        jclient-perl/		A simple perl version of module mode client
+        plugin/			Several plugin source codes and documentation
+        man/			Unix online manuals
+        msvc/			Files to compile on Microsoft VC++ 2013
+        dnntools/		Sample programs for dnn and vecnet client
+        binlm2arpa/		Convert binary N-gram to ARPA format
 
 
 License and Citation
@@ -171,5 +142,5 @@ Julius is now hosted on GitHub:
 You can still find older documents and files in previous web page:
 
         http://julius.osdn.jp/
-	https://osdn.jp/projects/julius/
+        https://osdn.jp/projects/julius/
 

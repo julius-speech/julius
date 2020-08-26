@@ -1,5 +1,5 @@
 #define JULIUS_PRODUCTNAME ""
-#define JULIUS_VERSION "4.5"
+#define JULIUS_VERSION "4.6"
 #define JULIUS_SETUP "fast"
 #define JULIUS_HOSTINFO ""
 #define JULIUS_BUILD_INFO ""

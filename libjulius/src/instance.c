@@ -393,6 +393,8 @@ j_jconf_am_free(JCONF_AM *amconf)
     free(amconf->dnn.output_bfile);
   if (amconf->dnn.priorfile)
     free(amconf->dnn.priorfile);
+  if (amconf->dnn.cuda_mode)
+    free(amconf->dnn.cuda_mode);
   free(amconf);
 }
 
