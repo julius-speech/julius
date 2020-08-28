@@ -4,7 +4,7 @@
 - GPU サポート（DNN-HMM計算部）
   - CUDA toolkit をインストールし nvcc でビルドすることで有効化 詳しくは INSTALL.txt の対応する項目を。
   - .dnnconf で "cuda_mode=..." で詳細なパラメータを設定可能 詳しくは Sample.dnnconf の末尾を。
-  - 動作確認： Linux のみ
+  - Linux の CUDA 8.0, 9.0, 10.2 で動作確認済み
 - 1パス文法認識の実装
   - 第1パスからフルの文法制約を適用することで、1パス文法認識を行うモードを新規追加
   - モードのON/OFFは文法単位：".dfa.forward" ファイルが存在する文法はこの機能が有効になり、なければ従来バージョン通り（単語対制約のみ）
@@ -17,7 +17,7 @@
 ○更新
 - 修正BSDライセンスへ移行
 - Python バージョンの文法コンパイラ "mkdfa.py" を gramtools/mkdfa に追加
-- .vcproj を Visual Studio 2017 に更新。それ以前のバージョンでは "JuliusLib_vs2013_v120.sln" を使うこと
+- Visual Studio 2017 でのビルドに対応。多くのツールのビルドに対応。
 - 最新版に合わせたドキュメントを markdown 形式で doc/ 以下に執筆中（フロントエンドまで記述）
 - GitHubで見やすいよう各ディレクトリに README.md を置き、*.txt を廃止
 ○バグ修正

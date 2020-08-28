@@ -41,35 +41,22 @@ Julius は，音声認識システムの開発・研究のためのオープン�
 Android, その他の環境です．
 
 
-GitHub への移行について
-========================
-
-Julius のコード開発は2016年より GitHub へ移行しました．開発者向けの
-最新のソースコード・各種実行キット・開発情報の公開・共有および
-フォーラム運営は GitHub にて行っています．
-
-        Julius on GitHub
-        https://github.com/julius-speech/julius
-
-ホームページには一般向けのお知らせやキットのリンク、日本語の情報等が
-掲載されます．こちらもご活用下さい．
-
-        旧 Julius Web サイト
-        http://julius.osdn.jp/
-
-
 What's new in Julius-4.6
 ==========================
 
 Julius-4.6 はマイナーリリースです。主な変更点は以下のとおりです。
-全ての変更の詳細は同梱の Release-ja.txt をご覧ください。
 
-- DNN-HMM 計算での CUDA サポート (Linux で動作確認)
+- DNN-HMM 計算での CUDA サポート
 - 1パス文法認識の実装
 - DNN-HMM で出力が log10 化されていないモデルのサポート
 - 特徴量正規化モードを追加：平均は入力自身、分散は固定値を使うモード
-- 修正BSDライセンスへ移行
+- Visual Studio 2017 対応、julius と adintool 以外もビルド可能に
 - 不具合の修正
+- 修正BSDライセンスへ移行
+
+CUDA サポートは Linux でのみ動作確認しています。
+CUDA-8.0, 9.0 および 10.2 での動作を確認済みです。
+全ての変更の詳細は同梱の Release-ja.txt をご覧ください。
 
 
 UTF-8への移行について
@@ -142,6 +129,23 @@ Juliusおよび関連ソフトウェアの今後の開発・拡張につなが�
     A. Lee and T. Kawahara: Julius v4.5 (2019) https://doi.org/10.5281/zenodo.2530395
 
 あるいは両方をご使用ください．
+
+
+GitHub への移行について
+========================
+
+Julius のコード開発は2016年より GitHub へ移行しました．開発者向けの
+最新のソースコード・各種実行キット・開発情報の公開・共有および
+フォーラム運営は GitHub にて行っています．
+
+        Julius on GitHub
+        https://github.com/julius-speech/julius
+
+ホームページには一般向けのお知らせやキットのリンク、日本語の情報等が
+掲載されます．こちらもご活用下さい．
+
+        旧 Julius Web サイト
+        http://julius.osdn.jp/
 
 
 連絡先

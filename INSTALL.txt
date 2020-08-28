@@ -52,22 +52,13 @@ where "/usr/local/cuda-x.x/" is the location of the CUDA sdk toolkit.
 -----------------------------------------------
 Mingw on Ubuntu (tested on 16.04)
 
-Install SDL2 dev lib for mingw:
- - Find "SDL2-devel-2.x.x-mingw.tar.gz" in SDL site and download it.
-   https://www.libsdl.org/download-2.0.php
- - unpack it, enter the dir
- - "sudo make cross" to install 32bit/64bit pre-compiled binaries into /usr/local.
-
   % sudo apt-get install mingw-w64 mingw-w64-tools
   % sudo apt-get install libz-mingw-w64-dev
-  % ./configure --host=x86_64-w64-mingw32
+  % ./configure --host=x86_64-w64-mingw32 --disable-sdlmain
   % make
 
-In case you failed to compile "adintool-gui", edit adintool/Makefile:
-
-  SDL_LDFLAGS=`/usr/local/x86_64-w64-mingw32/bin/sdl2-config --static-libs`
-
-and do make again!
+"adintool-gui" may not be built or run correctly.
+If you want Windows binary, try mingw support in cygwin.
 
 -----------------------------------------------
 Cygwin
@@ -113,9 +104,9 @@ Visual Studio:
 
   1. Open msvc/JuliusLib.sln
   2. Choose build type to "Release"
-  3. Build
+  3. Build the solution
 
-The compiled binaries will be placed in "msvc/Release" folder.
+Compiled binaries will be stored in "msvc/Release" folder.
 
 Build with VisualStudio newer than 2013 update 3.
 Older version does not support SIMD FMA instructions. (/ARCH:AVX2)
