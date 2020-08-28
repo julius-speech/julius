@@ -46,16 +46,14 @@ What's new in Julius-4.6
 
 Julius-4.6 はマイナーリリースです。主な変更点は以下のとおりです。
 
-- DNN-HMM 計算での CUDA サポート
+- DNN-HMM 計算での CUDA サポート (Linux + CUDA-8,9,10 でのみ動作確認)
 - 1パス文法認識の実装
 - DNN-HMM で出力が log10 化されていないモデルのサポート
 - 特徴量正規化モードを追加：平均は入力自身、分散は固定値を使うモード
-- Visual Studio 2017 対応、julius と adintool 以外もビルド可能に
+- Visual Studio 2017 でのビルド全面対応 (msvc/Julius.sln)
 - 不具合の修正
 - 修正BSDライセンスへ移行
 
-CUDA サポートは Linux でのみ動作確認しています。
-CUDA-8.0, 9.0 および 10.2 での動作を確認済みです。
 全ての変更の詳細は同梱の Release-ja.txt をご覧ください。
 
 

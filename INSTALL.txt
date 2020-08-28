@@ -49,6 +49,35 @@ If you want to explicitly choose an audio interface, use `--with-mictype=xxx`.
 where "/usr/local/cuda-x.x/" is the location of the CUDA sdk toolkit.
  (tested on Ubuntu-16.04 and CUDA-9.0, but later should work)
 
+
+-----------------------------------------------
+Visual Studio 2017 / Windows:
+
+Before build, prepare libSDL2 development files:
+
+- Download libSDL2 Development Libraries for Windows from official site.
+    Direct link: https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip
+- Unpack the zip and place the whole content under the "msvc/SDL2" folder.
+
+The content of "msvc/SDL2" should look like:
+   msvc
+     +- SDL2
+          +- include
+          +- lib
+               +- x64
+               +- x86
+
+build:
+  1. Open msvc/Julius.sln
+  2. Choose build type to "Release"
+  3. Build the solution
+
+Compiled binaries will be stored in "msvc/Release" folder.
+
+Note that "SDL2.dll" is needed to run "adintool-gui.exe".
+Copy "SDL2/lib/x86/SDL2.dll" to the same place of adintool-gui.exe,
+into "Release" folder.
+
 -----------------------------------------------
 Mingw on Ubuntu (tested on 16.04)
 
@@ -98,20 +127,6 @@ Mingw on cygwin
   If "adintool-gui.exe" fails or not run, try without "--disable-sdlmain".
 
 (tested on cygwin-x86 setup-v2.5.2, 08/31/2016)
-
------------------------------------------------
-Visual Studio:
-
-  1. Open msvc/JuliusLib.sln
-  2. Choose build type to "Release"
-  3. Build the solution
-
-Compiled binaries will be stored in "msvc/Release" folder.
-
-Build with VisualStudio newer than 2013 update 3.
-Older version does not support SIMD FMA instructions. (/ARCH:AVX2)
-
-(tested on VisualStudio 2013 update 5)
 
 -----------------------------------------------
 Cross-compiling for ARM:

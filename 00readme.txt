@@ -60,14 +60,13 @@ What's new in Julius-4.6
 
 Julius-4.6 is a minor release with a few new features and many fixes.
 
-- New CUDA support for DNN computation (tested on Linux)
+- New CUDA support at DNN computation (tested on Linux / CUDA-8,9,10)
 - New 1-pass grammar recognition
 - Support non-log10nized state priors in DNN model
 - Feature normalization pattern added: mean = input self, variance = static
-- Full support for build with Visual Studio 2017.
+- Now can build almost all tools with Visual Studio 2017 (msvc/Julius.sln)
 - Now delivered under simplified BSD License
 
-The CUDA support was tested on Linux with CUDA-8.0, 9.0 and 10.2.
 See Release.txt for full changes and usage example.
 
 
