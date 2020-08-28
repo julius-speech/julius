@@ -1,6 +1,6 @@
 /**
  * @file   mkbingram.c
- * 
+ *
  * <JA>
  * @brief  ARPA標準形式のN-gramから Julius 用のバイナリN-gramに変換する．
  *
@@ -10,16 +10,16 @@
  * バイナリN-gramの形式はまた古い形式(3.4.2以前)
  * のバイナリN-gramを 3.5 以降の新しい形式に変換することもできる．
  * </JA>
- * 
+ *
  * <EN>
- * @brief  
+ * @brief
  * </EN>
- * 
+ *
  * @author Akinobu LEE
  * @date   Thu Mar 24 12:22:27 2005
  *
  * $Revision: 1.7 $
- * 
+ *
  */
 /*
  * Copyright (c) 1991-2016 Kawahara Lab., Kyoto University
@@ -35,7 +35,9 @@
 #include <sys/stat.h>
 #include <time.h>
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 #include "charconv.h"
 
 static NGRAM_INFO *ngram;
@@ -213,7 +215,7 @@ main(int argc, char *argv[])
   }
 
   print_ngram_info(stdout, ngram);
-  
+
 #if defined(HAVE_WINNLS) || defined(HAVE_ICONV)
   if (charconv_enabled == TRUE) {
     int fail_count = 0;
@@ -252,7 +254,7 @@ main(int argc, char *argv[])
   fclose_writefile(fp);
 
   printf("completed\n");
-  
+
   return 0;
 
 }

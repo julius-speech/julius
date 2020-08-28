@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 #define strmatch !strcmp
 
@@ -70,7 +72,7 @@ str2code(char *codestr, unsigned int *code)
     /* codepage number */
     *code = atoi(codestr);
     if (! IsValidCodePage(*code)) {
-      jlog("Error: charconv_win32: codepage \"%d\" not found\n", codestr);
+      fprintf(stderr, "Error: charconv_win32: codepage \"%s\" not found\n", codestr);
       return -1;
     }
   } else {
@@ -163,11 +165,11 @@ charconv(char *instr, char *outstr, int maxoutlen)
   /* get length of unicode string */
   unilen = MultiByteToWideChar(from_cp, 0, srcbuf, -1, NULL, 0);
   if (unilen <= 0) {
-    jlog("Error: charconv: conversion error?\n");
+    fprintf(stderr, "Error: charconv: conversion error?\n");
     return(instr);
   }
   if (unilen > UNICODE_BUFFER_SIZE) {
-    jlog("Error: charconv: unicode buffer size exceeded (%d > %d)!\n", unilen, UNICODE_BUFFER_SIZE);
+    fprintf(stderr, "Error: charconv: unicode buffer size exceeded (%d > %d)!\n", unilen, UNICODE_BUFFER_SIZE);
     return(instr);
   }
   /* convert source string to unicode */
@@ -175,11 +177,11 @@ charconv(char *instr, char *outstr, int maxoutlen)
   /* get length of target string */
   newlen = WideCharToMultiByte(to_cp, 0, unibuf, -1, outstr, 0, NULL, NULL);
   if (newlen <= 0) {
-    jlog("Error: charconv: conversion error?\n");
+    fprintf(stderr, "Error: charconv: conversion error?\n");
     return(instr);
   }
   if (newlen > maxoutlen) {
-    jlog("Error: charconv: target buffer size exceeded (%d > %d)!\n", newlen, maxoutlen);
+    fprintf(stderr, "Error: charconv: target buffer size exceeded (%d > %d)!\n", newlen, maxoutlen);
     return(instr);
   }
   /* convert unicode to target string */

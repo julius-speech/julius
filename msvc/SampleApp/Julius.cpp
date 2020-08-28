@@ -484,7 +484,7 @@ bool cJulius::addGrammar( char *name, char *dictfile, char *dfafile, bool delete
 		multigram_delete_all(r->lm);
 	}
 	/* register the new grammar to multi-gram tree */
-	multigram_add(dfa, winfo, name, r->lm);
+	multigram_add(dfa, winfo, name, r->lm, NULL);
 	/* need to rebuild the global lexicon */
 	/* tell engine to update at requested timing */
 	schedule_grammar_update(m_recog);
