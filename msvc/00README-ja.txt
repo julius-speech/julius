@@ -1,12 +1,12 @@
 Juliusのコンパイル方法
 =======================
 
-このファイルでは Microsoft Visual Studio 2013 以降における Julius のコン
+このファイルでは Microsoft Visual Studio 2017 以降における Julius のコン
 パイル方法について解説します．また，GUI版サンプルアプリケーションであ
 る"SampleApp" と Julius のラッパークラスの定義についても解説します．コ
 ンパイルとテストの方法を知りたい方は以下をご覧ください．
 
-本バージョンは Microsoft Visual Studio 2013 で Windows10 にて動作確認
+本バージョンは Microsoft Visual Studio 2017 で Windows10 にて動作確認
 しています．
 
 Julius を新たに使用する場合，音響モデル，言語モデル，および Julius の設
@@ -29,9 +29,9 @@ Juliusを動かすためには音響モデル，言語モデルの2つのモデ�
 2. ビルド
 ==============
 
-VisualStudio 2013以降で "JuliusLib.sln" をで開き，ビルドしてください．
-"Debug" あるいは "Release" ディレクトリの中に "julius.exe", "adintool.exe" および
-"SampleApp.exe" が生成されます．
+VisualStudio 2017以降で "Julius.sln" をで開き，ビルドしてください．
+"Debug" あるいは "Release" ディレクトリの中に "julius.exe", "adintool-gui.exe",
+"SampleApp.exe" などのツールが生成されます．
 
 
 3. テスト
@@ -106,15 +106,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 詳細はSampleApp.cppとJulius.cppをご覧ください．
 
 
-5.  ソース内の文字コードについて
-=================================
-
-Julius のソースコードでは日本語の文字を EUC-JP で記述しています．もしそ
-れらを MSVC++ で読みたい場合，UTF-8 へ変換してください．
-
-
-6.  更新履歴
+5.  更新履歴
 =============
+2020/9/2 (ver.4.6)
+        VS2017 に合わせて更新
+        adintool-gui など他のツールを追加
 
 2016/8/19 (ver.4.4)
 

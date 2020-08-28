@@ -2,10 +2,10 @@ HOW TO COMPILE JULIUS ON MSVC
 =================================================
 
 This file describes how to compile Julius on Microsoft Visual Studio
-2013 and later.  A sample application "SampleApp" and the Julius wrapper class
+2017 and later.  A sample application "SampleApp" and the Julius wrapper class
 is also included.  See below to see how to compile and test it.
 
-This version was tested on Microsoft Visual Studio 2013 on Windows 10.
+This version was tested on Microsoft Visual Studio 2017 on Windows 10.
 
 If you are totally new to Julius, please note that an acoustic model
 and a language model is needed to run Julius as speech recognizer.
@@ -20,10 +20,10 @@ the source archive, so you can build Julius without any extra source.
 1. Build
 ------------
 
-Just open "JuliusLib.sln" with Visual Studio, choose configuration from
+Just open "Julius.sln" with Visual Studio, choose configuration from
 menu either "Release" or "Debug", then build the solution!  You will
-get libraries, "julius.exe", "adintool.exe" and "SampleApp.exe" under
-"Release" or "Debug" directory respectively.
+get libraries, "julius.exe", "adintool-gui.exe", "SampleApp.exe" and
+other tools under "Release" or "Debug" directories, respectively.
 
 
 2  SampleApp.exe
@@ -85,15 +85,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 See SampleApp.cpp and Julius.cpp for details.
 
 
-4.  About the character codes in the sources
-----------------------------------------------
 
-The source code of Julius contains Japanese characters at EUC-JP encoding.
-If you want to read them in MSVC++, convert them to UTF-8.
-
-
-6.  History
+4.  History
 -------------
+
+2020/9/2 (ver.4.6)
+        updated for VS2017
+        added other tools, including adintool-gui.
 
 2016/8/19 (ver.4.4)
 
