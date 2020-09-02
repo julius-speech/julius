@@ -2,10 +2,12 @@ Julius: Open-Source Large Vocabulary Continuous Speech Recognition Engine
 ==========================================================================
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2530396.svg)](https://doi.org/10.5281/zenodo.2530396)
 
+<pre>
 Copyright (c) 1991-2020 [Kawahara Lab., Kyoto University](http://sap.ist.i.kyoto-u.ac.jp/)
 Copyright (c) 2005-2020 [Julius project team, Lee Lab., Nagoya Institute of Technology](http://www.slp.nitech.ac.jp/)
 Copyright (c) 1997-2000 Information-technology Promotion Agency, Japan
 Copyright (c) 2000-2005 Shikano Lab., Nara Institute of Science and Technology
+</pre>
 
 # About Julius
 
