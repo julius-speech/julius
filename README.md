@@ -151,12 +151,9 @@ and run Julius with the mic.jconf instead of julius.jconf
 
 # Download
 
-The latest release version is [4.5](https://github.com/julius-speech/julius/releases), released on Janualy 2, 2019.
+The latest release version is [4.6](https://github.com/julius-speech/julius/releases), released on September 2, 2020.
 You can get the released package from the [Release page](https://github.com/julius-speech/julius/releases).
-
-Version 4.4 supports stand-alone DNN-HMM support, and several new
-tools and bug fixes are included.  See the "Release.txt" file for the
-full list of updates.  Run with "-help" to see full list of options.
+See the "Release.txt" file for full list of updates.  Run with "-help" to see full list of options.
 
 # Install / Build Julius
 
