@@ -19,6 +19,7 @@ Updates:
 - Update build for Visual Studio 2017, support building more tools.
 - Re-write documentations in markdown format under "doc" (WIP)
 - Place README.md in each directory, remove *.txt instead
+- mkdfa (mkfa): now outputs detailed error message (line num etc.) 
 Bug fix
 - "mkbingram" ignores charset conversion options, performs no conversion
 
