@@ -806,16 +806,15 @@ void dnn_calc_outprob(HMMWork *wrk)
 #ifdef _OPENMP
 #pragma omp parallel num_threads(dnn->num_threads)
 {
-  int n = 0;
   int hidx, i;
   float *lsrc, *dst;
   DNNLayer *h;
   int id = omp_get_thread_num();
   int j;
 
-  dst = dnn->work[n];
   lsrc = src;
   for (hidx = 0; hidx < dnn->hnum; hidx++) {
+    dst = dnn->work[hidx];
     h = &(dnn->h[hidx]);
     (*dnn->subfunc)(dst + h->begin[id] , lsrc, h->w + h->begin[id] * h->in, h->b + h->begin[id], h->end[id] - h->begin[id], h->in, dnn->accum + id * 8);
     for (j = h->begin[id] ; j < h->end[id]; j++) {
@@ -828,7 +827,6 @@ void dnn_calc_outprob(HMMWork *wrk)
     }
 #pragma omp barrier
     lsrc = dst;
-    dst = dnn->work[++n];
   }
   /* compute output layer */
   (*dnn->subfunc)(wrk->last_cache + dnn->o.begin[id] , lsrc, dnn->o.w + dnn->o.begin[id] * dnn->o.in, dnn->o.b + dnn->o.begin[id], dnn->o.end[id] - dnn->o.begin[id], dnn->o.in, dnn->accum + id * 8);
@@ -836,15 +834,14 @@ void dnn_calc_outprob(HMMWork *wrk)
 
 #else /* ~_OPENMP */
 
-  dst = dnn->work[n];
   for (hidx = 0; hidx < dnn->hnum; hidx++) {
+    dst = dnn->work[hidx];
     h = &(dnn->h[hidx]);
     (*dnn->subfunc)(dst, src, h->w, h->b, h->out, h->in, dnn->accum);
     for (i = 0; i < h->out; i++) {
       dst[i] = logistic_func(dst[i]);
     }
     src = dst;
-    dst = dnn->work[++n];
   }
   /* compute output layer */
   (*dnn->subfunc)(wrk->last_cache, src, dnn->o.w, dnn->o.b, dnn->o.out, dnn->o.in, dnn->accum);
