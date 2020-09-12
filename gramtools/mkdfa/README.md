@@ -22,8 +22,10 @@ Perl version:
 `.grammar` and vocabulary file  `.voca`) into finite automaton grammar to be
 used in Julius.
 
-The output files, `prefix.dfa` and `prefix.dict`, can be read by Julius to
-perform grammar-based recognition based on the given grammar.
+The output files, `prefix.dfa` and `prefix.dict`, can be used in Julius as
+grammar constrained speech recognition.  If additional forward grammar file
+`prefix.dfa.forward` exists, Julius will further enable applying full grammar
+on the 1st pass.
 
 `mkdfa.py` is a python 3 version of `mkdfa.pl`, just works as the same.
 
@@ -31,8 +33,8 @@ perform grammar-based recognition based on the given grammar.
 
 `mkdfa.pl` requires Perl to run.  `mkdfa.py` requires Python 3.x to run.
 
-Both of them requires `mkfa` and `dfa_minimize` to be placed on the same
-directory of `mkdfa.pl`.
+Requires `mkfa` and `dfa_minimize` executables to be placed on the same
+directory.  Additionally `dfa_determinize` is required to generate forward grammar.
 
 See [Julius grammar-kit GitHub](https://github.com/julius-speech/grammar-kit/)
 for details about grammars. There are also an
@@ -42,7 +44,7 @@ for details about grammars. There are also an
 
 This tool will be installed together with Julius. Place `mkfa` and
 `dfa_minimize` at the same directory as `mkdfa.pl` or `mkdfa.py`, since it invokes them
-internally while compilation.
+internally while compilation.  Additionally place `dfa_determinize` as the same for generating forward grammar.
 
 ## Usage
 
@@ -88,25 +90,16 @@ or
 Skip voca-to-dict conversion. Build `.dfa` from `.grammar` but leave `.dict`
 unchanged.
 
-## Environment Variables
+### `-r`
 
-### TMP / TEMP
-
-Temporary directory for `mkdfa.pl`.  When not specified, one from the following
-list will be used:
-
-- /tmp
-- /var/tmp
-- /WINDOWS/Temp
-- /WINNT/Temp.
-
-`mkdfa.py` does not use environment value.  It uses `tempfile.gettempdir()` to
-get temporary directory.
+Skip generating forward grammar.
 
 ## Related tools
 
 - "[dfa_minimize](https://github.com/julius-speech/julius/tree/master/gramtools/dfa_minimize)"
   can minimize DFA. `mkdfa.pl` and `mkdfa.py` call call this inside the process.
+- "[dfa_determinize](https://github.com/julius-speech/julius/tree/master/gramtools/dfa_determinize)"
+  can determinize NFA into DFA. `mkdfa.pl` and `mkdfa.py` call call this inside the process.
 - "[mkfa](https://github.com/julius-speech/julius/tree/master/gramtools/mkdfa/mkfa-1.44-flex)"
     is the core BNF-to-FSA compiler.  `mkdfa.pl` and `mkdfa.py` call this inside the process.
 - "[generate](https://github.com/julius-speech/julius/tree/master/gramtools/generate)"
