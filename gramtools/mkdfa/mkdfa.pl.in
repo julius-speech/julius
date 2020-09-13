@@ -7,49 +7,43 @@
 #
 
 ## setup
+
 $tmpdir = ".";
 
-# mkfa executable location
+#############################################################
+# executable check
+# mkdfa requires mkfa, dfa_minimize and dfa_determinize in the same directory.
+sub bincheck() {
+    my ($dir, $execfile) = @_;
+    my $failed = 0;
+    my $execpath = $dir . $execfile;
+    if (! -e $execpath ) {
+        if ($^O eq "MSWin32" || $^O eq "cygwin") {
+            $execfile .= ".exe";
+            if (! -e $execpath ) {
+                $failed = 1;
+            }
+        } else {
+            $failed = 1;
+        }
+    }
+    if ($failed == 1) {
+        print STDERR "Error: $execfile not found in \"$dir\"";
+        return "";
+    }
+    return $execpath;
+}
+
 ($thisdir) = ($0 =~ /(.*(\/|\\))[^\/\\]*$/o);
-$mkfabin = "${thisdir}mkfa";
-if (! -e $mkfabin) {
-    if ($^O eq "MSWin32" || $^O eq "cygwin") {
-	$mkfabin .= ".exe";
-	if (! -e $mkfabin) {
-	    die "cannot find mkfa executable in the script dir";
-	}
-    } else {
-	die "cannot find mkfa executable in the script dir";
-    }
-}
-
-# dfa_minimize executable location
-$minimizebin = "${thisdir}dfa_minimize";
-if (! -e $minimizebin) {
-    if ($^O eq "MSWin32" || $^O eq "cygwin") {
-	$minimizebin .= ".exe";
-	if (! -e $minimizebin) {
-	    die "cannot find dfa_minimize executable in the script dir";
-	}
-    } else {
-	die "cannot find dfa_minimize executable in the script dir";
-    }
-}
-
-# dfa_determinize executable location
-$determinizebin = "${thisdir}dfa_determinize";
-if (! -e $determinizebin) {
-    if ($^O eq "MSWin32" || $^O eq "cygwin") {
-	$determinizebin .= ".exe";
-	if (! -e $determinizebin) {
-	    die "cannot find dfa_determinize executable in the script dir";
-	}
-    } else {
-	die "cannot find dfa_determinize executable in the script dir";
-    }
-}
+$mkfabin = &bincheck($thisdir, "mkfa");
+$minimizebin = &bincheck($thisdir, "dfa_minimize");
+$determinizebin = &bincheck($thisdir, "dfa_determinize");
+die if ($mkfabin eq "");
+die if ($minimizebin eq "");
+die if ($determinizebin eq "");
 
 #############################################################
+# arguments and files
 
 if ($#ARGV < 0 || $ARGV[0] eq "-h") {
     usage();
@@ -59,44 +53,62 @@ $make_dict = 1;
 $make_term = 1;
 $make_forward = 1;
 
-$CRLF = 0;
-if ($^O eq "MSWin32") {
-    $CRLF = 1;
-}
-
 $gramprefix = "";
 foreach $arg (@ARGV) {
     if ($arg eq "-t") {
-	$make_term = 1;
+    $make_term = 1;
     } elsif ($arg eq "-n") {
-	$make_dict = 0;
+    $make_dict = 0;
     } elsif ($arg eq "-r") {
-	$make_forward = 0;
+    $make_forward = 0;
     } else {
-	$gramprefix = $arg;
+    $gramprefix = $arg;
     }
 }
 if ($gramprefix eq "") {
     usage();
 }
+
+# input grammar
 $gramfile = "$ARGV[$#ARGV].grammar";
+# input voca
 $vocafile = "$ARGV[$#ARGV].voca";
+# output dfa
 $dfafile  = "$ARGV[$#ARGV].dfa";
+# output forward dfa
 $fdfafile  = "$ARGV[$#ARGV].dfa.forward";
+# output dict
 $dictfile = "$ARGV[$#ARGV].dict";
+# output terminal list
 $termfile = "$ARGV[$#ARGV].term";
+
+# temporary files for mkfa:
 $tmpprefix = "$tmpdir/tmp$$";
+# pseudo voca file that contains only category info for mkfa
 $tmpvocafile = "${tmpprefix}.voca";
+# reversed grammar file for mkfa
 $rgramfile = "${tmpprefix}-rev.grammar";
+# output header info from mkfa
 $tmpheadfile = "${tmpprefix}.h";
 
-# check if input file exists
+# temporary files for DFA conversion:
+$dfafile_beforeminimize = "${dfafile}_beforeminimize";
+$fdfafile_nfa = "${fdfafile}_nfa";
+$fdfafile_beforeminimize = "${fdfafile}_beforeminimize";
 
+# check if input file exists
 if (! -f $gramfile) {
     die "cannot open \"$gramfile\"";
 }
 if (! -f $vocafile) {
     die "cannot open \"$vocafile\"";
+}
+
+#############################################################
+
+$CRLF = 0;
+if ($^O eq "MSWin32") {
+    $CRLF = 1;
 }
 
 # generate reverse grammar file
@@ -108,14 +120,14 @@ while (<GRAM>) {
     s/\r+$//g;
     s/#.*//g;
     if (/^[ \t]*$/) {
-	print RGRAM "\n";
-	next;
+    print RGRAM "\n";
+    next;
     }
     ($left, $right) = split(/\:/);
     if ($CRLF == 1) {
-	print RGRAM $left, ': ', join(' ', reverse(split(/ /,$right))), "\r\n";
+    print RGRAM $left, ': ', join(' ', reverse(split(/ /,$right))), "\r\n";
     } else {
-	print RGRAM $left, ': ', join(' ', reverse(split(/ /,$right))), "\n";
+    print RGRAM $left, ': ', join(' ', reverse(split(/ /,$right))), "\n";
     }
     $n ++;
 }
@@ -123,9 +135,9 @@ close(GRAM);
 close(RGRAM);
 print "$gramfile has $n rules\n";
 
-# make temporary voca for mkfa (include only category info)
+# make temporary voca for mkfa (include only category info) and terminal info
 if (! -r $vocafile) {
-	die "cannot open voca file $vocafile";
+    die "cannot open voca file $vocafile";
 }
 open(VOCA,"$vocafile") || die "cannot open vocabulary file";
 open(TMPVOCA,"> $tmpvocafile") || die "cannot open temporary file $tmpvocafile";
@@ -141,25 +153,25 @@ while (<VOCA>) {
     s/#.*//g;
     if (/^[ \t]*$/) {
 #	print TMPVOCA "\n";
-	next;
+    next;
     }
     if (/^%[ \t]*([A-Za-z0-9_]*)/) {
-	if ($CRLF == 1) {
-	    printf(TMPVOCA "\#%s\r\n", $1);
-	} else {
-	    printf(TMPVOCA "\#%s\n", $1);
-	}
-	if ($make_term == 1) {
-	    if ($CRLF == 1) {
-		printf(GTERM "%d\t%s\r\n",$termid, $1);
-	    } else {
-		printf(GTERM "%d\t%s\n",$termid, $1);
-	    }
-	    $termid++;
-	}
-	$n1++;
+    if ($CRLF == 1) {
+        printf(TMPVOCA "\#%s\r\n", $1);
     } else {
-	$n2++;
+        printf(TMPVOCA "\#%s\n", $1);
+    }
+    if ($make_term == 1) {
+        if ($CRLF == 1) {
+        printf(GTERM "%d\t%s\r\n",$termid, $1);
+        } else {
+        printf(GTERM "%d\t%s\n",$termid, $1);
+        }
+        $termid++;
+    }
+    $n1++;
+    } else {
+    $n2++;
     }
 }
 close(VOCA);
@@ -174,127 +186,122 @@ print "---\n";
 sub runext {
     my ($command) = @_;
     print "executing [$command]\n";
-    $status = system("$command");
+    my $status = system("$command");
     if ($status != 0) {
-	print STDERR "\n";
-	print STDERR "**** Error occured in mkfa ***\n";
-	print STDERR "*  Temporary files are left in $tmpdir for your debugging. You can delete them manually:\n";
-	print STDERR "*   reversed grammar = $rgramfile\n";
-	print STDERR "*     vocab category = $tmpvocafile\n";
-	print STDERR "*         header log = $tmpheadfile\n";
-	print STDERR "\n";
+        print STDERR "\n";
+        print STDERR "**** Error occured ***\n";
+        print STDERR "*  Some temporary files are kept in $tmpdir for your debugging. You can delete them manually:\n";
+        print STDERR "*    reversed grammar = $rgramfile\n";
+        print STDERR "*      vocab category = $tmpvocafile\n";
+        print STDERR "*     mkfa header log = $tmpheadfile\n";
+        print STDERR "*  output DFA pre-min = $dfafile_beforeminimize\n";
+        print STDERR "* forw. NFA converted = $fdfafile_nfa\n";
+        print STDERR "*   forw. DFA pre-min = $fdfafile_beforeminimize\n";
+        print STDERR "\n";
     }
     return $status;
 }
 
 # execute mkfa
 if ($^O eq "cygwin") {
-    $com = "$mkfabin -e1 -fg `cygpath -w $rgramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w ${dfafile}.tmp` -fh `cygpath -w $tmpheadfile`";
+    $com = "$mkfabin -e1 -fg `cygpath -w $rgramfile` -fv `cygpath -w $tmpvocafile` -fo `cygpath -w $dfafile_beforeminimize` -fh `cygpath -w $tmpheadfile`";
 } else {
-    $com = "$mkfabin -e1 -fg $rgramfile -fv $tmpvocafile -fo ${dfafile}.tmp -fh $tmpheadfile";
+    $com = "$mkfabin -e1 -fg $rgramfile -fv $tmpvocafile -fo $dfafile_beforeminimize -fh $tmpheadfile";
 }
 if (&runext($com) != 0) {
     die "stopped";
 }
 # execute minimize
 if ($^O eq "cygwin") {
-    $com = "$minimizebin `cygpath -w ${dfafile}.tmp` -o `cygpath -w $dfafile`";
+    $com = "$minimizebin `cygpath -w $dfafile_beforeminimize` -o `cygpath -w $dfafile`";
 } else {
-    $com = "$minimizebin ${dfafile}.tmp -o $dfafile";
+    $com = "$minimizebin $dfafile_beforeminimize -o $dfafile";
 }
 if (&runext($com) != 0) {
     die "stopped";
 }
-unlink("${dfafile}.tmp");
-
-print "saved to $dfafile\n";
 
 if ($make_forward == 1) {
     print "---\n";
-    print "now reversing $dfafile\n";
+    print "now reversing $dfafile into NFA \"$fdfafile_nfa\"\n";
 
     # make forward NFA from DFA
     $dfamax = -1;
     open(DFA,"< $dfafile") || die "cannot open \"$dfafile\"";
     while (<DFA>) {
-	chomp;
-	s/\r+$//g;
-	@a = split(/ /);
-	if ($a[1] == -1 && $a[2] == -1) {
-	    $endstate[$a[0]] = 1;
-	}
-	if ($dfamax < $a[0]) {
-	    $dfamax = $a[0];
-	}
+        chomp;
+        s/\r+$//g;
+        @a = split(/ /);
+        if ($a[1] == -1 && $a[2] == -1) {
+            $endstate[$a[0]] = 1;
+        }
+        if ($dfamax < $a[0]) {
+            $dfamax = $a[0];
+        }
     }
     close(DFA);
     $dfamax += 1;
     open(DFA,"< $dfafile") || die "cannot open \"$dfafile\"";
-    open(FDFA,"> ${fdfafile}.tmptmp") || die "cannot open \"${fdfafile}.tmptmp\"";
+    open(FDFA,"> $fdfafile_nfa") || die "cannot open \"$fdfafile_nfa\"";
     if ($CRLF == 1) {
-	print FDFA "$dfamax -1 -1 1 0\r\n";
+        print FDFA "$dfamax -1 -1 1 0\r\n";
     } else {
-	print FDFA "$dfamax -1 -1 1 0\n";
+        print FDFA "$dfamax -1 -1 1 0\n";
     }
     while (<DFA>) {
-	chomp;
-	s/\r+$//g;
-	@a = split(/ /);
-	next if ($a[1] == -1 && $a[2] == -1);
-	if ($a[0] == 0) {
-	    $a[0] = $dfamax;
-	}
-	if ($a[2] == 0) {
-	    $a[2] = $dfamax;
-	}
-	if ($a[0] != $dfamax && $endstate[$a[0]] != 0) {
-	    $a[0] = 0;
-	}
-	if ($a[2] != $dfamax && $endstate[$a[2]] != 0) {
-	    $a[2] = 0;
-	}
-	$s = "$a[2] $a[1] $a[0] 0 0";
-	if ($CRLF == 1) {
-	    print FDFA "$s\r\n";
-	} else {
-	    print FDFA "$s\n";
-	}
+        chomp;
+        s/\r+$//g;
+        @a = split(/ /);
+        next if ($a[1] == -1 && $a[2] == -1);
+        if ($a[0] == 0) {
+            $a[0] = $dfamax;
+        }
+        if ($a[2] == 0) {
+            $a[2] = $dfamax;
+        }
+        if ($a[0] != $dfamax && $endstate[$a[0]] != 0) {
+            $a[0] = 0;
+        }
+        if ($a[2] != $dfamax && $endstate[$a[2]] != 0) {
+            $a[2] = 0;
+        }
+        $s = "$a[2] $a[1] $a[0] 0 0";
+        if ($CRLF == 1) {
+            print FDFA "$s\r\n";
+        } else {
+            print FDFA "$s\n";
+        }
     }
     close(DFA);
     close(FDFA);
 
     # execute determinimize
     if ($^O eq "cygwin") {
-	$com = "$determinizebin `cygpath -w ${fdfafile}.tmptmp` -o `cygpath -w ${fdfafile}.tmp`";
+        $com = "$determinizebin `cygpath -w $fdfafile_nfa` -o `cygpath -w $fdfafile_beforeminimize`";
     } else {
-	$com = "$determinizebin ${fdfafile}.tmptmp -o ${fdfafile}.tmp";
+        $com = "$determinizebin $fdfafile_nfa -o $fdfafile_beforeminimize";
     }
     if (&runext($com) != 0) {
-	die "stopped";
+        die "stopped";
     }
     # execute minimize
     if ($^O eq "cygwin") {
-	$com = "$minimizebin `cygpath -w ${fdfafile}.tmp` -o `cygpath -w $fdfafile`";
+        $com = "$minimizebin `cygpath -w $fdfafile_beforeminimize` -o `cygpath -w $fdfafile`";
     } else {
-	$com = "$minimizebin ${fdfafile}.tmp -o $fdfafile";
+        $com = "$minimizebin $fdfafile_beforeminimize -o $fdfafile";
     }
     if (&runext($com) != 0) {
-	die "stopped";
+        die "stopped";
     }
-    unlink("${fdfafile}.tmptmp");
-    unlink("${fdfafile}.tmp");
-    print "saved to $fdfafile\n";
 }
 
+unlink("$fdfafile_nfa");
+unlink("$fdfafile_beforeminimize");
+unlink("$dfafile_beforeminimize");
 unlink("$rgramfile");
 unlink("$tmpvocafile");
 unlink("$tmpheadfile");
 print "---\n";
-if ($status != 0) {
-    # error
-    print "no .dfa or .dict file generated\n";
-    exit;
-}
 
 # convert .voca -> .dict
 # terminal number should be ordered by voca at mkfa output
@@ -303,22 +310,22 @@ if ($make_dict == 1) {
     open(VOCA, "$vocafile")  || die "No vocafile \"$vocafile\" found.\n";
     open(DICT, "> $dictfile") || die "cannot open $dictfile for writing.\n";
     while (<VOCA>) {
-	chomp;
-	s/\r//g;
-	s/#.*//g;
-	if (/^[ \t]*$/) {next;}
-	if (/^%/) {
-	    $nowid++;
-	    next;
-	} else {
-	    @a = split;
-	    $name = shift(@a);
-	    if ($CRLF == 1) {
-		printf(DICT "%d\t[%s]\t%s\r\n", $nowid, $name, join(' ', @a));
-	    } else {
-		printf(DICT "%d\t[%s]\t%s\n", $nowid, $name, join(' ', @a));
-	    }
-	}
+        chomp;
+        s/\r//g;
+        s/#.*//g;
+        if (/^[ \t]*$/) {next;}
+        if (/^%/) {
+            $nowid++;
+            next;
+        } else {
+            @a = split;
+            $name = shift(@a);
+            if ($CRLF == 1) {
+                printf(DICT "%d\t[%s]\t%s\r\n", $nowid, $name, join(' ', @a));
+            } else {
+                printf(DICT "%d\t[%s]\t%s\n", $nowid, $name, join(' ', @a));
+            }
+        }
     }
     close(VOCA);
     close(DICT);
@@ -331,7 +338,9 @@ if ($make_term == 1) {
 if ($make_dict == 1) {
     $gene .= " $dictfile";
 }
-$gene .= " $fdfafile";
+if ($make_forward == 1) {
+    $gene .= " $fdfafile";
+}
 
 print "generated: $gene\n";
 
