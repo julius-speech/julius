@@ -48,36 +48,38 @@ internally while compilation.  Additionally place `dfa_determinize` as the same 
 
 ## Usage
 
-Compiling the [sample
-grammar](https://github.com/julius-speech/grammar-kit/tree/master/SampleGrammars_en)
-"fruit":
+Compiling the [sample grammar](https://github.com/julius-speech/grammar-kit/tree/master/SampleGrammars_en) "fruit":
 
 ```shell
 % git clone https://github.com/julius-speech/grammar-kit/
 % cd grammar-kit/SampleGrammars_en
-% mkdfa.py fruit
+% mkdfa.pl fruit
 fruit.grammar has 8 rules
 fruit.voca    has 8 categories and 31 words
 ---
+executing [/usr/local/bin/mkfa -e1 -fg ./tmp24634-rev.grammar -fv ./tmp24634.voca -fo fruit.dfa_beforeminimize -fh ./tmp24634.h]
 Now parsing grammar file
-Now modifying grammar to minimize states[0]
+Now modifying grammar to reduce states[0]
 Now parsing vocabulary file
 Now making nondeterministic finite automaton[10/10]
 Now making deterministic finite automaton[10/10]
 Now making triplet list[10/10]
+executing [/usr/local/bin/dfa_minimize fruit.dfa_beforeminimize -o fruit.dfa]
 8 categories, 10 nodes, 17 arcs
 -> minimized: 8 nodes, 13 arcs
 ---
-generated: fruit.dfa fruit.term fruit.dict
+now reversing fruit.dfa into NFA "fruit.dfa.forward_nfa"
+executing [/usr/local/bin/dfa_determinize fruit.dfa.forward_nfa -o fruit.dfa.forward_beforeminimize]
+8 categories, 9 nodes, 13 arcs
+-> determinized: 8 nodes, 14 arcs
+executing [/usr/local/bin/dfa_minimize fruit.dfa.forward_beforeminimize -o fruit.dfa.forward]
+8 categories, 8 nodes, 14 arcs
+-> minimized: 8 nodes, 14 arcs
+---
+generated: fruit.dfa fruit.term fruit.dict fruit.dfa.forward
 ```
 
 Running Julius with them:
-
-```shell
-% julius ... -dfa fruit.dfa -v fruit.dict
-```
-
-or
 
 ```shell
 % julius ... -gram fruit
