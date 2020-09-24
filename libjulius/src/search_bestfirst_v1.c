@@ -894,6 +894,10 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
       }
     }
 #endif
+    endt = startt = -1;
+    if (hmminfo->multipath) {
+      now->final_g = LOG_ZERO;
+    }
     goto end_of_scan;
   }
   startt = t;
@@ -1265,8 +1269,6 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
   
   if (debug2_flag) jlog("DEBUG: scanned: [%3d-%3d]\n", endt, startt);
 
- end_of_scan:
-
   if (hmminfo->multipath) {
     /* 前向きスコアの最終値を計算 (状態 0 から時間 0 への遷移) */
     /* compute the total forward score (transition from state 0 to frame 0 */
@@ -1332,6 +1334,8 @@ scan_word(NODE *now, HTK_Param *param, RecogProcess *r)
     }
   }
 #endif
+
+ end_of_scan:
 
   /* free work area */
   free_hmm(whmm);
