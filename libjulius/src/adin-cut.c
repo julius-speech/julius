@@ -622,7 +622,10 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 #endif
     
     /* wstep: unit length for the loop below */
-    if (wstep > a->current_len) wstep = a->current_len;
+    if (a->end_of_stream) {
+      /* already reaches end of stream, just process the rest */
+      if (wstep > a->current_len) wstep = a->current_len;
+    }
 
 #ifdef THREAD_DEBUG
     jlog("DEBUG: process %d samples by %d step\n", imax, wstep);
