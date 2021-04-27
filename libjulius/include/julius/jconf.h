@@ -997,22 +997,38 @@ typedef struct __Jconf__ {
      * aggressive, put focus on picking up all possible speech, likely
      * to accepting speech-like noise part.  Larger value indicates
      * very aggressive detection, putting focus on accepting truly
-     * speech only part, aggressively dropping amiguous part.
+     * speech only part, aggressively dropping ambiguous part.
      */
     int fvad_mode;
 
     /**
      * (LIBFVAD) number of frames for smoothing.  Last N frames (where 1
-     * frame is fixed to 10ms) value are averaged to get stational VAD.
+     * frame is fixed to 10ms) value are averaged to get stable VAD.
      */
     int fvad_smoothnum;
 
     /**
-     * (LIBFVAD) speech likelihood threshold value to finaly detect
+     * (LIBFVAD) speech likelihood threshold value to finally detect
      * speech trigger.  Value should be between 0.0 and 1.0.  Typical
      * value is 0.5. 
      */
     float fvad_thres;
+
+    /**
+     * (LIBFVAD) switch AGC 
+     */
+    boolean auto_gain_control_flag;
+
+    struct {
+      int overflow_thres;             ///< signal overflow threshold
+      float scale_max;                ///< maximum allowed scale (absolute)
+      float scale_max_relative_first; ///< maximum allowed scale (relative to first-utterance scale)
+      float level_factor_first;       ///< target level threshold factor for first-utterance scaling
+      float scale_up_rate;            ///< rate when moving scale up
+      float scale_down_rate;          ///< rate when moving scale down
+      float scale_down_overflow_rate; ///< rate when moving scale down by overflow
+    } agc;
+
 #endif /* HAVE_LIBFVAD */
     
   } detect;

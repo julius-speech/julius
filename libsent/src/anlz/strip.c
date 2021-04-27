@@ -29,6 +29,21 @@
 /// Length of zero sample to detect as invalid sequence.
 #define WINDOWLEN 16
 
+/// log switch
+static boolean strip_zero_warning = TRUE;
+
+/** 
+ * Switch strip zero warning message
+ * 
+ * @param flag [in] flag
+ * 
+ */
+void
+set_strip_zero_warning(boolean flag)
+{
+  strip_zero_warning = flag;
+}
+
 /** 
  * Strip zero samples from speech data.
  * 
@@ -63,7 +78,7 @@ strip_zero(SP16 a[], int len)
 	  }
         } else {
           /* deleted (leave uncopied) */
-	  jlog("Warning: strip: sample %d-%d has zero value, stripped\n", bgn, src-1);
+	  if (strip_zero_warning) jlog("Warning: strip: sample %d-%d has zero value, stripped\n", bgn, src-1);
         }
       }
       a[dst++] = a[src];
@@ -79,7 +94,7 @@ strip_zero(SP16 a[], int len)
       }
     } else {
       /* deleted (leave uncopied) */
-      jlog("Warning: strip: sample %d-%d is invalid, stripped\n", bgn, src-1);
+      if (strip_zero_warning) jlog("Warning: strip: sample %d-%d is invalid, stripped\n", bgn, src-1);
     }
   }
   

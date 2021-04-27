@@ -51,6 +51,11 @@ enum{SPOUT_NONE, SPOUT_FILE, SPOUT_STDOUT, SPOUT_ADINNET, SPOUT_VECTORNET};
 #define WAVE_TICK_FLAG_PROCESSED 0x01
 // audio tick flag: set to indicate that an input segment was triggered down
 #define WAVE_TICK_FLAG_TRIGGER 0x02
+#ifdef HAVE_LIBFVAD
+// audio tick flag: set to indicate that an input segment was detemined as voice by fvad
+#define WAVE_TICK_FLAG_FVAD_VOICED 0x04
+#endif /* HAVE_LIBFVAD */
+
 
 #ifdef AUTO_ADJUST_THRESHOLD
 // mean / var computing window length in seconds

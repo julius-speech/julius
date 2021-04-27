@@ -33,7 +33,7 @@ show_help_and_exit(Jconf *jconf, char *arg[], int argnum)
   fprintf(stderr, "    vecnet      to vecnet server as feature vector (I'm client)\n");
   fprintf(stderr, "    stdout      standard tty output\n");
   fprintf(stderr, "    none        output nothing\n");
-  
+
   fprintf(stderr, "I/O options:\n");
 #ifdef USE_NETAUDIO
   fprintf(stderr, "    -NA             (netaudio) NetAudio server host:unit\n");
@@ -47,7 +47,7 @@ show_help_and_exit(Jconf *jconf, char *arg[], int argnum)
   fprintf(stderr, "Feature extraction options (other than in jconf):\n");
   fprintf(stderr, "    -paramtype desc     parameter type in HTK format\n");
   fprintf(stderr, "    -veclen num         total vector length\n");
-  
+
   fprintf(stderr, "Recording and Pause segmentation options:\n");
 
   fprintf(stderr, " (input segmentation: on for file/mic/stdin, off for adinnet)\n");
@@ -63,10 +63,12 @@ show_help_and_exit(Jconf *jconf, char *arg[], int argnum)
   fprintf(stderr, "  [-tailmargin msec]    tail margin length          (%d)\n", jconf->detect.tail_margin_msec);
   fprintf(stderr, "  [-chunksize sample]   chunk size for processing   (%d)\n", jconf->detect.chunk_size);
 #ifdef HAVE_LIBFVAD
-  fprintf(stderr, "  [-fvad]               FVAD sw (-1=off, 0 - 3)     (%d)\n", jconf->detect.fvad_mode);
-  fprintf(stderr, "  [-fvad_param i f]     FVAD parameter (dur/thres)  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(stderr, "  [-fvad mode]          enable WebRTC VAD (0-3, larger value rejects noises aggressively, -1 to disable) (%d)\n", jconf->detect.fvad_mode);
+  fprintf(stderr, "  [-fvad_param i f]     WebRTC VAD parameters (smoothing duration (frames), thres([0-1]))  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(stderr, "  [-agc][-noagc]        enable/disable additional AGC on WebRTC VAD\n");
+  fprintf(stderr, "  [-agc_param p1 ... p7]  AGC parameters   (%d %.2f %.2f %.2f %.2f %.2f %.2f)\n", jconf->detect.agc.overflow_thres , jconf->detect.agc.scale_max, jconf->detect.agc.scale_max_relative_first, jconf->detect.agc.level_factor_first, jconf->detect.agc.scale_up_rate, jconf->detect.agc.scale_down_rate, jconf->detect.agc.scale_down_overflow_rate);
 #endif /* HAVE_LIBFVAD */
-  
+
   fprintf(stderr, "  [-nostrip]            do not strip zero samples\n");
   fprintf(stderr, "  [-zmean]              remove DC by zero mean\n");
   fprintf(stderr, "  [-raw]                output in RAW format\n");
@@ -74,7 +76,7 @@ show_help_and_exit(Jconf *jconf, char *arg[], int argnum)
   fprintf(stderr, "  [-loosesync]          loose sync of resume among servers\n");
   fprintf(stderr, "  [-rewind msec]        rewind input if spoken while pause at resume\n");
   fprintf(stderr, "  [-C jconffile]        load jconf to set parameters (ignore other options\n");
-  
+
   fprintf(stderr, "\nLibrary configuration: ");
   confout_version(stderr);
   confout_audio(stderr);
@@ -346,7 +348,7 @@ void register_options_to_julius()
   j_add_option("-h", 0, 0, "display this help", show_help_and_exit);
   j_add_option("-help", 0, 0, "display this help", show_help_and_exit);
   j_add_option("--help", 0, 0, "display this help", show_help_and_exit);
-  
+
 }
 
 /* end of options.c */

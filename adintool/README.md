@@ -22,7 +22,7 @@ GUI version:
 ## Description
 
 `adintool` analyzes speech input, detects speech segments skipping silence, and
-records the detected segments in various ways.
+records the detected segments in various ways.  It accepts all Julius options.
 
 Input waveform:
 
@@ -47,7 +47,7 @@ Output waveform / feature vector:
 - none
 
 This tool uses Julius's internal VAD module for speech detection. The detection
-algorithm and parameters are the same as Julius.
+algorithm and parameters are the same as Julius.  It also accepts all Julius options.
 
 The default audio format is 16 bit, 1 channel in Microsoft WAV format.
 
@@ -78,6 +78,12 @@ Record utterances one by one, into file "test0001.wav", "test0002.wav", ...
 
 ```shell
 % adintool -in mic -out file -filename test
+```
+
+Use WebRTC-based VAD and experimental AGC.
+
+```shell
+% adintool -in mic -out file -filename test -fvad 3 -agc
 ```
 
 Record only one utterance into "test.wav"

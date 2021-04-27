@@ -1,19 +1,19 @@
 /**
  * @file   m_info.c
- * 
+ *
  * <JA>
  * @brief  システム情報の出力
  * </JA>
- * 
+ *
  * <EN>
  * @brief  Output system informations.
  * </EN>
- * 
+ *
  * @author Akinobu Lee
  * @date   Thu May 12 14:14:01 2005
  *
  * $Revision: 1.23 $
- * 
+ *
  */
 /*
  * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
@@ -24,19 +24,19 @@
 
 #include <julius/julius.h>
 
-/** 
+/**
  * <EN>
  * Output module overview in a global configuration variables to log.
  * </EN>
  * <JA>
- * 全体設定パラメータ内のモジュール構成の概要をログに出力する. 
+ * 全体設定パラメータ内のモジュール構成の概要をログに出力する.
  * </JA>
- * 
+ *
  * @param jconf [in] global configuration variables
  *
  * @callgraph
  * @callergraph
- * 
+ *
  */
 void
 print_jconf_overview(Jconf *jconf)
@@ -56,9 +56,9 @@ print_jconf_overview(Jconf *jconf)
   jlog(" LM=%d,", i);
   i = 0; for(sconf=jconf->search_root;sconf;sconf=sconf->next) i++;
   jlog(" SR=%d\n", i);
-  
+
   jlog("\n");
-  
+
   jlog(" Acoustic Model (with input parameter spec.):\n");
   for(amconf=jconf->am_root;amconf;amconf=amconf->next) {
     if (amconf->name[0] != '\0') {
@@ -75,7 +75,7 @@ print_jconf_overview(Jconf *jconf)
     }
   }
   jlog("\n");
-  
+
   jlog(" Language Model:\n");
   for(lmconf=jconf->lm_root;lmconf;lmconf=lmconf->next) {
     if (lmconf->name[0] != '\0') {
@@ -218,7 +218,7 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
     jlog("        save cep. data to = \"%s\", update at the end of each input\n", mfcc->cmn.save_filename);
   }
   jlog("\n");
-  
+
   jlog("\t base setup from =");
   if (mfcc->htk_loaded == 1 || mfcc->hmm_loaded == 1) {
     if (mfcc->hmm_loaded == 1) {
@@ -243,16 +243,16 @@ print_mfcc_info(FILE *fp, MFCCCalc *mfcc, Jconf *jconf)
 }
 
 
-/** 
+/**
  * <JA>
- * エンジンインスタンスの全情報をログに出力する. 
+ * エンジンインスタンスの全情報をログに出力する.
  * </JA>
  * <EN>
  * Output all informations of an engine instance to log.
  * </EN>
  *
  * @param recog [in] engine instance
- * 
+ *
  * @callgraph
  * @callergraph
  */
@@ -267,7 +267,7 @@ print_engine_info(Recog *recog)
   RecogProcess *r;
 
   jconf = recog->jconf;
-  
+
   /* set output file pointer to fp */
   fp = jlog_get_fp();
   if (fp == NULL) return;
@@ -277,7 +277,7 @@ print_engine_info(Recog *recog)
   j_put_compile_defs(fp);
   j_put_library_defs(fp);
   jlog("\n");
-  
+
   /* print current argument setting to log */
   print_jconf_overview(jconf);
 
@@ -286,7 +286,7 @@ print_engine_info(Recog *recog)
     /* acoustic parameter conditions for this model */
     jlog("------------------------------------------------------------\n");
     jlog("Speech Analysis Module(s)\n\n");
-    
+
     for(mfcc=recog->mfcclist;mfcc;mfcc=mfcc->next) {
 
       jlog("[MFCC%02d]  for", mfcc->id);
@@ -395,7 +395,7 @@ print_engine_info(Recog *recog)
 #else
     jlog("disabled\n");
 #endif
-    
+
     if (am->hmminfo->multipath) {
       jlog("   sp transition penalty = %+2.1f\n", am->config->iwsp_penalty);
     }
@@ -484,7 +484,7 @@ print_engine_info(Recog *recog)
 	jlog("\n");
       }
     }
-    
+
     if (lm->lmtype == LM_PROB) {
       if (lm->config->enable_iwspword) {
 	jlog("\tIW-sp word added to dict= \"%s\"\n", lm->config->iwspentry);
@@ -509,7 +509,7 @@ print_engine_info(Recog *recog)
       }
     }
 
-    if (lm->lmtype == LM_PROB) {    
+    if (lm->lmtype == LM_PROB) {
       jlog("\t(-silhead)head sil word = ");
       put_voca(fp, lm->winfo, lm->winfo->head_silwid);
       jlog("\t(-siltail)tail sil word = ");
@@ -521,7 +521,7 @@ print_engine_info(Recog *recog)
       jlog("\tword head          = \"%s\"\n", lm->config->wordrecog_head_silence_model_name);
       jlog("\tword tail          = \"%s\"\n", lm->config->wordrecog_tail_silence_model_name);
       jlog("\ttheir context name = \"%s\"\n", (lm->config->wordrecog_silence_context_name[0] == '\0') ? "NULL (blank)" : lm->config->wordrecog_silence_context_name);
-      
+
     }
 
   }
@@ -639,7 +639,7 @@ print_engine_info(Recog *recog)
 #endif
     jlog("\t(-n)search candidate num= %d\n", r->config->pass2.nbest);
     jlog("\t(-s)  search stack size = %d\n", r->config->pass2.stack_size);
-    jlog("\t(-m)    search overflow = after %d hypothesis poped\n", r->config->pass2.hypo_overflow);
+    jlog("\t(-m)    search overflow = after %d hypothesis popped\n", r->config->pass2.hypo_overflow);
     jlog("\t        2nd pass method = ");
     if (r->config->graph.enabled) {
 #ifdef GRAPHOUT_DYNAMIC
@@ -735,7 +735,7 @@ print_engine_info(Recog *recog)
     if (r->config->compute_only_1pass) {
       jlog("\tCompute only 1-pass\n");
     }
-    
+
     if (r->config->graph.enabled) {
       jlog("\n");
       jlog("Graph-based output with graph-oriented search:\n");
@@ -772,7 +772,7 @@ print_engine_info(Recog *recog)
 #endif
 
     }
-    
+
     if (r->config->successive.enabled) {
       jlog("\tshort pause segmentation = on\n");
       jlog("\t      sp duration length = %d frames\n", r->config->successive.sp_frame_duration);
@@ -840,7 +840,7 @@ print_engine_info(Recog *recog)
   jlog("based on search-time scores\n");
 #endif
 #endif /* CONFIDENCE_MEASURE */
-  
+
   jlog("\n");
 
   jlog("------------------------------------------------------------\n");
@@ -958,11 +958,23 @@ print_engine_info(Recog *recog)
       jlog("\t              chunk size = %d samples\n", jconf->detect.chunk_size);
 #ifdef HAVE_LIBFVAD
       if (jconf->detect.fvad_mode < 0) {
-	jlog("\t       FVAD switch value = %d (disabled)\n", jconf->detect.fvad_mode);
+	jlog("\tWebRTC VAD operating mode = %d (disabled)\n", jconf->detect.fvad_mode);
       } else {
-	jlog("\t       FVAD switch value = %d (0: moderate - 3: very aggressive to regist to noise\n", jconf->detect.fvad_mode);
-	jlog("\t    FVAD param smoothlen = %d (%dms)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_smoothnum * 10);
-	jlog("\t    FVAD param threshold = %.2f\n", jconf->detect.fvad_thres);
+	jlog("\tWebRTC VAD operating mode = %d (0-3, larger value rejects noises aggressively)\n", jconf->detect.fvad_mode);
+	jlog("\tWebRTC VAD  smoothing len = %d (%dms)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_smoothnum * 10);
+	jlog("\tWebRTC VAD   active thres = %.2f\n", jconf->detect.fvad_thres);
+	if (jconf->detect.auto_gain_control_flag) {
+	  jlog("\t      Auto Gain Control = enabled\n");
+	  jlog("\t        AGC signal overflow threshold = %d\n", jconf->detect.agc.overflow_thres);
+	  jlog("\t        AGC maximum allowed scale = %.2f\n", jconf->detect.agc.scale_max);
+	  jlog("\t        AGC maximum allowed scale, relative to first-utterance scale) = %.2f\n", jconf->detect.agc.scale_max_relative_first);
+	  jlog("\t        AGC target level threshold factor for first-utterance scaling = %.2f\n", jconf->detect.agc.level_factor_first);
+	  jlog("\t        AGC rate when moving scale up = %.2f\n", jconf->detect.agc.scale_up_rate);
+	  jlog("\t        AGC rate when moving scale down = %.2f\n", jconf->detect.agc.scale_down_rate); 
+	  jlog("\t        AGC rate when moving scale down at overflow = %.2f\n", jconf->detect.agc.scale_down_overflow_rate);
+	} else {
+	  jlog("\t      Auto Gain Control = disabled\n");
+	}
       }
 #endif /* HAVE_LIBFVAD */
     } else {

@@ -1,19 +1,19 @@
 /**
  * @file   m_usage.c
- * 
+ *
  * <JA>
  * @brief  ヘルプを表示する
  * </JA>
- * 
+ *
  * <EN>
  * @brief  Print help.
  * </EN>
- * 
+ *
  * @author Akinobu Lee
  * @date   Fri May 13 15:04:34 2005
  *
  * $Revision: 1.25 $
- * 
+ *
  */
 /*
  * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
@@ -24,14 +24,14 @@
 
 #include <julius/julius.h>
 
-/** 
+/**
  * <JA>
- * ヘルプを表示する. 
- * 
+ * ヘルプを表示する.
+ *
  * </JA>
  * <EN>
  * Output help document.
- * 
+ *
  * </EN>
  *
  * @param fp [in] file pointer to output help
@@ -39,7 +39,7 @@
  * @callgraph
  * @callergraph
  * @ingroup engine
- * 
+ *
  */
 void
 j_output_argument_help(FILE *fp)
@@ -51,7 +51,7 @@ j_output_argument_help(FILE *fp)
   PLUGIN_ENTRY *p;
   FUNC_VOID func;
 #endif
-    
+
   /* load default values */
   jconf = j_jconf_new();
 
@@ -129,7 +129,7 @@ j_output_argument_help(FILE *fp)
 #ifdef POWER_REJECT
   fprintf(fp, "    [-powerthres value] rejection threshold of average power  (%.1f)\n", jconf->reject.powerthres);
 #endif
-  
+
   fprintf(fp, "\n Speech Detection: (default: on=mic/net off=files)\n");
   /*fprintf(fp, "    [-pausesegment]     turn on (force) pause detection\n");*/
   /*fprintf(fp, "    [-nopausesegment]   turn off (force) pause detection\n");*/
@@ -141,8 +141,11 @@ j_output_argument_help(FILE *fp)
   fprintf(fp, "    [-tailmargin msec]  tail margin length in msec.           (%d)\n", jconf->detect.tail_margin_msec);
   fprintf(fp, "    [-chunksize sample] unit length for processing            (%d)\n", jconf->detect.chunk_size);
 #ifdef HAVE_LIBFVAD
-  fprintf(fp, "    [-fvad]             FVAD sw (-1=off, 0-3=on / degree      (%d)\n", jconf->detect.fvad_mode);
-  fprintf(fp, "    [-fvad_param i f]   FVAD parameter (dur/thres)            (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(fp, "    [-fvad mode]        enable WebRTC VAD (0-3, larger value rejects noises aggressively) (%d)\n", jconf->detect.fvad_mode);
+  fprintf(fp, "    [-fvad_param i f]   WebRTC VAD parameters (smoothing duration (frames), thres([0-1]))  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(fp, "    [-agc][-noagc]        enable/disable additional AGC on WebRTC VAD\n");
+  fprintf(fp, "    [-agc_param p1 ... p7]  AGC parameters   (%d %.2f %.2f %.2f %.2f %.2f %.2f)\n", jconf->detect.agc.overflow_thres , jconf->detect.agc.scale_max, jconf->detect.agc.scale_max_relative_first, jconf->detect.agc.level_factor_first, jconf->detect.agc.scale_up_rate, jconf->detect.agc.scale_down_rate, jconf->detect.agc.scale_down_overflow_rate);
+
 #endif /* HAVE_LIBFVAD */
 
   fprintf(fp, "\n GMM utterance verification:\n");
@@ -289,7 +292,7 @@ j_output_argument_help(FILE *fp)
   fprintf(fp, "    [-iwspentry entry]  (n-gram) word entry for \"-iwspword\" (%s)\n", IWSPENTRY_DEFAULT);
   fprintf(fp, "    [-adddict dictfile] (n-gram) load extra dictionary\n");
   fprintf(fp, "    [-addentry entry]   (n-gram) load extra word entry\n");
-  
+
   fprintf(fp, "\n Isolated Word Recognition:\n");
   fprintf(fp, "    -w file[,file2...]  (list of) wordlist file name(s)\n");
   fprintf(fp, "    -wlist filename     file that contains list of wordlists\n");
