@@ -1,0 +1,3 @@
+option('charconv', type:'combo', choices:['auto', 'iconv', 'libjcode', 'win' , 'no'], value:'auto', description:'character conversion')
+option('visualize', type:'boolean', value:false, description:'enable search space visualization on X11 and GTK')
+

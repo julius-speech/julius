@@ -53,12 +53,23 @@ How to test English dictation with Julius and English DNN model.  The procedure 
 
 ## 1. Build latest Julius
 
+### 1.1 Get Sources
+
 ```shell
 % sudo apt-get install build-essential zlib1g-dev libsdl2-dev libasound2-dev
 % git clone https://github.com/julius-speech/julius.git
+
+### 1.2 Build with autotools
+
 % cd julius
 % ./configure --enable-words-int
 % make -j4
+
+### 1.3 Build with meson
+% cd julius
+% CC=gcc meson builddir
+% cd builddir && ninja
+
 % ls -l julius/julius
 -rwxr-xr-x 1 ri lab 746056 May 26 13:01 julius/julius
 ```
