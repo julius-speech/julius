@@ -126,6 +126,7 @@ BODY *entryTerm( char *name, BODY *body, int listLen )
     class->usedFA = 0;
     class->used=0;
     class->tmp = 0;
+    class->next = NULL;
     if( ClassListTail == NULL ){
 	ClassList = class;
     } else {
