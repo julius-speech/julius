@@ -45,7 +45,7 @@ static void cpu_id_check()
 
   use_simd = USE_SIMD_NONE;
 
-#if defined(__arm__) || TARGET_OS_IPHONE
+#if defined(__arm__) || TARGET_OS_IPHONE || defined(__aarch64__)
   /* on ARM NEON */
 
 #if defined(HAS_SIMD_NEONV2)
