@@ -373,7 +373,8 @@ if test "$want_pthread" = yes; then
 	AC_MSG_CHECKING([for linking POSIX threaded process])
  	ac_save_CFLAGS="$CFLAGS"
  	CFLAGS="$CFLAGS -pthread"
- 	AC_TRY_LINK([#include <pthread.h>],[pthread_equal(NULL,NULL);],
+ 	AC_TRY_LINK([#include <pthread.h>],
+		    [pthread_equal(pthread_self(),pthread_self());],
      	    use_pthread=yes
      	    AC_DEFINE(HAVE_PTHREAD)
 	    CPPFLAGS="$CPPFLAGS -pthread",
@@ -388,7 +389,8 @@ if test "$want_pthread" = yes; then
 	AC_MSG_CHECKING([for POSIX thread library in -lpthread])
 	ac_save_LIBS_p="$LIBS"
 	LIBS="$LIBS -lpthread"
-	AC_TRY_LINK([#include <pthread.h>],[pthread_equal(NULL,NULL);],
+	AC_TRY_LINK([#include <pthread.h>],
+	            [pthread_equal(pthread_self(),pthread_self());],
 	    use_pthread=yes
 	    AC_DEFINE(HAVE_PTHREAD),
 	  use_pthread=no
