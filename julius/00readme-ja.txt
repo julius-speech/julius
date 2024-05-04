@@ -982,7 +982,7 @@ DIAGNOSTICS
 BUGS
        使用できるモデルにはサイズやタイプに若干の制限があります．詳しく はパッ
        ケージに付属のドキュメントを参照してください． バグ報告・問い合わせ・コ
-       メントなどは julius-info at lists.sourceforge.jp までお願いします．
+       メントなどは GitHub のサイト までお願いします．
 
 COPYRIGHT
        Copyright (c) 1991-2013 京都大学 河原研究室

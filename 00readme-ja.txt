@@ -154,9 +154,4 @@ Julius 開発に関するご質問・お問い合わせは主に GitHub 上で�
         Julius on GitHub
         https://github.com/julius-speech/julius
 
-あるいは下記のメールアドレスまでお問い合わせ下さい
-('at' を '@' に読み替えてください)
-
-        julius-info at lists.sourceforge.jp
-
 以上

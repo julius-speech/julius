@@ -1279,8 +1279,7 @@ DIAGNOSTICS
 BUGS
        There are some restrictions to the type and size of the models Julius
        can use. For a detailed explanation refer to the Julius documentation.
-       For bug-reports, inquires and comments please contact julius-info at
-       lists.sourceforge.jp.
+       For bug-reports, inquires and comments should go to the GitHub site.
 
 COPYRIGHT
        Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
