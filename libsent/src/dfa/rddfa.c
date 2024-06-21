@@ -150,22 +150,22 @@ rddfa_line(char *line, DFA_INFO *dinfo, int *state_max, int *arc_num, int *termi
   if (strmatch(buf, "DFAEND")) return(FALSE);
   /* format: state terminalID nextstate statuscode_of_state */
   if ((p = strtok(line, DELM)) == NULL) {
-    jlog("Error: rddfa: failed to parse, corrupted or invalid data?\n");
+    jlog("Error: rddfa: failed to parse (1), corrupted or invalid data?\n");
     return FALSE;
   }
   state = atoi(p);
   if ((p = strtok(NULL, DELM)) == NULL) {
-    jlog("Error: rddfa: failed to parse, corrupted or invalid data?\n");
+    jlog("Error: rddfa: failed to parse (2), corrupted or invalid data?\n");
     return FALSE;
   }
   terminal = atoi(p);
   if ((p = strtok(NULL, DELM)) == NULL) {
-    jlog("Error: rddfa: failed to parse, corrupted or invalid data?\n");
+    jlog("Error: rddfa: failed to parse (3), corrupted or invalid data?\n");
     return FALSE;
   }
   next_state = atoi(p);
   if ((p = strtok(NULL, DELM)) == NULL) {
-    jlog("Error: rddfa: failed to parse, corrupted or invalid data?\n");
+    jlog("Error: rddfa: failed to parse (4), corrupted or invalid data?\n");
     return FALSE;
   }
   sscanf(p, "%x", &status);
