@@ -350,22 +350,22 @@ j_jconf_finalize(Jconf *jconf)
   /* check parameter to be passed to libfvad */
   if (jconf->detect.fvad_mode < -1) jconf->detect.fvad_mode = -1;
   if (jconf->detect.fvad_mode > 3) {
-    jlog("WARNING: m_chkparam: invalud value for \"-fvad\": %d\n", jconf->detect.fvad_mode);
+    jlog("WARNING: m_chkparam: invalid value for \"-fvad\": %d\n", jconf->detect.fvad_mode);
     jlog("WARNING: m_chkparam: maximum aggressiveness is 3, use 3 now\n");
     jconf->detect.fvad_mode = 3;
   }
   if (jconf->detect.fvad_smoothnum < 1) {
-    jlog("WARNING: m_chkparam: invalud value for 1st arg of \"-fvad_param\": %d\n", jconf->detect.fvad_smoothnum);
+    jlog("WARNING: m_chkparam: invalid value for 1st arg of \"-fvad_param\": %d\n", jconf->detect.fvad_smoothnum);
     jlog("WARNING: m_chkparam: num should be >= 1, use 1 now\n");
     jconf->detect.fvad_smoothnum = 1;
   }
   if (jconf->detect.fvad_thres < 0.0) {
-    jlog("WARNING: m_chkparam: invalud value for 2nd arg of \"-fvad_param\": %f\n", jconf->detect.fvad_thres);
+    jlog("WARNING: m_chkparam: invalid value for 2nd arg of \"-fvad_param\": %f\n", jconf->detect.fvad_thres);
     jlog("WARNING: m_chkparam: thres should be >= 0.0, use 0.0 now\n");
     jconf->detect.fvad_thres = 0.0;
   }
   if (jconf->detect.fvad_thres > 1.0) {
-    jlog("WARNING: m_chkparam: invalud value for 2nd arg of \"-fvad_param\": %f\n", jconf->detect.fvad_thres);
+    jlog("WARNING: m_chkparam: invalid value for 2nd arg of \"-fvad_param\": %f\n", jconf->detect.fvad_thres);
     jlog("WARNING: m_chkparam: thres should be <= 1.0, use 1.0 now\n");
     jconf->detect.fvad_thres = 1.0;
   }

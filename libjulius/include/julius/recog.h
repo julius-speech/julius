@@ -455,6 +455,7 @@ typedef struct __adin__ {
   int *fvad_lastresult;           ///< working buffer to hold last N results
   int fvad_lastp;                 ///< current pointer fot lastresult buffer
   float fvad_thres;               ///< threshold to detect speech
+  boolean fvad_last_voice;        ///< TRUE if last result was voice
 #endif /* HAVE_LIBFVAD */
 
 } ADIn;
