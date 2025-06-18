@@ -284,7 +284,7 @@ static boolean load_npy(float *array, char *filename, int x, int y)
     return FALSE;
   }
 #ifdef WORDS_BIGENDIAN
-  swap_bytes(&header_len, 2, 1);
+  swap_bytes((char *)&header_len, 2, 1);
 #endif
   header = (char *)mymalloc(header_len + 1);
   if ((len = myfread(header, 1, header_len, fp)) < header_len) {
