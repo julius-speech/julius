@@ -1,19 +1,19 @@
 /**
  * @file   adinrec.c
- * 
+ *
  * <JA>
  * @brief  マイクから一発話をファイルへ記録する
  * </JA>
- * 
+ *
  * <EN>
  * @brief  Record a speech segment from microphone to a file
  * </EN>
- * 
+ *
  * @author Akinobu LEE
  * @date   Wed Mar 23 20:33:01 2005
  *
  * $Revision: 1.13 $
- * 
+ *
  */
 /*
  * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
@@ -35,7 +35,7 @@ static char *filename = NULL;	///< Output file name
 static boolean stout = FALSE;	///< True if output to stdout
 static boolean use_raw = FALSE;	///< Output in RAW format if TRUE
 
-/** 
+/**
  * <JA>ヘルプを表示して終了する</JA>
  * <EN>Print help and exit</EN>
  */
@@ -53,8 +53,10 @@ opt_help(Jconf *jconf, char *arg[], int argnum)
   fprintf(stderr, "    [-tailmargin msec]    tail margin length          (%d)\n", jconf->detect.tail_margin_msec);
   fprintf(stderr, "    [-chunksize sample]   chunk size for processing   (%d)\n", jconf->detect.chunk_size);
 #ifdef HAVE_LIBFVAD
-  fprintf(stderr, "    [-fvad]               FVAD sw (-1=off, 0 - 3)     (%d)\n", jconf->detect.fvad_mode);
-  fprintf(stderr, "    [-fvad_param i f]     FVAD parameter (dur/thres)  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(stderr, "    [-fvad mode]          enable WebRTC VAD (0-3, larger value rejects noises aggressively) (%d)\n", jconf->detect.fvad_mode);
+  fprintf(stderr, "    [-fvad_param i f]     WebRTC VAD parameters (smoothing duration (frames), thres([0-1]))  (%d %.2f)\n", jconf->detect.fvad_smoothnum, jconf->detect.fvad_thres);
+  fprintf(stderr, "    [-agc][-noagc]        enable/disable additional AGC on WebRTC VAD\n");
+  fprintf(stderr, "    [-agc_param p1 ... p7]  AGC parameters   (%d %.2f %.2f %.2f %.2f %.2f %.2f)\n", jconf->detect.agc.overflow_thres , jconf->detect.agc.scale_max, jconf->detect.agc.scale_max_relative_first, jconf->detect.agc.level_factor_first, jconf->detect.agc.scale_up_rate, jconf->detect.agc.scale_down_rate, jconf->detect.agc.scale_down_overflow_rate);
 #endif /* HAVE_LIBFVAD */
   fprintf(stderr, "    [-nostrip]            not strip off zero samples\n");
   fprintf(stderr, "    [-zmean]              remove DC by zero mean\n");
@@ -83,21 +85,21 @@ opt_freq(Jconf *jconf, char *arg[], int argnum)
   return TRUE;
 }
 
-/** 
+/**
  * <JA>
  * 録音されたサンプル列を処理するコールバック関数
- * 
+ *
  * @param now [in] 録音されたサンプル列
  * @param len [in] 長さ（サンプル数）
- * 
+ *
  * @return エラー時 -1，処理成功時 0，処理成功＋区間終端検出時 1 を返す．
  * </JA>
  * <EN>
  * Callback handler of recorded sample fragments
- * 
+ *
  * @param now [in] recorded fragments of speech sample
  * @param len [in] length of above in samples
- * 
+ *
  * @return -1 on device error (require caller to exit and terminate input),
  * 0 on success (allow caller to continue),
  * 1 on succeeded but segmentation detected (require caller to exit but
@@ -155,11 +157,11 @@ adin_callback_file(SP16 *now, int len, Recog *recog)
       return -1;
     }
   }
-  
+
   speechlen += len;
-  
+
   /* progress bar in dots */
-  fprintf(stderr, ".");		
+  fprintf(stderr, ".");
   return(0);
 }
 
@@ -182,7 +184,7 @@ close_file()
     }
   }
   fprintf(stderr, "\n%d samples (%d bytes, %.2f sec.) recorded\n", speechlen, size, (float)speechlen / (float)sfreq);
-}  
+}
 
 /* Interrupt signal handling */
 static void
@@ -196,21 +198,21 @@ interrupt_record(int signum)
 }
 
 
-/** 
+/**
  * <JA>
  * メイン関数
- * 
+ *
  * @param argc [in] 引数列の長さ
  * @param argv [in] 引数列
- * 
- * @return 
+ *
+ * @return
  * </JA>エラー時 1，通常終了時 0 を返す．
  * <EN>
  * Main function.
- * 
+ *
  * @param argc [in] number of argument.
  * @param argv [in] array of arguments.
- * 
+ *
  * @return 1 on error, 0 on success.
  * </EN>
  */
@@ -266,7 +268,7 @@ main(int argc, char *argv[])
 
   /* set Julius default parameters for unspecified acoustic parameters */
   apply_para(&(jconf->am_root->analysis.para), &(jconf->am_root->analysis.para_default));
-  
+
   /* set some values */
   jconf->input.sfreq = jconf->am_root->analysis.para.smp_freq;
   jconf->input.period = jconf->am_root->analysis.para.smp_period;

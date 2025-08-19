@@ -954,6 +954,11 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
       if (recog->adin->is_valid_data == TRUE) {
 	s->flag[s->bp] |= WAVE_TICK_FLAG_PROCESSED;
       }
+#ifdef HAVE_LIBFVAD
+      if (recog->adin->fvad_last_voice == TRUE) {
+	s->flag[s->bp] |= WAVE_TICK_FLAG_FVAD_VOICED;
+      }
+#endif /* HAVE_LIBFVAD */
       s->is_valid_flag = (recog->adin->is_valid_data == TRUE) ? 1 : 0;
 
 #ifdef AUTO_ADJUST_THRESHOLD
@@ -1098,7 +1103,7 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 #endif /* AUTO_ADJUST_THRESHOLD */
 
   // clear screen
-  if (recog->jconf->preprocess.level_coef == 1.0f) {
+  if (recog->jconf->preprocess.level_coef != 0.0f) {
     // fill black
     SDL_SetRenderDrawColor(s->renderer, 0, 0, 0, 0xFF);
   } else {
@@ -1163,19 +1168,32 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
     j++;
     if (j >= s->items) j -= s->items;
   }
-  m = s->rectflags[0] & WAVE_TICK_FLAG_PROCESSED;
+
+  short process_flag = WAVE_TICK_FLAG_PROCESSED;
+#ifdef HAVE_LIBFVAD
+  process_flag |= WAVE_TICK_FLAG_FVAD_VOICED;
+#endif
+  m = s->rectflags[0] & process_flag;
   k = 0;
   miny = viewport.h;
   startx = 0;
   for(i = 0; i < s->items; i++) {
-    if ((s->rectflags[i] & WAVE_TICK_FLAG_PROCESSED) != m) {
-      SDL_SetRenderDrawColor(s->renderer, 255 * m, 128, 255 - 128 * m, 255);
+    if ((s->rectflags[i] & process_flag) != m) {
+      if (m & WAVE_TICK_FLAG_PROCESSED) {
+	SDL_SetRenderDrawColor(s->renderer, 255, 128, 128, 255);
+#ifdef HAVE_LIBFVAD
+      } else if (m & WAVE_TICK_FLAG_FVAD_VOICED) {
+	SDL_SetRenderDrawColor(s->renderer, 128, 255, 128, 255);
+#endif
+      } else {
+	SDL_SetRenderDrawColor(s->renderer,   0, 128, 255, 255);
+      }
       SDL_RenderFillRects(s->renderer, &(s->rects[k]), i - k);
-      m = s->rectflags[i];
-      if ((s->rectflags[i] & WAVE_TICK_FLAG_PROCESSED) != 0) {
+      if ((m & WAVE_TICK_FLAG_PROCESSED) == 0 && (s->rectflags[i] & WAVE_TICK_FLAG_PROCESSED) != 0) {
 	startx = i;
 	miny = viewport.h;
       }
+      m = s->rectflags[i] & process_flag;
       k = i;
     }
     if ((s->rectflags[i] & WAVE_TICK_FLAG_TRIGGER) != 0) {
@@ -1193,8 +1211,24 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
     if (miny > viewport.h - (s->rects[i].y + s->rects[i].h))
       miny = viewport.h - (s->rects[i].y + s->rects[i].h);
   }
-  SDL_SetRenderDrawColor(s->renderer, 255 * m, 128, 255 - 128 * m, 255);
+  if (m & WAVE_TICK_FLAG_PROCESSED) {
+    SDL_SetRenderDrawColor(s->renderer, 255, 128, 128, 255);
+  } else if (m & WAVE_TICK_FLAG_FVAD_VOICED) {
+    SDL_SetRenderDrawColor(s->renderer, 128, 255, 128, 255);
+  } else {
+    SDL_SetRenderDrawColor(s->renderer,   0, 128, 255, 255);
+  }
   SDL_RenderFillRects(s->renderer, &(s->rects[k]), s->items - k);
+
+#ifdef HAVE_LIBFVAD
+  /* draw current scale at last */
+  r.w = WAVE_TICK_WIDTH;
+  r.h = recog->adin->level_coef * viewport.h * 0.025;
+  r.x = viewport.w - r.w;
+  r.y = viewport.h * 0.5 - r.h;
+  SDL_SetRenderDrawColor(s->renderer, 255, 0, 0, 255);
+  SDL_RenderDrawRect(s->renderer, &r);
+#endif /* HAVE_LIBFVAD */
 
 #ifdef AUTO_ADJUST_THRESHOLD
 
@@ -1223,6 +1257,10 @@ static void draw_wave(Recog *recog, SP16 *now, int len, void *data)
 #endif
 
 }
+
+
+// keep audio scale
+static float stored_scale;
 
 // check events on SDL
 static int
@@ -1267,10 +1305,11 @@ sdl_check_command()
       case SDLK_m:
 	// 'm' -> input mute
 	if (event.key.state != SDL_PRESSED || event.key.repeat != 0) break;
-	if (recog->jconf->preprocess.level_coef == 1.0f) {
-	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = 0.00f;
+	if (recog->jconf->preprocess.level_coef != 0.0f) {
+	  stored_scale = recog->jconf->preprocess.level_coef;
+	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = 0.0f;
 	} else {
-	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = 1.0f;
+	  recog->jconf->preprocess.level_coef = recog->adin->level_coef = stored_scale;
 	}
 	break;
       case SDLK_c:

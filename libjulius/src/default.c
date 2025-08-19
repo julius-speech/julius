@@ -87,6 +87,14 @@ jconf_set_default_values(Jconf *j)
   j->detect.fvad_mode                   = -1;
   j->detect.fvad_smoothnum              = 5;
   j->detect.fvad_thres                  = 0.5;
+  j->detect.auto_gain_control_flag      = FALSE;
+  j->detect.agc.overflow_thres           = 30000;
+  j->detect.agc.scale_max                = 25.0;
+  j->detect.agc.scale_max_relative_first = 3.0;
+  j->detect.agc.level_factor_first       = 3.0;
+  j->detect.agc.scale_up_rate            = 1.3;
+  j->detect.agc.scale_down_rate          = 0.8;
+  j->detect.agc.scale_down_overflow_rate = 0.7;
 #endif /* HAVE_LIBFVAD */
 
   j->preprocess.strip_zero_sample	= TRUE;

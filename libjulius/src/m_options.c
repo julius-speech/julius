@@ -1363,6 +1363,31 @@ opt_parse(int argc, char *argv[], char *cwd, Jconf *jconf)
       GET_TMPARG;
       jconf->detect.fvad_thres = (float)atof(tmparg);
       continue;
+    } else if (strmatch(argv[i],"-agc")) { /* enable agc */
+      if (!check_section(jconf, argv[i], JCONF_OPT_GLOBAL)) return FALSE;
+      jconf->detect.auto_gain_control_flag = TRUE;
+      continue;
+    } else if (strmatch(argv[i],"-noagc")) { /* disable agc */
+      if (!check_section(jconf, argv[i], JCONF_OPT_GLOBAL)) return FALSE;
+      jconf->detect.auto_gain_control_flag = FALSE;
+      continue;
+    } else if (strmatch(argv[i],"-agc_param")) { /* disable agc */
+      if (!check_section(jconf, argv[i], JCONF_OPT_GLOBAL)) return FALSE;
+      GET_TMPARG;
+      jconf->detect.agc.overflow_thres = atoi(tmparg);
+      GET_TMPARG;
+      jconf->detect.agc.scale_max = (float)atof(tmparg);
+      GET_TMPARG;
+      jconf->detect.agc.scale_max_relative_first = (float)atof(tmparg);
+      GET_TMPARG;
+      jconf->detect.agc.level_factor_first = (float)atof(tmparg);
+      GET_TMPARG;
+      jconf->detect.agc.scale_up_rate = (float)atof(tmparg);
+      GET_TMPARG;
+      jconf->detect.agc.scale_down_rate = (float)atof(tmparg);
+      GET_TMPARG;
+      jconf->detect.agc.scale_down_overflow_rate = (float)atof(tmparg);
+      continue;
 #endif /* HAVE_LIBFVAD */
     }
     if (argv[i][0] == '-' && strlen(argv[i]) == 2) {

@@ -5,42 +5,42 @@
  * @brief  音声キャプチャおよび有音区間検出
  *
  * 音声入力デバイスからの音声データの取り込み，および
- * 音の存在する区間の検出を行ないます. 
+ * 音の存在する区間の検出を行ないます.
  *
- * 有音区間の検出は，振幅レベルと零交差数を用いて行ないます. 
+ * 有音区間の検出は，振幅レベルと零交差数を用いて行ないます.
  * 入力断片ごとに，レベルしきい値を越える振幅について零交差数をカウントし，
  * それが指定した数以上になれば，音の区間開始検出として
  * 取り込みを開始します. 取り込み中に零交差数が指定数以下になれば，
  * 取り込みを停止します. 実際には頑健に切り出しを行なうため，開始部と
- * 停止部の前後にマージンを持たせて切り出します. 
- * 
- * また，オプション指定 (-zmean)により DC offset の除去をここで行ないます. 
- * offset は最初の @a ZMEANSAMPLES 個のサンプルの平均から計算されます. 
+ * 停止部の前後にマージンを持たせて切り出します.
+ *
+ * また，オプション指定 (-zmean)により DC offset の除去をここで行ないます.
+ * offset は最初の @a ZMEANSAMPLES 個のサンプルの平均から計算されます.
  *
  * 音声データの取り込みと並行して入力音声の処理を行ないます. このため，
  * 取り込んだ音声データはその取り込み単位（live入力では一定時間，音声ファイル
- * ではバッファサイズ）ごとに，それらを引数としてコールバック関数が呼ばれます. 
+ * ではバッファサイズ）ごとに，それらを引数としてコールバック関数が呼ばれます.
  * このコールバック関数としてデータの保存や特徴量抽出，
- * （フレーム同期の）認識処理を進める関数を指定します. 
+ * （フレーム同期の）認識処理を進める関数を指定します.
  *
  * マイク入力や NetAudio 入力などの Live 入力では，
  * コールバック内の処理が重く処理が入力の速度に追い付かないと，
- * デバイスのバッファが溢れ，入力断片がロストする場合があります. 
+ * デバイスのバッファが溢れ，入力断片がロストする場合があります.
  * このエラーを防ぐため，実行環境で pthread が使用可能である場合，
- * 音声取り込み・区間検出部は本体と独立したスレッドで動作します. 
+ * 音声取り込み・区間検出部は本体と独立したスレッドで動作します.
  * この場合，このスレッドは本スレッドとバッファ @a speech を介して
- * 以下のように協調動作します. 
- * 
+ * 以下のように協調動作します.
+ *
  *    - Thread 1: 音声取り込み・音区間検出スレッド
- *        - デバイスから音声データを読み込みながら音区間検出を行なう. 
+ *        - デバイスから音声データを読み込みながら音区間検出を行なう.
  *          検出した音区間のサンプルはバッファ @a speech の末尾に逐次
- *          追加される. 
+ *          追加される.
  *        - このスレッドは起動時から本スレッドから独立して動作し，
- *          上記の動作を行ない続ける. 
+ *          上記の動作を行ない続ける.
  *    - Thread 2: 音声処理・認識処理を行なう本スレッド
  *        - バッファ @a speech を一定時間ごとに監視し，新たなサンプルが
  *          Thread 1 によって追加されたらそれらを処理し，処理が終了した
- *          分バッファを詰める. 
+ *          分バッファを詰める.
  *
  * </JA>
  * <EN>
@@ -96,7 +96,7 @@
  * @date   Sat Feb 12 13:20:53 2005
  *
  * $Revision: 1.22 $
- * 
+ *
  */
 /*
  * Copyright (c) 1991-2013 Kawahara Lab., Kyoto University
@@ -117,20 +117,20 @@
 /// Define this if you want to output a debug message for threading
 #undef THREAD_DEBUG
 /// Enable some fixes relating adinnet+module
-#define TMP_FIX_200602		
+#define TMP_FIX_200602
 
-/** 
+/**
  * <EN>
  * @brief  Set up parameters for A/D-in and input detection.
  *
  * Set variables in work area according to the configuration values.
- * 
+ *
  * </EN>
  * <JA>
  * @brief  音声切り出し用各種パラメータをセット
  *
- * 設定を元に切り出し用のパラメータを計算し，ワークエリアにセットします. 
- * 
+ * 設定を元に切り出し用のパラメータを計算し，ワークエリアにセットします.
+ *
  * </JA>
  * @param adin [in] AD-in work area
  * @param jconf [in] configuration data
@@ -157,6 +157,7 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
     adin->adin_cut_on = adin->silence_cut_default;
   }
   adin->strip_flag = jconf->preprocess.strip_zero_sample;
+  if (verbose_flag == FALSE) set_strip_zero_warning(FALSE);
   adin->thres = jconf->detect.level_thres;
 #ifdef HAVE_PTHREAD
   if (adin->enable_thread && jconf->decodeopt.segment) {
@@ -207,7 +208,7 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
   if (adin->adin_cut_on) {
     init_count_zc_e(&(adin->zc), adin->c_length);
   }
-  
+
   adin->need_init = TRUE;
 
   adin->rehash = FALSE;
@@ -230,6 +231,7 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
     adin->fvad_lastresult = (int *)mymalloc(sizeof(int) * adin->fvad_lastresultnum);
     for (i = 0; i < adin->fvad_lastresultnum; i++) adin->fvad_lastresult[i] = 0;
     adin->fvad_lastp = 0;
+    adin->fvad_last_voice = FALSE;
   }
 #endif /* HAVE_LIBFVAD */
 
@@ -237,17 +239,17 @@ adin_setup_param(ADIn *adin, Jconf *jconf)
 
 }
 
-/** 
+/**
  * <EN>
  * Purge samples already processed in the temporary buffer.
  * </EN>
  * <JA>
  * テンポラリバッファにある処理されたサンプルをパージする.
  * </JA>
- * 
+ *
  * @param a [in] AD-in work area
  * @param from [in] Purge samples in range [0..from-1].
- * 
+ *
  */
 static void
 adin_purge(ADIn *a, int from)
@@ -260,14 +262,14 @@ adin_purge(ADIn *a, int from)
 
 #ifdef HAVE_LIBFVAD
 /* proceed libfvad detection: return 1 for speech part, 0 for non-speech part */
-static int
+static boolean
 fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
 {
   int i, j, k;
   int ret, result;
   float sum;
 
-  if (a->fvad == NULL) return 1;
+  if (a->fvad == NULL) return TRUE;
 
   if (a->fvad_speechlen + samplenum > MAXSPEECHLEN) {
     /* buffer overflow */
@@ -283,7 +285,7 @@ fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
     ret = fvad_process(a->fvad, &(a->fvad_speech[i]), a->fvad_framesize);
     if (ret < 0) {
       /* error */
-      jlog("ERROR: fvad_proceed: internal error occured at fvad_process()\n");
+      jlog("ERROR: fvad_proceed: internal error occurred at fvad_process()\n");
       break;
     }
     a->fvad_lastresult[a->fvad_lastp] = ret;
@@ -295,10 +297,10 @@ fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
   sum /= (float)a->fvad_lastresultnum;
   /* judge */
   if (sum >= a->fvad_thres)
-    result = 1;
+    a->fvad_last_voice = TRUE;
   else
-    result = 0;
-  
+    a->fvad_last_voice = FALSE;
+
   /* flush processed samples */
   k = 0;
   for (j = i; j < a->fvad_speechlen; j++) {
@@ -306,12 +308,48 @@ fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
     k++;
   }
   a->fvad_speechlen = k;
-  
-  return result;
+
+  return a->fvad_last_voice;
 }
 #endif /* HAVE_LIBFVAD */
 
-/** 
+#ifdef HAVE_LIBFVAD
+/* work area for auto gain control */
+static int fvad_cont_count = 0;    /* continuous count of status keep */
+static boolean fvad_last_result = FALSE;   /* keeps last fvad result */
+static int fvad_level_max = 0;     /* maximum input level in cycle buffer */
+static int fvad_first_time = 0;    /* flag to detect the first speech */
+static float fvad_first_rate;
+
+/* change scale and update cycle buffer */
+static int
+update_audio_scale(Recog *recog, float scale, int totallen) {
+  ADIn *a = recog->adin;
+  int i, len;
+  int zc;
+  float totalsec;
+  int hour, minutes;
+  float second;
+
+  totalsec = (float)totallen / (float)recog->jconf->input.sfreq;
+  hour = (int)totalsec / 3600;
+  minutes = (int)((totalsec - hour * 3600) / 60);
+  second = totalsec - hour * 3600 - minutes * 60;
+
+  zc_copy_buffer(&(a->zc), a->cbuf, &len);
+  for(i = 0; i < len; i++) a->cbuf[i] = a->cbuf[i] * scale / a->level_coef;
+  reset_count_zc_e(&(a->zc), a->thres, a->c_length, a->c_offset);
+  zc = count_zc_e(&(a->zc), a->cbuf, len);
+  if (verbose_flag) jlog("STAT: AGC: %.2f to %.2f at %02d:%02d:%02.2f\n", recog->adin->level_coef, scale, hour, minutes, second);
+  recog->adin->level_coef = scale;
+  recog->jconf->preprocess.level_coef = scale;
+
+  return zc;
+}
+
+#endif /* HAVE_LIBFVAD */
+
+/**
  * <EN>
  * @brief  Main A/D-in and sound detection function
  *
@@ -340,40 +378,40 @@ fvad_proceed(ADIn *a, SP16 *speech, int samplenum)
  *
  * When the argument "ad_check()" specified, it will be called periodically.
  * When it returns less than 0, this function will be terminated.
- * 
+ *
  * </EN>
  * <JA>
  * @brief  音声入力と音検出を行うメイン関数
  *
- * ここでは音声入力の取り込み，音区間の開始・終了の検出を行います. 
+ * ここでは音声入力の取り込み，音区間の開始・終了の検出を行います.
  *
- * スレッドモード時，この関数は独立したAD-inスレッドとしてデタッチされます. 
+ * スレッドモード時，この関数は独立したAD-inスレッドとしてデタッチされます.
  * (adin_thread_create()), 音入力を検知するとこの関数はワークエリア内の
  * speech[] にトリガしたサンプルを記録し，かつ transfer_online を TRUE に
  * セットします. Julius のメイン処理スレッド (adin_go()) は
  * adin_thread_process() に移行し，そこで transfer_online 時に speech[] を
- * 参照しながら認識処理を行います. 
+ * 参照しながら認識処理を行います.
  *
  * 非スレッドモード時は，メイン処理関数 adin_go() は直接この関数を呼び，
- * 認識処理はこの内部で直接行われます. 
+ * 認識処理はこの内部で直接行われます.
  *
  * スレッドモードはマイク入力など，入力が無限で処理の遅延がデータの
  * 取りこぼしを招くような live input で用いられます. 一方，ファイル入力
- * やadinnet 入力のような buffered input では非スレッドモードが用いられます. 
+ * やadinnet 入力のような buffered input では非スレッドモードが用いられます.
  *
  * 引数の ad_process は，取り込んだサンプルに対して処理を行う関数を
  * 指定します. リアルタイム認識を行う場合は，ここに第1パスの認識処理を
- * 行う関数が指定されます. 返り値が 1 であれば，入力をここで区切ります. 
- * -1 であればエラー終了します. 
- * 
+ * 行う関数が指定されます. 返り値が 1 であれば，入力をここで区切ります.
+ * -1 であればエラー終了します.
+ *
  * 引数の ad_check は一定処理ごとに繰り返し呼ばれる関数を指定します. この
- * 関数の返り値が 0 以下だった場合，入力を即時中断して関数を終了します. 
+ * 関数の返り値が 0 以下だった場合，入力を即時中断して関数を終了します.
  * </JA>
  *
  * @param ad_process [in] function to process triggerted input.
  * @param ad_check [in] function to be called periodically.
  * @param recog [in] engine instance
- * 
+ *
  * @return 2 when input termination requested by ad_process(), 1 when
  * if detect end of an input segment (down trigger detected after up
  * trigger), 0 when reached end of input device, -1 on error, -2 when
@@ -394,7 +432,9 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
   int end_status = 0;	/* return value */
   boolean transfer_online_local;	/* local repository of transfer_online */
   int zc;		/* count of zero cross */
-
+#ifdef HAVE_LIBFVAD
+  boolean fv;
+#endif /* HAVE_LIBFVAD */
   a = recog->adin;
 
   /*
@@ -404,7 +444,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
    *   swap buffer for re-starting after short tail silence
    *
    * Each samples are first read to buffer[], then passed to count_zc_e()
-   * to find trigger.  Samples between trigger and end of speech are 
+   * to find trigger.  Samples between trigger and end of speech are
    * passed to (*ad_process) with pointer to the first sample and its length.
    *
    */
@@ -460,7 +500,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	mic input - samples exist in a device buffer
         tcpip input - samples exist in a socket
         file input - samples in a file
-	   
+
 	Return value is the number of read samples.
 	If no data exists in the device (in case of mic input), ad_read()
 	will return 0.  If reached end of stream (in case end of file or
@@ -488,11 +528,11 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	  a->input_side_segment = TRUE;
 	  end_status = 0;
 	}
-	/* now the input has been ended, 
-	   we should not get further speech input in the next loop, 
+	/* now the input has been ended,
+	   we should not get further speech input in the next loop,
 	   instead just process the samples in the temporary buffer until
 	   the entire data is processed. */
-	a->end_of_stream = TRUE;		
+	a->end_of_stream = TRUE;
 	cnt = 0;			/* no new input */
 	/* in case the first trial of ad_read() fails, exit this loop */
 	if (a->bp == 0) break;
@@ -543,7 +583,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	  sub_zmean(&(a->buffer[a->bp]), cnt);
 	}
       }
-      
+
       /* current len = current samples in buffer */
       a->current_len = a->bp + cnt;
     }
@@ -591,7 +631,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     /* When not adin_cut mode, all incoming data is valid.
        So is_valid_data should be set to TRUE when some input first comes
        till this input ends.  So, if some data comes, set is_valid_data to
-       TRUE here. */ 
+       TRUE here. */
     if (!a->adin_cut_on && a->is_valid_data == FALSE && a->current_len > 0) {
       a->is_valid_data = TRUE;
       callback_exec(CALLBACK_EVENT_SPEECH_START, recog);
@@ -600,18 +640,18 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
     /******************************************************/
     /* prepare for processing samples in temporary buffer */
     /******************************************************/
-    
+
     wstep = a->chunk_size;	/* process unit (should be smaller than cycle buffer) */
 
     /* imax: total length that should be processed at one ad_read() call */
-    /* if in real-time mode and not threaded, recognition process 
+    /* if in real-time mode and not threaded, recognition process
        will be called and executed as the ad_process() callback within
        this function.  If the recognition speed is over the real time,
        processing all the input samples at the loop below may result in the
        significant delay of getting next input, that may result in the buffer
        overflow of the device (namely a microphone device will suffer from
        this). So, in non-threaded mode, in order to avoid buffer overflow and
-       input frame dropping, we will leave here by processing 
+       input frame dropping, we will leave here by processing
        only one segment [0..wstep], and leave the rest in the temporary buffer.
     */
 #ifdef HAVE_PTHREAD
@@ -620,7 +660,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 #else
     imax = (a->current_len < wstep) ? a->current_len : wstep;	/* one step */
 #endif
-    
+
     /* wstep: unit length for the loop below */
     if (a->end_of_stream) {
       /* already reaches end of stream, just process the rest */
@@ -654,19 +694,99 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	/* the cycle buffer in count_zc_e() holds the last
 	   samples of (head_margin) miliseconds, and the zerocross
 	   over the threshold level are counted within the cycle buffer */
-	
+
 	/* store the new data to cycle buffer and update the count */
 	/* return zero-cross num in the cycle buffer */
 	zc = count_zc_e(&(a->zc), &(a->buffer[i]), wstep);
-	
+
+#ifdef HAVE_LIBFVAD
+	/*********************/
+	/* auto gain control */
+	/*********************/
+
+	/* get voice/noise status from fvad */
+	fv = fvad_proceed(a, &(a->buffer[i]), wstep);
+	if (a->fvad && recog->jconf->detect.auto_gain_control_flag) {
+	  float scale;
+	  int total_processed_len = a->total_captured_len - a->current_len + i + wstep - a->zc.valid_len;
+	  /* check if voice/noise status has been kept for the entire cycle buffer */
+	  if (fvad_last_result == fv) {
+	    fvad_cont_count += wstep;
+	    /* also keep maximum level for the entire cycle buffer */
+	    if (fvad_level_max < a->zc.level) fvad_level_max = a->zc.level;
+	  } else {
+	    fvad_cont_count = wstep;
+	    fvad_level_max = a->zc.level;
+	  }
+	  fvad_last_result = fv;
+
+	  if (a->zc.level > recog->jconf->detect.agc.overflow_thres && fvad_cont_count > a->c_length) {
+	    /* detect input overflow at last chunk, immediately reduce the scale under the cap */
+	    if (verbose_flag) jlog("STAT: AGC: too loud (>%d)\n", recog->jconf->detect.agc.overflow_thres);
+	    zc = update_audio_scale(recog, (float)recog->adin->level_coef * recog->jconf->detect.agc.scale_down_overflow_rate, total_processed_len);
+	    /* update max after scaling */
+	    fvad_level_max *= recog->jconf->detect.agc.scale_down_overflow_rate;
+	    /* does not reset detection, continues */
+	  }
+	  if (fv == TRUE && fvad_cont_count > a->c_length) {
+	    /* voice segment of a certain length found */
+	    if (fvad_first_time == 0) {
+	      fvad_first_time = 1;
+	      /* this is first time: if amplitude is below level threshold, immediately raise the scale to go over the threshold */
+	      scale = recog->jconf->detect.agc.level_factor_first  * a->thres / fvad_level_max;
+	      if (scale > 1.0f) {
+	        /* set new scale */
+	        if (verbose_flag) jlog("STAT: AGC: first speech segment, force adjustment\n");
+		if (scale > recog->jconf->detect.agc.scale_max) scale = recog->jconf->detect.agc.scale_max;
+	        fvad_first_rate = scale;
+	        zc = update_audio_scale(recog, scale, total_processed_len);
+	        /* update max after scaling */
+	        if (fvad_level_max < a->zc.level) fvad_level_max = a->zc.level;
+	      }
+	    } else if (fvad_level_max < a->thres) {
+	      /* too low amplitude of the voice part, increase scale gradually */
+	      if (fvad_first_time == 1 && recog->adin->level_coef >= fvad_first_rate * recog->jconf->detect.agc.scale_max_relative_first) {
+	        fvad_cont_count = 0;
+	      } else {
+	        scale = recog->adin->level_coef * recog->jconf->detect.agc.scale_up_rate;
+	        if (scale > recog->jconf->detect.agc.scale_max) scale = recog->jconf->detect.agc.scale_max;
+	        if (fvad_first_time == 1 && scale > fvad_first_rate * recog->jconf->detect.agc.scale_max_relative_first) {
+	          scale = fvad_first_rate * recog->jconf->detect.agc.scale_max_relative_first;
+	        }
+	        zc = update_audio_scale(recog, scale, total_processed_len);
+	        /* update max after scaling */
+	        if (fvad_level_max < a->zc.level) fvad_level_max = a->zc.level;
+	      }
+	    }
+	    /* reset detection */
+	    fvad_cont_count = 0;
+	  }
+	  if (fv == FALSE && fvad_cont_count > a->c_length) {
+	    /* noise segment of a certain length found */
+	    if (fvad_level_max > a->thres) {
+	      /* mis-detecting long noise as speech, decrease scale gradually */
+	      scale = recog->adin->level_coef * recog->jconf->detect.agc.scale_down_rate;
+	      if (scale <= 0.0) {
+	        if (verbose_flag) jlog("STAT: AGC: too small scale %f, ignored\n", scale);
+	      } else {
+	        zc = update_audio_scale(recog, scale, total_processed_len);
+	        /* update max after scaling */
+	        fvad_level_max *= recog->jconf->detect.agc.scale_down_rate;
+	      }
+	    }
+	    /* reset detection */
+	    fvad_cont_count = 0;
+	  }
+	}
+#endif /* HAVE_LIBFVAD */
 	if (
 #ifdef HAVE_LIBFVAD
 	    /* trigger when both libfvad and julius VAD are triggered */
 	    /* process input in libfvad and get VAD result */
-	    fvad_proceed(a, &(a->buffer[i]), wstep) == 1 &&
+	    fv == TRUE &&
 #endif /* HAVE_LIBFVAD */
 	    zc > a->noise_zerocross) { /* now triggering */
-	  
+
 	  if (a->is_valid_data == FALSE) {
 	    /*****************************************************/
 	    /* process off, trigger on: detect speech triggering */
@@ -741,18 +861,18 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 		}
 	      }
 	    }
-	    
+
 	  } else {		/* is_valid_data == TRUE */
 	    /******************************************************/
 	    /* process on, trigger on: we are in a speech segment */
 	    /******************************************************/
-	    
+
 	    if (a->nc > 0) {
-	      
+
 	      /*************************************/
 	      /* re-triggering in trailing silence */
 	      /*************************************/
-	      
+
 #ifdef THREAD_DEBUG
 	      jlog("DEBUG: re-triggered\n");
 #endif
@@ -770,7 +890,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 #endif
 		  ) {
 #endif
-	      
+
 	      /*************************************************/
 	      /* process swap buffer stored while tail silence */
 	      /*************************************************/
@@ -822,13 +942,13 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	      }
 #endif
 	    }
-	  } 
+	  }
 	} else if (a->is_valid_data == TRUE) {
-	  
+
 	  /*******************************************************/
 	  /* process on, trigger off: processing tailing silence */
 	  /*******************************************************/
-	  
+
 #ifdef THREAD_DEBUG
 	  jlog("DEBUG: TRAILING SILENCE\n");
 #endif
@@ -845,21 +965,21 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	  a->nc++;
 	}
       }	/* end of triggering handlers */
-      
-      
+
+
       /********************************************************************/
       /* process the current segment buffer[i...i+wstep] if process == on */
       /********************************************************************/
-      
+
       if (a->adin_cut_on && a->is_valid_data && a->nc > 0 && a->rest_tail == 0) {
-	
+
 	/* The current trailing silence is now longer than the user-
 	   specified tail margin length, so the current samples
 	   should not be processed now.  But if 're-triggering'
 	   occurs in the trailing silence later, they should be processed
 	   then.  So we just store the overed samples in swapbuf[] and
 	   not process them now */
-	
+
 #ifdef THREAD_DEBUG
 	jlog("DEBUG: tail silence over, store to swap buffer (nc=%d, rest_tail=%d, sblen=%d-%d)\n", a->nc, a->rest_tail, a->sblen, a->sblen+wstep);
 #endif
@@ -868,7 +988,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	}
 	memcpy(&(a->swapbuf[a->sblen]), &(a->buffer[i]), wstep * sizeof(SP16));
 	a->sblen += wstep;
-	
+
       } else {
 
 	/* we are in a normal speech segment (nc == 0), or
@@ -876,7 +996,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	   The current trailing silence is shorter than the user-
 	   specified tail margin length, so the current samples
 	   should be processed now as same as the normal speech segment */
-	
+
 #ifdef TMP_FIX_200602
 	if (!a->adin_cut_on || a->is_valid_data == TRUE) {
 #else
@@ -947,7 +1067,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
 	}
       }	/* end of current segment processing */
 
-      
+
       if (a->adin_cut_on && a->is_valid_data && a->nc >= a->nc_max) {
 	/*************************************/
 	/* process on, trailing silence over */
@@ -982,7 +1102,7 @@ adin_cut(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Reco
       /*********************************************************/
       i += wstep;		/* increment to next wstep samples */
     }
-    
+
     /* purge processed samples and update queue */
     adin_purge(a, i);
 
@@ -1004,7 +1124,7 @@ break_input:
       end_status = (a->bp) ? 1 : 0;
     }
   }
-  
+
   return(end_status);
 }
 
@@ -1024,11 +1144,11 @@ break_input:
  * <JA>
  * A/D-in スレッドにてトリガした入力サンプルを保存するコールバック.
  * </JA>
- * 
+ *
  * @param now [in] triggered fragment
  * @param len [in] length of above
  * @param recog [in] engine instance
- * 
+ *
  * @return always 0, to tell caller to just continue the input
  */
 static int
@@ -1062,7 +1182,7 @@ adin_store_buffer(SP16 *now, int len, Recog *recog)
  * <JA>
  * A/D-in スレッドのメイン関数.
  * </JA>
- * 
+ *
  * @param dummy [in] a dummy data, not used.
  */
 static void
@@ -1092,7 +1212,7 @@ adin_thread_input_main(void *dummy)
  * Start new A/D-in thread, and initialize buffer.
  * </EN>
  * <JA>
- * バッファを初期化して A/D-in スレッドを開始する. 
+ * バッファを初期化して A/D-in スレッドを開始する.
  * </JA>
  * @param recog [in] engine instance
  *
@@ -1203,13 +1323,13 @@ adin_thread_cancel(Recog *recog)
  *
  * この関数は A/D-in スレッドによってサンプルが保存されるのを待ち，
  * 保存されたサンプルを順次処理していきます. 引数や返り値は adin_cut() と
- * 同一です. 
+ * 同一です.
  * </JA>
- * 
+ *
  * @param ad_process [in] function to process triggerted input.
  * @param ad_check [in] function to be called periodically.
  * @param recog [in] engine instance
- * 
+ *
  * @return 2 when input termination requested by ad_process(), 1 when
  * if detect end of an input segment (down trigger detected after up
  * trigger), 0 when reached end of input device, -1 on error, -2 when
@@ -1333,7 +1453,7 @@ adin_thread_process(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Rec
 	pthread_mutex_unlock(&(a->mutex));
         break;
       }
-      usleep(50000);   /* wait = 0.05sec*/            
+      usleep(50000);   /* wait = 0.05sec*/
     }
   }
 
@@ -1363,13 +1483,13 @@ adin_thread_process(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Rec
  *
  * スレッドモードでは，この関数は adin_thead_process() を呼び出し，
  * 非スレッドモードでは adin_cut() を直接呼び出す. 引数や返り値は
- * adin_cut() と同一である. 
+ * adin_cut() と同一である.
  * </JA>
- * 
+ *
  * @param ad_process [in] function to process triggerted input.
  * @param ad_check [in] function to be called periodically.
  * @param recog [in] engine instance
- * 
+ *
  * @return 2 when input termination requested by ad_process(), 1 when
  * if detect end of an input segment (down trigger detected after up
  * trigger), 0 when reached end of input device, -1 on error, -2 when
@@ -1377,7 +1497,7 @@ adin_thread_process(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Rec
  *
  * @callergraph
  * @callgraph
- * 
+ *
  */
 int
 adin_go(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Recog *recog)
@@ -1392,23 +1512,23 @@ adin_go(int (*ad_process)(SP16 *, int, Recog *), int (*ad_check)(Recog *), Recog
   return(adin_cut(ad_process, ad_check, recog));
 }
 
-/** 
+/**
  * <EN>
  * Call device-specific initialization.
  * </EN>
  * <JA>
- * デバイス依存の初期化関数を呼び出す. 
+ * デバイス依存の初期化関数を呼び出す.
  * </JA>
- * 
+ *
  * @param a [in] A/D-in work area
  * @param freq [in] sampling frequency
  * @param arg [in] device-dependent argument
- * 
+ *
  * @return TRUE if succeeded, FALSE if failed.
- * 
+ *
  * @callergraph
  * @callgraph
- * 
+ *
  */
 boolean
 adin_standby(ADIn *a, int freq, void *arg)
@@ -1417,22 +1537,22 @@ adin_standby(ADIn *a, int freq, void *arg)
   if (a->ad_standby != NULL) return(a->ad_standby(freq, arg));
   return TRUE;
 }
-/** 
+/**
  * <EN>
  * Call device-specific function to begin capturing of the audio stream.
  * </EN>
  * <JA>
- * 音の取り込みを開始するデバイス依存の関数を呼び出す. 
+ * 音の取り込みを開始するデバイス依存の関数を呼び出す.
  * </JA>
- * 
+ *
  * @param a [in] A/D-in work area
  * @param file_or_dev_name [in] device / file path to open or NULL for default
- * 
+ *
  * @return TRUE on success, FALSE on failure.
- * 
+ *
  * @callergraph
  * @callgraph
- * 
+ *
  */
 boolean
 adin_begin(ADIn *a, char *file_or_dev_name)
@@ -1446,16 +1566,16 @@ adin_begin(ADIn *a, char *file_or_dev_name)
   }
   return TRUE;
 }
-/** 
+/**
  * <EN>
  * Call device-specific function to end capturing of the audio stream.
  * </EN>
  * <JA>
- * 音の取り込みを終了するデバイス依存の関数を呼び出す. 
+ * 音の取り込みを終了するデバイス依存の関数を呼び出す.
  * </JA>
- * 
+ *
  * @param a [in] A/D-in work area
- * 
+ *
  * @return TRUE on success, FALSE on failure.
  *
  * @callergraph
@@ -1471,19 +1591,19 @@ adin_end(ADIn *a)
   return TRUE;
 }
 
-/** 
+/**
  * <EN>
  * Free memories of A/D-in work area.
  * </EN>
  * <JA>
- * 音取り込み用ワークエリアのメモリを開放する. 
+ * 音取り込み用ワークエリアのメモリを開放する.
  * </JA>
- * 
+ *
  * @param recog [in] engine instance
  *
  * @callergraph
  * @callgraph
- * 
+ *
  */
 void
 adin_free_param(Recog *recog)

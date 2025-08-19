@@ -96,14 +96,16 @@
 #-rejectlong -1			# reject longer input (msec) -1 to disable
 
 ####
-#### Speech detection by libfvad
+#### Speech detection by WebRTC VAD (libfvad)
 ####
-#-fvad -1           # disable libfvad
-#-fvad 0            # enable on mode 0 (least aggressive to filtering out non-speech)
-#-fvad 1            # enable on mode 1 (moderately aggressive to filtering out non-speech)
-#-fvad 2            # enable on mode 2 (aggressive to filtering out non-speech)
-#-fvad 3            # enable on mode 3 (very aggressive to filtering out non-speech)
-#-fvad_param 5 0.5  # optinal parameter: smoothing frames, trigger threshold
+#-fvad -1           # disable WebRTC VAD
+#-fvad 0            # enable WebRTC VAD on mode 0 (least aggressive to filtering out non-speech)
+#-fvad 1            # enable WebRTC VAD on mode 1 (moderately aggressive to filtering out non-speech)
+#-fvad 2            # enable WebRTC VAD on mode 2 (aggressive to filtering out non-speech)
+#-fvad 3            # enable WebRTC VAD on mode 3 (very aggressive to filtering out non-speech)
+#-fvad_param 5 0.5  # optional parameter: smoothing frames, trigger threshold
+#-agc               # enable auto gain control.  Should be specified with -fvad. 
+#-noagc             # disable auto gain control.
 
 ####
 #### Input rejection by average power (EXPERIMENTAL)
@@ -117,7 +119,7 @@
 ####
 #### Gaussian Mixture Model
 ####
-####  GMM will be used for input rejection by accumurated score, or
+####  GMM will be used for input rejection by accumulated score, or
 ####  for GMM-based frontend VAD when "--enable-gmm-vad" specified.
 ####
 ####  NOTE: If you use MFCC for the GMM which is different from AM, you
@@ -188,13 +190,13 @@
 
 ## Create a new AM configuration set, and switch current to it.
 ## You should give a unique name.
-#-AM name			
+#-AM name
 
 ## Create a new LM configuration set, and switch current to it.
 ## You should give a unique name.
-#-LM name			
+#-LM name
 
-## Create a new Search configuration set with AM and LM, and switch 
+## Create a new Search configuration set with AM and LM, and switch
 ## current to it.  AM and LM name can be either name or ID number.
 #-SR name am_name_or_id lm_name_or_id
 
@@ -208,7 +210,7 @@
 ## This option is only a switcher and can be used anywhere anytime.
 # -GLOBAL
 
-## This option disables the strict section checkings and back to 4.0
+## This option disables the strict section checks and back to 4.0
 # -nosectioncheck
 
 ######################################################################
@@ -231,7 +233,7 @@
 #-mapunk "<unk>"		# word to which unknown words should be mapped
 #-iwspword			# add a pause word to the dictionary
 #-iwspentry "<UNK> [sp] sp sp"	# word that will be added by "-iwspword"
-#-sepnum 150			# num of high freq words to linearize 
+#-sepnum 150			# num of high freq words to linearize
 #-adddict dictfile              # append additional word dictionary
 #-addword entry                 # append additional word entry
 
@@ -271,7 +273,7 @@
 #### the AM defines the required parameter.  You can use different MFCC
 #### type for each AM.
 #### For GMM, the same parameter should be specified after "-AM_GMM"
-#### 
+####
 #### When using multiple AM,  the values of "-smpPeriod", "-smpFreq",
 #### "-fsize" and "-fshift" should be the same among all AM.
 ####
@@ -332,7 +334,7 @@
 #-dnnconf file			# DNN configuration file
 
 ## Others
-#-htkconf configfile		# load analysis settings from HTK Config file 
+#-htkconf configfile		# load analysis settings from HTK Config file
 
 ######################################################################
 #### RECOGNIZER (-SR)
@@ -341,7 +343,7 @@
 #### Default values for beam width and LM weights will change
 #### according to compile-time setup of JuliusLib and model specification.
 #### Please see the startup log for the actual values.
-#### 
+####
 
 ####
 #### parameter (common)
@@ -387,34 +389,34 @@
 #-spdur 10			# # of frames to detect a short pause
 #-pausemodels string		# comma-separated pause model names
 #### for decoder-VAD
-#-spmargin 40			# backstep margin at trigger up (frame)
+#-spmargin 40			# back-step margin at trigger up (frame)
 #-spdelay 4			# decision delay at trigger up (frame)
 
-#### 
+####
 #### lattice output
-#### 
+####
 #-lattice			# output result in word graph (aka -graphout)
 #-graphrange 0			# merge same words nearby, -1 to disable merge
 #-graphcut 80			# graph depth cut threshold (in depth)
-#-graphboundloop 20		# max itertations for boundary adjustment loop
-#-graphsearchdelay		# activate an alternate generation algorithm 
+#-graphboundloop 20		# max iterations for boundary adjustment loop
+#-graphsearchdelay		# activate an alternate generation algorithm
 #-nographsearchdelay		# disable "-graphsearchdelay"
 
-#### 
+####
 #### confusion network output
-#### 
+####
 #-confnet			# enable confusion network output
 #-noconfnet			# disable confusion network output
 
-#### 
+####
 #### multi-grammar output (for grammar and isolated word)
-#### 
+####
 #-multigramout			# output max hypo for each grammar
 #-nomultigramout		# disable "-multigramout"
 
-#### 
+####
 #### forced alignment
-#### 
+####
 #-walign			# enable alignment for result at word level
 #-palign			# enable alignment for result at phoneme level
 #-salign			# enable alignment for result at state level
