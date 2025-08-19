@@ -4532,7 +4532,7 @@ $as_echo_n "checking for linking POSIX threaded process... " >&6; }
 int
 main ()
 {
-pthread_equal(NULL,NULL);
+pthread_equal(pthread_self(),pthread_self());
   ;
   return 0;
 }
@@ -4564,7 +4564,7 @@ $as_echo_n "checking for POSIX thread library in -lpthread... " >&6; }
 int
 main ()
 {
-pthread_equal(NULL,NULL);
+pthread_equal(pthread_self(),pthread_self());
   ;
   return 0;
 }
