@@ -1,0 +1,16 @@
+option('mictype', 
+       type : 'combo', 
+       choices:['oss','alsa','freebsd','coreaudio','sol2','sun4','irix','esd','sp','portaudio','pa-oss','pa-alsa','pa-winmm','pa-dsound','pulseaudio'],
+       value:'alsa',
+       description:'specify mic I/O')
+option('netaudio-dir', type:'string',value:'auto',description:'DatLink/NetAudio include/lib are in DIR')
+option('disable-addarray', type:'boolean', value:false, description:'[debug] do not use addlog_array() function')
+option('words-int', type:'boolean', value:false, description:'use integer instead of unsigned short for word ID to extend vocabulary limit to 2^31=2G words]')
+option('class-ngram', type:'boolean', value:true, description:'disable class N-gram support')
+option('fork', type:'boolean', value:false, description:'enable process forking on adinnet')
+option('disable-mfcc-table', type:'boolean', value:false, description:'disable sin/cos table for MFCC calculation')
+option('msd', type:'boolean', value:false, description:'MSD model support')
+option('disable-mbr', type:'boolean', value:false, description:'MBR support')
+option('disable-zlib', type:'boolean', value:false, description:'use Zlib library')
+option('without-sndfile', type:'boolean', value: false, description:'does not link libsndfile library')
+option('disable-neon', type:'boolean', value:false, description:'ARM NEON support for DNN')
