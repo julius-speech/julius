@@ -497,7 +497,7 @@ merge_contexts(WordGraph *dst, WordGraph *src)
 static void
 swap_leftword(WordGraph *wg, WordGraph *from, WordGraph *to, LOGPROB lscore)
 {
-  int i;
+    int i, k;
   
 #ifdef GDEBUG
   jlog("DEBUG: swapleft: replacing left of \"%s\"[%d..%d] from \"%s\"[%d..%d] to \"%s\"[%d..%d]...\n",
@@ -506,12 +506,24 @@ swap_leftword(WordGraph *wg, WordGraph *from, WordGraph *to, LOGPROB lscore)
 	 wchmm_local->winfo->woutput[to->wid], to->lefttime, to->righttime);
 #endif
   
-  for(i=0;i<wg->leftwordnum;i++) {
-    if (wg->leftword[i] == from) {
-      wg->leftword[i] = to;
-      wg->left_lscore[i] = lscore;
+    if (wg == to) { //handle self loop, remove it
+        k = 0;
+        for (i = 0; i < wg->leftwordnum; i++) {
+            if (wg->leftword[i] != from) {            
+                wg->leftword[k] = wg->leftword[i];
+                wg->left_lscore[k] = wg->left_lscore[i];
+                k++;
+            }
+        }
+        wg->leftwordnum = k;        
+    } else {
+        for (i = 0; i < wg->leftwordnum; i++) {
+ 	    if (wg->leftword[i] == from) {
+      		wg->leftword[i] = to;
+      		wg->left_lscore[i] = lscore;
+	    }
+        }
     }
-  }
 }
 
 /** 
@@ -535,7 +547,7 @@ swap_leftword(WordGraph *wg, WordGraph *from, WordGraph *to, LOGPROB lscore)
 static void
 swap_rightword(WordGraph *wg, WordGraph *from, WordGraph *to, LOGPROB lscore)
 {
-  int i;
+    int i, k;    
   
 #ifdef GDEBUG
   jlog("DEBUG: swapright: replacing right of \"%s\"[%d..%d] from \"%s\"[%d..%d] to \"%s\"[%d..%d]...\n",
@@ -544,12 +556,24 @@ swap_rightword(WordGraph *wg, WordGraph *from, WordGraph *to, LOGPROB lscore)
 	 wchmm_local->winfo->woutput[to->wid], to->lefttime, to->righttime);
 #endif
 
-  for(i=0;i<wg->rightwordnum;i++) {
-    if (wg->rightword[i] == from) {
-      wg->rightword[i] = to;
-      wg->right_lscore[i] = lscore;
+    if (wg == to) { //handle self loop, remove it
+        k = 0;
+        for (i = 0; i < wg->rightwordnum; i++) {
+            if (wg->rightword[i] != from) {
+                wg->rightword[k] = wg->rightword[i];
+                wg->right_lscore[k] = wg->right_lscore[i];
+                k++;
+            }            
+        }
+        wg->rightwordnum = k;        
+    } else {
+        for (i = 0; i < wg->rightwordnum; i++) {
+            if (wg->rightword[i] == from) {
+                wg->rightword[i] = to;
+      		wg->right_lscore[i] = lscore;
+    	    }
+       }
     }
-  }
 }
 
 /** 
